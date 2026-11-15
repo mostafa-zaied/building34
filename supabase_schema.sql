@@ -55,10 +55,11 @@ CREATE TABLE IF NOT EXISTS payments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   month_id INT NOT NULL REFERENCES months(id) ON DELETE CASCADE,
   apt_num INT NOT NULL,
-  receipt_url TEXT NOT NULL,
+  receipt_url TEXT,
   paid_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE(month_id, apt_num)
 );
+ALTER TABLE payments ALTER COLUMN receipt_url DROP NOT NULL;
 
 -- ============================================================
 -- 5. تفعيل الحماية (Row Level Security)
@@ -93,7 +94,7 @@ CREATE OR REPLACE FUNCTION verify_apt_and_record_payment(
   p_month_id INT,
   p_apt_num INT,
   p_passcode TEXT,
-  p_receipt_url TEXT
+  p_receipt_url TEXT DEFAULT NULL
 )
 RETURNS JSON
 LANGUAGE plpgsql
@@ -107,12 +108,8 @@ BEGIN
     RETURN json_build_object('ok', false, 'error', 'كلمة سر الشقة غير صحيحة');
   END IF;
 
-  IF p_receipt_url IS NULL OR length(trim(p_receipt_url)) = 0 THEN
-    RETURN json_build_object('ok', false, 'error', 'صورة الإيصال مطلوبة');
-  END IF;
-
   INSERT INTO payments (month_id, apt_num, receipt_url)
-  VALUES (p_month_id, p_apt_num, p_receipt_url)
+  VALUES (p_month_id, p_apt_num, NULLIF(trim(COALESCE(p_receipt_url, '')), ''))
   ON CONFLICT (month_id, apt_num) DO UPDATE
   SET receipt_url = EXCLUDED.receipt_url, paid_at = NOW();
 

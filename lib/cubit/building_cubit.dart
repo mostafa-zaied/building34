@@ -236,8 +236,8 @@ class BuildingCubit extends Cubit<BuildingState> {
   Future<String?> submitPayment({
     required int aptNum,
     required String passcode,
-    required Uint8List imageBytes,
-    required String fileName,
+    Uint8List? imageBytes,
+    String? fileName,
   }) async {
     final m = state.currentMonth;
     if (m == null) return state.s.errNoMonth;

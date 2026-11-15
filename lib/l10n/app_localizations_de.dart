@@ -170,7 +170,18 @@ class AppLocalizationsDe extends AppLocalizations {
   String get enterPassHint => 'Passwort eingeben...';
 
   @override
-  String get step2Image => '2. Überweisungsbeleg (Pflicht)';
+  String get step2Image => '2. Überweisungsbeleg (Optional)';
+
+  @override
+  String get confirmPaidCheckbox =>
+      'Ich bestätige die Zahlung für diesen Monat';
+
+  @override
+  String get errConfirmCheckbox =>
+      '❌ Bitte zuerst das Bestätigungsfeld ankreuzen!';
+
+  @override
+  String get noReceiptAttached => 'Ohne Belegbild bestätigt';
 
   @override
   String get pickImagePrompt => '📸 Tippen, um Belegbild auszuwählen';
@@ -232,13 +243,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get navComplaints => 'Beschwerden';
 
   @override
-  String get navImprovements => 'Ideen';
+  String get navImprovements => 'Vorschläge';
 
   @override
   String get complaintsTitle => '📢 Beschwerden';
 
   @override
-  String get improvementsTitle => '💡 Verbesserungsvorschläge';
+  String get improvementsTitle => '💡 Vorschläge';
 
   @override
   String get writeComplaintHint => 'Beschwerde hier eingeben...';
@@ -274,11 +285,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String tabViewImprovements(int count) {
-    return 'Ideen ($count)';
+    return 'Vorschläge ($count)';
   }
 
   @override
-  String get tabAddImprovement => 'Neue Idee';
+  String get tabAddImprovement => 'Neuer Vorschlag';
 
   @override
   String get languageTooltip => 'Sprache';

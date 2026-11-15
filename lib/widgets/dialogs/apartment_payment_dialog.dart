@@ -29,20 +29,22 @@ Future<void> showApartmentPaymentDialog({
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(s.fileLabel(existing.fileName), style: TextStyle(fontSize: 12, color: isDark ? Colors.white70 : Colors.black54)),
-            const SizedBox(height: 12),
-            if (existing.localBytes != null)
+            if (existing.localBytes != null) ...[
+              Text(s.fileLabel(existing.fileName), style: TextStyle(fontSize: 12, color: isDark ? Colors.white70 : Colors.black54)),
+              const SizedBox(height: 12),
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.memory(existing.localBytes!, height: 220, fit: BoxFit.contain),
-              )
-            else if (existing.receiptUrl != null)
+              ),
+            ] else if (existing.receiptUrl != null && existing.receiptUrl!.isNotEmpty) ...[
+              Text(s.fileLabel(existing.fileName), style: TextStyle(fontSize: 12, color: isDark ? Colors.white70 : Colors.black54)),
+              const SizedBox(height: 12),
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(existing.receiptUrl!, height: 220, fit: BoxFit.contain),
-              )
-            else
-              Text(s.receiptAttachedPreviously, style: const TextStyle(color: Color(0xFF22C55E))),
+              ),
+            ] else
+              Text(s.noReceiptAttached, style: const TextStyle(color: Color(0xFF22C55E))),
           ],
         ),
         actions: [
@@ -62,6 +64,7 @@ Future<void> showApartmentPaymentDialog({
   }
 
   final passCtrl = TextEditingController();
+  bool confirmed = true;
   Uint8List? pickedBytes;
   String? pickedName;
   String? errMsg;
@@ -92,7 +95,40 @@ Future<void> showApartmentPaymentDialog({
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
+              InkWell(
+                borderRadius: BorderRadius.circular(10),
+                onTap: () {
+                  setModalState(() {
+                    confirmed = !confirmed;
+                    if (confirmed) errMsg = null;
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.symmetric(vertical: 4),
+                  child: Row(
+                    children: [
+                      Checkbox(
+                        value: confirmed,
+                        activeColor: const Color(0xFF10B981),
+                        onChanged: (v) {
+                          setModalState(() {
+                            confirmed = v ?? false;
+                            if (confirmed) errMsg = null;
+                          });
+                        },
+                      ),
+                      Expanded(
+                        child: Text(
+                          s.confirmPaidCheckbox,
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
               Text(s.step2Image, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
               const SizedBox(height: 6),
               InkWell(
@@ -145,16 +181,16 @@ Future<void> showApartmentPaymentDialog({
             onPressed: submitting
                 ? null
                 : () async {
-                    if (pickedBytes == null) {
-                      setModalState(() => errMsg = s.errMissingImage);
+                    if (!confirmed) {
+                      setModalState(() => errMsg = s.errConfirmCheckbox);
                       return;
                     }
                     setModalState(() => submitting = true);
                     final resErr = await cubit.submitPayment(
                       aptNum: aptNum,
                       passcode: passCtrl.text,
-                      imageBytes: pickedBytes!,
-                      fileName: pickedName ?? 'receipt.jpg',
+                      imageBytes: pickedBytes,
+                      fileName: pickedName,
                     );
                     if (resErr != null) {
                       setModalState(() {

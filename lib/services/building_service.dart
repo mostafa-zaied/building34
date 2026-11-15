@@ -132,8 +132,8 @@ class BuildingService {
     required MonthBill month,
     required int aptNum,
     required String passcode,
-    required Uint8List imageBytes,
-    required String fileName,
+    Uint8List? imageBytes,
+    String? fileName,
   }) async {
     if (!_useSupabase) {
       final expected = _demoApartments[aptNum]?.passcode ?? '${1000 + aptNum}';
@@ -143,23 +143,27 @@ class BuildingService {
       month.payments[aptNum] = PaymentRecord(
         aptNum: aptNum,
         localBytes: imageBytes,
-        fileName: fileName,
+        fileName: fileName ?? '',
         paidAt: DateTime.now(),
       );
       return null;
     }
 
     final client = Supabase.instance.client;
-    final ext = fileName.split('.').last.toLowerCase();
-    final storagePath = '${month.yearNum}_${month.monthNum}/apt_${aptNum}_${DateTime.now().millisecondsSinceEpoch}.$ext';
+    String? publicUrl;
+    if (imageBytes != null) {
+      final safeName = fileName ?? 'receipt.jpg';
+      final ext = safeName.split('.').last.toLowerCase();
+      final storagePath = '${month.yearNum}_${month.monthNum}/apt_${aptNum}_${DateTime.now().millisecondsSinceEpoch}.$ext';
 
-    await client.storage.from('receipts').uploadBinary(
-          storagePath,
-          imageBytes,
-          fileOptions: const FileOptions(upsert: true),
-        );
+      await client.storage.from('receipts').uploadBinary(
+            storagePath,
+            imageBytes,
+            fileOptions: const FileOptions(upsert: true),
+          );
 
-    final publicUrl = client.storage.from('receipts').getPublicUrl(storagePath);
+      publicUrl = client.storage.from('receipts').getPublicUrl(storagePath);
+    }
 
     final res = await client.rpc('verify_apt_and_record_payment', params: {
       'p_month_id': month.id,

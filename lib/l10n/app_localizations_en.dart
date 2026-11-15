@@ -170,7 +170,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterPassHint => 'Enter passcode...';
 
   @override
-  String get step2Image => '2. Transfer Screenshot (Required)';
+  String get step2Image => '2. Transfer Screenshot (Optional)';
+
+  @override
+  String get confirmPaidCheckbox => 'I confirm I have paid this month\'s share';
+
+  @override
+  String get errConfirmCheckbox =>
+      '❌ Please check the payment confirmation box first!';
+
+  @override
+  String get noReceiptAttached => 'Confirmed without receipt image';
 
   @override
   String get pickImagePrompt => '📸 Tap here to select receipt image';
@@ -232,13 +242,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navComplaints => 'Complaints';
 
   @override
-  String get navImprovements => 'Improvements';
+  String get navImprovements => 'Suggestions';
 
   @override
   String get complaintsTitle => '📢 Resident Complaints';
 
   @override
-  String get improvementsTitle => '💡 Building Improvements';
+  String get improvementsTitle => '💡 Suggestions';
 
   @override
   String get writeComplaintHint => 'Write your complaint clearly...';

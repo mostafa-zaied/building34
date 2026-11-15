@@ -170,7 +170,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get enterPassHint => 'اكتب كلمة السر...';
 
   @override
-  String get step2Image => '2. إرفاق صورة التحويل من جهازك (إجباري)';
+  String get step2Image => '2. إرفاق صورة التحويل (اختياري)';
+
+  @override
+  String get confirmPaidCheckbox => 'أؤكد أنني قمت بسداد نصيب هذا الشهر';
+
+  @override
+  String get errConfirmCheckbox => '❌ يرجى تفعيل علامة تأكيد الدفع أولاً!';
+
+  @override
+  String get noReceiptAttached => 'تم تأكيد الدفع بدون إرفاق صورة';
 
   @override
   String get pickImagePrompt => '📸 اضغط هنا لاختيار صورة الإيصال';
@@ -231,13 +240,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get navComplaints => 'شكاوى';
 
   @override
-  String get navImprovements => 'تحسينات';
+  String get navImprovements => 'مقترحات';
 
   @override
   String get complaintsTitle => '📢 شكاوى السكان';
 
   @override
-  String get improvementsTitle => '💡 مقترحات التحسين';
+  String get improvementsTitle => '💡 المقترحات';
 
   @override
   String get writeComplaintHint => 'اكتب الشكوى هنا...';

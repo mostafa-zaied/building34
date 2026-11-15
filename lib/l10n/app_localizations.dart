@@ -373,8 +373,26 @@ abstract class AppLocalizations {
   /// No description provided for @step2Image.
   ///
   /// In en, this message translates to:
-  /// **'2. Transfer Screenshot (Required)'**
+  /// **'2. Transfer Screenshot (Optional)'**
   String get step2Image;
+
+  /// No description provided for @confirmPaidCheckbox.
+  ///
+  /// In en, this message translates to:
+  /// **'I confirm I have paid this month\'s share'**
+  String get confirmPaidCheckbox;
+
+  /// No description provided for @errConfirmCheckbox.
+  ///
+  /// In en, this message translates to:
+  /// **'❌ Please check the payment confirmation box first!'**
+  String get errConfirmCheckbox;
+
+  /// No description provided for @noReceiptAttached.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed without receipt image'**
+  String get noReceiptAttached;
 
   /// No description provided for @pickImagePrompt.
   ///
@@ -469,7 +487,7 @@ abstract class AppLocalizations {
   /// No description provided for @navImprovements.
   ///
   /// In en, this message translates to:
-  /// **'Improvements'**
+  /// **'Suggestions'**
   String get navImprovements;
 
   /// No description provided for @complaintsTitle.
@@ -481,7 +499,7 @@ abstract class AppLocalizations {
   /// No description provided for @improvementsTitle.
   ///
   /// In en, this message translates to:
-  /// **'💡 Building Improvements'**
+  /// **'💡 Suggestions'**
   String get improvementsTitle;
 
   /// No description provided for @writeComplaintHint.
