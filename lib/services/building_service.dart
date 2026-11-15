@@ -1,0 +1,193 @@
+import 'dart:typed_data';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../config.dart';
+import '../models/building_models.dart';
+
+class BuildingDataState {
+  final double baseEmergencyFund;
+  final List<MonthBill> months;
+
+  BuildingDataState({
+    required this.baseEmergencyFund,
+    required this.months,
+  });
+}
+
+class BuildingService {
+  bool get _useSupabase {
+    if (!AppConfig.isSupabaseConfigured) return false;
+    try {
+      Supabase.instance.client;
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  // Local Demo state (used when Supabase keys are not yet configured or in tests)
+  static double _demoBaseEmergency = 2550;
+  static final List<MonthBill> _demoMonths = [
+    MonthBill(id: 7, monthNum: 7, yearNum: 2026, water: 1080, elec: 1500, elev: 400, clean: 240, forEmerg: 0, aptsCount: 13, payments: _archivedPayments(7)),
+    MonthBill(id: 8, monthNum: 8, yearNum: 2026, water: 1100, elec: 1590, elev: 400, clean: 240, forEmerg: 50, aptsCount: 13, payments: _archivedPayments(8)),
+    MonthBill(id: 9, monthNum: 9, yearNum: 2026, water: 1150, elec: 1620, elev: 400, clean: 240, forEmerg: 100, aptsCount: 13, payments: _archivedPayments(9)),
+    MonthBill(id: 10, monthNum: 10, yearNum: 2026, water: 1210, elec: 1700, elev: 400, clean: 240, forEmerg: 90, aptsCount: 13, payments: _archivedPayments(10)),
+    MonthBill(
+      id: 11,
+      monthNum: 11,
+      yearNum: 2026,
+      water: 1281,
+      elec: 1803,
+      elev: 400,
+      clean: 240,
+      forEmerg: 176,
+      aptsCount: 13,
+      payments: {
+        1: PaymentRecord(aptNum: 1, fileName: 'InstaPay_Apt1.jpg', paidAt: DateTime(2026, 11, 14, 20, 15)),
+        3: PaymentRecord(aptNum: 3, fileName: 'InstaPay_Apt3.jpg', paidAt: DateTime(2026, 11, 15, 18, 40)),
+      },
+    ),
+    MonthBill(id: 12, monthNum: 12, yearNum: 2026, water: 0, elec: 0, elev: 400, clean: 240, forEmerg: 0, aptsCount: 13),
+  ];
+
+  static Map<int, PaymentRecord> _archivedPayments(int monthNum) {
+    return {
+      for (int i = 1; i <= 13; i++)
+        i: PaymentRecord(aptNum: i, fileName: 'مؤرشف.jpg', paidAt: DateTime(2026, monthNum, 10)),
+    };
+  }
+
+  Future<BuildingDataState> fetchAll() async {
+    if (!_useSupabase) {
+      return BuildingDataState(
+        baseEmergencyFund: _demoBaseEmergency,
+        months: _demoMonths,
+      );
+    }
+
+    final client = Supabase.instance.client;
+    final baseEmergResp = await client.rpc('get_base_emergency_fund');
+    final baseEmerg = (baseEmergResp as num?)?.toDouble() ?? 2550;
+
+    final monthsRows = await client
+        .from('months')
+        .select()
+        .order('year_num', ascending: true)
+        .order('month_num', ascending: true);
+
+    final paymentRows = await client.from('payments').select();
+
+    final monthsMap = <int, MonthBill>{};
+    for (final row in monthsRows) {
+      final bill = MonthBill.fromJson(row);
+      monthsMap[bill.id] = bill;
+    }
+
+    for (final pRow in paymentRows) {
+      final monthId = pRow['month_id'] as int;
+      final record = PaymentRecord.fromJson(pRow);
+      monthsMap[monthId]?.payments[record.aptNum] = record;
+    }
+
+    return BuildingDataState(
+      baseEmergencyFund: baseEmerg,
+      months: monthsMap.values.toList(),
+    );
+  }
+
+  Future<String?> submitApartmentPayment({
+    required MonthBill month,
+    required int aptNum,
+    required String passcode,
+    required Uint8List imageBytes,
+    required String fileName,
+  }) async {
+    if (!_useSupabase) {
+      final expected = '${1000 + aptNum}';
+      if (passcode.trim() != expected) {
+        return 'كلمة سر الشقة غير صحيحة (جرب $expected)';
+      }
+      month.payments[aptNum] = PaymentRecord(
+        aptNum: aptNum,
+        localBytes: imageBytes,
+        fileName: fileName,
+        paidAt: DateTime.now(),
+      );
+      return null;
+    }
+
+    final client = Supabase.instance.client;
+    final ext = fileName.split('.').last.toLowerCase();
+    final storagePath = '${month.yearNum}_${month.monthNum}/apt_${aptNum}_${DateTime.now().millisecondsSinceEpoch}.$ext';
+
+    await client.storage.from('receipts').uploadBinary(
+          storagePath,
+          imageBytes,
+          fileOptions: const FileOptions(upsert: true),
+        );
+
+    final publicUrl = client.storage.from('receipts').getPublicUrl(storagePath);
+
+    final res = await client.rpc('verify_apt_and_record_payment', params: {
+      'p_month_id': month.id,
+      'p_apt_num': aptNum,
+      'p_passcode': passcode.trim(),
+      'p_receipt_url': publicUrl,
+    });
+
+    if (res is Map && res['ok'] == true) {
+      return null;
+    }
+    return (res is Map ? res['error']?.toString() : null) ?? 'تعذر تسجيل الدفع';
+  }
+
+  Future<String?> updateMonthAsAdmin({
+    required String adminPass,
+    required MonthBill month,
+    required double baseEmergency,
+  }) async {
+    if (!_useSupabase) {
+      _demoBaseEmergency = baseEmergency;
+      return null;
+    }
+
+    final client = Supabase.instance.client;
+    final res = await client.rpc('admin_update_month', params: {
+      'p_admin_pass': adminPass,
+      'p_month_id': month.id,
+      'p_water': month.water,
+      'p_elec': month.elec,
+      'p_elev': month.elev,
+      'p_clean': month.clean,
+      'p_for_emerg': month.forEmerg,
+      'p_apts_count': month.aptsCount,
+      'p_base_emerg': baseEmergency,
+    });
+
+    if (res is Map && res['ok'] == true) return null;
+    return (res is Map ? res['error']?.toString() : null) ?? 'كلمة سر المدير غير صحيحة';
+  }
+
+  Future<String?> cancelPaymentAsAdmin({
+    required String adminPass,
+    required MonthBill month,
+    required int aptNum,
+  }) async {
+    if (!_useSupabase) {
+      month.payments.remove(aptNum);
+      return null;
+    }
+
+    final client = Supabase.instance.client;
+    final res = await client.rpc('admin_cancel_payment', params: {
+      'p_admin_pass': adminPass,
+      'p_month_id': month.id,
+      'p_apt_num': aptNum,
+    });
+
+    if (res is Map && res['ok'] == true) {
+      month.payments.remove(aptNum);
+      return null;
+    }
+    return (res is Map ? res['error']?.toString() : null) ?? 'تعذر إلغاء الدفع';
+  }
+}
