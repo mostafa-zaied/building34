@@ -43,8 +43,11 @@ ON CONFLICT (month_num, year_num) DO NOTHING;
 -- 3. جدول الشقق وكلمات السر (محمي ولا يمكن قراءة كلمات السر من التطبيق)
 CREATE TABLE IF NOT EXISTS apartments (
   apt_num INT PRIMARY KEY,
+  display_name TEXT,
   passcode TEXT NOT NULL
 );
+
+ALTER TABLE apartments ADD COLUMN IF NOT EXISTS display_name TEXT;
 
 -- توليد كلمات سر افتراضية للشقق من 1 إلى 30 (مثلاً شقة 1 -> 1001، شقة 5 -> 1005)
 INSERT INTO apartments (apt_num, passcode)
@@ -180,6 +183,70 @@ BEGIN
   END IF;
 
   DELETE FROM payments WHERE month_id = p_month_id AND apt_num = p_apt_num;
+  RETURN json_build_object('ok', true);
+END;
+$$;
+
+-- د. قراءة أسماء الشقق للجميع (بدون كلمات السر)
+CREATE OR REPLACE FUNCTION get_apartment_names()
+RETURNS TABLE(apt_num INT, display_name TEXT)
+LANGUAGE sql
+SECURITY DEFINER
+AS $$
+  SELECT apt_num, display_name FROM apartments ORDER BY apt_num;
+$$;
+
+-- هـ. قراءة الشقق مع كلمات السر (للمدير فقط)
+CREATE OR REPLACE FUNCTION admin_get_apartments(p_admin_pass TEXT)
+RETURNS JSON
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_admin_pass TEXT;
+  v_rows JSON;
+BEGIN
+  SELECT admin_password INTO v_admin_pass FROM building_settings WHERE id = 1;
+  IF v_admin_pass <> trim(p_admin_pass) THEN
+    RETURN json_build_object('ok', false, 'error', 'كلمة سر المدير غير صحيحة');
+  END IF;
+
+  SELECT COALESCE(json_agg(row_to_json(t)), '[]'::json) INTO v_rows
+  FROM (SELECT apt_num, display_name, passcode FROM apartments ORDER BY apt_num) t;
+
+  RETURN json_build_object('ok', true, 'apartments', v_rows);
+END;
+$$;
+
+-- و. تعديل اسم الشقة وكلمة سرها (للمدير فقط)
+CREATE OR REPLACE FUNCTION admin_update_apartment(
+  p_admin_pass TEXT,
+  p_apt_num INT,
+  p_display_name TEXT,
+  p_passcode TEXT
+)
+RETURNS JSON
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_admin_pass TEXT;
+BEGIN
+  SELECT admin_password INTO v_admin_pass FROM building_settings WHERE id = 1;
+  IF v_admin_pass <> trim(p_admin_pass) THEN
+    RETURN json_build_object('ok', false, 'error', 'كلمة سر المدير غير صحيحة');
+  END IF;
+
+  IF length(trim(p_passcode)) = 0 THEN
+    RETURN json_build_object('ok', false, 'error', 'كلمة سر الشقة لا يمكن أن تكون فارغة');
+  END IF;
+
+  INSERT INTO apartments (apt_num, display_name, passcode)
+  VALUES (p_apt_num, NULLIF(trim(p_display_name), ''), trim(p_passcode))
+  ON CONFLICT (apt_num) DO UPDATE
+  SET display_name = NULLIF(trim(p_display_name), ''),
+      passcode = trim(p_passcode);
+
   RETURN json_build_object('ok', true);
 END;
 $$;

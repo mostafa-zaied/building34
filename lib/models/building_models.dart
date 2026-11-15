@@ -1,5 +1,27 @@
 import 'dart:typed_data';
 
+class ApartmentInfo {
+  final int aptNum;
+  String displayName;
+  String passcode;
+
+  ApartmentInfo({
+    required this.aptNum,
+    this.displayName = '',
+    this.passcode = '',
+  });
+
+  String get label => displayName.trim().isNotEmpty ? displayName.trim() : 'شقة $aptNum';
+
+  factory ApartmentInfo.fromJson(Map<String, dynamic> json) {
+    return ApartmentInfo(
+      aptNum: json['apt_num'] as int,
+      displayName: (json['display_name'] as String?) ?? '',
+      passcode: (json['passcode'] as String?) ?? '',
+    );
+  }
+}
+
 class PaymentRecord {
   final int aptNum;
   final String? receiptUrl;

@@ -6,10 +6,12 @@ import '../models/building_models.dart';
 class BuildingDataState {
   final double baseEmergencyFund;
   final List<MonthBill> months;
+  final Map<int, String> apartmentNames;
 
   BuildingDataState({
     required this.baseEmergencyFund,
     required this.months,
+    required this.apartmentNames,
   });
 }
 
@@ -26,6 +28,10 @@ class BuildingService {
 
   // Local Demo state (used when Supabase keys are not yet configured or in tests)
   static double _demoBaseEmergency = 2550;
+  static final Map<int, ApartmentInfo> _demoApartments = {
+    for (int i = 1; i <= 30; i++)
+      i: ApartmentInfo(aptNum: i, displayName: '', passcode: '${1000 + i}'),
+  };
   static final List<MonthBill> _demoMonths = [
     MonthBill(id: 7, monthNum: 7, yearNum: 2026, water: 1080, elec: 1500, elev: 400, clean: 240, forEmerg: 0, aptsCount: 13, payments: _archivedPayments(7)),
     MonthBill(id: 8, monthNum: 8, yearNum: 2026, water: 1100, elec: 1590, elev: 400, clean: 240, forEmerg: 50, aptsCount: 13, payments: _archivedPayments(8)),
@@ -61,12 +67,33 @@ class BuildingService {
       return BuildingDataState(
         baseEmergencyFund: _demoBaseEmergency,
         months: _demoMonths,
+        apartmentNames: {
+          for (final entry in _demoApartments.entries)
+            if (entry.value.displayName.trim().isNotEmpty)
+              entry.key: entry.value.displayName.trim(),
+        },
       );
     }
 
     final client = Supabase.instance.client;
     final baseEmergResp = await client.rpc('get_base_emergency_fund');
     final baseEmerg = (baseEmergResp as num?)?.toDouble() ?? 2550;
+
+    final aptNamesMap = <int, String>{};
+    try {
+      final aptRows = await client.rpc('get_apartment_names');
+      if (aptRows is List) {
+        for (final r in aptRows) {
+          final num = r['apt_num'] as int;
+          final name = (r['display_name'] as String?)?.trim() ?? '';
+          if (name.isNotEmpty) {
+            aptNamesMap[num] = name;
+          }
+        }
+      }
+    } catch (_) {
+      // Fallback gracefully if get_apartment_names RPC hasn't been created yet
+    }
 
     final monthsRows = await client
         .from('months')
@@ -91,6 +118,7 @@ class BuildingService {
     return BuildingDataState(
       baseEmergencyFund: baseEmerg,
       months: monthsMap.values.toList(),
+      apartmentNames: aptNamesMap,
     );
   }
 
@@ -102,7 +130,7 @@ class BuildingService {
     required String fileName,
   }) async {
     if (!_useSupabase) {
-      final expected = '${1000 + aptNum}';
+      final expected = _demoApartments[aptNum]?.passcode ?? '${1000 + aptNum}';
       if (passcode.trim() != expected) {
         return 'كلمة سر الشقة غير صحيحة (جرب $expected)';
       }
@@ -189,5 +217,69 @@ class BuildingService {
       return null;
     }
     return (res is Map ? res['error']?.toString() : null) ?? 'تعذر إلغاء الدفع';
+  }
+
+  Future<({List<ApartmentInfo>? apartments, String? error})> fetchAdminApartments({
+    required String adminPass,
+    required int aptsCount,
+  }) async {
+    if (!_useSupabase) {
+      final list = <ApartmentInfo>[];
+      for (int i = 1; i <= aptsCount; i++) {
+        list.add(_demoApartments[i] ?? ApartmentInfo(aptNum: i, passcode: '${1000 + i}'));
+      }
+      return (apartments: list, error: null);
+    }
+
+    final client = Supabase.instance.client;
+    final res = await client.rpc('admin_get_apartments', params: {
+      'p_admin_pass': adminPass,
+    });
+
+    if (res is Map && res['ok'] == true) {
+      final rawList = (res['apartments'] as List?) ?? [];
+      final byNum = <int, ApartmentInfo>{};
+      for (final item in rawList) {
+        final info = ApartmentInfo.fromJson(Map<String, dynamic>.from(item as Map));
+        byNum[info.aptNum] = info;
+      }
+      final result = <ApartmentInfo>[];
+      for (int i = 1; i <= aptsCount; i++) {
+        result.add(byNum[i] ?? ApartmentInfo(aptNum: i, passcode: '${1000 + i}'));
+      }
+      return (apartments: result, error: null);
+    }
+
+    return (
+      apartments: null,
+      error: (res is Map ? res['error']?.toString() : null) ?? 'كلمة سر المدير غير صحيحة',
+    );
+  }
+
+  Future<String?> updateApartmentAsAdmin({
+    required String adminPass,
+    required int aptNum,
+    required String displayName,
+    required String passcode,
+  }) async {
+    if (!_useSupabase) {
+      _demoApartments[aptNum] = ApartmentInfo(
+        aptNum: aptNum,
+        displayName: displayName.trim(),
+        passcode: passcode.trim(),
+      );
+      return null;
+    }
+
+    final client = Supabase.instance.client;
+    final res = await client.rpc('admin_update_apartment', params: {
+      'p_admin_pass': adminPass,
+      'p_apt_num': aptNum,
+      'p_display_name': displayName.trim(),
+      'p_passcode': passcode.trim(),
+    });
+
+    if (res is Map && res['ok'] == true) return null;
+    return (res is Map ? res['error']?.toString() : null) ?? 'تعذر حفظ بيانات الشقة';
   }
 }

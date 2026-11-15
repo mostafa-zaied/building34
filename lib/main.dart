@@ -65,7 +65,10 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
 
   double _baseEmergency = 2550;
   List<MonthBill> _months = [];
+  Map<int, String> _apartmentNames = {};
   int _selectedMonthIndex = 0;
+
+  String _aptLabel(int aptNum) => _apartmentNames[aptNum] ?? 'شقة $aptNum';
 
   // Highlight state when Admin focuses/hovers a field
   String? _highlightedKey;
@@ -104,6 +107,7 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
       final data = await _service.fetchAll();
       _baseEmergency = data.baseEmergencyFund;
       _months = data.months;
+      _apartmentNames = data.apartmentNames;
       final novIndex = _months.indexWhere((m) => m.monthNum == 11);
       _selectedMonthIndex = novIndex >= 0 ? novIndex : (_months.isNotEmpty ? _months.length - 1 : 0);
       _syncControllers();
@@ -177,10 +181,10 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
       '(مقسومة على ${m.aptsCount} شقة = نصيب الشقة ${m.sharePerApt} ج)',
       '* إجمالي صندوق الطوارئ: $newEmergTotal ج (المتاح سابقاً ${_baseEmergency.toInt()} ج + ${m.forEmerg.toInt()} ج هذا الشهر)',
       '------------------',
-      '✅ تم السداد (${paidList.length} من ${m.aptsCount} شقة): ${paidList.isEmpty ? 'لا يوجد بعد' : paidList.map((e) => 'شقة $e').join('، ')}',
+      '✅ تم السداد (${paidList.length} من ${m.aptsCount} شقة): ${paidList.isEmpty ? 'لا يوجد بعد' : paidList.map(_aptLabel).join('، ')}',
     ];
     if (unpaidList.isNotEmpty) {
-      lines.add('⏳ متبقي (${unpaidList.length} شقة): ${unpaidList.map((e) => 'شقة $e').join('، ')}');
+      lines.add('⏳ متبقي (${unpaidList.length} شقة): ${unpaidList.map(_aptLabel).join('، ')}');
     }
     return lines.join('\n');
   }
@@ -234,13 +238,144 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
     }
   }
 
+  Future<void> _openManageApartmentsDialog(MonthBill m) async {
+    final res = await _service.fetchAdminApartments(
+      adminPass: _adminPass,
+      aptsCount: m.aptsCount,
+    );
+    if (!mounted) return;
+
+    if (res.error != null || res.apartments == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('❌ ${res.error ?? "تعذر تحميل الشقق"}'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    final apts = res.apartments!;
+    final nameCtrls = {
+      for (final a in apts) a.aptNum: TextEditingController(text: a.displayName),
+    };
+    final passCtrls = {
+      for (final a in apts) a.aptNum: TextEditingController(text: a.passcode),
+    };
+    bool saving = false;
+
+    await showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setModalState) => AlertDialog(
+          title: const Text('🔑 إدارة أسماء وكلمات سر الشقق', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+          content: SizedBox(
+            width: 420,
+            height: 380,
+            child: ListView.separated(
+              itemCount: apts.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 8),
+              itemBuilder: (_, idx) {
+                final a = apts[idx];
+                return Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0F172A),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.white12),
+                  ),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 48,
+                        child: Text('شقة ${a.aptNum}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF818CF8))),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        flex: 3,
+                        child: TextField(
+                          controller: nameCtrls[a.aptNum],
+                          style: const TextStyle(fontSize: 12),
+                          decoration: InputDecoration(
+                            labelText: 'الاسم (اختياري)',
+                            hintText: 'مثلاً: شقة ${a.aptNum} - د. كريم',
+                            isDense: true,
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        flex: 2,
+                        child: TextField(
+                          controller: passCtrls[a.aptNum],
+                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                          decoration: InputDecoration(
+                            labelText: 'كلمة السر',
+                            isDense: true,
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: saving ? null : () => Navigator.pop(ctx), child: const Text('إلغاء')),
+            ElevatedButton(
+              onPressed: saving
+                  ? null
+                  : () async {
+                      setModalState(() => saving = true);
+                      String? firstErr;
+                      for (final a in apts) {
+                        final err = await _service.updateApartmentAsAdmin(
+                          adminPass: _adminPass,
+                          aptNum: a.aptNum,
+                          displayName: nameCtrls[a.aptNum]!.text,
+                          passcode: passCtrls[a.aptNum]!.text,
+                        );
+                        if (err != null) {
+                          firstErr = err;
+                          break;
+                        }
+                      }
+                      if (ctx.mounted) Navigator.pop(ctx);
+                      await _loadData();
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(firstErr ?? '✅ تم حفظ أسماء وكلمات سر الشقق بنجاح'),
+                            backgroundColor: firstErr != null ? Colors.redAccent : const Color(0xFF22C55E),
+                          ),
+                        );
+                      }
+                    },
+              child: Text(saving ? 'جاري الحفظ...' : '💾 حفظ الكل'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    for (final c in nameCtrls.values) {
+      c.dispose();
+    }
+    for (final c in passCtrls.values) {
+      c.dispose();
+    }
+  }
+
   Future<void> _openApartmentDialog(MonthBill m, int aptNum) async {
     final existing = m.payments[aptNum];
     if (existing != null) {
       await showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: Text('شقة $aptNum — ✅ تم الدفع', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          title: Text('${_aptLabel(aptNum)} — ✅ تم الدفع', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -297,7 +432,7 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => AlertDialog(
-          title: Text('شقة $aptNum — مطلوب ${m.sharePerApt} ج', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          title: Text('${_aptLabel(aptNum)} — مطلوب ${m.sharePerApt} ج', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -667,15 +802,35 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
             const SizedBox(height: 8),
             _AdminInputField(label: '💰 رصيد الطوارئ المتاح سابقاً:', controller: _baseEmergCtrl, color: const Color(0xFF22C55E), onFocusKey: 'top-emerg', onHighlight: (k) => setState(() => _highlightedKey = k), onChanged: _onAdminFieldChanged),
             const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: _saveAdminChanges,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF22C55E),
-                foregroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              child: const Text('💾 حفظ التعديلات', style: TextStyle(fontWeight: FontWeight.bold)),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _saveAdminChanges,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF22C55E),
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: const Text('💾 حفظ التعديلات', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () => _openManageApartmentsDialog(m),
+                    icon: const Icon(Icons.vpn_key_outlined, size: 16),
+                    label: const Text('أسماء وباسورد الشقق', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF818CF8),
+                      side: const BorderSide(color: Color(0xFF6366F1)),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ],
@@ -729,6 +884,7 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
               final isPaid = m.payments.containsKey(aptNum);
               return _ApartmentCard(
                 aptNum: aptNum,
+                label: _aptLabel(aptNum),
                 sharePerApt: m.sharePerApt,
                 isPaid: isPaid,
                 onTap: () => _openApartmentDialog(m, aptNum),
@@ -881,12 +1037,14 @@ class _AdminInputField extends StatelessWidget {
 
 class _ApartmentCard extends StatefulWidget {
   final int aptNum;
+  final String label;
   final int sharePerApt;
   final bool isPaid;
   final VoidCallback onTap;
 
   const _ApartmentCard({
     required this.aptNum,
+    required this.label,
     required this.sharePerApt,
     required this.isPaid,
     required this.onTap,
@@ -932,7 +1090,13 @@ class _ApartmentCardState extends State<_ApartmentCard> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('شقة ${widget.aptNum}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+              Text(
+                widget.label,
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 4),
               Text(
                 widget.isPaid ? '✅ دفعت' : '⏳ ${widget.sharePerApt} ج',
