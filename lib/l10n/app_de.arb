@@ -75,5 +75,22 @@
   "tabViewComplaints": "Beschwerden ({count})",
   "tabAddComplaint": "Neue Beschwerde",
   "tabViewImprovements": "Ideen ({count})",
-  "tabAddImprovement": "Neue Idee"
+  "tabAddImprovement": "Neue Idee",
+  "languageTooltip": "Sprache",
+  "deleteTooltip": "Löschen",
+  "errLoadData": "❌ Daten konnten nicht geladen werden: {err}",
+  "monthSavedToast": "✅ Monatsänderungen gespeichert",
+  "paymentCancelledToast": "✅ Zahlung storniert",
+  "aptsSavedToast": "✅ Wohnungsnamen & Passwörter gespeichert",
+  "errNoMonth": "Kein Monat ausgewählt",
+  "errWrongAdminPass": "Falsches Admin-Passwort",
+  "errWrongAptPass": "Falsches Wohnungspasswort",
+  "errWrongAptPassHint": "Falsches Wohnungspasswort (versuche {hint})",
+  "errPaymentFailed": "Zahlung konnte nicht erfasst werden",
+  "errCancelFailed": "Zahlung konnte nicht storniert werden",
+  "errAptLoadFailed": "Wohnungen konnten nicht geladen werden",
+  "errAptSaveFailed": "Wohnung konnte nicht gespeichert werden",
+  "errEmptyMessage": "Nachricht darf nicht leer sein",
+  "errSubmitFailed": "Beitrag konnte nicht gesendet werden",
+  "errDeleteFailed": "Beitrag konnte nicht gelöscht werden"
 }

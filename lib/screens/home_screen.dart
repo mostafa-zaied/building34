@@ -4,6 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../config.dart';
+import '../core/theme/app_colors.dart';
+import '../core/theme/app_spacing.dart';
+import '../core/theme/app_typography.dart';
 import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
 import '../widgets/dialogs/admin_login_dialog.dart';
@@ -112,75 +115,99 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
           return const Center(child: CircularProgressIndicator());
         }
 
-        return Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 560),
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (!AppConfig.isSupabaseConfigured)
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFFFACC15).withValues(alpha: 0.6)),
-                      ),
-                      child: Text(
-                        s.demoBanner,
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: state.isDarkMode ? const Color(0xFFFACC15) : const Color(0xFFB45309),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  TopBar(
-                    cubit: cubit,
-                    state: state,
-                    month: m,
-                    onToggleAdmin: () => _toggleAdminPanel(cubit, state),
-                  ),
-                  const SizedBox(height: 12),
-                  BillSummaryCard(
-                    cubit: cubit,
-                    state: state,
-                    month: m,
-                    onCopyWhatsApp: () => _copyWhatsApp(cubit),
-                    waterCtrl: _waterCtrl,
-                    elecCtrl: _elecCtrl,
-                    elevCtrl: _elevCtrl,
-                    cleanCtrl: _cleanCtrl,
-                    forEmergCtrl: _forEmergCtrl,
-                    aptsCtrl: _aptsCtrl,
-                    baseEmergCtrl: _baseEmergCtrl,
-                    onFieldChanged: () => _onAdminFieldChanged(cubit),
-                    onOpenManageApts: () => showManageApartmentsDialog(
-                      context: context,
-                      cubit: cubit,
-                      state: state,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  ApartmentsGrid(
-                    state: state,
-                    month: m,
-                    onTapApartment: (aptNum) => showApartmentPaymentDialog(
-                      context: context,
-                      cubit: cubit,
-                      state: state,
-                      month: m,
-                      aptNum: aptNum,
-                      picker: _picker,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+        final billCard = BillSummaryCard(
+          cubit: cubit,
+          state: state,
+          month: m,
+          onCopyWhatsApp: () => _copyWhatsApp(cubit),
+          waterCtrl: _waterCtrl,
+          elecCtrl: _elecCtrl,
+          elevCtrl: _elevCtrl,
+          cleanCtrl: _cleanCtrl,
+          forEmergCtrl: _forEmergCtrl,
+          aptsCtrl: _aptsCtrl,
+          baseEmergCtrl: _baseEmergCtrl,
+          onFieldChanged: () => _onAdminFieldChanged(cubit),
+          onOpenManageApts: () => showManageApartmentsDialog(
+            context: context,
+            cubit: cubit,
+            state: state,
           ),
+        );
+
+        final apartmentsCard = ApartmentsGrid(
+          state: state,
+          month: m,
+          onTapApartment: (aptNum) => showApartmentPaymentDialog(
+            context: context,
+            cubit: cubit,
+            state: state,
+            month: m,
+            aptNum: aptNum,
+            picker: _picker,
+          ),
+        );
+
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final isDesktopDash = constraints.maxWidth >= 900;
+
+            return Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: isDesktopDash ? 1080 : 580),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (!AppConfig.isSupabaseConfigured)
+                        Container(
+                          margin: const EdgeInsetsDirectional.only(bottom: AppSpacing.md),
+                          padding: const EdgeInsetsDirectional.symmetric(
+                            horizontal: AppSpacing.md,
+                            vertical: AppSpacing.sm,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.card(state.isDarkMode),
+                            borderRadius: BorderRadius.circular(AppRadius.md),
+                            border: Border.all(color: AppColors.amber.withValues(alpha: 0.5)),
+                          ),
+                          child: Text(
+                            s.demoBanner,
+                            style: AppTypography.caption.copyWith(
+                              color: state.isDarkMode ? AppColors.amber : AppColors.amberDarkText,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      TopBar(
+                        cubit: cubit,
+                        state: state,
+                        month: m,
+                        onToggleAdmin: () => _toggleAdminPanel(cubit, state),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      if (isDesktopDash)
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(flex: 6, child: billCard),
+                            const SizedBox(width: AppSpacing.lg),
+                            Expanded(flex: 5, child: apartmentsCard),
+                          ],
+                        )
+                      else ...[
+                        billCard,
+                        const SizedBox(height: AppSpacing.md),
+                        apartmentsCard,
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
         );
       },
     );

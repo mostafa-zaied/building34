@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../core/theme/app_colors.dart';
+import '../core/theme/app_spacing.dart';
+import '../core/theme/app_typography.dart';
 import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
 import 'feedback_screen.dart';
@@ -18,7 +21,7 @@ class MainShell extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.feedbackMessage!),
-              backgroundColor: state.feedbackIsError ? Colors.redAccent : const Color(0xFF22C55E),
+              backgroundColor: state.feedbackIsError ? AppColors.danger : AppColors.emerald,
             ),
           );
           context.read<BuildingCubit>().clearFeedback();
@@ -38,6 +41,7 @@ class MainShell extends StatelessWidget {
         return LayoutBuilder(
           builder: (context, constraints) {
             final isWide = constraints.maxWidth >= 720;
+            final isExtended = constraints.maxWidth >= 1024;
 
             if (isWide) {
               return Scaffold(
@@ -47,20 +51,43 @@ class MainShell extends StatelessWidget {
                       NavigationRail(
                         selectedIndex: state.selectedNavIndex,
                         onDestinationSelected: cubit.selectNav,
-                        extended: constraints.maxWidth >= 980,
-                        backgroundColor: Theme.of(context).cardColor,
-                        indicatorColor: const Color(0xFF6366F1).withValues(alpha: 0.2),
+                        extended: isExtended,
+                        minExtendedWidth: 215,
+                        backgroundColor: AppColors.card(isDark),
+                        indicatorColor: AppColors.primary.withValues(alpha: 0.16),
+                        selectedIconTheme: IconThemeData(color: AppColors.primaryText(isDark)),
+                        selectedLabelTextStyle: AppTypography.label.copyWith(
+                          color: AppColors.primaryText(isDark),
+                          fontWeight: FontWeight.w700,
+                        ),
+                        unselectedLabelTextStyle: AppTypography.label.copyWith(
+                          color: AppColors.textSecondary(isDark),
+                        ),
                         leading: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                          padding: const EdgeInsetsDirectional.symmetric(
+                            vertical: AppSpacing.lg,
+                            horizontal: AppSpacing.md,
+                          ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text('🏢', style: TextStyle(fontSize: 22)),
-                              if (constraints.maxWidth >= 980) ...[
-                                const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsetsDirectional.all(AppSpacing.sm),
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [AppColors.primary, AppColors.emerald],
+                                    begin: AlignmentDirectional.topStart,
+                                    end: AlignmentDirectional.bottomEnd,
+                                  ),
+                                  borderRadius: BorderRadius.circular(AppRadius.md),
+                                ),
+                                child: const Icon(Icons.apartment_rounded, size: 20, color: Colors.white),
+                              ),
+                              if (isExtended) ...[
+                                const SizedBox(width: AppSpacing.sm),
                                 Text(
                                   s.appTitle,
-                                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                                  style: AppTypography.title.copyWith(fontWeight: FontWeight.w800),
                                 ),
                               ],
                             ],
@@ -87,7 +114,7 @@ class MainShell extends StatelessWidget {
                       VerticalDivider(
                         width: 1,
                         thickness: 1,
-                        color: isDark ? Colors.white12 : Colors.black12,
+                        color: AppColors.border(isDark),
                       ),
                       Expanded(
                         child: IndexedStack(
@@ -108,28 +135,34 @@ class MainShell extends StatelessWidget {
                   children: screens,
                 ),
               ),
-              bottomNavigationBar: NavigationBar(
-                selectedIndex: state.selectedNavIndex,
-                onDestinationSelected: cubit.selectNav,
-                backgroundColor: Theme.of(context).cardColor,
-                indicatorColor: const Color(0xFF6366F1).withValues(alpha: 0.2),
-                destinations: [
-                  NavigationDestination(
-                    icon: const Icon(Icons.receipt_long_outlined),
-                    selectedIcon: const Icon(Icons.receipt_long_rounded),
-                    label: s.navExpenses,
-                  ),
-                  NavigationDestination(
-                    icon: const Icon(Icons.campaign_outlined),
-                    selectedIcon: const Icon(Icons.campaign_rounded),
-                    label: s.navComplaints,
-                  ),
-                  NavigationDestination(
-                    icon: const Icon(Icons.lightbulb_outline),
-                    selectedIcon: const Icon(Icons.lightbulb_rounded),
-                    label: s.navImprovements,
-                  ),
-                ],
+              bottomNavigationBar: Container(
+                decoration: BoxDecoration(
+                  border: Border(top: BorderSide(color: AppColors.border(isDark))),
+                ),
+                child: NavigationBar(
+                  selectedIndex: state.selectedNavIndex,
+                  onDestinationSelected: cubit.selectNav,
+                  backgroundColor: AppColors.card(isDark),
+                  indicatorColor: AppColors.primary.withValues(alpha: 0.16),
+                  height: 68,
+                  destinations: [
+                    NavigationDestination(
+                      icon: const Icon(Icons.receipt_long_outlined),
+                      selectedIcon: Icon(Icons.receipt_long_rounded, color: AppColors.primaryText(isDark)),
+                      label: s.navExpenses,
+                    ),
+                    NavigationDestination(
+                      icon: const Icon(Icons.campaign_outlined),
+                      selectedIcon: Icon(Icons.campaign_rounded, color: AppColors.primaryText(isDark)),
+                      label: s.navComplaints,
+                    ),
+                    NavigationDestination(
+                      icon: const Icon(Icons.lightbulb_outline),
+                      selectedIcon: Icon(Icons.lightbulb_rounded, color: AppColors.primaryText(isDark)),
+                      label: s.navImprovements,
+                    ),
+                  ],
+                ),
               ),
             );
           },

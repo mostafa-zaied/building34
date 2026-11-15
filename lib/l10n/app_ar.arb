@@ -75,5 +75,22 @@
   "tabViewComplaints": "الشكاوى ({count})",
   "tabAddComplaint": "إضافة شكوى",
   "tabViewImprovements": "المقترحات ({count})",
-  "tabAddImprovement": "إضافة مقترح"
+  "tabAddImprovement": "إضافة مقترح",
+  "languageTooltip": "اللغة",
+  "deleteTooltip": "حذف",
+  "errLoadData": "❌ تعذر تحميل البيانات: {err}",
+  "monthSavedToast": "✅ تم حفظ تعديلات الشهر بنجاح",
+  "paymentCancelledToast": "✅ تم إلغاء الدفع",
+  "aptsSavedToast": "✅ تم حفظ أسماء وكلمات سر الشقق بنجاح",
+  "errNoMonth": "لا يوجد شهر محدد",
+  "errWrongAdminPass": "كلمة سر المسؤول غير صحيحة",
+  "errWrongAptPass": "كلمة سر الشقة غير صحيحة",
+  "errWrongAptPassHint": "كلمة سر الشقة غير صحيحة (جرب {hint})",
+  "errPaymentFailed": "تعذر تسجيل الدفع",
+  "errCancelFailed": "تعذر إلغاء الدفع",
+  "errAptLoadFailed": "تعذر تحميل بيانات الشقق",
+  "errAptSaveFailed": "تعذر حفظ بيانات الشقة",
+  "errEmptyMessage": "الرسالة فارغة",
+  "errSubmitFailed": "تعذر إرسال المشاركة",
+  "errDeleteFailed": "تعذر الحذف"
 }

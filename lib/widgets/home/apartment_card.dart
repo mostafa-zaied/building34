@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_shadows.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_typography.dart';
+
 class ApartmentCard extends StatefulWidget {
   final int aptNum;
   final String label;
@@ -26,34 +31,32 @@ class _ApartmentCardState extends State<ApartmentCard> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final surfaceColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
-    final defaultBorder = isDark ? Colors.white24 : Colors.black12;
     final borderColor = widget.isPaid
-        ? const Color(0xFF22C55E)
-        : (_hovering ? const Color(0xFF6366F1) : defaultBorder);
+        ? AppColors.emerald
+        : (_hovering ? AppColors.primary : AppColors.border(isDark));
 
     return MouseRegion(
       onEnter: (_) => setState(() => _hovering = true),
       onExit: (_) => setState(() => _hovering = false),
       child: InkWell(
         onTap: widget.onTap,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOutCubic,
-          transform: _hovering ? Matrix4.translationValues(0.0, -3.0, 0.0) : Matrix4.identity(),
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+          transform: _hovering ? Matrix4.translationValues(0.0, -2.0, 0.0) : Matrix4.identity(),
+          padding: const EdgeInsetsDirectional.symmetric(horizontal: AppSpacing.xs, vertical: AppSpacing.xs),
           decoration: BoxDecoration(
-            color: surfaceColor,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: borderColor, width: widget.isPaid || _hovering ? 1.8 : 1),
+            color: widget.isPaid
+                ? AppColors.emerald.withValues(alpha: isDark ? 0.09 : 0.06)
+                : AppColors.surface(isDark),
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            border: Border.all(
+              color: borderColor,
+              width: widget.isPaid || _hovering ? 1.6 : 1.0,
+            ),
             boxShadow: _hovering || widget.isPaid
-                ? [
-                    BoxShadow(
-                      color: borderColor.withValues(alpha: _hovering ? 0.45 : 0.2),
-                      blurRadius: _hovering ? 14 : 6,
-                    ),
-                  ]
+                ? AppShadows.accentGlow(borderColor, active: _hovering, isDark: isDark)
                 : null,
           ),
           child: FittedBox(
@@ -64,20 +67,19 @@ class _ApartmentCardState extends State<ApartmentCard> {
               children: [
                 Text(
                   widget.label,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  style: AppTypography.label.copyWith(fontWeight: FontWeight.w700),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: AppSpacing.xxs),
                 Text(
                   widget.statusText,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
+                  style: AppTypography.caption.copyWith(
+                    fontWeight: FontWeight.w700,
                     color: widget.isPaid
-                        ? (isDark ? const Color(0xFF22C55E) : const Color(0xFF15803D))
-                        : (isDark ? Colors.white70 : Colors.black54),
+                        ? AppColors.emeraldText(isDark)
+                        : AppColors.textSecondary(isDark),
                   ),
                 ),
               ],

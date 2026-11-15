@@ -237,7 +237,7 @@ class _ManageApartmentsDialogState extends State<_ManageApartmentsDialog> {
                                     color: Colors.redAccent,
                                     padding: EdgeInsets.zero,
                                     constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                                    tooltip: s.cancel,
+                                    tooltip: s.deleteTooltip,
                                   ),
                                 ],
                               ),

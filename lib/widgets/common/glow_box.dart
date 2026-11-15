@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_shadows.dart';
+import '../../core/theme/app_spacing.dart';
+
 class GlowBox extends StatefulWidget {
   final Color glowColor;
   final bool isHighlighted;
@@ -25,29 +29,25 @@ class _GlowBoxState extends State<GlowBox> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final active = _hovering || widget.isHighlighted;
-    final surfaceColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
 
     return MouseRegion(
       onEnter: (_) => setState(() => _hovering = true),
       onExit: (_) => setState(() => _hovering = false),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 220),
+        duration: const Duration(milliseconds: 200),
         curve: Curves.easeOutCubic,
-        transform: active ? Matrix4.translationValues(0.0, -3.0, 0.0) : Matrix4.identity(),
+        transform: active ? Matrix4.translationValues(0.0, -2.0, 0.0) : Matrix4.identity(),
         padding: widget.padding,
         decoration: BoxDecoration(
-          color: surfaceColor,
-          borderRadius: BorderRadius.circular(14),
+          color: AppColors.surface(isDark),
+          borderRadius: BorderRadius.circular(AppRadius.md),
           border: Border.all(
-            color: active ? widget.glowColor : widget.glowColor.withValues(alpha: isDark ? 0.45 : 0.7),
-            width: active ? 2 : 1.3,
+            color: active
+                ? widget.glowColor
+                : widget.glowColor.withValues(alpha: isDark ? 0.38 : 0.55),
+            width: active ? 1.8 : 1.1,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: widget.glowColor.withValues(alpha: active ? 0.5 : (isDark ? 0.18 : 0.22)),
-              blurRadius: active ? 16 : 6,
-            ),
-          ],
+          boxShadow: AppShadows.accentGlow(widget.glowColor, active: active, isDark: isDark),
         ),
         child: widget.child,
       ),

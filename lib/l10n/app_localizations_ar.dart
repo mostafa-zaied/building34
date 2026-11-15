@@ -278,4 +278,59 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get tabAddImprovement => 'إضافة مقترح';
+
+  @override
+  String get languageTooltip => 'اللغة';
+
+  @override
+  String get deleteTooltip => 'حذف';
+
+  @override
+  String errLoadData(String err) {
+    return '❌ تعذر تحميل البيانات: $err';
+  }
+
+  @override
+  String get monthSavedToast => '✅ تم حفظ تعديلات الشهر بنجاح';
+
+  @override
+  String get paymentCancelledToast => '✅ تم إلغاء الدفع';
+
+  @override
+  String get aptsSavedToast => '✅ تم حفظ أسماء وكلمات سر الشقق بنجاح';
+
+  @override
+  String get errNoMonth => 'لا يوجد شهر محدد';
+
+  @override
+  String get errWrongAdminPass => 'كلمة سر المسؤول غير صحيحة';
+
+  @override
+  String get errWrongAptPass => 'كلمة سر الشقة غير صحيحة';
+
+  @override
+  String errWrongAptPassHint(String hint) {
+    return 'كلمة سر الشقة غير صحيحة (جرب $hint)';
+  }
+
+  @override
+  String get errPaymentFailed => 'تعذر تسجيل الدفع';
+
+  @override
+  String get errCancelFailed => 'تعذر إلغاء الدفع';
+
+  @override
+  String get errAptLoadFailed => 'تعذر تحميل بيانات الشقق';
+
+  @override
+  String get errAptSaveFailed => 'تعذر حفظ بيانات الشقة';
+
+  @override
+  String get errEmptyMessage => 'الرسالة فارغة';
+
+  @override
+  String get errSubmitFailed => 'تعذر إرسال المشاركة';
+
+  @override
+  String get errDeleteFailed => 'تعذر الحذف';
 }

@@ -36,9 +36,42 @@ class BuildingCubit extends Cubit<BuildingState> {
     } catch (e) {
       emit(state.copyWith(
         loading: false,
-        feedbackMessage: () => '❌ تعذر تحميل البيانات: $e',
+        feedbackMessage: () => state.s.errLoadData('$e'),
         feedbackIsError: true,
       ));
+    }
+  }
+
+  String _localizeError(String err) {
+    final s = state.s;
+    if (err.startsWith('err_wrong_apt_pass_hint:')) {
+      final hint = err.substring('err_wrong_apt_pass_hint:'.length);
+      return s.errWrongAptPassHint(hint);
+    }
+    switch (err) {
+      case 'err_wrong_admin_pass':
+      case 'كلمة سر المدير غير صحيحة':
+      case 'كلمة سر المسؤول غير صحيحة':
+        return s.errWrongAdminPass;
+      case 'err_wrong_apt_pass':
+      case 'كلمة سر الشقة غير صحيحة':
+        return s.errWrongAptPass;
+      case 'err_payment_failed':
+        return s.errPaymentFailed;
+      case 'err_cancel_failed':
+        return s.errCancelFailed;
+      case 'err_apt_load_failed':
+        return s.errAptLoadFailed;
+      case 'err_apt_save_failed':
+        return s.errAptSaveFailed;
+      case 'err_empty_message':
+        return s.errEmptyMessage;
+      case 'err_submit_failed':
+        return s.errSubmitFailed;
+      case 'err_delete_failed':
+        return s.errDeleteFailed;
+      default:
+        return err;
     }
   }
 
@@ -69,7 +102,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     );
     if (err != null) {
       emit(state.copyWith(
-        feedbackMessage: () => '❌ $err',
+        feedbackMessage: () => '❌ ${_localizeError(err)}',
         feedbackIsError: true,
       ));
       return false;
@@ -91,7 +124,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     );
     if (err != null) {
       emit(state.copyWith(
-        feedbackMessage: () => '❌ $err',
+        feedbackMessage: () => '❌ ${_localizeError(err)}',
         feedbackIsError: true,
       ));
       return;
@@ -100,9 +133,19 @@ class BuildingCubit extends Cubit<BuildingState> {
     emit(state.copyWith(feedbackPosts: posts));
   }
 
-  void openAdmin(String pass) {
+  Future<void> openAdmin(String pass) async {
+    final clean = pass.trim();
+    final err = await _service.verifyAdminPass(clean);
+    if (err != null) {
+      emit(state.copyWith(
+        feedbackMessage: () => '❌ ${_localizeError(err)}',
+        feedbackIsError: true,
+        isAdminOpen: false,
+      ));
+      return;
+    }
     emit(state.copyWith(
-      adminPass: pass.trim(),
+      adminPass: clean,
       isAdminOpen: true,
     ));
   }
@@ -168,7 +211,7 @@ class BuildingCubit extends Cubit<BuildingState> {
       baseEmergency: state.baseEmergency,
     );
     emit(state.copyWith(
-      feedbackMessage: () => err ?? '✅ تم حفظ تعديلات الشهر بنجاح',
+      feedbackMessage: () => err != null ? '❌ ${_localizeError(err)}' : state.s.monthSavedToast,
       feedbackIsError: err != null,
     ));
   }
@@ -180,7 +223,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     required String fileName,
   }) async {
     final m = state.currentMonth;
-    if (m == null) return 'لا يوجد شهر محدد';
+    if (m == null) return state.s.errNoMonth;
     final err = await _service.submitApartmentPayment(
       month: m,
       aptNum: aptNum,
@@ -190,8 +233,9 @@ class BuildingCubit extends Cubit<BuildingState> {
     );
     if (err == null) {
       await loadData(preserveMonthIndex: state.selectedMonthIndex);
+      return null;
     }
-    return err;
+    return _localizeError(err);
   }
 
   Future<void> cancelPayment(int aptNum) async {
@@ -204,7 +248,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     );
     emit(state.copyWith(
       months: List<MonthBill>.from(state.months),
-      feedbackMessage: err != null ? () => err : () => '✅ تم إلغاء الدفع',
+      feedbackMessage: () => err != null ? '❌ ${_localizeError(err)}' : state.s.paymentCancelledToast,
       feedbackIsError: err != null,
     ));
   }
@@ -212,11 +256,15 @@ class BuildingCubit extends Cubit<BuildingState> {
   Future<({List<ApartmentInfo>? apartments, String? error})> fetchAdminApartments() async {
     final m = state.currentMonth;
     if (m == null) {
-      return (apartments: null, error: 'لا يوجد شهر محدد');
+      return (apartments: null, error: state.s.errNoMonth);
     }
-    return _service.fetchAdminApartments(
+    final res = await _service.fetchAdminApartments(
       adminPass: state.adminPass,
       aptsCount: m.aptsCount,
+    );
+    return (
+      apartments: res.apartments,
+      error: res.error != null ? _localizeError(res.error!) : null,
     );
   }
 
@@ -240,7 +288,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     }
     await loadData(preserveMonthIndex: state.selectedMonthIndex);
     emit(state.copyWith(
-      feedbackMessage: () => firstErr ?? '✅ تم حفظ أسماء وكلمات سر الشقق بنجاح',
+      feedbackMessage: () => firstErr != null ? '❌ ${_localizeError(firstErr)}' : state.s.aptsSavedToast,
       feedbackIsError: firstErr != null,
     ));
   }
@@ -258,15 +306,9 @@ class BuildingCubit extends Cubit<BuildingState> {
         unpaidList.add(i);
       }
     }
-    final newEmergTotal = (state.baseEmergency + m.forEmerg).toInt();
-
     if (state.localeCode == 'en') {
       final lines = <String>[
         'Building Expenses — Month ${m.monthNum}:',
-        '* Water: ${m.water.toInt()} | Elec: ${m.elec.toInt()} | Elevator: ${m.elev.toInt()} | Cleaning: ${m.clean.toInt()}${m.forEmerg > 0 ? ' | Reserve: ${m.forEmerg.toInt()}' : ''} EGP',
-        '* Total Expenses: ${m.totalExpenses.toInt()} EGP',
-        '(Divided by ${m.aptsCount} apts = ${m.sharePerApt} EGP/apt)',
-        '* Emergency Fund: $newEmergTotal EGP (${state.baseEmergency.toInt()} prev + ${m.forEmerg.toInt()} this month)',
         '------------------',
         '✅ Paid (${paidList.length}/${m.aptsCount}): ${paidList.isEmpty ? 'None yet' : paidList.map(state.aptLabel).join(', ')}',
       ];
@@ -279,10 +321,6 @@ class BuildingCubit extends Cubit<BuildingState> {
     if (state.localeCode == 'de') {
       final lines = <String>[
         'Hauskosten — Monat ${m.monthNum}:',
-        '* Wasser: ${m.water.toInt()} | Strom: ${m.elec.toInt()} | Aufzug: ${m.elev.toInt()} | Reinigung: ${m.clean.toInt()}${m.forEmerg > 0 ? ' | Rücklage: ${m.forEmerg.toInt()}' : ''} EGP',
-        '* Gesamtkosten: ${m.totalExpenses.toInt()} EGP',
-        '(Geteilt durch ${m.aptsCount} Whg. = ${m.sharePerApt} EGP/Whg.)',
-        '* Notfallfonds: $newEmergTotal EGP (${state.baseEmergency.toInt()} vorher + ${m.forEmerg.toInt()} diesen Monat)',
         '------------------',
         '✅ Bezahlt (${paidList.length}/${m.aptsCount}): ${paidList.isEmpty ? 'Noch keine' : paidList.map(state.aptLabel).join(', ')}',
       ];
@@ -294,10 +332,6 @@ class BuildingCubit extends Cubit<BuildingState> {
 
     final lines = <String>[
       'مصاريف العمارة لشهر ${m.monthNum}:',
-      '* مياه: ${m.water.toInt()} ج | كهرباء: ${m.elec.toInt()} ج | أسانسير: ${m.elev.toInt()} ج | منظفات: ${m.clean.toInt()} ج${m.forEmerg > 0 ? ' | للطوارئ: ${m.forEmerg.toInt()} ج' : ''}',
-      '* إجمالي المصاريف: ${m.totalExpenses.toInt()} ج',
-      '(مقسومة على ${m.aptsCount} شقة = نصيب الشقة ${m.sharePerApt} ج)',
-      '* إجمالي صندوق الطوارئ: $newEmergTotal ج (المتاح سابقاً ${state.baseEmergency.toInt()} ج + ${m.forEmerg.toInt()} ج هذا الشهر)',
       '------------------',
       '✅ تم السداد (${paidList.length} من ${m.aptsCount} شقة): ${paidList.isEmpty ? 'لا يوجد بعد' : paidList.map(state.aptLabel).join('، ')}',
     ];

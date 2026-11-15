@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_typography.dart';
 import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
 import '../../models/building_models.dart';
+import '../common/app_button.dart';
+import '../common/app_card.dart';
 import '../common/expense_stat_card.dart';
 import '../common/glow_box.dart';
 import 'admin_edit_panel.dart';
@@ -43,47 +48,38 @@ class BillSummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = state.s;
     final isDark = state.isDarkMode;
-    final cardBg = Theme.of(context).cardColor;
-    final borderCol = isDark ? Colors.white12 : Colors.black12;
     final newEmergTotal = (state.baseEmergency + month.forEmerg).toInt();
 
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: borderCol),
-      ),
+    return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Wrap(
             alignment: WrapAlignment.spaceBetween,
             crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: 8,
-            runSpacing: 8,
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
             children: [
-              Text(s.billTitle(month.monthNum), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-              ElevatedButton.icon(
+              Text(
+                s.billTitle(month.monthNum),
+                style: AppTypography.headline.copyWith(fontSize: 15),
+              ),
+              AppPrimaryButton(
+                label: s.copyWhatsAppBtn,
+                icon: Icons.copy_rounded,
                 onPressed: onCopyWhatsApp,
-                icon: const Icon(Icons.copy, size: 14),
-                label: Text(s.copyWhatsAppBtn, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
           LayoutBuilder(
             builder: (context, constraints) {
               final cards = [
-                ExpenseStatCard(label: s.waterLabel, value: '${month.water.toInt()}', color: const Color(0xFF38BDF8), highlighted: state.highlightedKey == 'water'),
-                ExpenseStatCard(label: s.elecLabel, value: '${month.elec.toInt()}', color: const Color(0xFFFACC15), highlighted: state.highlightedKey == 'elec'),
-                ExpenseStatCard(label: s.elevLabel, value: '${month.elev.toInt()}', color: const Color(0xFFA855F7), highlighted: state.highlightedKey == 'elev'),
-                ExpenseStatCard(label: s.cleanLabel, value: '${month.clean.toInt()}', color: const Color(0xFFF472B6), highlighted: state.highlightedKey == 'clean'),
-                ExpenseStatCard(label: s.forEmergLabel, value: '${month.forEmerg.toInt()}', color: const Color(0xFF22C55E), highlighted: state.highlightedKey == 'emerg'),
+                ExpenseStatCard(label: s.waterLabel, value: '${month.water.toInt()}', color: AppColors.water, highlighted: state.highlightedKey == 'water'),
+                ExpenseStatCard(label: s.elecLabel, value: '${month.elec.toInt()}', color: AppColors.electricity, highlighted: state.highlightedKey == 'elec'),
+                ExpenseStatCard(label: s.elevLabel, value: '${month.elev.toInt()}', color: AppColors.elevator, highlighted: state.highlightedKey == 'elev'),
+                ExpenseStatCard(label: s.cleanLabel, value: '${month.clean.toInt()}', color: AppColors.cleaning, highlighted: state.highlightedKey == 'clean'),
+                ExpenseStatCard(label: s.forEmergLabel, value: '${month.forEmerg.toInt()}', color: AppColors.reserve, highlighted: state.highlightedKey == 'emerg'),
               ];
 
               if (constraints.maxWidth < 460) {
@@ -92,19 +88,19 @@ class BillSummaryCard extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(child: cards[0]),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: AppSpacing.xs),
                         Expanded(child: cards[1]),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: AppSpacing.xs),
                         Expanded(child: cards[2]),
                       ],
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: AppSpacing.xs),
                     Row(
                       children: [
                         Expanded(child: cards[3]),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: AppSpacing.xs),
                         Expanded(child: cards[4]),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: AppSpacing.xs),
                         const Spacer(),
                       ],
                     ),
@@ -115,23 +111,23 @@ class BillSummaryCard extends StatelessWidget {
               return Row(
                 children: [
                   Expanded(child: cards[0]),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: AppSpacing.xs),
                   Expanded(child: cards[1]),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: AppSpacing.xs),
                   Expanded(child: cards[2]),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: AppSpacing.xs),
                   Expanded(child: cards[3]),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: AppSpacing.xs),
                   Expanded(child: cards[4]),
                 ],
               );
             },
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
           GlowBox(
-            glowColor: const Color(0xFF6366F1),
+            glowColor: AppColors.primary,
             isHighlighted: state.highlightedKey == 'apts',
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsetsDirectional.all(AppSpacing.md),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -141,30 +137,32 @@ class BillSummaryCard extends StatelessWidget {
                     children: [
                       Text(
                         s.totalExpensesLine(month.totalExpenses.toInt(), month.aptsCount),
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                        style: AppTypography.label.copyWith(fontWeight: FontWeight.w700),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.xxs),
                       Text(
                         s.emergencySummaryLine(newEmergTotal, state.baseEmergency.toInt(), month.forEmerg.toInt()),
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: isDark ? const Color(0xFF22C55E) : const Color(0xFF15803D),
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.emeraldText(isDark),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
                   ),
                 ),
+                const SizedBox(width: AppSpacing.sm),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(s.sharePerAptLabel, style: TextStyle(fontSize: 11, color: isDark ? Colors.white60 : Colors.black54)),
+                    Text(
+                      s.sharePerAptLabel,
+                      style: AppTypography.caption.copyWith(color: AppColors.textSecondary(isDark)),
+                    ),
                     Text(
                       s.currency(month.sharePerApt),
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: isDark ? const Color(0xFF818CF8) : const Color(0xFF4F46E5),
+                      style: AppTypography.heroAmount.copyWith(
+                        fontSize: 21,
+                        color: AppColors.primaryText(isDark),
                       ),
                     ),
                   ],
@@ -172,55 +170,76 @@ class BillSummaryCard extends StatelessWidget {
               ],
             ),
           ),
-          if (state.copiedPreview != null) ...[
-            const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF22C55E)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        s.copiedTitle,
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: isDark ? const Color(0xFF22C55E) : const Color(0xFF15803D),
-                          fontWeight: FontWeight.bold,
-                        ),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOutCubic,
+            child: state.copiedPreview == null
+                ? const SizedBox.shrink()
+                : Padding(
+                    padding: const EdgeInsetsDirectional.only(top: AppSpacing.md),
+                    child: Container(
+                      padding: const EdgeInsetsDirectional.all(AppSpacing.md),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface(isDark),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        border: Border.all(color: AppColors.emerald.withValues(alpha: 0.65)),
                       ),
-                      InkWell(
-                        onTap: () => cubit.setCopiedPreview(null),
-                        child: Icon(Icons.close, size: 16, color: isDark ? Colors.white54 : Colors.black45),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                s.copiedTitle,
+                                style: AppTypography.caption.copyWith(
+                                  color: AppColors.emeraldText(isDark),
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () => cubit.setCopiedPreview(null),
+                                borderRadius: BorderRadius.circular(AppRadius.pill),
+                                child: Padding(
+                                  padding: const EdgeInsetsDirectional.all(2),
+                                  child: Icon(
+                                    Icons.close_rounded,
+                                    size: 16,
+                                    color: AppColors.textSecondary(isDark),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: AppSpacing.xs),
+                          SelectableText(
+                            state.copiedPreview!,
+                            style: AppTypography.caption.copyWith(height: 1.55),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                  const SizedBox(height: 6),
-                  SelectableText(state.copiedPreview!, style: const TextStyle(fontSize: 11, height: 1.5)),
-                ],
-              ),
-            ),
-          ],
-          if (state.isAdminOpen)
-            AdminEditPanel(
-              cubit: cubit,
-              state: state,
-              waterCtrl: waterCtrl,
-              elecCtrl: elecCtrl,
-              elevCtrl: elevCtrl,
-              cleanCtrl: cleanCtrl,
-              forEmergCtrl: forEmergCtrl,
-              aptsCtrl: aptsCtrl,
-              baseEmergCtrl: baseEmergCtrl,
-              onFieldChanged: onFieldChanged,
-              onOpenManageApts: onOpenManageApts,
-            ),
+          ),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 240),
+            curve: Curves.easeOutCubic,
+            child: state.isAdminOpen
+                ? AdminEditPanel(
+                    cubit: cubit,
+                    state: state,
+                    waterCtrl: waterCtrl,
+                    elecCtrl: elecCtrl,
+                    elevCtrl: elevCtrl,
+                    cleanCtrl: cleanCtrl,
+                    forEmergCtrl: forEmergCtrl,
+                    aptsCtrl: aptsCtrl,
+                    baseEmergCtrl: baseEmergCtrl,
+                    onFieldChanged: onFieldChanged,
+                    onOpenManageApts: onOpenManageApts,
+                  )
+                : const SizedBox.shrink(),
+          ),
         ],
       ),
     );

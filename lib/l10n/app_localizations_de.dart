@@ -279,4 +279,59 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get tabAddImprovement => 'Neue Idee';
+
+  @override
+  String get languageTooltip => 'Sprache';
+
+  @override
+  String get deleteTooltip => 'Löschen';
+
+  @override
+  String errLoadData(String err) {
+    return '❌ Daten konnten nicht geladen werden: $err';
+  }
+
+  @override
+  String get monthSavedToast => '✅ Monatsänderungen gespeichert';
+
+  @override
+  String get paymentCancelledToast => '✅ Zahlung storniert';
+
+  @override
+  String get aptsSavedToast => '✅ Wohnungsnamen & Passwörter gespeichert';
+
+  @override
+  String get errNoMonth => 'Kein Monat ausgewählt';
+
+  @override
+  String get errWrongAdminPass => 'Falsches Admin-Passwort';
+
+  @override
+  String get errWrongAptPass => 'Falsches Wohnungspasswort';
+
+  @override
+  String errWrongAptPassHint(String hint) {
+    return 'Falsches Wohnungspasswort (versuche $hint)';
+  }
+
+  @override
+  String get errPaymentFailed => 'Zahlung konnte nicht erfasst werden';
+
+  @override
+  String get errCancelFailed => 'Zahlung konnte nicht storniert werden';
+
+  @override
+  String get errAptLoadFailed => 'Wohnungen konnten nicht geladen werden';
+
+  @override
+  String get errAptSaveFailed => 'Wohnung konnte nicht gespeichert werden';
+
+  @override
+  String get errEmptyMessage => 'Nachricht darf nicht leer sein';
+
+  @override
+  String get errSubmitFailed => 'Beitrag konnte nicht gesendet werden';
+
+  @override
+  String get errDeleteFailed => 'Beitrag konnte nicht gelöscht werden';
 }

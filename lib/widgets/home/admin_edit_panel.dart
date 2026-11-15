@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_typography.dart';
 import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
+import '../common/app_button.dart';
 import 'admin_input_field.dart';
 
 class AdminEditPanel extends StatelessWidget {
@@ -36,33 +40,31 @@ class AdminEditPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = state.s;
     final isDark = state.isDarkMode;
-    final borderCol = isDark ? Colors.white12 : Colors.black12;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Divider(height: 24, color: borderCol),
+        Divider(height: AppSpacing.xxl, color: AppColors.border(isDark)),
         Text(
           s.adminSectionHint,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-            color: isDark ? const Color(0xFF818CF8) : const Color(0xFF4F46E5),
+          style: AppTypography.label.copyWith(
+            fontWeight: FontWeight.w700,
+            color: AppColors.primaryText(isDark),
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.md),
         GridView.count(
           crossAxisCount: 2,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 8,
-          crossAxisSpacing: 8,
+          mainAxisSpacing: AppSpacing.sm,
+          crossAxisSpacing: AppSpacing.sm,
           childAspectRatio: 3.1,
           children: [
             AdminInputField(
               label: '${s.waterLabel}:',
               controller: waterCtrl,
-              color: const Color(0xFF38BDF8),
+              color: AppColors.water,
               onFocusKey: 'water',
               onHighlight: cubit.setHighlight,
               onChanged: onFieldChanged,
@@ -70,7 +72,7 @@ class AdminEditPanel extends StatelessWidget {
             AdminInputField(
               label: '${s.elecLabel}:',
               controller: elecCtrl,
-              color: const Color(0xFFFACC15),
+              color: AppColors.electricity,
               onFocusKey: 'elec',
               onHighlight: cubit.setHighlight,
               onChanged: onFieldChanged,
@@ -78,7 +80,7 @@ class AdminEditPanel extends StatelessWidget {
             AdminInputField(
               label: '${s.elevLabel}:',
               controller: elevCtrl,
-              color: const Color(0xFFA855F7),
+              color: AppColors.elevator,
               onFocusKey: 'elev',
               onHighlight: cubit.setHighlight,
               onChanged: onFieldChanged,
@@ -86,7 +88,7 @@ class AdminEditPanel extends StatelessWidget {
             AdminInputField(
               label: '${s.cleanLabel}:',
               controller: cleanCtrl,
-              color: const Color(0xFFF472B6),
+              color: AppColors.cleaning,
               onFocusKey: 'clean',
               onHighlight: cubit.setHighlight,
               onChanged: onFieldChanged,
@@ -94,7 +96,7 @@ class AdminEditPanel extends StatelessWidget {
             AdminInputField(
               label: '${s.forEmergLabel}:',
               controller: forEmergCtrl,
-              color: const Color(0xFF22C55E),
+              color: AppColors.reserve,
               onFocusKey: 'emerg',
               onHighlight: cubit.setHighlight,
               onChanged: onFieldChanged,
@@ -102,49 +104,39 @@ class AdminEditPanel extends StatelessWidget {
             AdminInputField(
               label: s.aptsCountField,
               controller: aptsCtrl,
-              color: const Color(0xFF6366F1),
+              color: AppColors.primary,
               onFocusKey: 'apts',
               onHighlight: cubit.setHighlight,
               onChanged: onFieldChanged,
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         AdminInputField(
           label: s.baseEmergField,
           controller: baseEmergCtrl,
-          color: const Color(0xFF22C55E),
+          color: AppColors.reserve,
           onFocusKey: 'top-emerg',
           onHighlight: cubit.setHighlight,
           onChanged: onFieldChanged,
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.md),
         Row(
           children: [
             Expanded(
-              child: ElevatedButton(
+              child: AppPrimaryButton(
+                label: s.saveChangesBtn,
+                backgroundColor: AppColors.emerald,
+                foregroundColor: Colors.black,
                 onPressed: cubit.saveAdminChanges,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF22C55E),
-                  foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-                child: Text(s.saveChangesBtn, style: const TextStyle(fontWeight: FontWeight.bold)),
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.sm),
             Expanded(
-              child: OutlinedButton.icon(
+              child: AppSecondaryButton(
+                label: s.manageAptsBtn,
+                icon: Icons.vpn_key_outlined,
                 onPressed: onOpenManageApts,
-                icon: const Icon(Icons.vpn_key_outlined, size: 16),
-                label: Text(s.manageAptsBtn, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: isDark ? const Color(0xFF818CF8) : const Color(0xFF4F46E5),
-                  side: const BorderSide(color: Color(0xFF6366F1)),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
               ),
             ),
           ],

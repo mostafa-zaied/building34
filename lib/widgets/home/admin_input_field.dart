@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_typography.dart';
+
 class AdminInputField extends StatelessWidget {
   final String label;
   final TextEditingController controller;
@@ -21,7 +25,6 @@ class AdminInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final surfaceColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
     final labelColor = isDark ? color : HSLColor.fromColor(color).withLightness(0.32).toColor();
 
     return MouseRegion(
@@ -34,27 +37,33 @@ class AdminInputField extends StatelessWidget {
           });
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          padding: const EdgeInsetsDirectional.symmetric(horizontal: 10, vertical: AppSpacing.xxs),
           decoration: BoxDecoration(
-            color: surfaceColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: color.withValues(alpha: isDark ? 0.7 : 0.9)),
+            color: AppColors.surface(isDark),
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            border: Border.all(color: color.withValues(alpha: isDark ? 0.55 : 0.75)),
           ),
           child: Row(
             children: [
-              Text(label, style: TextStyle(fontSize: 11, color: labelColor, fontWeight: FontWeight.bold)),
-              const SizedBox(width: 6),
+              Text(
+                label,
+                style: AppTypography.caption.copyWith(color: labelColor, fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(width: AppSpacing.xs),
               Expanded(
                 child: TextField(
                   controller: controller,
                   keyboardType: TextInputType.number,
-                  textAlign: TextAlign.left,
+                  textAlign: TextAlign.end,
                   onChanged: (_) => onChanged(),
-                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                  style: AppTypography.body.copyWith(fontWeight: FontWeight.w700),
                   decoration: const InputDecoration(
                     isDense: true,
+                    filled: false,
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(vertical: 6),
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    contentPadding: EdgeInsetsDirectional.symmetric(vertical: 6),
                   ),
                 ),
               ),

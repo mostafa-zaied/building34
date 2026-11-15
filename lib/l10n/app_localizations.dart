@@ -555,6 +555,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New Suggestion'**
   String get tabAddImprovement;
+
+  /// No description provided for @languageTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get languageTooltip;
+
+  /// No description provided for @deleteTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deleteTooltip;
+
+  /// No description provided for @errLoadData.
+  ///
+  /// In en, this message translates to:
+  /// **'❌ Failed to load data: {err}'**
+  String errLoadData(String err);
+
+  /// No description provided for @monthSavedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Month changes saved successfully'**
+  String get monthSavedToast;
+
+  /// No description provided for @paymentCancelledToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Payment cancelled'**
+  String get paymentCancelledToast;
+
+  /// No description provided for @aptsSavedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Apartment names & passwords saved'**
+  String get aptsSavedToast;
+
+  /// No description provided for @errNoMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'No month selected'**
+  String get errNoMonth;
+
+  /// No description provided for @errWrongAdminPass.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect admin password'**
+  String get errWrongAdminPass;
+
+  /// No description provided for @errWrongAptPass.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect apartment passcode'**
+  String get errWrongAptPass;
+
+  /// No description provided for @errWrongAptPassHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect apartment passcode (try {hint})'**
+  String errWrongAptPassHint(String hint);
+
+  /// No description provided for @errPaymentFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not record payment'**
+  String get errPaymentFailed;
+
+  /// No description provided for @errCancelFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not cancel payment'**
+  String get errCancelFailed;
+
+  /// No description provided for @errAptLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load apartments'**
+  String get errAptLoadFailed;
+
+  /// No description provided for @errAptSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save apartment'**
+  String get errAptSaveFailed;
+
+  /// No description provided for @errEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Message cannot be empty'**
+  String get errEmptyMessage;
+
+  /// No description provided for @errSubmitFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not submit post'**
+  String get errSubmitFailed;
+
+  /// No description provided for @errDeleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete post'**
+  String get errDeleteFailed;
 }
 
 class _AppLocalizationsDelegate

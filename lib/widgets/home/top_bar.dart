@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_typography.dart';
 import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
 import '../../models/building_models.dart';
+import '../common/app_card.dart';
 import '../common/glow_box.dart';
 
 class TopBar extends StatelessWidget {
@@ -23,37 +27,40 @@ class TopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = state.s;
     final isDark = state.isDarkMode;
-    final cardBg = Theme.of(context).cardColor;
-    final chipBg = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
-    final borderCol = isDark ? Colors.white12 : Colors.black12;
+    final chipBg = AppColors.surface(isDark);
+    final borderCol = AppColors.border(isDark);
     final newEmergTotal = (state.baseEmergency + month.forEmerg).toInt();
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: borderCol),
+    return AppCard(
+      padding: const EdgeInsetsDirectional.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
       ),
       child: Wrap(
         alignment: WrapAlignment.spaceBetween,
         crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 8,
-        runSpacing: 8,
+        spacing: AppSpacing.sm,
+        runSpacing: AppSpacing.sm,
         children: [
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('🏢', style: TextStyle(fontSize: 18)),
-              const SizedBox(width: 6),
+              Container(
+                padding: const EdgeInsetsDirectional.all(AppSpacing.xs),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                ),
+                child: const Icon(Icons.apartment_rounded, size: 18, color: AppColors.primary),
+              ),
+              const SizedBox(width: AppSpacing.sm),
               DropdownButtonHideUnderline(
                 child: DropdownButton<int>(
                   value: state.selectedMonthIndex,
-                  dropdownColor: cardBg,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : Colors.black87,
+                  dropdownColor: AppColors.card(isDark),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                  style: AppTypography.title.copyWith(
+                    color: AppColors.textPrimary(isDark),
                   ),
                   items: List.generate(state.months.length, (i) {
                     final item = state.months[i];
@@ -71,35 +78,35 @@ class TopBar extends StatelessWidget {
           ),
           Wrap(
             crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: 6,
-            runSpacing: 6,
+            spacing: AppSpacing.xs,
+            runSpacing: AppSpacing.xs,
             children: [
               GlowBox(
-                glowColor: const Color(0xFF22C55E),
+                glowColor: AppColors.emerald,
                 isHighlighted: state.highlightedKey == 'top-emerg' || state.highlightedKey == 'emerg',
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsetsDirectional.symmetric(horizontal: 10, vertical: 6),
                 child: Text(
                   s.emergencyBadge(newEmergTotal),
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? const Color(0xFF22C55E) : const Color(0xFF15803D),
+                  style: AppTypography.label.copyWith(
+                    color: AppColors.emeraldText(isDark),
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
               PopupMenuButton<String>(
-                tooltip: 'Language',
+                tooltip: s.languageTooltip,
                 onSelected: cubit.setLocale,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
                 itemBuilder: (_) => const [
                   PopupMenuItem(value: 'ar', child: Center(child: Text('🇪🇬', style: TextStyle(fontSize: 18)))),
                   PopupMenuItem(value: 'en', child: Center(child: Text('🇺🇸', style: TextStyle(fontSize: 18)))),
                   PopupMenuItem(value: 'de', child: Center(child: Text('🇩🇪', style: TextStyle(fontSize: 18)))),
                 ],
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                  padding: const EdgeInsetsDirectional.symmetric(horizontal: 9, vertical: 6),
                   decoration: BoxDecoration(
                     color: chipBg,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                     border: Border.all(color: borderCol),
                   ),
                   child: Text(
@@ -114,34 +121,40 @@ class TopBar extends StatelessWidget {
               ),
               InkWell(
                 onTap: cubit.toggleTheme,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
                 child: Container(
-                  padding: const EdgeInsets.all(6),
+                  padding: const EdgeInsetsDirectional.all(7),
                   decoration: BoxDecoration(
                     color: chipBg,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                     border: Border.all(color: borderCol),
                   ),
                   child: Icon(
                     isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
                     size: 16,
-                    color: isDark ? const Color(0xFFFACC15) : const Color(0xFF4F46E5),
+                    color: isDark ? AppColors.amber : AppColors.primary,
                   ),
                 ),
               ),
               InkWell(
                 onTap: onToggleAdmin,
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsetsDirectional.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: chipBg,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: borderCol),
+                    color: state.isAdminOpen ? AppColors.primary.withValues(alpha: 0.16) : chipBg,
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                    border: Border.all(
+                      color: state.isAdminOpen ? AppColors.primary : borderCol,
+                    ),
                   ),
                   child: Text(
                     state.isAdminOpen ? s.closeBtn : s.editBtn,
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                    style: AppTypography.label.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: state.isAdminOpen ? AppColors.primaryText(isDark) : AppColors.textPrimary(isDark),
+                    ),
                   ),
                 ),
               ),

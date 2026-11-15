@@ -133,7 +133,7 @@ class BuildingService {
     if (!_useSupabase) {
       final expected = _demoApartments[aptNum]?.passcode ?? '${1000 + aptNum}';
       if (passcode.trim() != expected) {
-        return 'كلمة سر الشقة غير صحيحة (جرب $expected)';
+        return 'err_wrong_apt_pass_hint:$expected';
       }
       month.payments[aptNum] = PaymentRecord(
         aptNum: aptNum,
@@ -166,7 +166,7 @@ class BuildingService {
     if (res is Map && res['ok'] == true) {
       return null;
     }
-    return (res is Map ? res['error']?.toString() : null) ?? 'تعذر تسجيل الدفع';
+    return (res is Map ? res['error']?.toString() : null) ?? 'err_payment_failed';
   }
 
   Future<String?> updateMonthAsAdmin({
@@ -193,7 +193,7 @@ class BuildingService {
     });
 
     if (res is Map && res['ok'] == true) return null;
-    return (res is Map ? res['error']?.toString() : null) ?? 'كلمة سر المسؤول غير صحيحة';
+    return (res is Map ? res['error']?.toString() : null) ?? 'err_wrong_admin_pass';
   }
 
   Future<String?> cancelPaymentAsAdmin({
@@ -217,7 +217,26 @@ class BuildingService {
       month.payments.remove(aptNum);
       return null;
     }
-    return (res is Map ? res['error']?.toString() : null) ?? 'تعذر إلغاء الدفع';
+    return (res is Map ? res['error']?.toString() : null) ?? 'err_cancel_failed';
+  }
+
+  Future<String?> verifyAdminPass(String adminPass) async {
+    final clean = adminPass.trim();
+    if (!_useSupabase) {
+      if (clean == 'admin123' || clean == 'zaied123') return null;
+      return 'err_wrong_admin_pass';
+    }
+
+    try {
+      final client = Supabase.instance.client;
+      final res = await client.rpc('admin_get_apartments', params: {
+        'p_admin_pass': clean,
+      });
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_wrong_admin_pass';
+    } catch (e) {
+      return 'err_wrong_admin_pass';
+    }
   }
 
   Future<({List<ApartmentInfo>? apartments, String? error})> fetchAdminApartments({
@@ -254,10 +273,10 @@ class BuildingService {
 
       return (
         apartments: null,
-        error: (res is Map ? res['error']?.toString() : null) ?? 'كلمة سر المسؤول غير صحيحة',
+        error: (res is Map ? res['error']?.toString() : null) ?? 'err_wrong_admin_pass',
       );
     } catch (e) {
-      return (apartments: null, error: 'تعذر تحميل بيانات الشقق: $e');
+      return (apartments: null, error: 'err_apt_load_failed');
     }
   }
 
@@ -286,9 +305,9 @@ class BuildingService {
       });
 
       if (res is Map && res['ok'] == true) return null;
-      return (res is Map ? res['error']?.toString() : null) ?? 'تعذر حفظ بيانات الشقة';
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_apt_save_failed';
     } catch (e) {
-      return 'تعذر حفظ بيانات الشقة: $e';
+      return 'err_apt_save_failed';
     }
   }
 
@@ -318,13 +337,13 @@ class BuildingService {
     String? authorLabel,
   }) async {
     final cleanMsg = message.trim();
-    if (cleanMsg.isEmpty) return 'الرسالة فارغة';
+    if (cleanMsg.isEmpty) return 'err_empty_message';
 
     if (!_useSupabase) {
       if (aptNum != null) {
         final expectedPass = _demoApartments[aptNum]?.passcode ?? '${1000 + aptNum}';
         if ((passcode ?? '').trim() != expectedPass) {
-          return 'كلمة سر الشقة غير صحيحة';
+          return 'err_wrong_apt_pass';
         }
       }
       _demoFeedbackPosts.insert(
@@ -351,7 +370,7 @@ class BuildingService {
           'p_author_label': authorLabel,
         });
         if (res is Map && res['ok'] == true) return null;
-        return (res is Map ? res['error']?.toString() : null) ?? 'كلمة سر الشقة غير صحيحة';
+        return (res is Map ? res['error']?.toString() : null) ?? 'err_wrong_apt_pass';
       }
 
       await client.from('feedback_posts').insert({
@@ -361,7 +380,7 @@ class BuildingService {
       });
       return null;
     } catch (e) {
-      return 'تعذر إرسال المشاركة: $e';
+      return 'err_submit_failed';
     }
   }
 
@@ -381,9 +400,9 @@ class BuildingService {
         'p_id': int.tryParse(id) ?? 0,
       });
       if (res is Map && res['ok'] == true) return null;
-      return (res is Map ? res['error']?.toString() : null) ?? 'تعذر الحذف';
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_delete_failed';
     } catch (e) {
-      return 'تعذر الحذف: $e';
+      return 'err_delete_failed';
     }
   }
 }

@@ -280,4 +280,59 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tabAddImprovement => 'New Suggestion';
+
+  @override
+  String get languageTooltip => 'Language';
+
+  @override
+  String get deleteTooltip => 'Delete';
+
+  @override
+  String errLoadData(String err) {
+    return '❌ Failed to load data: $err';
+  }
+
+  @override
+  String get monthSavedToast => '✅ Month changes saved successfully';
+
+  @override
+  String get paymentCancelledToast => '✅ Payment cancelled';
+
+  @override
+  String get aptsSavedToast => '✅ Apartment names & passwords saved';
+
+  @override
+  String get errNoMonth => 'No month selected';
+
+  @override
+  String get errWrongAdminPass => 'Incorrect admin password';
+
+  @override
+  String get errWrongAptPass => 'Incorrect apartment passcode';
+
+  @override
+  String errWrongAptPassHint(String hint) {
+    return 'Incorrect apartment passcode (try $hint)';
+  }
+
+  @override
+  String get errPaymentFailed => 'Could not record payment';
+
+  @override
+  String get errCancelFailed => 'Could not cancel payment';
+
+  @override
+  String get errAptLoadFailed => 'Could not load apartments';
+
+  @override
+  String get errAptSaveFailed => 'Could not save apartment';
+
+  @override
+  String get errEmptyMessage => 'Message cannot be empty';
+
+  @override
+  String get errSubmitFailed => 'Could not submit post';
+
+  @override
+  String get errDeleteFailed => 'Could not delete post';
 }

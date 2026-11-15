@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_typography.dart';
 import 'glow_box.dart';
 
 class ExpenseStatCard extends StatelessWidget {
@@ -24,16 +26,20 @@ class ExpenseStatCard extends StatelessWidget {
     return GlowBox(
       glowColor: color,
       isHighlighted: highlighted,
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+      padding: const EdgeInsetsDirectional.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.xs),
       child: Column(
         children: [
           Text(
             label,
-            style: TextStyle(fontSize: 11, color: labelColor, fontWeight: FontWeight.bold),
+            style: AppTypography.caption.copyWith(color: labelColor, fontWeight: FontWeight.w700),
             overflow: TextOverflow.ellipsis,
+            maxLines: 1,
           ),
-          const SizedBox(height: 4),
-          Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+          const SizedBox(height: AppSpacing.xxs),
+          Text(
+            value,
+            style: AppTypography.title.copyWith(fontWeight: FontWeight.w800),
+          ),
         ],
       ),
     );

@@ -186,5 +186,24 @@
       "count": { "type": "int" }
     }
   },
-  "tabAddImprovement": "New Suggestion"
+  "tabAddImprovement": "New Suggestion",
+  "languageTooltip": "Language",
+  "deleteTooltip": "Delete",
+  "errLoadData": "❌ Failed to load data: {err}",
+  "@errLoadData": { "placeholders": { "err": { "type": "String" } } },
+  "monthSavedToast": "✅ Month changes saved successfully",
+  "paymentCancelledToast": "✅ Payment cancelled",
+  "aptsSavedToast": "✅ Apartment names & passwords saved",
+  "errNoMonth": "No month selected",
+  "errWrongAdminPass": "Incorrect admin password",
+  "errWrongAptPass": "Incorrect apartment passcode",
+  "errWrongAptPassHint": "Incorrect apartment passcode (try {hint})",
+  "@errWrongAptPassHint": { "placeholders": { "hint": { "type": "String" } } },
+  "errPaymentFailed": "Could not record payment",
+  "errCancelFailed": "Could not cancel payment",
+  "errAptLoadFailed": "Could not load apartments",
+  "errAptSaveFailed": "Could not save apartment",
+  "errEmptyMessage": "Message cannot be empty",
+  "errSubmitFailed": "Could not submit post",
+  "errDeleteFailed": "Could not delete post"
 }
