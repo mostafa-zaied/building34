@@ -335,4 +335,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errDeleteFailed => 'Could not delete post';
+
+  @override
+  String get addNextMonthBtn => 'Next Month';
+
+  @override
+  String get monthAddedToast => '✅ Next month added';
 }

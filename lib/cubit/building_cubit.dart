@@ -216,6 +216,23 @@ class BuildingCubit extends Cubit<BuildingState> {
     ));
   }
 
+  Future<void> addNextMonth() async {
+    if (!state.isAdminOpen) return;
+    final err = await _service.addNextMonthAsAdmin(state.adminPass);
+    if (err != null) {
+      emit(state.copyWith(
+        feedbackMessage: () => '❌ ${_localizeError(err)}',
+        feedbackIsError: true,
+      ));
+      return;
+    }
+    await loadData(preserveMonthIndex: state.months.length);
+    emit(state.copyWith(
+      feedbackMessage: () => state.s.monthAddedToast,
+      feedbackIsError: false,
+    ));
+  }
+
   Future<String?> submitPayment({
     required int aptNum,
     required String passcode,

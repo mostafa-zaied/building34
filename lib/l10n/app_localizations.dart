@@ -657,6 +657,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not delete post'**
   String get errDeleteFailed;
+
+  /// No description provided for @addNextMonthBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Month'**
+  String get addNextMonthBtn;
+
+  /// No description provided for @monthAddedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Next month added'**
+  String get monthAddedToast;
 }
 
 class _AppLocalizationsDelegate

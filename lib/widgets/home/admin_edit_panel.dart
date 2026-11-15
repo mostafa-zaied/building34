@@ -141,6 +141,13 @@ class AdminEditPanel extends StatelessWidget {
             ),
           ],
         ),
+        const SizedBox(height: AppSpacing.sm),
+        AppSecondaryButton(
+          label: s.addNextMonthBtn,
+          icon: Icons.calendar_month_outlined,
+          accentColor: AppColors.emerald,
+          onPressed: cubit.addNextMonth,
+        ),
       ],
     );
   }

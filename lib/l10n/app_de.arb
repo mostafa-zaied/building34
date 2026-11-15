@@ -92,5 +92,7 @@
   "errAptSaveFailed": "Wohnung konnte nicht gespeichert werden",
   "errEmptyMessage": "Nachricht darf nicht leer sein",
   "errSubmitFailed": "Beitrag konnte nicht gesendet werden",
-  "errDeleteFailed": "Beitrag konnte nicht gelöscht werden"
+  "errDeleteFailed": "Beitrag konnte nicht gelöscht werden",
+  "addNextMonthBtn": "Nächster Monat",
+  "monthAddedToast": "✅ Nächster Monat hinzugefügt"
 }

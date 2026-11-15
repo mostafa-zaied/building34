@@ -92,5 +92,7 @@
   "errAptSaveFailed": "تعذر حفظ بيانات الشقة",
   "errEmptyMessage": "الرسالة فارغة",
   "errSubmitFailed": "تعذر إرسال المشاركة",
-  "errDeleteFailed": "تعذر الحذف"
+  "errDeleteFailed": "تعذر الحذف",
+  "addNextMonthBtn": "إضافة الشهر القادم",
+  "monthAddedToast": "✅ تم إضافة الشهر القادم بنجاح"
 }

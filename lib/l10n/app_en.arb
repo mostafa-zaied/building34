@@ -205,5 +205,7 @@
   "errAptSaveFailed": "Could not save apartment",
   "errEmptyMessage": "Message cannot be empty",
   "errSubmitFailed": "Could not submit post",
-  "errDeleteFailed": "Could not delete post"
+  "errDeleteFailed": "Could not delete post",
+  "addNextMonthBtn": "Next Month",
+  "monthAddedToast": "✅ Next month added"
 }

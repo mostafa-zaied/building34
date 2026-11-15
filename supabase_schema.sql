@@ -29,15 +29,10 @@ CREATE TABLE IF NOT EXISTS months (
   UNIQUE(month_num, year_num)
 );
 
--- إضافة بيانات شهر 11 الفعلية + الشهور السابقة والأرشيف
+-- إضافة بداية من شهر 12 القادم (2026) ويمكن للمسؤول إضافة الشهور التالية من التطبيق
 INSERT INTO months (month_num, year_num, water, elec, elev, clean, for_emerg, apts_count)
 VALUES
-  (7,  2026, 1080, 1500, 400, 240, 0,   13),
-  (8,  2026, 1100, 1590, 400, 240, 50,  13),
-  (9,  2026, 1150, 1620, 400, 240, 100, 13),
-  (10, 2026, 1210, 1700, 400, 240, 90,  13),
-  (11, 2026, 1281, 1803, 400, 240, 176, 13),
-  (12, 2026, 0,    0,    400, 240, 0,   13)
+  (12, 2026, 0, 0, 400, 240, 0, 13)
 ON CONFLICT (month_num, year_num) DO NOTHING;
 
 -- 3. جدول الشقق وكلمات السر (محمي ولا يمكن قراءة كلمات السر من التطبيق)
@@ -125,6 +120,79 @@ BEGIN
 END;
 $$;
 
+-- ز. إضافة الشهر القادم تلقائياً (للمسؤول فقط)
+CREATE OR REPLACE FUNCTION admin_add_next_month(p_admin_pass TEXT)
+RETURNS JSON
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_admin_pass TEXT;
+  v_last_month INT;
+  v_last_year INT;
+  v_last_apts INT;
+  v_next_month INT;
+  v_next_year INT;
+BEGIN
+  SELECT admin_password INTO v_admin_pass FROM building_settings WHERE id = 1;
+  IF v_admin_pass <> p_admin_pass THEN
+    RETURN json_build_object('ok', false, 'error', 'كلمة سر المسؤول غير صحيحة');
+  END IF;
+
+  SELECT month_num, year_num, apts_count
+  INTO v_last_month, v_last_year, v_last_apts
+  FROM months
+  ORDER BY year_num DESC, month_num DESC
+  LIMIT 1;
+
+  IF v_last_month IS NULL THEN
+    v_next_month := 12;
+    v_next_year := 2026;
+    v_last_apts := 13;
+  ELSIF v_last_month = 12 THEN
+    v_next_month := 1;
+    v_next_year := v_last_year + 1;
+  ELSE
+    v_next_month := v_last_month + 1;
+    v_next_year := v_last_year;
+  END IF;
+
+  INSERT INTO months (month_num, year_num, water, elec, elev, clean, for_emerg, apts_count)
+  VALUES (v_next_month, v_next_year, 0, 0, 400, 240, 0, COALESCE(v_last_apts, 13))
+  ON CONFLICT (month_num, year_num) DO NOTHING;
+
+  RETURN json_build_object('ok', true, 'month_num', v_next_month, 'year_num', v_next_year);
+END;
+$$;
+
+-- ح. إنشاء الشهر الحالي تلقائياً عند دخول أي مستخدم مع بداية كل شهر جديد (بداية من 12/2026)
+CREATE OR REPLACE FUNCTION ensure_current_month()
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_cur_month INT := EXTRACT(MONTH FROM CURRENT_DATE)::INT;
+  v_cur_year INT := EXTRACT(YEAR FROM CURRENT_DATE)::INT;
+  v_last_apts INT;
+BEGIN
+  IF (v_cur_year > 2026) OR (v_cur_year = 2026 AND v_cur_month >= 12) THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM months WHERE month_num = v_cur_month AND year_num = v_cur_year
+    ) THEN
+      SELECT apts_count INTO v_last_apts
+      FROM months
+      ORDER BY year_num DESC, month_num DESC
+      LIMIT 1;
+
+      INSERT INTO months (month_num, year_num, water, elec, elev, clean, for_emerg, apts_count)
+      VALUES (v_cur_month, v_cur_year, 0, 0, 400, 240, 0, COALESCE(v_last_apts, 13))
+      ON CONFLICT (month_num, year_num) DO NOTHING;
+    END IF;
+  END IF;
+END;
+$$;
+
 -- ب. التحقق من كلمة سر المدير وتحديث مصاريف الشهر
 CREATE OR REPLACE FUNCTION admin_update_month(
   p_admin_pass TEXT,
@@ -166,6 +234,79 @@ BEGIN
 END;
 $$;
 
+-- ز. إضافة الشهر القادم تلقائياً (للمسؤول فقط)
+CREATE OR REPLACE FUNCTION admin_add_next_month(p_admin_pass TEXT)
+RETURNS JSON
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_admin_pass TEXT;
+  v_last_month INT;
+  v_last_year INT;
+  v_last_apts INT;
+  v_next_month INT;
+  v_next_year INT;
+BEGIN
+  SELECT admin_password INTO v_admin_pass FROM building_settings WHERE id = 1;
+  IF v_admin_pass <> p_admin_pass THEN
+    RETURN json_build_object('ok', false, 'error', 'كلمة سر المسؤول غير صحيحة');
+  END IF;
+
+  SELECT month_num, year_num, apts_count
+  INTO v_last_month, v_last_year, v_last_apts
+  FROM months
+  ORDER BY year_num DESC, month_num DESC
+  LIMIT 1;
+
+  IF v_last_month IS NULL THEN
+    v_next_month := 12;
+    v_next_year := 2026;
+    v_last_apts := 13;
+  ELSIF v_last_month = 12 THEN
+    v_next_month := 1;
+    v_next_year := v_last_year + 1;
+  ELSE
+    v_next_month := v_last_month + 1;
+    v_next_year := v_last_year;
+  END IF;
+
+  INSERT INTO months (month_num, year_num, water, elec, elev, clean, for_emerg, apts_count)
+  VALUES (v_next_month, v_next_year, 0, 0, 400, 240, 0, COALESCE(v_last_apts, 13))
+  ON CONFLICT (month_num, year_num) DO NOTHING;
+
+  RETURN json_build_object('ok', true, 'month_num', v_next_month, 'year_num', v_next_year);
+END;
+$$;
+
+-- ح. إنشاء الشهر الحالي تلقائياً عند دخول أي مستخدم مع بداية كل شهر جديد (بداية من 12/2026)
+CREATE OR REPLACE FUNCTION ensure_current_month()
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_cur_month INT := EXTRACT(MONTH FROM CURRENT_DATE)::INT;
+  v_cur_year INT := EXTRACT(YEAR FROM CURRENT_DATE)::INT;
+  v_last_apts INT;
+BEGIN
+  IF (v_cur_year > 2026) OR (v_cur_year = 2026 AND v_cur_month >= 12) THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM months WHERE month_num = v_cur_month AND year_num = v_cur_year
+    ) THEN
+      SELECT apts_count INTO v_last_apts
+      FROM months
+      ORDER BY year_num DESC, month_num DESC
+      LIMIT 1;
+
+      INSERT INTO months (month_num, year_num, water, elec, elev, clean, for_emerg, apts_count)
+      VALUES (v_cur_month, v_cur_year, 0, 0, 400, 240, 0, COALESCE(v_last_apts, 13))
+      ON CONFLICT (month_num, year_num) DO NOTHING;
+    END IF;
+  END IF;
+END;
+$$;
+
 -- ج. إلغاء دفع شقة (للمدير فقط)
 CREATE OR REPLACE FUNCTION admin_cancel_payment(
   p_admin_pass TEXT,
@@ -186,6 +327,79 @@ BEGIN
 
   DELETE FROM payments WHERE month_id = p_month_id AND apt_num = p_apt_num;
   RETURN json_build_object('ok', true);
+END;
+$$;
+
+-- ز. إضافة الشهر القادم تلقائياً (للمسؤول فقط)
+CREATE OR REPLACE FUNCTION admin_add_next_month(p_admin_pass TEXT)
+RETURNS JSON
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_admin_pass TEXT;
+  v_last_month INT;
+  v_last_year INT;
+  v_last_apts INT;
+  v_next_month INT;
+  v_next_year INT;
+BEGIN
+  SELECT admin_password INTO v_admin_pass FROM building_settings WHERE id = 1;
+  IF v_admin_pass <> p_admin_pass THEN
+    RETURN json_build_object('ok', false, 'error', 'كلمة سر المسؤول غير صحيحة');
+  END IF;
+
+  SELECT month_num, year_num, apts_count
+  INTO v_last_month, v_last_year, v_last_apts
+  FROM months
+  ORDER BY year_num DESC, month_num DESC
+  LIMIT 1;
+
+  IF v_last_month IS NULL THEN
+    v_next_month := 12;
+    v_next_year := 2026;
+    v_last_apts := 13;
+  ELSIF v_last_month = 12 THEN
+    v_next_month := 1;
+    v_next_year := v_last_year + 1;
+  ELSE
+    v_next_month := v_last_month + 1;
+    v_next_year := v_last_year;
+  END IF;
+
+  INSERT INTO months (month_num, year_num, water, elec, elev, clean, for_emerg, apts_count)
+  VALUES (v_next_month, v_next_year, 0, 0, 400, 240, 0, COALESCE(v_last_apts, 13))
+  ON CONFLICT (month_num, year_num) DO NOTHING;
+
+  RETURN json_build_object('ok', true, 'month_num', v_next_month, 'year_num', v_next_year);
+END;
+$$;
+
+-- ح. إنشاء الشهر الحالي تلقائياً عند دخول أي مستخدم مع بداية كل شهر جديد (بداية من 12/2026)
+CREATE OR REPLACE FUNCTION ensure_current_month()
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_cur_month INT := EXTRACT(MONTH FROM CURRENT_DATE)::INT;
+  v_cur_year INT := EXTRACT(YEAR FROM CURRENT_DATE)::INT;
+  v_last_apts INT;
+BEGIN
+  IF (v_cur_year > 2026) OR (v_cur_year = 2026 AND v_cur_month >= 12) THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM months WHERE month_num = v_cur_month AND year_num = v_cur_year
+    ) THEN
+      SELECT apts_count INTO v_last_apts
+      FROM months
+      ORDER BY year_num DESC, month_num DESC
+      LIMIT 1;
+
+      INSERT INTO months (month_num, year_num, water, elec, elev, clean, for_emerg, apts_count)
+      VALUES (v_cur_month, v_cur_year, 0, 0, 400, 240, 0, COALESCE(v_last_apts, 13))
+      ON CONFLICT (month_num, year_num) DO NOTHING;
+    END IF;
+  END IF;
 END;
 $$;
 
@@ -253,6 +467,79 @@ BEGIN
 END;
 $$;
 
+-- ز. إضافة الشهر القادم تلقائياً (للمسؤول فقط)
+CREATE OR REPLACE FUNCTION admin_add_next_month(p_admin_pass TEXT)
+RETURNS JSON
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_admin_pass TEXT;
+  v_last_month INT;
+  v_last_year INT;
+  v_last_apts INT;
+  v_next_month INT;
+  v_next_year INT;
+BEGIN
+  SELECT admin_password INTO v_admin_pass FROM building_settings WHERE id = 1;
+  IF v_admin_pass <> p_admin_pass THEN
+    RETURN json_build_object('ok', false, 'error', 'كلمة سر المسؤول غير صحيحة');
+  END IF;
+
+  SELECT month_num, year_num, apts_count
+  INTO v_last_month, v_last_year, v_last_apts
+  FROM months
+  ORDER BY year_num DESC, month_num DESC
+  LIMIT 1;
+
+  IF v_last_month IS NULL THEN
+    v_next_month := 12;
+    v_next_year := 2026;
+    v_last_apts := 13;
+  ELSIF v_last_month = 12 THEN
+    v_next_month := 1;
+    v_next_year := v_last_year + 1;
+  ELSE
+    v_next_month := v_last_month + 1;
+    v_next_year := v_last_year;
+  END IF;
+
+  INSERT INTO months (month_num, year_num, water, elec, elev, clean, for_emerg, apts_count)
+  VALUES (v_next_month, v_next_year, 0, 0, 400, 240, 0, COALESCE(v_last_apts, 13))
+  ON CONFLICT (month_num, year_num) DO NOTHING;
+
+  RETURN json_build_object('ok', true, 'month_num', v_next_month, 'year_num', v_next_year);
+END;
+$$;
+
+-- ح. إنشاء الشهر الحالي تلقائياً عند دخول أي مستخدم مع بداية كل شهر جديد (بداية من 12/2026)
+CREATE OR REPLACE FUNCTION ensure_current_month()
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_cur_month INT := EXTRACT(MONTH FROM CURRENT_DATE)::INT;
+  v_cur_year INT := EXTRACT(YEAR FROM CURRENT_DATE)::INT;
+  v_last_apts INT;
+BEGIN
+  IF (v_cur_year > 2026) OR (v_cur_year = 2026 AND v_cur_month >= 12) THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM months WHERE month_num = v_cur_month AND year_num = v_cur_year
+    ) THEN
+      SELECT apts_count INTO v_last_apts
+      FROM months
+      ORDER BY year_num DESC, month_num DESC
+      LIMIT 1;
+
+      INSERT INTO months (month_num, year_num, water, elec, elev, clean, for_emerg, apts_count)
+      VALUES (v_cur_month, v_cur_year, 0, 0, 400, 240, 0, COALESCE(v_last_apts, 13))
+      ON CONFLICT (month_num, year_num) DO NOTHING;
+    END IF;
+  END IF;
+END;
+$$;
+
 -- ============================================================
 -- 7. إنشاء Bucket لصور الإيصالات (Storage)
 -- ============================================================
@@ -310,6 +597,107 @@ BEGIN
 END;
 $$;
 
+-- ز. إضافة الشهر القادم تلقائياً (للمسؤول فقط)
+CREATE OR REPLACE FUNCTION admin_add_next_month(p_admin_pass TEXT)
+RETURNS JSON
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_admin_pass TEXT;
+  v_last_month INT;
+  v_last_year INT;
+  v_last_apts INT;
+  v_next_month INT;
+  v_next_year INT;
+BEGIN
+  SELECT admin_password INTO v_admin_pass FROM building_settings WHERE id = 1;
+  IF v_admin_pass <> p_admin_pass THEN
+    RETURN json_build_object('ok', false, 'error', 'كلمة سر المسؤول غير صحيحة');
+  END IF;
+
+  SELECT month_num, year_num, apts_count
+  INTO v_last_month, v_last_year, v_last_apts
+  FROM months
+  ORDER BY year_num DESC, month_num DESC
+  LIMIT 1;
+
+  IF v_last_month IS NULL THEN
+    v_next_month := 12;
+    v_next_year := 2026;
+    v_last_apts := 13;
+  ELSIF v_last_month = 12 THEN
+    v_next_month := 1;
+    v_next_year := v_last_year + 1;
+  ELSE
+    v_next_month := v_last_month + 1;
+    v_next_year := v_last_year;
+  END IF;
+
+  INSERT INTO months (month_num, year_num, water, elec, elev, clean, for_emerg, apts_count)
+  VALUES (v_next_month, v_next_year, 0, 0, 400, 240, 0, COALESCE(v_last_apts, 13))
+  ON CONFLICT (month_num, year_num) DO NOTHING;
+
+  RETURN json_build_object('ok', true, 'month_num', v_next_month, 'year_num', v_next_year);
+END;
+$$;
+
+-- ح. إنشاء الشهر الحالي تلقائياً عند دخول أي مستخدم مع بداية كل شهر جديد (بداية من 12/2026)
+CREATE OR REPLACE FUNCTION ensure_current_month()
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_cur_month INT := EXTRACT(MONTH FROM CURRENT_DATE)::INT;
+  v_cur_year INT := EXTRACT(YEAR FROM CURRENT_DATE)::INT;
+  v_last_apts INT;
+BEGIN
+  IF (v_cur_year > 2026) OR (v_cur_year = 2026 AND v_cur_month >= 12) THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM months WHERE month_num = v_cur_month AND year_num = v_cur_year
+    ) THEN
+      SELECT apts_count INTO v_last_apts
+      FROM months
+      ORDER BY year_num DESC, month_num DESC
+      LIMIT 1;
+
+      INSERT INTO months (month_num, year_num, water, elec, elev, clean, for_emerg, apts_count)
+      VALUES (v_cur_month, v_cur_year, 0, 0, 400, 240, 0, COALESCE(v_last_apts, 13))
+      ON CONFLICT (month_num, year_num) DO NOTHING;
+    END IF;
+  END IF;
+END;
+$$;
+
+-- ح. إنشاء الشهر الحالي تلقائياً عند دخول أي مستخدم مع بداية كل شهر جديد (بداية من 12/2026)
+CREATE OR REPLACE FUNCTION ensure_current_month()
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_cur_month INT := EXTRACT(MONTH FROM CURRENT_DATE)::INT;
+  v_cur_year INT := EXTRACT(YEAR FROM CURRENT_DATE)::INT;
+  v_last_apts INT;
+BEGIN
+  IF (v_cur_year > 2026) OR (v_cur_year = 2026 AND v_cur_month >= 12) THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM months WHERE month_num = v_cur_month AND year_num = v_cur_year
+    ) THEN
+      SELECT apts_count INTO v_last_apts
+      FROM months
+      ORDER BY year_num DESC, month_num DESC
+      LIMIT 1;
+
+      INSERT INTO months (month_num, year_num, water, elec, elev, clean, for_emerg, apts_count)
+      VALUES (v_cur_month, v_cur_year, 0, 0, 400, 240, 0, COALESCE(v_last_apts, 13))
+      ON CONFLICT (month_num, year_num) DO NOTHING;
+    END IF;
+  END IF;
+END;
+$$;
+
 CREATE OR REPLACE FUNCTION submit_feedback_with_passcode(
   p_type TEXT,
   p_message TEXT,
@@ -345,5 +733,151 @@ BEGIN
   );
 
   RETURN json_build_object('ok', true);
+END;
+$$;
+
+
+-- ز. إضافة الشهر القادم تلقائياً (للمسؤول فقط)
+CREATE OR REPLACE FUNCTION admin_add_next_month(p_admin_pass TEXT)
+RETURNS JSON
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_admin_pass TEXT;
+  v_last_month INT;
+  v_last_year INT;
+  v_last_apts INT;
+  v_next_month INT;
+  v_next_year INT;
+BEGIN
+  SELECT admin_password INTO v_admin_pass FROM building_settings WHERE id = 1;
+  IF v_admin_pass <> p_admin_pass THEN
+    RETURN json_build_object('ok', false, 'error', 'كلمة سر المسؤول غير صحيحة');
+  END IF;
+
+  SELECT month_num, year_num, apts_count
+  INTO v_last_month, v_last_year, v_last_apts
+  FROM months
+  ORDER BY year_num DESC, month_num DESC
+  LIMIT 1;
+
+  IF v_last_month IS NULL THEN
+    v_next_month := 12;
+    v_next_year := 2026;
+    v_last_apts := 13;
+  ELSIF v_last_month = 12 THEN
+    v_next_month := 1;
+    v_next_year := v_last_year + 1;
+  ELSE
+    v_next_month := v_last_month + 1;
+    v_next_year := v_last_year;
+  END IF;
+
+  INSERT INTO months (month_num, year_num, water, elec, elev, clean, for_emerg, apts_count)
+  VALUES (v_next_month, v_next_year, 0, 0, 400, 240, 0, COALESCE(v_last_apts, 13))
+  ON CONFLICT (month_num, year_num) DO NOTHING;
+
+  RETURN json_build_object('ok', true, 'month_num', v_next_month, 'year_num', v_next_year);
+END;
+$$;
+
+-- ح. إنشاء الشهر الحالي تلقائياً عند دخول أي مستخدم مع بداية كل شهر جديد (بداية من 12/2026)
+CREATE OR REPLACE FUNCTION ensure_current_month()
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_cur_month INT := EXTRACT(MONTH FROM CURRENT_DATE)::INT;
+  v_cur_year INT := EXTRACT(YEAR FROM CURRENT_DATE)::INT;
+  v_last_apts INT;
+BEGIN
+  IF (v_cur_year > 2026) OR (v_cur_year = 2026 AND v_cur_month >= 12) THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM months WHERE month_num = v_cur_month AND year_num = v_cur_year
+    ) THEN
+      SELECT apts_count INTO v_last_apts
+      FROM months
+      ORDER BY year_num DESC, month_num DESC
+      LIMIT 1;
+
+      INSERT INTO months (month_num, year_num, water, elec, elev, clean, for_emerg, apts_count)
+      VALUES (v_cur_month, v_cur_year, 0, 0, 400, 240, 0, COALESCE(v_last_apts, 13))
+      ON CONFLICT (month_num, year_num) DO NOTHING;
+    END IF;
+  END IF;
+END;
+$$;
+-- ز. إضافة الشهر القادم تلقائياً (للمسؤول فقط)
+CREATE OR REPLACE FUNCTION admin_add_next_month(p_admin_pass TEXT)
+RETURNS JSON
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_admin_pass TEXT;
+  v_last_month INT;
+  v_last_year INT;
+  v_last_apts INT;
+  v_next_month INT;
+  v_next_year INT;
+BEGIN
+  SELECT admin_password INTO v_admin_pass FROM building_settings WHERE id = 1;
+  IF v_admin_pass <> p_admin_pass THEN
+    RETURN json_build_object('ok', false, 'error', 'كلمة سر المسؤول غير صحيحة');
+  END IF;
+
+  SELECT month_num, year_num, apts_count
+  INTO v_last_month, v_last_year, v_last_apts
+  FROM months
+  ORDER BY year_num DESC, month_num DESC
+  LIMIT 1;
+
+  IF v_last_month IS NULL THEN
+    v_next_month := 12;
+    v_next_year := 2026;
+    v_last_apts := 13;
+  ELSIF v_last_month = 12 THEN
+    v_next_month := 1;
+    v_next_year := v_last_year + 1;
+  ELSE
+    v_next_month := v_last_month + 1;
+    v_next_year := v_last_year;
+  END IF;
+
+  INSERT INTO months (month_num, year_num, water, elec, elev, clean, for_emerg, apts_count)
+  VALUES (v_next_month, v_next_year, 0, 0, 400, 240, 0, COALESCE(v_last_apts, 13))
+  ON CONFLICT (month_num, year_num) DO NOTHING;
+
+  RETURN json_build_object('ok', true, 'month_num', v_next_month, 'year_num', v_next_year);
+END;
+$$;
+
+-- ح. إنشاء الشهر الحالي تلقائياً عند دخول أي مستخدم مع بداية كل شهر جديد (بداية من 12/2026)
+CREATE OR REPLACE FUNCTION ensure_current_month()
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_cur_month INT := EXTRACT(MONTH FROM CURRENT_DATE)::INT;
+  v_cur_year INT := EXTRACT(YEAR FROM CURRENT_DATE)::INT;
+  v_last_apts INT;
+BEGIN
+  IF (v_cur_year > 2026) OR (v_cur_year = 2026 AND v_cur_month >= 12) THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM months WHERE month_num = v_cur_month AND year_num = v_cur_year
+    ) THEN
+      SELECT apts_count INTO v_last_apts
+      FROM months
+      ORDER BY year_num DESC, month_num DESC
+      LIMIT 1;
+
+      INSERT INTO months (month_num, year_num, water, elec, elev, clean, for_emerg, apts_count)
+      VALUES (v_cur_month, v_cur_year, 0, 0, 400, 240, 0, COALESCE(v_last_apts, 13))
+      ON CONFLICT (month_num, year_num) DO NOTHING;
+    END IF;
+  END IF;
 END;
 $$;

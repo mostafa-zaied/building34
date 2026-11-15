@@ -333,4 +333,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get errDeleteFailed => 'تعذر الحذف';
+
+  @override
+  String get addNextMonthBtn => 'إضافة الشهر القادم';
+
+  @override
+  String get monthAddedToast => '✅ تم إضافة الشهر القادم بنجاح';
 }

@@ -77,6 +77,11 @@ class BuildingService {
     }
 
     final client = Supabase.instance.client;
+    try {
+      await client.rpc('ensure_current_month');
+    } catch (_) {
+      // Ignore if function not yet deployed
+    }
     final baseEmergResp = await client.rpc('get_base_emergency_fund');
     final baseEmerg = (baseEmergResp as num?)?.toDouble() ?? 2550;
 
@@ -403,6 +408,37 @@ class BuildingService {
       return (res is Map ? res['error']?.toString() : null) ?? 'err_delete_failed';
     } catch (e) {
       return 'err_delete_failed';
+    }
+  }
+
+  Future<String?> addNextMonthAsAdmin(String adminPass) async {
+    if (!_useSupabase) {
+      final last = _demoMonths.last;
+      final nextMonth = last.monthNum == 12 ? 1 : last.monthNum + 1;
+      final nextYear = last.monthNum == 12 ? last.yearNum + 1 : last.yearNum;
+      _demoMonths.add(MonthBill(
+        id: last.id + 1,
+        monthNum: nextMonth,
+        yearNum: nextYear,
+        water: 0,
+        elec: 0,
+        elev: 400,
+        clean: 240,
+        forEmerg: 0,
+        aptsCount: last.aptsCount,
+      ));
+      return null;
+    }
+
+    try {
+      final client = Supabase.instance.client;
+      final res = await client.rpc('admin_add_next_month', params: {
+        'p_admin_pass': adminPass,
+      });
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_wrong_admin_pass';
+    } catch (e) {
+      return 'err_apt_save_failed';
     }
   }
 }
