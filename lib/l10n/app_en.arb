@@ -1,0 +1,163 @@
+{
+  "@@locale": "en",
+  "appTitle": "Building Expenses",
+  "demoBanner": "🧪 Local Demo Mode — Add Supabase keys in lib/config.dart for live deployment",
+  "monthOption": "Month {monthNum} ({yearNum})",
+  "@monthOption": {
+    "placeholders": {
+      "monthNum": { "type": "int" },
+      "yearNum": { "type": "int" }
+    }
+  },
+  "emergencyBadge": "🛡️ Emergency: {amount} EGP",
+  "@emergencyBadge": {
+    "placeholders": {
+      "amount": { "type": "int" }
+    }
+  },
+  "editBtn": "⚙️ Edit",
+  "closeBtn": "✓ Close",
+  "billTitle": "Building Expenses — Month {monthNum}:",
+  "@billTitle": {
+    "placeholders": {
+      "monthNum": { "type": "int" }
+    }
+  },
+  "copyWhatsAppBtn": "Copy for WhatsApp",
+  "waterLabel": "💧 Water",
+  "elecLabel": "⚡ Elec",
+  "elevLabel": "🛗 Elevator",
+  "cleanLabel": "🧹 Cleaning",
+  "forEmergLabel": "🛡️ Reserve",
+  "totalExpensesLine": "• Total Expenses: {total} EGP (÷ {apts} apts)",
+  "@totalExpensesLine": {
+    "placeholders": {
+      "total": { "type": "int" },
+      "apts": { "type": "int" }
+    }
+  },
+  "emergencySummaryLine": "• Emergency Fund: {total} EGP ({base} avail + {added} this month)",
+  "@emergencySummaryLine": {
+    "placeholders": {
+      "total": { "type": "int" },
+      "base": { "type": "int" },
+      "added": { "type": "int" }
+    }
+  },
+  "sharePerAptLabel": "Per Apt",
+  "currency": "{amount} EGP",
+  "@currency": {
+    "placeholders": {
+      "amount": { "type": "int" }
+    }
+  },
+  "copiedTitle": "✅ Copied for WhatsApp:",
+  "copiedToast": "✅ Updated monthly report copied for WhatsApp",
+  "adminSectionHint": "⚙️ Edit Month Items (hover/focus a field to highlight its card):",
+  "aptsCountField": "🏠 Apts:",
+  "baseEmergField": "💰 Previous Emergency Balance:",
+  "saveChangesBtn": "💾 Save Changes",
+  "manageAptsBtn": "Apts & Passwords",
+  "tapAptTitle": "Tap your apartment to record payment",
+  "paidCounter": "Paid {paid} of {total}",
+  "@paidCounter": {
+    "placeholders": {
+      "paid": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "defaultAptName": "Apt {num}",
+  "@defaultAptName": {
+    "placeholders": {
+      "num": { "type": "int" }
+    }
+  },
+  "paidBadge": "✅ Paid",
+  "adminLoginTitle": "🔐 Admin Login",
+  "adminPassHint": "Enter admin password...",
+  "cancel": "Cancel",
+  "close": "Close",
+  "login": "Login",
+  "manageAptsTitle": "🔑 Manage Apartment Names & Passwords",
+  "optionalName": "Name (optional)",
+  "nameHint": "e.g. Apt {num} - John",
+  "@nameHint": {
+    "placeholders": {
+      "num": { "type": "int" }
+    }
+  },
+  "passcodeLabel": "Passcode",
+  "saveAll": "💾 Save All",
+  "saving": "Saving...",
+  "fileLabel": "File: {name}",
+  "@fileLabel": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "receiptAttachedPreviously": "Receipt attached previously",
+  "cancelPaymentAdmin": "❌ Cancel Payment (Admin)",
+  "dueDialogTitle": "{aptLabel} — Due {share} EGP",
+  "@dueDialogTitle": {
+    "placeholders": {
+      "aptLabel": { "type": "String" },
+      "share": { "type": "int" }
+    }
+  },
+  "step1Passcode": "1. Apartment Passcode{demoHint}",
+  "@step1Passcode": {
+    "placeholders": {
+      "demoHint": { "type": "String" }
+    }
+  },
+  "enterPassHint": "Enter passcode...",
+  "step2Image": "2. Transfer Screenshot (Required)",
+  "pickImagePrompt": "📸 Tap here to select receipt image",
+  "chosenFile": "✅ Selected: {name}",
+  "@chosenFile": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "errMissingImage": "❌ Please attach the transfer screenshot first!",
+  "confirmPaymentBtn": "✅ Confirm Payment",
+  "uploadingBtn": "Uploading...",
+  "whatsappHeader": "🏢 *Building Expenses — Month {monthNum} ({yearNum})*",
+  "@whatsappHeader": {
+    "placeholders": {
+      "monthNum": { "type": "int" },
+      "yearNum": { "type": "int" }
+    }
+  },
+  "whatsappTotal": "💰 *Total:* {total} EGP",
+  "@whatsappTotal": {
+    "placeholders": {
+      "total": { "type": "int" }
+    }
+  },
+  "whatsappShare": "📌 *Share per apartment ({apts} apts):* {share} EGP",
+  "@whatsappShare": {
+    "placeholders": {
+      "apts": { "type": "int" },
+      "share": { "type": "int" }
+    }
+  },
+  "whatsappEmergency": "🛡️ *Emergency fund:* {total} EGP ({base} avail + {added} this month)",
+  "@whatsappEmergency": {
+    "placeholders": {
+      "total": { "type": "int" },
+      "base": { "type": "int" },
+      "added": { "type": "int" }
+    }
+  },
+  "whatsappLinkPrompt": "🔗 *Open the link to mark your payment and attach the receipt:*",
+  "whatsappPaidStatus": "✅ *Paid ({paid}/{total}):*",
+  "@whatsappPaidStatus": {
+    "placeholders": {
+      "paid": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "whatsappNonePaid": "• None yet",
+  "addApartmentBtn": "+ Add Apartment"
+}

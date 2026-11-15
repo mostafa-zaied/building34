@@ -231,29 +231,33 @@ class BuildingService {
       return (apartments: list, error: null);
     }
 
-    final client = Supabase.instance.client;
-    final res = await client.rpc('admin_get_apartments', params: {
-      'p_admin_pass': adminPass,
-    });
+    try {
+      final client = Supabase.instance.client;
+      final res = await client.rpc('admin_get_apartments', params: {
+        'p_admin_pass': adminPass,
+      });
 
-    if (res is Map && res['ok'] == true) {
-      final rawList = (res['apartments'] as List?) ?? [];
-      final byNum = <int, ApartmentInfo>{};
-      for (final item in rawList) {
-        final info = ApartmentInfo.fromJson(Map<String, dynamic>.from(item as Map));
-        byNum[info.aptNum] = info;
+      if (res is Map && res['ok'] == true) {
+        final rawList = (res['apartments'] as List?) ?? [];
+        final byNum = <int, ApartmentInfo>{};
+        for (final item in rawList) {
+          final info = ApartmentInfo.fromJson(Map<String, dynamic>.from(item as Map));
+          byNum[info.aptNum] = info;
+        }
+        final result = <ApartmentInfo>[];
+        for (int i = 1; i <= aptsCount; i++) {
+          result.add(byNum[i] ?? ApartmentInfo(aptNum: i, passcode: '${1000 + i}'));
+        }
+        return (apartments: result, error: null);
       }
-      final result = <ApartmentInfo>[];
-      for (int i = 1; i <= aptsCount; i++) {
-        result.add(byNum[i] ?? ApartmentInfo(aptNum: i, passcode: '${1000 + i}'));
-      }
-      return (apartments: result, error: null);
+
+      return (
+        apartments: null,
+        error: (res is Map ? res['error']?.toString() : null) ?? 'كلمة سر المدير غير صحيحة',
+      );
+    } catch (e) {
+      return (apartments: null, error: 'تعذر تحميل بيانات الشقق: $e');
     }
-
-    return (
-      apartments: null,
-      error: (res is Map ? res['error']?.toString() : null) ?? 'كلمة سر المدير غير صحيحة',
-    );
   }
 
   Future<String?> updateApartmentAsAdmin({
@@ -271,15 +275,19 @@ class BuildingService {
       return null;
     }
 
-    final client = Supabase.instance.client;
-    final res = await client.rpc('admin_update_apartment', params: {
-      'p_admin_pass': adminPass,
-      'p_apt_num': aptNum,
-      'p_display_name': displayName.trim(),
-      'p_passcode': passcode.trim(),
-    });
+    try {
+      final client = Supabase.instance.client;
+      final res = await client.rpc('admin_update_apartment', params: {
+        'p_admin_pass': adminPass,
+        'p_apt_num': aptNum,
+        'p_display_name': displayName.trim(),
+        'p_passcode': passcode.trim(),
+      });
 
-    if (res is Map && res['ok'] == true) return null;
-    return (res is Map ? res['error']?.toString() : null) ?? 'تعذر حفظ بيانات الشقة';
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'تعذر حفظ بيانات الشقة';
+    } catch (e) {
+      return 'تعذر حفظ بيانات الشقة: $e';
+    }
   }
 }

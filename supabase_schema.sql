@@ -74,7 +74,9 @@ ALTER TABLE apartments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
 
 -- السماح للجميع بقراءة الشهور والمدفوعات ورصيد الطوارئ (بدون كلمة سر المدير)
+DROP POLICY IF EXISTS "Public read months" ON months;
 CREATE POLICY "Public read months" ON months FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read payments" ON payments;
 CREATE POLICY "Public read payments" ON payments FOR SELECT USING (true);
 -- ملاحظة: نمنع القراءة المباشرة لجدول apartments و building_settings.admin_password
 -- ونوفر دالة آمنة لقراءة رصيد الطوارئ فقط
@@ -258,10 +260,12 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('receipts', 'receipts', true)
 ON CONFLICT (id) DO NOTHING;
 
+DROP POLICY IF EXISTS "Public read receipts" ON storage.objects;
 CREATE POLICY "Public read receipts"
 ON storage.objects FOR SELECT
 USING (bucket_id = 'receipts');
 
+DROP POLICY IF EXISTS "Public upload receipts" ON storage.objects;
 CREATE POLICY "Public upload receipts"
 ON storage.objects FOR INSERT
 WITH CHECK (bucket_id = 'receipts');
