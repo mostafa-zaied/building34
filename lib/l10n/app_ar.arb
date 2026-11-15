@@ -58,5 +58,18 @@
   "whatsappLinkPrompt": "🔗 *افتح اللينك لتسجيل الدفع وإرفاق صورة التحويل:*",
   "whatsappPaidStatus": "✅ *المدفوع ({paid}/{total}):*",
   "whatsappNonePaid": "• لا يوجد بعد",
-  "addApartmentBtn": "+ إضافة شقة جديدة"
+  "addApartmentBtn": "+ إضافة شقة جديدة",
+  "navExpenses": "المصاريف",
+  "navComplaints": "شكاوى",
+  "navImprovements": "تحسينات",
+  "complaintsTitle": "📢 شكاوى السكان",
+  "improvementsTitle": "💡 مقترحات التحسين",
+  "writeComplaintHint": "اكتب الشكوى هنا...",
+  "writeImprovementHint": "اكتب اقتراحك لتحسين العمارة...",
+  "postAnonymously": "إرسال بدون اسم (مجهول)",
+  "selectApartment": "اختر الشقة",
+  "submitPostBtn": "إرسال",
+  "anonymousAuthor": "🕵️ بدون اسم (مجهول)",
+  "noPostsYet": "لا توجد مشاركات بعد",
+  "postAddedToast": "✅ تم الإرسال بنجاح"
 }

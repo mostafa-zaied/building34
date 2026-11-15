@@ -76,18 +76,56 @@ class BillSummaryCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(child: ExpenseStatCard(label: s.waterLabel, value: '${month.water.toInt()}', color: const Color(0xFF38BDF8), highlighted: state.highlightedKey == 'water')),
-              const SizedBox(width: 6),
-              Expanded(child: ExpenseStatCard(label: s.elecLabel, value: '${month.elec.toInt()}', color: const Color(0xFFFACC15), highlighted: state.highlightedKey == 'elec')),
-              const SizedBox(width: 6),
-              Expanded(child: ExpenseStatCard(label: s.elevLabel, value: '${month.elev.toInt()}', color: const Color(0xFFA855F7), highlighted: state.highlightedKey == 'elev')),
-              const SizedBox(width: 6),
-              Expanded(child: ExpenseStatCard(label: s.cleanLabel, value: '${month.clean.toInt()}', color: const Color(0xFFF472B6), highlighted: state.highlightedKey == 'clean')),
-              const SizedBox(width: 6),
-              Expanded(child: ExpenseStatCard(label: s.forEmergLabel, value: '${month.forEmerg.toInt()}', color: const Color(0xFF22C55E), highlighted: state.highlightedKey == 'emerg')),
-            ],
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final cards = [
+                ExpenseStatCard(label: s.waterLabel, value: '${month.water.toInt()}', color: const Color(0xFF38BDF8), highlighted: state.highlightedKey == 'water'),
+                ExpenseStatCard(label: s.elecLabel, value: '${month.elec.toInt()}', color: const Color(0xFFFACC15), highlighted: state.highlightedKey == 'elec'),
+                ExpenseStatCard(label: s.elevLabel, value: '${month.elev.toInt()}', color: const Color(0xFFA855F7), highlighted: state.highlightedKey == 'elev'),
+                ExpenseStatCard(label: s.cleanLabel, value: '${month.clean.toInt()}', color: const Color(0xFFF472B6), highlighted: state.highlightedKey == 'clean'),
+                ExpenseStatCard(label: s.forEmergLabel, value: '${month.forEmerg.toInt()}', color: const Color(0xFF22C55E), highlighted: state.highlightedKey == 'emerg'),
+              ];
+
+              if (constraints.maxWidth < 460) {
+                return Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(child: cards[0]),
+                        const SizedBox(width: 6),
+                        Expanded(child: cards[1]),
+                        const SizedBox(width: 6),
+                        Expanded(child: cards[2]),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Expanded(child: cards[3]),
+                        const SizedBox(width: 6),
+                        Expanded(child: cards[4]),
+                        const SizedBox(width: 6),
+                        const Spacer(),
+                      ],
+                    ),
+                  ],
+                );
+              }
+
+              return Row(
+                children: [
+                  Expanded(child: cards[0]),
+                  const SizedBox(width: 6),
+                  Expanded(child: cards[1]),
+                  const SizedBox(width: 6),
+                  Expanded(child: cards[2]),
+                  const SizedBox(width: 6),
+                  Expanded(child: cards[3]),
+                  const SizedBox(width: 6),
+                  Expanded(child: cards[4]),
+                ],
+              );
+            },
           ),
           const SizedBox(height: 12),
           GlowBox(

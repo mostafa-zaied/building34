@@ -61,25 +61,30 @@ class ApartmentsGrid extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: month.aptsCount,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
-              childAspectRatio: 1.55,
-            ),
-            itemBuilder: (context, idx) {
-              final aptNum = idx + 1;
-              final isPaid = month.payments.containsKey(aptNum);
-              return ApartmentCard(
-                aptNum: aptNum,
-                label: state.aptLabel(aptNum),
-                statusText: isPaid ? s.paidBadge : '⏳ ${s.currency(month.sharePerApt)}',
-                isPaid: isPaid,
-                onTap: () => onTapApartment(aptNum),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final aspect = constraints.maxWidth < 400 ? 1.25 : 1.45;
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: month.aptsCount,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 8,
+                  crossAxisSpacing: 8,
+                  childAspectRatio: aspect,
+                ),
+                itemBuilder: (context, idx) {
+                  final aptNum = idx + 1;
+                  final isPaid = month.payments.containsKey(aptNum);
+                  return ApartmentCard(
+                    aptNum: aptNum,
+                    label: state.aptLabel(aptNum),
+                    statusText: isPaid ? s.paidBadge : '⏳ ${s.currency(month.sharePerApt)}',
+                    isPaid: isPaid,
+                    onTap: () => onTapApartment(aptNum),
+                  );
+                },
               );
             },
           ),

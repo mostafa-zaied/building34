@@ -224,4 +224,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addApartmentBtn => '+ Add Apartment';
+
+  @override
+  String get navExpenses => 'Expenses';
+
+  @override
+  String get navComplaints => 'Complaints';
+
+  @override
+  String get navImprovements => 'Improvements';
+
+  @override
+  String get complaintsTitle => '📢 Resident Complaints';
+
+  @override
+  String get improvementsTitle => '💡 Building Improvements';
+
+  @override
+  String get writeComplaintHint => 'Write your complaint clearly...';
+
+  @override
+  String get writeImprovementHint =>
+      'Share your suggestion to improve the building...';
+
+  @override
+  String get postAnonymously => 'Post anonymously (hide apartment name)';
+
+  @override
+  String get selectApartment => 'Apartment';
+
+  @override
+  String get submitPostBtn => 'Submit';
+
+  @override
+  String get anonymousAuthor => '🕵️ Anonymous';
+
+  @override
+  String get noPostsYet => 'No entries yet';
+
+  @override
+  String get postAddedToast => '✅ Submitted successfully';
 }

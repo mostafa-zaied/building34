@@ -453,6 +453,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'+ Add Apartment'**
   String get addApartmentBtn;
+
+  /// No description provided for @navExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses'**
+  String get navExpenses;
+
+  /// No description provided for @navComplaints.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaints'**
+  String get navComplaints;
+
+  /// No description provided for @navImprovements.
+  ///
+  /// In en, this message translates to:
+  /// **'Improvements'**
+  String get navImprovements;
+
+  /// No description provided for @complaintsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'📢 Resident Complaints'**
+  String get complaintsTitle;
+
+  /// No description provided for @improvementsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'💡 Building Improvements'**
+  String get improvementsTitle;
+
+  /// No description provided for @writeComplaintHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write your complaint clearly...'**
+  String get writeComplaintHint;
+
+  /// No description provided for @writeImprovementHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your suggestion to improve the building...'**
+  String get writeImprovementHint;
+
+  /// No description provided for @postAnonymously.
+  ///
+  /// In en, this message translates to:
+  /// **'Post anonymously (hide apartment name)'**
+  String get postAnonymously;
+
+  /// No description provided for @selectApartment.
+  ///
+  /// In en, this message translates to:
+  /// **'Apartment'**
+  String get selectApartment;
+
+  /// No description provided for @submitPostBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get submitPostBtn;
+
+  /// No description provided for @anonymousAuthor.
+  ///
+  /// In en, this message translates to:
+  /// **'🕵️ Anonymous'**
+  String get anonymousAuthor;
+
+  /// No description provided for @noPostsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No entries yet'**
+  String get noPostsYet;
+
+  /// No description provided for @postAddedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Submitted successfully'**
+  String get postAddedToast;
 }
 
 class _AppLocalizationsDelegate

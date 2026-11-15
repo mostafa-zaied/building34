@@ -93,3 +93,29 @@ class MonthBill {
     );
   }
 }
+
+class FeedbackPost {
+  final String id;
+  final String type; // 'complaint' or 'improvement'
+  final String message;
+  final String? authorLabel; // null when anonymous
+  final DateTime createdAt;
+
+  const FeedbackPost({
+    required this.id,
+    required this.type,
+    required this.message,
+    this.authorLabel,
+    required this.createdAt,
+  });
+
+  factory FeedbackPost.fromJson(Map<String, dynamic> json) {
+    return FeedbackPost(
+      id: json['id'].toString(),
+      type: (json['type'] as String?) ?? 'complaint',
+      message: (json['message'] as String?) ?? '',
+      authorLabel: json['author_label'] as String?,
+      createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ?? DateTime.now(),
+    );
+  }
+}

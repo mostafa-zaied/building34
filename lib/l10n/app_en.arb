@@ -159,5 +159,18 @@
     }
   },
   "whatsappNonePaid": "• None yet",
-  "addApartmentBtn": "+ Add Apartment"
+  "addApartmentBtn": "+ Add Apartment",
+  "navExpenses": "Expenses",
+  "navComplaints": "Complaints",
+  "navImprovements": "Improvements",
+  "complaintsTitle": "📢 Resident Complaints",
+  "improvementsTitle": "💡 Building Improvements",
+  "writeComplaintHint": "Write your complaint clearly...",
+  "writeImprovementHint": "Share your suggestion to improve the building...",
+  "postAnonymously": "Post anonymously (hide apartment name)",
+  "selectApartment": "Apartment",
+  "submitPostBtn": "Submit",
+  "anonymousAuthor": "🕵️ Anonymous",
+  "noPostsYet": "No entries yet",
+  "postAddedToast": "✅ Submitted successfully"
 }

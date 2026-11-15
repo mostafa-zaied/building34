@@ -17,6 +17,8 @@ class BuildingState {
   final bool feedbackIsError;
   final String localeCode;
   final bool isDarkMode;
+  final int selectedNavIndex;
+  final List<FeedbackPost> feedbackPosts;
 
   const BuildingState({
     this.loading = true,
@@ -32,6 +34,8 @@ class BuildingState {
     this.feedbackIsError = false,
     this.localeCode = 'ar',
     this.isDarkMode = true,
+    this.selectedNavIndex = 0,
+    this.feedbackPosts = const [],
   });
 
   AppLocalizations get s => lookupAppLocalizations(Locale(localeCode));
@@ -57,6 +61,8 @@ class BuildingState {
     bool? feedbackIsError,
     String? localeCode,
     bool? isDarkMode,
+    int? selectedNavIndex,
+    List<FeedbackPost>? feedbackPosts,
   }) {
     return BuildingState(
       loading: loading ?? this.loading,
@@ -72,6 +78,8 @@ class BuildingState {
       feedbackIsError: feedbackIsError ?? this.feedbackIsError,
       localeCode: localeCode ?? this.localeCode,
       isDarkMode: isDarkMode ?? this.isDarkMode,
+      selectedNavIndex: selectedNavIndex ?? this.selectedNavIndex,
+      feedbackPosts: feedbackPosts ?? this.feedbackPosts,
     );
   }
 }

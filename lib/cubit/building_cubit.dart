@@ -13,6 +13,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     emit(state.copyWith(loading: true));
     try {
       final data = await _service.fetchAll();
+      final posts = await _service.fetchFeedbackPosts();
       int targetIdx = preserveMonthIndex ?? state.selectedMonthIndex;
       if (preserveMonthIndex == null && state.months.isEmpty) {
         final novIndex = data.months.indexWhere((m) => m.monthNum == 11);
@@ -30,6 +31,7 @@ class BuildingCubit extends Cubit<BuildingState> {
         months: data.months,
         apartmentNames: data.apartmentNames,
         selectedMonthIndex: targetIdx,
+        feedbackPosts: posts,
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -45,6 +47,57 @@ class BuildingCubit extends Cubit<BuildingState> {
       selectedMonthIndex: index,
       copiedPreview: () => null,
     ));
+  }
+
+  void selectNav(int index) {
+    emit(state.copyWith(selectedNavIndex: index));
+  }
+
+  Future<bool> submitFeedbackPost({
+    required String type,
+    required String message,
+    int? aptNum,
+    String? passcode,
+  }) async {
+    final authorLabel = aptNum != null ? state.aptLabel(aptNum) : null;
+    final err = await _service.submitFeedbackPost(
+      type: type,
+      message: message,
+      aptNum: aptNum,
+      passcode: passcode,
+      authorLabel: authorLabel,
+    );
+    if (err != null) {
+      emit(state.copyWith(
+        feedbackMessage: () => '❌ $err',
+        feedbackIsError: true,
+      ));
+      return false;
+    }
+    final posts = await _service.fetchFeedbackPosts();
+    emit(state.copyWith(
+      feedbackPosts: posts,
+      feedbackMessage: () => state.s.postAddedToast,
+      feedbackIsError: false,
+    ));
+    return true;
+  }
+
+  Future<void> deleteFeedbackPost(String id) async {
+    if (!state.isAdminOpen) return;
+    final err = await _service.deleteFeedbackPost(
+      adminPass: state.adminPass,
+      id: id,
+    );
+    if (err != null) {
+      emit(state.copyWith(
+        feedbackMessage: () => '❌ $err',
+        feedbackIsError: true,
+      ));
+      return;
+    }
+    final posts = await _service.fetchFeedbackPosts();
+    emit(state.copyWith(feedbackPosts: posts));
   }
 
   void openAdmin(String pass) {

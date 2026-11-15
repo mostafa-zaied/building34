@@ -269,3 +269,81 @@ DROP POLICY IF EXISTS "Public upload receipts" ON storage.objects;
 CREATE POLICY "Public upload receipts"
 ON storage.objects FOR INSERT
 WITH CHECK (bucket_id = 'receipts');
+
+-- ============================================================
+-- 8. جدول الشكاوى والتحسينات (اختياري بالاسم أو بدون اسم)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS feedback_posts (
+  id BIGSERIAL PRIMARY KEY,
+  type TEXT NOT NULL CHECK (type IN ('complaint', 'improvement')),
+  message TEXT NOT NULL,
+  author_label TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE feedback_posts ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public read feedback_posts" ON feedback_posts;
+CREATE POLICY "Public read feedback_posts" ON feedback_posts FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public insert feedback_posts" ON feedback_posts;
+CREATE POLICY "Public insert feedback_posts" ON feedback_posts FOR INSERT WITH CHECK (true);
+
+CREATE OR REPLACE FUNCTION admin_delete_feedback(
+  p_admin_pass TEXT,
+  p_id BIGINT
+)
+RETURNS JSON
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_admin_pass TEXT;
+BEGIN
+  SELECT admin_password INTO v_admin_pass FROM building_settings WHERE id = 1;
+  IF v_admin_pass <> p_admin_pass THEN
+    RETURN json_build_object('ok', false, 'error', 'كلمة سر المدير غير صحيحة');
+  END IF;
+
+  DELETE FROM feedback_posts WHERE id = p_id;
+  RETURN json_build_object('ok', true);
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION submit_feedback_with_passcode(
+  p_type TEXT,
+  p_message TEXT,
+  p_apt_num INT,
+  p_passcode TEXT,
+  p_author_label TEXT DEFAULT NULL
+)
+RETURNS JSON
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_pass TEXT;
+  v_display TEXT;
+BEGIN
+  SELECT passcode, display_name INTO v_pass, v_display
+  FROM apartments
+  WHERE apt_num = p_apt_num;
+
+  IF v_pass IS NULL THEN
+    RETURN json_build_object('ok', false, 'error', 'الشقة غير موجودة');
+  END IF;
+
+  IF v_pass <> p_passcode THEN
+    RETURN json_build_object('ok', false, 'error', 'كلمة سر الشقة غير صحيحة');
+  END IF;
+
+  INSERT INTO feedback_posts (type, message, author_label)
+  VALUES (
+    p_type,
+    p_message,
+    COALESCE(NULLIF(TRIM(v_display), ''), p_author_label, 'شقة ' || p_apt_num)
+  );
+
+  RETURN json_build_object('ok', true);
+END;
+$$;

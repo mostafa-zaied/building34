@@ -28,6 +28,7 @@ class BuildingService {
 
   // Local Demo state (used when Supabase keys are not yet configured or in tests)
   static double _demoBaseEmergency = 2550;
+  static final List<FeedbackPost> _demoFeedbackPosts = [];
   static final Map<int, ApartmentInfo> _demoApartments = {
     for (int i = 1; i <= 30; i++)
       i: ApartmentInfo(aptNum: i, displayName: '', passcode: '${1000 + i}'),
@@ -288,6 +289,101 @@ class BuildingService {
       return (res is Map ? res['error']?.toString() : null) ?? 'تعذر حفظ بيانات الشقة';
     } catch (e) {
       return 'تعذر حفظ بيانات الشقة: $e';
+    }
+  }
+
+  Future<List<FeedbackPost>> fetchFeedbackPosts() async {
+    if (!_useSupabase) {
+      return List<FeedbackPost>.from(_demoFeedbackPosts);
+    }
+    try {
+      final client = Supabase.instance.client;
+      final rows = await client
+          .from('feedback_posts')
+          .select('id, type, message, author_label, created_at')
+          .order('created_at', ascending: false);
+      return (rows as List)
+          .map((r) => FeedbackPost.fromJson(Map<String, dynamic>.from(r as Map)))
+          .toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Future<String?> submitFeedbackPost({
+    required String type,
+    required String message,
+    int? aptNum,
+    String? passcode,
+    String? authorLabel,
+  }) async {
+    final cleanMsg = message.trim();
+    if (cleanMsg.isEmpty) return 'الرسالة فارغة';
+
+    if (!_useSupabase) {
+      if (aptNum != null) {
+        final expectedPass = _demoApartments[aptNum]?.passcode ?? '${1000 + aptNum}';
+        if ((passcode ?? '').trim() != expectedPass) {
+          return 'كلمة سر الشقة غير صحيحة';
+        }
+      }
+      _demoFeedbackPosts.insert(
+        0,
+        FeedbackPost(
+          id: DateTime.now().microsecondsSinceEpoch.toString(),
+          type: type,
+          message: cleanMsg,
+          authorLabel: aptNum != null ? authorLabel : null,
+          createdAt: DateTime.now(),
+        ),
+      );
+      return null;
+    }
+
+    try {
+      final client = Supabase.instance.client;
+      if (aptNum != null) {
+        final res = await client.rpc('submit_feedback_with_passcode', params: {
+          'p_type': type,
+          'p_message': cleanMsg,
+          'p_apt_num': aptNum,
+          'p_passcode': (passcode ?? '').trim(),
+          'p_author_label': authorLabel,
+        });
+        if (res is Map && res['ok'] == true) return null;
+        return (res is Map ? res['error']?.toString() : null) ?? 'كلمة سر الشقة غير صحيحة';
+      }
+
+      await client.from('feedback_posts').insert({
+        'type': type,
+        'message': cleanMsg,
+        'author_label': null,
+      });
+      return null;
+    } catch (e) {
+      return 'تعذر إرسال المشاركة: $e';
+    }
+  }
+
+  Future<String?> deleteFeedbackPost({
+    required String adminPass,
+    required String id,
+  }) async {
+    if (!_useSupabase) {
+      _demoFeedbackPosts.removeWhere((p) => p.id == id);
+      return null;
+    }
+
+    try {
+      final client = Supabase.instance.client;
+      final res = await client.rpc('admin_delete_feedback', params: {
+        'p_admin_pass': adminPass,
+        'p_id': int.tryParse(id) ?? 0,
+      });
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'تعذر الحذف';
+    } catch (e) {
+      return 'تعذر الحذف: $e';
     }
   }
 }

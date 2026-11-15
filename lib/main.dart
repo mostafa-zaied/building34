@@ -6,7 +6,7 @@ import 'config.dart';
 import 'cubit/building_cubit.dart';
 import 'cubit/building_state.dart';
 import 'l10n/app_localizations.dart';
-import 'screens/home_screen.dart';
+import 'screens/main_shell.dart';
 import 'services/building_service.dart';
 
 Future<void> main() async {
@@ -56,7 +56,7 @@ class AmaratyApp extends StatelessWidget {
                 surface: Color(0xFF1E293B),
               ),
             ),
-            home: const BuildingHomePage(),
+            home: const MainShell(),
           );
         },
       ),

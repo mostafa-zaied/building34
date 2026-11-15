@@ -102,95 +102,84 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
     return BlocConsumer<BuildingCubit, BuildingState>(
       listener: (context, state) {
         _syncControllersIfNeeded(state);
-        if (state.feedbackMessage != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.feedbackMessage!),
-              backgroundColor: state.feedbackIsError ? Colors.redAccent : const Color(0xFF22C55E),
-            ),
-          );
-          context.read<BuildingCubit>().clearFeedback();
-        }
       },
       builder: (context, state) {
         final cubit = context.read<BuildingCubit>();
         final m = state.currentMonth;
         final s = state.s;
 
-        return Scaffold(
-          body: SafeArea(
-            child: state.loading || m == null
-                ? const Center(child: CircularProgressIndicator())
-                : Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 560),
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(14),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            if (!AppConfig.isSupabaseConfigured)
-                              Container(
-                                margin: const EdgeInsets.only(bottom: 10),
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).cardColor,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: const Color(0xFFFACC15).withValues(alpha: 0.6)),
-                                ),
-                                child: Text(
-                                  s.demoBanner,
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: state.isDarkMode ? const Color(0xFFFACC15) : const Color(0xFFB45309),
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            TopBar(
-                              cubit: cubit,
-                              state: state,
-                              month: m,
-                              onToggleAdmin: () => _toggleAdminPanel(cubit, state),
-                            ),
-                            const SizedBox(height: 12),
-                            BillSummaryCard(
-                              cubit: cubit,
-                              state: state,
-                              month: m,
-                              onCopyWhatsApp: () => _copyWhatsApp(cubit),
-                              waterCtrl: _waterCtrl,
-                              elecCtrl: _elecCtrl,
-                              elevCtrl: _elevCtrl,
-                              cleanCtrl: _cleanCtrl,
-                              forEmergCtrl: _forEmergCtrl,
-                              aptsCtrl: _aptsCtrl,
-                              baseEmergCtrl: _baseEmergCtrl,
-                              onFieldChanged: () => _onAdminFieldChanged(cubit),
-                              onOpenManageApts: () => showManageApartmentsDialog(
-                                context: context,
-                                cubit: cubit,
-                                state: state,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            ApartmentsGrid(
-                              state: state,
-                              month: m,
-                              onTapApartment: (aptNum) => showApartmentPaymentDialog(
-                                context: context,
-                                cubit: cubit,
-                                state: state,
-                                month: m,
-                                aptNum: aptNum,
-                                picker: _picker,
-                              ),
-                            ),
-                          ],
+        if (state.loading || m == null) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        return Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 560),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (!AppConfig.isSupabaseConfigured)
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFFACC15).withValues(alpha: 0.6)),
+                      ),
+                      child: Text(
+                        s.demoBanner,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: state.isDarkMode ? const Color(0xFFFACC15) : const Color(0xFFB45309),
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
+                  TopBar(
+                    cubit: cubit,
+                    state: state,
+                    month: m,
+                    onToggleAdmin: () => _toggleAdminPanel(cubit, state),
                   ),
+                  const SizedBox(height: 12),
+                  BillSummaryCard(
+                    cubit: cubit,
+                    state: state,
+                    month: m,
+                    onCopyWhatsApp: () => _copyWhatsApp(cubit),
+                    waterCtrl: _waterCtrl,
+                    elecCtrl: _elecCtrl,
+                    elevCtrl: _elevCtrl,
+                    cleanCtrl: _cleanCtrl,
+                    forEmergCtrl: _forEmergCtrl,
+                    aptsCtrl: _aptsCtrl,
+                    baseEmergCtrl: _baseEmergCtrl,
+                    onFieldChanged: () => _onAdminFieldChanged(cubit),
+                    onOpenManageApts: () => showManageApartmentsDialog(
+                      context: context,
+                      cubit: cubit,
+                      state: state,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  ApartmentsGrid(
+                    state: state,
+                    month: m,
+                    onTapApartment: (aptNum) => showApartmentPaymentDialog(
+                      context: context,
+                      cubit: cubit,
+                      state: state,
+                      month: m,
+                      aptNum: aptNum,
+                      picker: _picker,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         );
       },

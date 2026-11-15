@@ -58,5 +58,18 @@
   "whatsappLinkPrompt": "🔗 *Link öffnen, um Zahlung zu melden und Beleg anzuhängen:*",
   "whatsappPaidStatus": "✅ *Bezahlt ({paid}/{total}):*",
   "whatsappNonePaid": "• Noch keine",
-  "addApartmentBtn": "+ Wohnung hinzufügen"
+  "addApartmentBtn": "+ Wohnung hinzufügen",
+  "navExpenses": "Kosten",
+  "navComplaints": "Beschwerden",
+  "navImprovements": "Ideen",
+  "complaintsTitle": "📢 Beschwerden",
+  "improvementsTitle": "💡 Verbesserungsvorschläge",
+  "writeComplaintHint": "Beschwerde hier eingeben...",
+  "writeImprovementHint": "Verbesserungsvorschlag teilen...",
+  "postAnonymously": "Anonym senden (Wohnung verbergen)",
+  "selectApartment": "Wohnung",
+  "submitPostBtn": "Senden",
+  "anonymousAuthor": "🕵️ Anonym",
+  "noPostsYet": "Noch keine Einträge",
+  "postAddedToast": "✅ Erfolgreich gesendet"
 }

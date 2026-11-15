@@ -91,20 +91,24 @@ class TopBar extends StatelessWidget {
                 tooltip: 'Language',
                 onSelected: cubit.setLocale,
                 itemBuilder: (_) => const [
-                  PopupMenuItem(value: 'ar', child: Text('🇪🇬 العربية (AR)')),
-                  PopupMenuItem(value: 'en', child: Text('🇺🇸 English (EN)')),
-                  PopupMenuItem(value: 'de', child: Text('🇩🇪 Deutsch (DE)')),
+                  PopupMenuItem(value: 'ar', child: Center(child: Text('🇪🇬', style: TextStyle(fontSize: 18)))),
+                  PopupMenuItem(value: 'en', child: Center(child: Text('🇺🇸', style: TextStyle(fontSize: 18)))),
+                  PopupMenuItem(value: 'de', child: Center(child: Text('🇩🇪', style: TextStyle(fontSize: 18)))),
                 ],
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                   decoration: BoxDecoration(
                     color: chipBg,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: borderCol),
                   ),
                   child: Text(
-                    state.localeCode.toUpperCase(),
-                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                    switch (state.localeCode) {
+                      'en' => '🇺🇸',
+                      'de' => '🇩🇪',
+                      _ => '🇪🇬',
+                    },
+                    style: const TextStyle(fontSize: 14),
                   ),
                 ),
               ),

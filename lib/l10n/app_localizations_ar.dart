@@ -223,4 +223,43 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get addApartmentBtn => '+ إضافة شقة جديدة';
+
+  @override
+  String get navExpenses => 'المصاريف';
+
+  @override
+  String get navComplaints => 'شكاوى';
+
+  @override
+  String get navImprovements => 'تحسينات';
+
+  @override
+  String get complaintsTitle => '📢 شكاوى السكان';
+
+  @override
+  String get improvementsTitle => '💡 مقترحات التحسين';
+
+  @override
+  String get writeComplaintHint => 'اكتب الشكوى هنا...';
+
+  @override
+  String get writeImprovementHint => 'اكتب اقتراحك لتحسين العمارة...';
+
+  @override
+  String get postAnonymously => 'إرسال بدون اسم (مجهول)';
+
+  @override
+  String get selectApartment => 'اختر الشقة';
+
+  @override
+  String get submitPostBtn => 'إرسال';
+
+  @override
+  String get anonymousAuthor => '🕵️ بدون اسم (مجهول)';
+
+  @override
+  String get noPostsYet => 'لا توجد مشاركات بعد';
+
+  @override
+  String get postAddedToast => '✅ تم الإرسال بنجاح';
 }

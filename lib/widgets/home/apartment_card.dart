@@ -42,7 +42,7 @@ class _ApartmentCardState extends State<ApartmentCard> {
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOutCubic,
           transform: _hovering ? Matrix4.translationValues(0.0, -3.0, 0.0) : Matrix4.identity(),
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
           decoration: BoxDecoration(
             color: surfaceColor,
             borderRadius: BorderRadius.circular(14),
@@ -56,28 +56,32 @@ class _ApartmentCardState extends State<ApartmentCard> {
                   ]
                 : null,
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                widget.label,
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                widget.statusText,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  color: widget.isPaid
-                      ? (isDark ? const Color(0xFF22C55E) : const Color(0xFF15803D))
-                      : (isDark ? Colors.white70 : Colors.black54),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  widget.label,
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
                 ),
-              ),
-            ],
+                const SizedBox(height: 3),
+                Text(
+                  widget.statusText,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: widget.isPaid
+                        ? (isDark ? const Color(0xFF22C55E) : const Color(0xFF15803D))
+                        : (isDark ? Colors.white70 : Colors.black54),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -224,4 +224,43 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get addApartmentBtn => '+ Wohnung hinzufügen';
+
+  @override
+  String get navExpenses => 'Kosten';
+
+  @override
+  String get navComplaints => 'Beschwerden';
+
+  @override
+  String get navImprovements => 'Ideen';
+
+  @override
+  String get complaintsTitle => '📢 Beschwerden';
+
+  @override
+  String get improvementsTitle => '💡 Verbesserungsvorschläge';
+
+  @override
+  String get writeComplaintHint => 'Beschwerde hier eingeben...';
+
+  @override
+  String get writeImprovementHint => 'Verbesserungsvorschlag teilen...';
+
+  @override
+  String get postAnonymously => 'Anonym senden (Wohnung verbergen)';
+
+  @override
+  String get selectApartment => 'Wohnung';
+
+  @override
+  String get submitPostBtn => 'Senden';
+
+  @override
+  String get anonymousAuthor => '🕵️ Anonym';
+
+  @override
+  String get noPostsYet => 'Noch keine Einträge';
+
+  @override
+  String get postAddedToast => '✅ Erfolgreich gesendet';
 }
