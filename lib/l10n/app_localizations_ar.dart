@@ -111,10 +111,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get paidBadge => '✅ دفعت';
 
   @override
-  String get adminLoginTitle => '🔐 دخول المدير';
+  String get adminLoginTitle => '🔐 دخول المسؤول';
 
   @override
-  String get adminPassHint => 'أدخل كلمة سر المدير...';
+  String get adminPassHint => 'أدخل كلمة سر المسؤول...';
 
   @override
   String get cancel => 'إلغاء';
@@ -154,7 +154,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get receiptAttachedPreviously => 'تم إرفاق الإيصال مسبقاً';
 
   @override
-  String get cancelPaymentAdmin => '❌ إلغاء الدفع (مدير)';
+  String get cancelPaymentAdmin => '❌ إلغاء الدفع (المسؤول)';
 
   @override
   String dueDialogTitle(String aptLabel, int share) {
@@ -262,4 +262,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get postAddedToast => '✅ تم الإرسال بنجاح';
+
+  @override
+  String tabViewComplaints(int count) {
+    return 'الشكاوى ($count)';
+  }
+
+  @override
+  String get tabAddComplaint => 'إضافة شكوى';
+
+  @override
+  String tabViewImprovements(int count) {
+    return 'المقترحات ($count)';
+  }
+
+  @override
+  String get tabAddImprovement => 'إضافة مقترح';
 }

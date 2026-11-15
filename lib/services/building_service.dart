@@ -193,7 +193,7 @@ class BuildingService {
     });
 
     if (res is Map && res['ok'] == true) return null;
-    return (res is Map ? res['error']?.toString() : null) ?? 'كلمة سر المدير غير صحيحة';
+    return (res is Map ? res['error']?.toString() : null) ?? 'كلمة سر المسؤول غير صحيحة';
   }
 
   Future<String?> cancelPaymentAsAdmin({
@@ -254,7 +254,7 @@ class BuildingService {
 
       return (
         apartments: null,
-        error: (res is Map ? res['error']?.toString() : null) ?? 'كلمة سر المدير غير صحيحة',
+        error: (res is Map ? res['error']?.toString() : null) ?? 'كلمة سر المسؤول غير صحيحة',
       );
     } catch (e) {
       return (apartments: null, error: 'تعذر تحميل بيانات الشقق: $e');

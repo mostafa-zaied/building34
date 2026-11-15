@@ -531,6 +531,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'✅ Submitted successfully'**
   String get postAddedToast;
+
+  /// No description provided for @tabViewComplaints.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaints ({count})'**
+  String tabViewComplaints(int count);
+
+  /// No description provided for @tabAddComplaint.
+  ///
+  /// In en, this message translates to:
+  /// **'New Complaint'**
+  String get tabAddComplaint;
+
+  /// No description provided for @tabViewImprovements.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestions ({count})'**
+  String tabViewImprovements(int count);
+
+  /// No description provided for @tabAddImprovement.
+  ///
+  /// In en, this message translates to:
+  /// **'New Suggestion'**
+  String get tabAddImprovement;
 }
 
 class _AppLocalizationsDelegate

@@ -172,5 +172,19 @@
   "submitPostBtn": "Submit",
   "anonymousAuthor": "🕵️ Anonymous",
   "noPostsYet": "No entries yet",
-  "postAddedToast": "✅ Submitted successfully"
+  "postAddedToast": "✅ Submitted successfully",
+  "tabViewComplaints": "Complaints ({count})",
+  "@tabViewComplaints": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "tabAddComplaint": "New Complaint",
+  "tabViewImprovements": "Suggestions ({count})",
+  "@tabViewImprovements": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "tabAddImprovement": "New Suggestion"
 }

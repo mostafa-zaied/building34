@@ -28,8 +28,8 @@
   "paidCounter": "دفع {paid} من {total}",
   "defaultAptName": "شقة {num}",
   "paidBadge": "✅ دفعت",
-  "adminLoginTitle": "🔐 دخول المدير",
-  "adminPassHint": "أدخل كلمة سر المدير...",
+  "adminLoginTitle": "🔐 دخول المسؤول",
+  "adminPassHint": "أدخل كلمة سر المسؤول...",
   "cancel": "إلغاء",
   "close": "إغلاق",
   "login": "دخول",
@@ -41,7 +41,7 @@
   "saving": "جاري الحفظ...",
   "fileLabel": "الملف: {name}",
   "receiptAttachedPreviously": "تم إرفاق الإيصال مسبقاً",
-  "cancelPaymentAdmin": "❌ إلغاء الدفع (مدير)",
+  "cancelPaymentAdmin": "❌ إلغاء الدفع (المسؤول)",
   "dueDialogTitle": "{aptLabel} — مطلوب {share} ج",
   "step1Passcode": "1. كلمة سر الشقة{demoHint}",
   "enterPassHint": "اكتب كلمة السر...",
@@ -71,5 +71,9 @@
   "submitPostBtn": "إرسال",
   "anonymousAuthor": "🕵️ بدون اسم (مجهول)",
   "noPostsYet": "لا توجد مشاركات بعد",
-  "postAddedToast": "✅ تم الإرسال بنجاح"
+  "postAddedToast": "✅ تم الإرسال بنجاح",
+  "tabViewComplaints": "الشكاوى ({count})",
+  "tabAddComplaint": "إضافة شكوى",
+  "tabViewImprovements": "المقترحات ({count})",
+  "tabAddImprovement": "إضافة مقترح"
 }

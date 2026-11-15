@@ -71,5 +71,9 @@
   "submitPostBtn": "Senden",
   "anonymousAuthor": "🕵️ Anonym",
   "noPostsYet": "Noch keine Einträge",
-  "postAddedToast": "✅ Erfolgreich gesendet"
+  "postAddedToast": "✅ Erfolgreich gesendet",
+  "tabViewComplaints": "Beschwerden ({count})",
+  "tabAddComplaint": "Neue Beschwerde",
+  "tabViewImprovements": "Ideen ({count})",
+  "tabAddImprovement": "Neue Idee"
 }

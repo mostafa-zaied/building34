@@ -263,4 +263,20 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get postAddedToast => '✅ Erfolgreich gesendet';
+
+  @override
+  String tabViewComplaints(int count) {
+    return 'Beschwerden ($count)';
+  }
+
+  @override
+  String get tabAddComplaint => 'Neue Beschwerde';
+
+  @override
+  String tabViewImprovements(int count) {
+    return 'Ideen ($count)';
+  }
+
+  @override
+  String get tabAddImprovement => 'Neue Idee';
 }

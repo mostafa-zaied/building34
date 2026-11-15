@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
+import '../models/building_models.dart';
 
 class FeedbackScreen extends StatefulWidget {
   final String type; // 'complaint' or 'improvement'
@@ -13,7 +14,8 @@ class FeedbackScreen extends StatefulWidget {
   State<FeedbackScreen> createState() => _FeedbackScreenState();
 }
 
-class _FeedbackScreenState extends State<FeedbackScreen> {
+class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProviderStateMixin {
+  late final TabController _tabCtrl;
   final _msgCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   bool _isAnonymous = true;
@@ -21,7 +23,14 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   bool _submitting = false;
 
   @override
+  void initState() {
+    super.initState();
+    _tabCtrl = TabController(length: 2, vsync: this);
+  }
+
+  @override
   void dispose() {
+    _tabCtrl.dispose();
     _msgCtrl.dispose();
     _passCtrl.dispose();
     super.dispose();
@@ -41,6 +50,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     if (ok) {
       _msgCtrl.clear();
       _passCtrl.clear();
+      _tabCtrl.animateTo(0);
     }
     setState(() => _submitting = false);
   }
@@ -76,14 +86,14 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         return Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 620),
-            child: SingleChildScrollView(
+            child: Padding(
               padding: const EdgeInsets.all(14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Composer Card
+                  // Header + Pill TabBar
                   Container(
-                    padding: const EdgeInsets.all(14),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: cardBg,
                       borderRadius: BorderRadius.circular(18),
@@ -96,86 +106,35 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                           isComplaint ? s.complaintsTitle : s.improvementsTitle,
                           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: _msgCtrl,
-                          maxLines: 3,
-                          decoration: InputDecoration(
-                            hintText: isComplaint ? s.writeComplaintHint : s.writeImprovementHint,
-                            filled: true,
-                            fillColor: innerBg,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: borderCol),
-                            ),
+                        const SizedBox(height: 10),
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: innerBg,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: borderCol),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                s.postAnonymously,
-                                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                          child: TabBar(
+                            controller: _tabCtrl,
+                            dividerColor: Colors.transparent,
+                            indicatorSize: TabBarIndicatorSize.tab,
+                            indicator: BoxDecoration(
+                              color: accent,
+                              borderRadius: BorderRadius.circular(9),
+                            ),
+                            labelColor: Colors.black,
+                            unselectedLabelColor: isDark ? Colors.white70 : Colors.black54,
+                            labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                            tabs: [
+                              Tab(
+                                text: isComplaint
+                                    ? s.tabViewComplaints(posts.length)
+                                    : s.tabViewImprovements(posts.length),
                               ),
-                            ),
-                            Switch.adaptive(
-                              value: _isAnonymous,
-                              onChanged: (v) => setState(() => _isAnonymous = v),
-                              activeTrackColor: accent,
-                            ),
-                          ],
-                        ),
-                        if (!_isAnonymous) ...[
-                          const SizedBox(height: 6),
-                          DropdownButtonFormField<int>(
-                            initialValue: _selectedApt,
-                            decoration: InputDecoration(
-                              labelText: s.selectApartment,
-                              isDense: true,
-                              filled: true,
-                              fillColor: innerBg,
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                            ),
-                            items: List.generate(aptsCount, (i) {
-                              final num = i + 1;
-                              return DropdownMenuItem(
-                                value: num,
-                                child: Text(state.aptLabel(num)),
-                              );
-                            }),
-                            onChanged: (v) {
-                              if (v != null) setState(() => _selectedApt = v);
-                            },
-                          ),
-                          const SizedBox(height: 8),
-                          TextField(
-                            controller: _passCtrl,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              labelText: s.passcodeLabel,
-                              hintText: s.enterPassHint,
-                              isDense: true,
-                              filled: true,
-                              fillColor: innerBg,
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                        ],
-                        ElevatedButton.icon(
-                          onPressed: _submitting ? null : () => _submit(cubit),
-                          icon: Icon(isComplaint ? Icons.campaign_outlined : Icons.lightbulb_outline, size: 18),
-                          label: Text(
-                            _submitting ? s.saving : s.submitPostBtn,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: accent,
-                            foregroundColor: Colors.black,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              Tab(
+                                text: isComplaint ? s.tabAddComplaint : s.tabAddImprovement,
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -183,94 +142,281 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   ),
                   const SizedBox(height: 12),
 
-                  // Posts List
-                  if (posts.isEmpty)
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: cardBg,
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: borderCol),
-                      ),
-                      child: Text(
-                        s.noPostsYet,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: isDark ? Colors.white54 : Colors.black45),
-                      ),
-                    )
-                  else
-                    ...posts.map((post) {
-                      final isAnon = post.authorLabel == null || post.authorLabel!.trim().isEmpty;
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 10),
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: cardBg,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: borderCol),
+                  // Tab Views
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabCtrl,
+                      children: [
+                        // Tab 0: List of Complaints / Suggestions
+                        _buildPostsList(
+                          posts: posts,
+                          isDark: isDark,
+                          cardBg: cardBg,
+                          innerBg: innerBg,
+                          borderCol: borderCol,
+                          accent: accent,
+                          isComplaint: isComplaint,
+                          state: state,
+                          cubit: cubit,
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: innerBg,
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(color: accent.withValues(alpha: 0.5)),
-                                  ),
-                                  child: Text(
-                                    isAnon ? s.anonymousAuthor : '🏠 ${post.authorLabel}',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold,
-                                      color: isAnon
-                                          ? (isDark ? Colors.white70 : Colors.black54)
-                                          : accent,
-                                    ),
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      _formatDate(post.createdAt),
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: isDark ? Colors.white54 : Colors.black45,
-                                      ),
-                                    ),
-                                    if (state.isAdminOpen) ...[
-                                      const SizedBox(width: 4),
-                                      IconButton(
-                                        onPressed: () => cubit.deleteFeedbackPost(post.id),
-                                        icon: const Icon(Icons.delete_outline, size: 18, color: Colors.redAccent),
-                                        padding: EdgeInsets.zero,
-                                        constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                                      ),
-                                    ],
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              post.message,
-                              style: const TextStyle(fontSize: 13, height: 1.5),
-                            ),
-                          ],
+
+                        // Tab 1: Add New Complaint / Suggestion
+                        _buildComposerTab(
+                          isDark: isDark,
+                          cardBg: cardBg,
+                          innerBg: innerBg,
+                          borderCol: borderCol,
+                          accent: accent,
+                          isComplaint: isComplaint,
+                          aptsCount: aptsCount,
+                          state: state,
+                          cubit: cubit,
                         ),
-                      );
-                    }),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildPostsList({
+    required List<FeedbackPost> posts,
+    required bool isDark,
+    required Color cardBg,
+    required Color innerBg,
+    required Color borderCol,
+    required Color accent,
+    required bool isComplaint,
+    required BuildingState state,
+    required BuildingCubit cubit,
+  }) {
+    final s = state.s;
+    if (posts.isEmpty) {
+      return Center(
+        child: Container(
+          padding: const EdgeInsets.all(28),
+          decoration: BoxDecoration(
+            color: cardBg,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: borderCol),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                isComplaint ? Icons.campaign_outlined : Icons.lightbulb_outline,
+                size: 40,
+                color: accent.withValues(alpha: 0.7),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                s.noPostsYet,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: isDark ? Colors.white60 : Colors.black54, fontSize: 13),
+              ),
+              const SizedBox(height: 14),
+              ElevatedButton.icon(
+                onPressed: () => _tabCtrl.animateTo(1),
+                icon: const Icon(Icons.add, size: 16),
+                label: Text(
+                  isComplaint ? s.tabAddComplaint : s.tabAddImprovement,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: accent,
+                  foregroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return ListView.separated(
+      itemCount: posts.length,
+      separatorBuilder: (_, _) => const SizedBox(height: 10),
+      itemBuilder: (context, index) {
+        final post = posts[index];
+        final isAnon = post.authorLabel == null || post.authorLabel!.trim().isEmpty;
+        return Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: cardBg,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: borderCol),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: innerBg,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: accent.withValues(alpha: 0.5)),
+                    ),
+                    child: Text(
+                      isAnon ? s.anonymousAuthor : '🏠 ${post.authorLabel}',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: isAnon ? (isDark ? Colors.white70 : Colors.black54) : accent,
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _formatDate(post.createdAt),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: isDark ? Colors.white54 : Colors.black45,
+                        ),
+                      ),
+                      if (state.isAdminOpen) ...[
+                        const SizedBox(width: 4),
+                        IconButton(
+                          onPressed: () => cubit.deleteFeedbackPost(post.id),
+                          icon: const Icon(Icons.delete_outline, size: 18, color: Colors.redAccent),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                post.message,
+                style: const TextStyle(fontSize: 13, height: 1.5),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildComposerTab({
+    required bool isDark,
+    required Color cardBg,
+    required Color innerBg,
+    required Color borderCol,
+    required Color accent,
+    required bool isComplaint,
+    required int aptsCount,
+    required BuildingState state,
+    required BuildingCubit cubit,
+  }) {
+    final s = state.s;
+    return SingleChildScrollView(
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: cardBg,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: borderCol),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: _msgCtrl,
+              maxLines: 4,
+              decoration: InputDecoration(
+                hintText: isComplaint ? s.writeComplaintHint : s.writeImprovementHint,
+                filled: true,
+                fillColor: innerBg,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: borderCol),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    s.postAnonymously,
+                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
+                ),
+                Switch.adaptive(
+                  value: _isAnonymous,
+                  onChanged: (v) => setState(() => _isAnonymous = v),
+                  activeTrackColor: accent,
+                ),
+              ],
+            ),
+            if (!_isAnonymous) ...[
+              const SizedBox(height: 8),
+              DropdownButtonFormField<int>(
+                initialValue: _selectedApt,
+                decoration: InputDecoration(
+                  labelText: s.selectApartment,
+                  isDense: true,
+                  filled: true,
+                  fillColor: innerBg,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                items: List.generate(aptsCount, (i) {
+                  final num = i + 1;
+                  return DropdownMenuItem(
+                    value: num,
+                    child: Text(state.aptLabel(num)),
+                  );
+                }),
+                onChanged: (v) {
+                  if (v != null) setState(() => _selectedApt = v);
+                },
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _passCtrl,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: s.passcodeLabel,
+                  hintText: s.enterPassHint,
+                  isDense: true,
+                  filled: true,
+                  fillColor: innerBg,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+              const SizedBox(height: 12),
+            ] else
+              const SizedBox(height: 6),
+            ElevatedButton.icon(
+              onPressed: _submitting ? null : () => _submit(cubit),
+              icon: Icon(isComplaint ? Icons.campaign_outlined : Icons.lightbulb_outline, size: 18),
+              label: Text(
+                _submitting ? s.saving : s.submitPostBtn,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: accent,
+                foregroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

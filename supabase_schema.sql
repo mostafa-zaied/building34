@@ -146,7 +146,7 @@ DECLARE
 BEGIN
   SELECT admin_password INTO v_admin_pass FROM building_settings WHERE id = 1;
   IF v_admin_pass <> trim(p_admin_pass) THEN
-    RETURN json_build_object('ok', false, 'error', 'كلمة سر المدير غير صحيحة');
+    RETURN json_build_object('ok', false, 'error', 'كلمة سر المسؤول غير صحيحة');
   END IF;
 
   UPDATE months
@@ -181,7 +181,7 @@ DECLARE
 BEGIN
   SELECT admin_password INTO v_admin_pass FROM building_settings WHERE id = 1;
   IF v_admin_pass <> trim(p_admin_pass) THEN
-    RETURN json_build_object('ok', false, 'error', 'كلمة سر المدير غير صحيحة');
+    RETURN json_build_object('ok', false, 'error', 'كلمة سر المسؤول غير صحيحة');
   END IF;
 
   DELETE FROM payments WHERE month_id = p_month_id AND apt_num = p_apt_num;
@@ -210,7 +210,7 @@ DECLARE
 BEGIN
   SELECT admin_password INTO v_admin_pass FROM building_settings WHERE id = 1;
   IF v_admin_pass <> trim(p_admin_pass) THEN
-    RETURN json_build_object('ok', false, 'error', 'كلمة سر المدير غير صحيحة');
+    RETURN json_build_object('ok', false, 'error', 'كلمة سر المسؤول غير صحيحة');
   END IF;
 
   SELECT COALESCE(json_agg(row_to_json(t)), '[]'::json) INTO v_rows
@@ -236,7 +236,7 @@ DECLARE
 BEGIN
   SELECT admin_password INTO v_admin_pass FROM building_settings WHERE id = 1;
   IF v_admin_pass <> trim(p_admin_pass) THEN
-    RETURN json_build_object('ok', false, 'error', 'كلمة سر المدير غير صحيحة');
+    RETURN json_build_object('ok', false, 'error', 'كلمة سر المسؤول غير صحيحة');
   END IF;
 
   IF length(trim(p_passcode)) = 0 THEN
@@ -302,7 +302,7 @@ DECLARE
 BEGIN
   SELECT admin_password INTO v_admin_pass FROM building_settings WHERE id = 1;
   IF v_admin_pass <> p_admin_pass THEN
-    RETURN json_build_object('ok', false, 'error', 'كلمة سر المدير غير صحيحة');
+    RETURN json_build_object('ok', false, 'error', 'كلمة سر المسؤول غير صحيحة');
   END IF;
 
   DELETE FROM feedback_posts WHERE id = p_id;
