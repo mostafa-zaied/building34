@@ -57,7 +57,10 @@ class _ApartmentCardState extends State<ApartmentCard> {
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeOutCubic,
             transform: _hovering ? Matrix4.translationValues(0.0, -2.0, 0.0) : Matrix4.identity(),
-            padding: const EdgeInsetsDirectional.all(AppSpacing.md),
+            padding: const EdgeInsetsDirectional.symmetric(
+              horizontal: AppSpacing.sm + 2,
+              vertical: AppSpacing.sm,
+            ),
             decoration: BoxDecoration(
               color: bgColor,
               borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -124,10 +127,12 @@ class _ApartmentCardState extends State<ApartmentCard> {
                   children: [
                     Flexible(
                       child: Text(
-                        widget.isPaid ? widget.paidLabel : widget.amountText,
+                        widget.isPaid
+                            ? widget.paidLabel.replaceAll('✅', '').trim()
+                            : widget.amountText,
                         style: (widget.isPaid ? AppTypography.label : AppTypography.statAmount)
                             .copyWith(
-                          fontSize: widget.isPaid ? 12 : 15,
+                          fontSize: widget.isPaid ? 11.5 : 14,
                           fontWeight: FontWeight.w800,
                           color: widget.isPaid
                               ? AppColors.emeraldText(isDark)

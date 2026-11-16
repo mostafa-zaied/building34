@@ -6,6 +6,7 @@ import '../core/theme/app_spacing.dart';
 import '../core/theme/app_typography.dart';
 import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
+import '../l10n/app_localizations.dart';
 import '../models/building_models.dart';
 import '../widgets/common/app_button.dart';
 import '../widgets/common/app_card.dart';
@@ -260,6 +261,17 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
                       if (state.isAdminOpen) ...[
                         const SizedBox(width: AppSpacing.xxs),
                         IconButton(
+                          onPressed: () => _showAdminStatusDialog(
+                            context: context,
+                            cubit: cubit,
+                            state: state,
+                            post: post,
+                          ),
+                          icon: const Icon(Icons.edit_note_rounded, size: 19, color: AppColors.primaryLight),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                        ),
+                        IconButton(
                           onPressed: () => cubit.deleteFeedbackPost(post.id),
                           icon: const Icon(Icons.delete_outline_rounded, size: 18, color: AppColors.danger),
                           padding: EdgeInsets.zero,
@@ -271,13 +283,123 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
                   ),
                 ],
               ),
+              const SizedBox(height: AppSpacing.sm),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: _StatusBadge(status: post.status, s: s, isDark: isDark),
+              ),
               const SizedBox(height: AppSpacing.md),
               Text(post.message, style: AppTypography.body),
+              if (post.adminReply != null && post.adminReply!.trim().isNotEmpty) ...[
+                const SizedBox(height: AppSpacing.md),
+                Container(
+                  padding: const EdgeInsetsDirectional.all(AppSpacing.md),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: isDark ? 0.12 : 0.07),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                    border: Border.all(
+                      color: AppColors.primary.withValues(alpha: 0.28),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        s.adminReplyLabel,
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.primaryText(isDark),
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        post.adminReply!,
+                        style: AppTypography.body.copyWith(
+                          color: AppColors.textPrimary(isDark),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ],
           ),
         );
       },
     );
+  }
+
+  Future<void> _showAdminStatusDialog({
+    required BuildContext context,
+    required BuildingCubit cubit,
+    required BuildingState state,
+    required FeedbackPost post,
+  }) async {
+    String selectedStatus = post.status;
+    final replyCtrl = TextEditingController(text: post.adminReply ?? '');
+    final isDark = state.isDarkMode;
+    final s = state.s;
+
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setModal) => AlertDialog(
+          backgroundColor: AppColors.card(isDark),
+          title: Text(
+            s.updateStatusTitle,
+            style: AppTypography.headline.copyWith(fontSize: 15),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              DropdownButtonFormField<String>(
+                initialValue: selectedStatus,
+                decoration: InputDecoration(labelText: s.statusFieldLabel),
+                items: [
+                  DropdownMenuItem(
+                    value: 'pending',
+                    child: Text(_statusLabel('pending', s)),
+                  ),
+                  DropdownMenuItem(
+                    value: 'in_progress',
+                    child: Text(_statusLabel('in_progress', s)),
+                  ),
+                  DropdownMenuItem(
+                    value: 'resolved',
+                    child: Text(_statusLabel('resolved', s)),
+                  ),
+                ],
+                onChanged: (v) {
+                  if (v != null) setModal(() => selectedStatus = v);
+                },
+              ),
+              const SizedBox(height: AppSpacing.md),
+              TextField(
+                controller: replyCtrl,
+                maxLines: 3,
+                decoration: InputDecoration(hintText: s.adminReplyHint),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: Text(state.s.cancel)),
+            ElevatedButton(
+              onPressed: () async {
+                await cubit.updateFeedbackStatus(
+                  id: post.id,
+                  status: selectedStatus,
+                  adminReply: replyCtrl.text,
+                );
+                if (ctx.mounted) Navigator.pop(ctx);
+              },
+              child: Text(state.s.saveAll),
+            ),
+          ],
+        ),
+      ),
+    );
+    Future.delayed(const Duration(milliseconds: 350), replyCtrl.dispose);
   }
 
   Widget _buildComposerTab({
@@ -366,6 +488,52 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
               onPressed: () => _submit(cubit),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+String _statusLabel(String status, AppLocalizations s) {
+  return switch (status) {
+    'in_progress' => s.statusInProgress,
+    'resolved' => s.statusResolved,
+    _ => s.statusPending,
+  };
+}
+
+class _StatusBadge extends StatelessWidget {
+  final String status;
+  final AppLocalizations s;
+  final bool isDark;
+
+  const _StatusBadge({
+    required this.status,
+    required this.s,
+    required this.isDark,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = switch (status) {
+      'in_progress' => AppColors.primaryLight,
+      'resolved' => AppColors.emerald,
+      _ => AppColors.amber,
+    };
+
+    return Container(
+      padding: const EdgeInsetsDirectional.symmetric(horizontal: 9, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: isDark ? 0.14 : 0.10),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
+      ),
+      child: Text(
+        _statusLabel(status, s),
+        style: AppTypography.caption.copyWith(
+          color: status == 'resolved' ? AppColors.emeraldText(isDark) : color,
+          fontSize: 10.5,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );

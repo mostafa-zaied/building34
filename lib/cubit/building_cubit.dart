@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/building_models.dart';
 import '../services/building_service.dart';
 import 'building_state.dart';
@@ -25,13 +26,39 @@ class BuildingCubit extends Cubit<BuildingState> {
         targetIdx = data.months.isNotEmpty ? data.months.length - 1 : 0;
       }
 
+      int? savedAptNum = state.myAptNum;
+      bool isAdminAuthed = state.isAdminAuthenticated;
+      String adminPass = state.adminPass;
+      try {
+        final prefs = await SharedPreferences.getInstance().timeout(
+          const Duration(milliseconds: 250),
+        );
+        savedAptNum = prefs.getInt('my_apt_num');
+        final savedAdminPass = prefs.getString('admin_pass');
+        if (savedAdminPass != null && savedAdminPass.isNotEmpty) {
+          final err = await _service.verifyAdminPass(savedAdminPass);
+          if (err == null) {
+            isAdminAuthed = true;
+            adminPass = savedAdminPass;
+          } else {
+            await prefs.remove('admin_pass');
+            isAdminAuthed = false;
+          }
+        }
+      } catch (_) {}
+
       emit(state.copyWith(
         loading: false,
+        isAdminAuthenticated: isAdminAuthed,
+        adminPass: adminPass,
         baseEmergency: data.baseEmergencyFund,
         months: data.months,
         apartmentNames: data.apartmentNames,
         selectedMonthIndex: targetIdx,
         feedbackPosts: posts,
+        myAptNum: () => savedAptNum,
+        announcement: data.announcement,
+        emergencyTransactions: data.emergencyTransactions,
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -144,14 +171,35 @@ class BuildingCubit extends Cubit<BuildingState> {
       ));
       return;
     }
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('admin_pass', clean);
+    } catch (_) {}
     emit(state.copyWith(
       adminPass: clean,
+      isAdminAuthenticated: true,
       isAdminOpen: true,
     ));
   }
 
+  void toggleAdminEditMode() {
+    if (!state.isAdminAuthenticated) return;
+    emit(state.copyWith(isAdminOpen: !state.isAdminOpen));
+  }
+
   void closeAdmin() {
     emit(state.copyWith(isAdminOpen: false));
+  }
+
+  Future<void> logoutAdmin() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('admin_pass');
+    } catch (_) {}
+    emit(state.copyWith(
+      isAdminAuthenticated: false,
+      isAdminOpen: false,
+    ));
   }
 
   void setHighlight(String? key) {
@@ -335,18 +383,6 @@ class BuildingCubit extends Cubit<BuildingState> {
       return lines.join('\n');
     }
 
-    if (state.localeCode == 'de') {
-      final lines = <String>[
-        'Hauskosten — Monat ${m.monthNum}:',
-        '------------------',
-        '✅ Bezahlt (${paidList.length}/${m.aptsCount}): ${paidList.isEmpty ? 'Noch keine' : paidList.map(state.aptLabel).join(', ')}',
-      ];
-      if (unpaidList.isNotEmpty) {
-        lines.add('⏳ Offen (${unpaidList.length}): ${unpaidList.map(state.aptLabel).join(', ')}');
-      }
-      return lines.join('\n');
-    }
-
     final lines = <String>[
       'مصاريف العمارة لشهر ${m.monthNum}:',
       '------------------',
@@ -356,5 +392,131 @@ class BuildingCubit extends Cubit<BuildingState> {
       lines.add('⏳ متبقي (${unpaidList.length} شقة): ${unpaidList.map(state.aptLabel).join('، ')}');
     }
     return lines.join('\n');
+  }
+
+  Future<void> setMyApt(int? aptNum) async {
+    emit(state.copyWith(myAptNum: () => aptNum));
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (aptNum == null) {
+        await prefs.remove('my_apt_num');
+      } else {
+        await prefs.setInt('my_apt_num', aptNum);
+      }
+    } catch (_) {}
+  }
+
+  String buildUnpaidReminderMessage() {
+    final m = state.currentMonth;
+    if (m == null) return '';
+
+    final unpaid = <int>[];
+    for (int i = 1; i <= m.aptsCount; i++) {
+      if (!m.payments.containsKey(i)) unpaid.add(i);
+    }
+
+    if (state.localeCode == 'en') {
+      if (unpaid.isEmpty) {
+        return '✅ All apartments have paid for Month ${m.monthNum} (${m.yearNum}). Thank you!';
+      }
+      return [
+        '⏳ *Payment Reminder — Month ${m.monthNum} (${m.yearNum})*',
+        '📌 Share per apartment: ${m.sharePerApt} EGP',
+        '🏠 *Remaining (${unpaid.length}):*',
+        ...unpaid.map((n) => '• ${state.aptLabel(n)}'),
+      ].join('\n');
+    }
+
+    if (unpaid.isEmpty) {
+      return '✅ تم سداد مصاريف شهر ${m.monthNum} (${m.yearNum}) من جميع الشقق. شكراً لكم!';
+    }
+    return [
+      '⏳ *تذكير بسداد مصاريف شهر ${m.monthNum} (${m.yearNum})*',
+      '📌 نصيب الشقة: ${m.sharePerApt} ج',
+      '🏠 *الشقق المتبقية (${unpaid.length}):*',
+      ...unpaid.map((n) => '• ${state.aptLabel(n)}'),
+    ].join('\n');
+  }
+
+  Future<void> saveAnnouncement(String text) async {
+    if (!state.isAdminOpen) return;
+    final err = await _service.saveAnnouncement(
+      adminPass: state.adminPass,
+      announcement: text,
+    );
+    if (err != null) {
+      emit(state.copyWith(
+        feedbackMessage: () => '❌ ${_localizeError(err)}',
+        feedbackIsError: true,
+      ));
+      return;
+    }
+    emit(state.copyWith(
+      announcement: text.trim(),
+      feedbackMessage: () => state.s.monthSavedToast,
+      feedbackIsError: false,
+    ));
+  }
+
+  Future<bool> addEmergencyTransaction(double amount, String reason) async {
+    if (!state.isAdminOpen) return false;
+    final err = await _service.addEmergencyTransaction(
+      adminPass: state.adminPass,
+      amount: amount,
+      reason: reason,
+    );
+    if (err != null) {
+      emit(state.copyWith(
+        feedbackMessage: () => '❌ ${_localizeError(err)}',
+        feedbackIsError: true,
+      ));
+      return false;
+    }
+    await loadData(preserveMonthIndex: state.selectedMonthIndex);
+    return true;
+  }
+
+  Future<void> deleteEmergencyTransaction(String id) async {
+    if (!state.isAdminOpen) return;
+    final err = await _service.deleteEmergencyTransaction(
+      adminPass: state.adminPass,
+      id: id,
+    );
+    if (err != null) {
+      emit(state.copyWith(
+        feedbackMessage: () => '❌ ${_localizeError(err)}',
+        feedbackIsError: true,
+      ));
+      return;
+    }
+    await loadData(preserveMonthIndex: state.selectedMonthIndex);
+  }
+
+  Future<bool> updateFeedbackStatus({
+    required String id,
+    required String status,
+    String? adminReply,
+  }) async {
+    if (!state.isAdminOpen) return false;
+    final err = await _service.updateFeedbackPostStatus(
+      adminPass: state.adminPass,
+      id: id,
+      status: status,
+      adminReply: adminReply,
+    );
+    if (err != null) {
+      emit(state.copyWith(
+        feedbackMessage: () => '❌ ${_localizeError(err)}',
+        feedbackIsError: true,
+      ));
+      return false;
+    }
+    final posts = await _service.fetchFeedbackPosts();
+    emit(state.copyWith(
+      feedbackPosts: posts,
+      feedbackMessage: () => state.s.monthSavedToast,
+      feedbackIsError: false,
+    ));
+    return true;
   }
 }

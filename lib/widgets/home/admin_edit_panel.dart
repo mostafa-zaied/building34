@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
@@ -11,13 +12,7 @@ import 'admin_input_field.dart';
 class AdminEditPanel extends StatelessWidget {
   final BuildingCubit cubit;
   final BuildingState state;
-  final TextEditingController waterCtrl;
-  final TextEditingController elecCtrl;
-  final TextEditingController elevCtrl;
-  final TextEditingController cleanCtrl;
-  final TextEditingController forEmergCtrl;
   final TextEditingController aptsCtrl;
-  final TextEditingController baseEmergCtrl;
   final VoidCallback onFieldChanged;
   final VoidCallback onOpenManageApts;
 
@@ -25,13 +20,7 @@ class AdminEditPanel extends StatelessWidget {
     super.key,
     required this.cubit,
     required this.state,
-    required this.waterCtrl,
-    required this.elecCtrl,
-    required this.elevCtrl,
-    required this.cleanCtrl,
-    required this.forEmergCtrl,
     required this.aptsCtrl,
-    required this.baseEmergCtrl,
     required this.onFieldChanged,
     required this.onOpenManageApts,
   });
@@ -39,84 +28,15 @@ class AdminEditPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = state.s;
-    final isDark = state.isDarkMode;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Divider(height: AppSpacing.xxl, color: AppColors.border(isDark)),
-        Text(
-          s.adminSectionHint,
-          style: AppTypography.label.copyWith(
-            fontWeight: FontWeight.w700,
-            color: AppColors.primaryText(isDark),
-          ),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: AppSpacing.sm,
-          crossAxisSpacing: AppSpacing.sm,
-          childAspectRatio: 3.1,
-          children: [
-            AdminInputField(
-              label: '${s.waterLabel}:',
-              controller: waterCtrl,
-              color: AppColors.water,
-              onFocusKey: 'water',
-              onHighlight: cubit.setHighlight,
-              onChanged: onFieldChanged,
-            ),
-            AdminInputField(
-              label: '${s.elecLabel}:',
-              controller: elecCtrl,
-              color: AppColors.electricity,
-              onFocusKey: 'elec',
-              onHighlight: cubit.setHighlight,
-              onChanged: onFieldChanged,
-            ),
-            AdminInputField(
-              label: '${s.elevLabel}:',
-              controller: elevCtrl,
-              color: AppColors.elevator,
-              onFocusKey: 'elev',
-              onHighlight: cubit.setHighlight,
-              onChanged: onFieldChanged,
-            ),
-            AdminInputField(
-              label: '${s.cleanLabel}:',
-              controller: cleanCtrl,
-              color: AppColors.cleaning,
-              onFocusKey: 'clean',
-              onHighlight: cubit.setHighlight,
-              onChanged: onFieldChanged,
-            ),
-            AdminInputField(
-              label: '${s.forEmergLabel}:',
-              controller: forEmergCtrl,
-              color: AppColors.reserve,
-              onFocusKey: 'emerg',
-              onHighlight: cubit.setHighlight,
-              onChanged: onFieldChanged,
-            ),
-            AdminInputField(
-              label: s.aptsCountField,
-              controller: aptsCtrl,
-              color: AppColors.primary,
-              onFocusKey: 'apts',
-              onHighlight: cubit.setHighlight,
-              onChanged: onFieldChanged,
-            ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.sm),
         AdminInputField(
-          label: s.baseEmergField,
-          controller: baseEmergCtrl,
-          color: AppColors.reserve,
-          onFocusKey: 'top-emerg',
+          label: s.aptsCountField,
+          controller: aptsCtrl,
+          color: AppColors.primary,
+          onFocusKey: 'apts',
           onHighlight: cubit.setHighlight,
           onChanged: onFieldChanged,
         ),
@@ -142,13 +62,91 @@ class AdminEditPanel extends StatelessWidget {
           ],
         ),
         const SizedBox(height: AppSpacing.sm),
+        Row(
+          children: [
+            Expanded(
+              child: AppSecondaryButton(
+                label: s.addNextMonthBtn,
+                icon: Icons.calendar_month_outlined,
+                accentColor: AppColors.emerald,
+                onPressed: cubit.addNextMonth,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: AppSecondaryButton(
+                label: s.unpaidReminderBtn,
+                icon: Icons.notifications_active_outlined,
+                accentColor: AppColors.amber,
+                onPressed: () async {
+                  final text = cubit.buildUnpaidReminderMessage();
+                  await Clipboard.setData(ClipboardData(text: text));
+                  cubit.setCopiedPreview(text);
+                },
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.sm),
         AppSecondaryButton(
-          label: s.addNextMonthBtn,
-          icon: Icons.calendar_month_outlined,
-          accentColor: AppColors.emerald,
-          onPressed: cubit.addNextMonth,
+          label: s.pinNoticeBtn,
+          icon: Icons.campaign_outlined,
+          accentColor: AppColors.primaryLight,
+          onPressed: () => _showAnnouncementDialog(context, cubit, state),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        AppSecondaryButton(
+          label: s.adminLogoutBtn,
+          icon: Icons.logout_rounded,
+          accentColor: AppColors.danger,
+          onPressed: cubit.logoutAdmin,
         ),
       ],
     );
+  }
+
+  Future<void> _showAnnouncementDialog(
+    BuildContext context,
+    BuildingCubit cubit,
+    BuildingState state,
+  ) async {
+    final ctrl = TextEditingController(text: state.announcement);
+    final isDark = state.isDarkMode;
+    final s = state.s;
+
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.card(isDark),
+        title: Text(s.noticeDialogTitle, style: AppTypography.headline.copyWith(fontSize: 15)),
+        content: TextField(
+          controller: ctrl,
+          maxLines: 3,
+          decoration: InputDecoration(hintText: s.noticeDialogHint),
+        ),
+        actions: [
+          if (state.announcement.trim().isNotEmpty)
+            TextButton(
+              onPressed: () async {
+                await cubit.saveAnnouncement('');
+                if (ctx.mounted) Navigator.pop(ctx);
+              },
+              child: Text(s.hideNoticeBtn, style: const TextStyle(color: AppColors.danger)),
+            ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(s.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await cubit.saveAnnouncement(ctrl.text);
+              if (ctx.mounted) Navigator.pop(ctx);
+            },
+            child: Text(s.saveAll),
+          ),
+        ],
+      ),
+    );
+    Future.delayed(const Duration(milliseconds: 350), ctrl.dispose);
   }
 }

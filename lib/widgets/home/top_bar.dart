@@ -33,9 +33,6 @@ class TopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = state.s;
     final isDark = state.isDarkMode;
-    final newEmergTotal = (state.baseEmergency + month.forEmerg).toInt();
-    final isEmergHighlighted =
-        state.highlightedKey == 'top-emerg' || state.highlightedKey == 'emerg';
 
     return Container(
       padding: const EdgeInsetsDirectional.symmetric(
@@ -88,15 +85,14 @@ class TopBar extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
-                child: Text(
-                  s.appTitle,
+                child: _SecretAdminTitle(
+                  title: s.appTitle,
                   style: AppTypography.headline.copyWith(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
                     color: AppColors.textPrimary(isDark),
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  onSecretTap: onToggleAdmin,
                 ),
               ),
               const SizedBox(width: AppSpacing.xs),
@@ -128,10 +124,6 @@ class TopBar extends StatelessWidget {
                           value: 'en',
                           child: Center(child: Text('🇺🇸', style: TextStyle(fontSize: 18))),
                         ),
-                        PopupMenuItem(
-                          value: 'de',
-                          child: Center(child: Text('🇩🇪', style: TextStyle(fontSize: 18))),
-                        ),
                       ],
                       child: Padding(
                         padding: const EdgeInsetsDirectional.symmetric(
@@ -139,11 +131,7 @@ class TopBar extends StatelessWidget {
                           vertical: 4,
                         ),
                         child: Text(
-                          switch (state.localeCode) {
-                            'en' => '🇺🇸',
-                            'de' => '🇩🇪',
-                            _ => '🇪🇬',
-                          },
+                          state.localeCode == 'en' ? '🇺🇸' : '🇪🇬',
                           style: const TextStyle(fontSize: 14),
                         ),
                       ),
@@ -172,51 +160,53 @@ class TopBar extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Container(
-                      width: 1,
-                      height: 15,
-                      color: AppColors.border(isDark),
-                    ),
-                    InkWell(
-                      onTap: onToggleAdmin,
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        padding: const EdgeInsetsDirectional.symmetric(
-                          horizontal: 9,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: state.isAdminOpen
-                              ? AppColors.primary.withValues(alpha: 0.20)
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(AppRadius.pill),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              state.isAdminOpen ? Icons.close_rounded : Icons.tune_rounded,
-                              size: 13,
-                              color: state.isAdminOpen
-                                  ? AppColors.primaryText(isDark)
-                                  : AppColors.textSecondary(isDark),
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              _cleanLabel(state.isAdminOpen ? s.closeBtn : s.editBtn),
-                              style: AppTypography.caption.copyWith(
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w700,
+                    if (state.isAdminAuthenticated) ...[
+                      Container(
+                        width: 1,
+                        height: 15,
+                        color: AppColors.border(isDark),
+                      ),
+                      InkWell(
+                        onTap: onToggleAdmin,
+                        borderRadius: BorderRadius.circular(AppRadius.pill),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsetsDirectional.symmetric(
+                            horizontal: 9,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: state.isAdminOpen
+                                ? AppColors.primary.withValues(alpha: 0.20)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(AppRadius.pill),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                state.isAdminOpen ? Icons.close_rounded : Icons.tune_rounded,
+                                size: 13,
                                 color: state.isAdminOpen
                                     ? AppColors.primaryText(isDark)
-                                    : AppColors.textPrimary(isDark),
+                                    : AppColors.textSecondary(isDark),
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 4),
+                              Text(
+                                _cleanLabel(state.isAdminOpen ? s.closeBtn : s.editBtn),
+                                style: AppTypography.caption.copyWith(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: state.isAdminOpen
+                                      ? AppColors.primaryText(isDark)
+                                      : AppColors.textPrimary(isDark),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),
@@ -227,9 +217,8 @@ class TopBar extends StatelessWidget {
           Divider(height: 1, color: AppColors.border(isDark)),
           const SizedBox(height: AppSpacing.sm + 2),
 
-          // Bottom row: Month selector + Emergency fund balance
+          // Bottom row: Month selector
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // Month & Year selector
               Container(
@@ -283,59 +272,57 @@ class TopBar extends StatelessWidget {
                   ],
                 ),
               ),
-
-              const SizedBox(width: AppSpacing.xs),
-
-              // Emergency Fund Balance Pill
-              Flexible(
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 220),
-                  padding: const EdgeInsetsDirectional.symmetric(
-                    horizontal: AppSpacing.md,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.emerald.withValues(
-                      alpha: isEmergHighlighted ? 0.22 : (isDark ? 0.12 : 0.09),
-                    ),
-                    borderRadius: BorderRadius.circular(AppRadius.pill),
-                    border: Border.all(
-                      color: AppColors.emerald.withValues(
-                        alpha: isEmergHighlighted ? 0.85 : 0.30,
-                      ),
-                    ),
-                    boxShadow: isEmergHighlighted
-                        ? AppShadows.accentGlow(AppColors.emerald, active: true, isDark: isDark)
-                        : null,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.shield_rounded,
-                        size: 14,
-                        color: AppColors.emeraldText(isDark),
-                      ),
-                      const SizedBox(width: 5),
-                      Flexible(
-                        child: Text(
-                          _cleanLabel(s.emergencyBadge(newEmergTotal)),
-                          style: AppTypography.label.copyWith(
-                            color: AppColors.emeraldText(isDark),
-                            fontWeight: FontWeight.w700,
-                            fontFeatures: const [FontFeature.tabularFigures()],
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _SecretAdminTitle extends StatefulWidget {
+  final String title;
+  final TextStyle style;
+  final VoidCallback onSecretTap;
+
+  const _SecretAdminTitle({
+    required this.title,
+    required this.style,
+    required this.onSecretTap,
+  });
+
+  @override
+  State<_SecretAdminTitle> createState() => _SecretAdminTitleState();
+}
+
+class _SecretAdminTitleState extends State<_SecretAdminTitle> {
+  int _tapCount = 0;
+  DateTime? _lastTapAt;
+
+  void _handleTap() {
+    final now = DateTime.now();
+    if (_lastTapAt == null || now.difference(_lastTapAt!) > const Duration(seconds: 2)) {
+      _tapCount = 0;
+    }
+    _lastTapAt = now;
+    _tapCount++;
+    if (_tapCount >= 5) {
+      _tapCount = 0;
+      _lastTapAt = null;
+      widget.onSecretTap();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: _handleTap,
+      child: Text(
+        widget.title,
+        style: widget.style,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }

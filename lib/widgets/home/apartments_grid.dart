@@ -30,7 +30,7 @@ class ApartmentsGrid extends StatelessWidget {
         : 0.0;
 
     return Container(
-      padding: const EdgeInsetsDirectional.all(AppSpacing.xl),
+      padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
       decoration: BoxDecoration(
         color: AppColors.card(isDark),
         borderRadius: BorderRadius.circular(AppRadius.xl),
@@ -133,10 +133,8 @@ class ApartmentsGrid extends StatelessWidget {
           LayoutBuilder(
             builder: (context, constraints) {
               final w = constraints.maxWidth;
-              final crossAxisCount = w < 340
-                  ? 2
-                  : (w < 640 ? 3 : 4);
-              final aspect = w < 360 ? 1.25 : 1.38;
+              final crossAxisCount = w < 640 ? 2 : 4;
+              final aspect = w < 640 ? 1.75 : 1.55;
 
               return GridView.builder(
                 shrinkWrap: true,

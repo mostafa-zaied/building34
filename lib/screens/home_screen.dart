@@ -11,9 +11,11 @@ import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
 import '../widgets/dialogs/admin_login_dialog.dart';
 import '../widgets/dialogs/apartment_payment_dialog.dart';
+import '../widgets/dialogs/apartment_statement_dialog.dart';
 import '../widgets/dialogs/manage_apartments_dialog.dart';
 import '../widgets/home/apartments_grid.dart';
 import '../widgets/home/bill_summary_card.dart';
+import '../widgets/home/my_apartment_banner.dart';
 import '../widgets/home/top_bar.dart';
 
 class BuildingHomePage extends StatefulWidget {
@@ -84,8 +86,8 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
   }
 
   Future<void> _toggleAdminPanel(BuildingCubit cubit, BuildingState state) async {
-    if (state.isAdminOpen) {
-      cubit.closeAdmin();
+    if (state.isAdminAuthenticated) {
+      cubit.toggleAdminEditMode();
       return;
     }
 
@@ -148,6 +150,34 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
           ),
         );
 
+        final myAptBanner = MyApartmentBanner(
+          cubit: cubit,
+          state: state,
+          month: m,
+          onTapPay: (aptNum) => showApartmentPaymentDialog(
+            context: context,
+            cubit: cubit,
+            state: state,
+            month: m,
+            aptNum: aptNum,
+            picker: _picker,
+          ),
+          onTapStatement: (aptNum) => showApartmentStatementDialog(
+            context: context,
+            state: state,
+            aptNum: aptNum,
+          ),
+        );
+
+        final apartmentsSection = Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            myAptBanner,
+            const SizedBox(height: AppSpacing.md),
+            apartmentsCard,
+          ],
+        );
+
         return LayoutBuilder(
           builder: (context, constraints) {
             final isDesktopDash = constraints.maxWidth >= 900;
@@ -205,6 +235,41 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
                           month: m,
                           onToggleAdmin: () => _toggleAdminPanel(cubit, state),
                         ),
+                        if (state.announcement.trim().isNotEmpty) ...[
+                          const SizedBox(height: AppSpacing.md),
+                          Container(
+                            padding: const EdgeInsetsDirectional.symmetric(
+                              horizontal: AppSpacing.md,
+                              vertical: AppSpacing.sm + 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.amber.withValues(alpha: isDark ? 0.14 : 0.12),
+                              borderRadius: BorderRadius.circular(AppRadius.lg),
+                              border: Border.all(
+                                color: AppColors.amber.withValues(alpha: 0.45),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.campaign_rounded,
+                                  size: 18,
+                                  color: isDark ? AppColors.amber : AppColors.amberDarkText,
+                                ),
+                                const SizedBox(width: AppSpacing.sm),
+                                Expanded(
+                                  child: Text(
+                                    state.announcement.trim(),
+                                    style: AppTypography.label.copyWith(
+                                      color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                         const SizedBox(height: AppSpacing.lg),
                         if (isDesktopDash)
                           Row(
@@ -212,13 +277,13 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
                             children: [
                               Expanded(flex: 6, child: billCard),
                               const SizedBox(width: AppSpacing.lg),
-                              Expanded(flex: 5, child: apartmentsCard),
+                              Expanded(flex: 5, child: apartmentsSection),
                             ],
                           )
                         else ...[
                           billCard,
                           const SizedBox(height: AppSpacing.lg),
-                          apartmentsCard,
+                          apartmentsSection,
                         ],
                       ],
                     ),

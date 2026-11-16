@@ -6,7 +6,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_ar.dart';
-import 'app_localizations_de.dart';
 import 'app_localizations_en.dart';
 
 // ignore_for_file: type=lint
@@ -96,7 +95,6 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('ar'),
-    Locale('de'),
     Locale('en'),
   ];
 
@@ -213,12 +211,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'✅ Updated monthly report copied for WhatsApp'**
   String get copiedToast;
-
-  /// No description provided for @adminSectionHint.
-  ///
-  /// In en, this message translates to:
-  /// **'⚙️ Edit Month Items (hover/focus a field to highlight its card):'**
-  String get adminSectionHint;
 
   /// No description provided for @aptsCountField.
   ///
@@ -478,6 +470,12 @@ abstract class AppLocalizations {
   /// **'Expenses'**
   String get navExpenses;
 
+  /// No description provided for @navEmergency.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency'**
+  String get navEmergency;
+
   /// No description provided for @navComplaints.
   ///
   /// In en, this message translates to:
@@ -687,6 +685,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'✅ Next month added'**
   String get monthAddedToast;
+
+  /// No description provided for @pinAptPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin your apartment for quick payment & statement'**
+  String get pinAptPrompt;
+
+  /// No description provided for @selectAptBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Apt'**
+  String get selectAptBtn;
+
+  /// No description provided for @myAptPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'My Apt'**
+  String get myAptPrefix;
+
+  /// No description provided for @statementBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Statement'**
+  String get statementBtn;
+
+  /// No description provided for @payNowBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay Now'**
+  String get payNowBtn;
+
+  /// No description provided for @changeAptTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Change apartment'**
+  String get changeAptTooltip;
+
+  /// No description provided for @statementDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Statement — {apt}'**
+  String statementDialogTitle(String apt);
+
+  /// No description provided for @statementSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid: {paid}  •  Remaining: {unpaid}'**
+  String statementSummary(int paid, int unpaid);
+
+  /// No description provided for @emergencyLogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency Fund Log'**
+  String get emergencyLogTitle;
+
+  /// No description provided for @emergencyLogEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No withdrawals recorded yet.'**
+  String get emergencyLogEmpty;
+
+  /// No description provided for @emergencyAmountHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get emergencyAmountHint;
+
+  /// No description provided for @emergencyReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason (e.g. water pump repair)'**
+  String get emergencyReasonHint;
+
+  /// No description provided for @recordExpenseBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Record Expense'**
+  String get recordExpenseBtn;
+
+  /// No description provided for @errEmergencyInput.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid amount and reason.'**
+  String get errEmergencyInput;
+
+  /// No description provided for @errEmergencySave.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save transaction.'**
+  String get errEmergencySave;
+
+  /// No description provided for @unpaidReminderBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpaid Reminder'**
+  String get unpaidReminderBtn;
+
+  /// No description provided for @emergencyLogBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency Log'**
+  String get emergencyLogBtn;
+
+  /// No description provided for @pinNoticeBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin Notice'**
+  String get pinNoticeBtn;
+
+  /// No description provided for @noticeDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Important Building Notice'**
+  String get noticeDialogTitle;
+
+  /// No description provided for @noticeDialogHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Elevator maintenance on Thursday 10–12'**
+  String get noticeDialogHint;
+
+  /// No description provided for @hideNoticeBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide'**
+  String get hideNoticeBtn;
+
+  /// No description provided for @adminReplyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Reply:'**
+  String get adminReplyLabel;
+
+  /// No description provided for @updateStatusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Status & Reply'**
+  String get updateStatusTitle;
+
+  /// No description provided for @statusFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get statusFieldLabel;
+
+  /// No description provided for @adminReplyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Short admin reply (optional)...'**
+  String get adminReplyHint;
+
+  /// No description provided for @statusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'⏳ Under Review'**
+  String get statusPending;
+
+  /// No description provided for @statusInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'🔧 In Progress'**
+  String get statusInProgress;
+
+  /// No description provided for @statusResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Resolved'**
+  String get statusResolved;
+
+  /// No description provided for @adminLogoutBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Logout'**
+  String get adminLogoutBtn;
+
+  /// No description provided for @emergencyTabWithdraw.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw'**
+  String get emergencyTabWithdraw;
+
+  /// No description provided for @emergencyTabDeposit.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit'**
+  String get emergencyTabDeposit;
+
+  /// No description provided for @emergencyDepositReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason (e.g. extra contribution or surplus)'**
+  String get emergencyDepositReasonHint;
+
+  /// No description provided for @recordDepositBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Record Deposit'**
+  String get recordDepositBtn;
 }
 
 class _AppLocalizationsDelegate
@@ -700,7 +896,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['ar', 'de', 'en'].contains(locale.languageCode);
+      <String>['ar', 'en'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -711,8 +907,6 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   switch (locale.languageCode) {
     case 'ar':
       return AppLocalizationsAr();
-    case 'de':
-      return AppLocalizationsDe();
     case 'en':
       return AppLocalizationsEn();
   }

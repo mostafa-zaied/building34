@@ -79,10 +79,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get copiedToast => '✅ Updated monthly report copied for WhatsApp';
 
   @override
-  String get adminSectionHint =>
-      '⚙️ Edit Month Items (hover/focus a field to highlight its card):';
-
-  @override
   String get aptsCountField => '🏠 Apts:';
 
   @override
@@ -239,6 +235,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navExpenses => 'Expenses';
 
   @override
+  String get navEmergency => 'Emergency';
+
+  @override
   String get navComplaints => 'Complaints';
 
   @override
@@ -351,4 +350,108 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get monthAddedToast => '✅ Next month added';
+
+  @override
+  String get pinAptPrompt => 'Pin your apartment for quick payment & statement';
+
+  @override
+  String get selectAptBtn => 'Select Apt';
+
+  @override
+  String get myAptPrefix => 'My Apt';
+
+  @override
+  String get statementBtn => 'Statement';
+
+  @override
+  String get payNowBtn => 'Pay Now';
+
+  @override
+  String get changeAptTooltip => 'Change apartment';
+
+  @override
+  String statementDialogTitle(String apt) {
+    return 'Payment Statement — $apt';
+  }
+
+  @override
+  String statementSummary(int paid, int unpaid) {
+    return 'Paid: $paid  •  Remaining: $unpaid';
+  }
+
+  @override
+  String get emergencyLogTitle => 'Emergency Fund Log';
+
+  @override
+  String get emergencyLogEmpty => 'No withdrawals recorded yet.';
+
+  @override
+  String get emergencyAmountHint => 'Amount';
+
+  @override
+  String get emergencyReasonHint => 'Reason (e.g. water pump repair)';
+
+  @override
+  String get recordExpenseBtn => 'Record Expense';
+
+  @override
+  String get errEmergencyInput => 'Please enter a valid amount and reason.';
+
+  @override
+  String get errEmergencySave => 'Failed to save transaction.';
+
+  @override
+  String get unpaidReminderBtn => 'Unpaid Reminder';
+
+  @override
+  String get emergencyLogBtn => 'Emergency Log';
+
+  @override
+  String get pinNoticeBtn => 'Pin Notice';
+
+  @override
+  String get noticeDialogTitle => 'Important Building Notice';
+
+  @override
+  String get noticeDialogHint => 'e.g. Elevator maintenance on Thursday 10–12';
+
+  @override
+  String get hideNoticeBtn => 'Hide';
+
+  @override
+  String get adminReplyLabel => 'Admin Reply:';
+
+  @override
+  String get updateStatusTitle => 'Update Status & Reply';
+
+  @override
+  String get statusFieldLabel => 'Status';
+
+  @override
+  String get adminReplyHint => 'Short admin reply (optional)...';
+
+  @override
+  String get statusPending => '⏳ Under Review';
+
+  @override
+  String get statusInProgress => '🔧 In Progress';
+
+  @override
+  String get statusResolved => '✅ Resolved';
+
+  @override
+  String get adminLogoutBtn => 'Admin Logout';
+
+  @override
+  String get emergencyTabWithdraw => 'Withdraw';
+
+  @override
+  String get emergencyTabDeposit => 'Deposit';
+
+  @override
+  String get emergencyDepositReasonHint =>
+      'Reason (e.g. extra contribution or surplus)';
+
+  @override
+  String get recordDepositBtn => 'Record Deposit';
 }

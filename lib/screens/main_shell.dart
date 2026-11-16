@@ -7,6 +7,7 @@ import '../core/theme/app_spacing.dart';
 import '../core/theme/app_typography.dart';
 import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
+import 'emergency_screen.dart';
 import 'feedback_screen.dart';
 import 'home_screen.dart';
 
@@ -36,6 +37,7 @@ class MainShell extends StatelessWidget {
 
         const screens = [
           BuildingHomePage(),
+          EmergencyScreen(),
           FeedbackScreen(type: 'complaint'),
           FeedbackScreen(type: 'improvement'),
         ];
@@ -107,6 +109,11 @@ class MainShell extends StatelessWidget {
                             label: Text(s.navExpenses),
                           ),
                           NavigationRailDestination(
+                            icon: const Icon(Icons.shield_outlined),
+                            selectedIcon: const Icon(Icons.shield_rounded),
+                            label: Text(s.navEmergency),
+                          ),
+                          NavigationRailDestination(
                             icon: const Icon(Icons.campaign_outlined),
                             selectedIcon: const Icon(Icons.campaign_rounded),
                             label: Text(s.navComplaints),
@@ -153,6 +160,11 @@ class MainShell extends StatelessWidget {
                     icon: Icons.account_balance_wallet_outlined,
                     selectedIcon: Icons.account_balance_wallet_rounded,
                     label: s.navExpenses,
+                  ),
+                  _NavItemData(
+                    icon: Icons.shield_outlined,
+                    selectedIcon: Icons.shield_rounded,
+                    label: s.navEmergency,
                   ),
                   _NavItemData(
                     icon: Icons.campaign_outlined,

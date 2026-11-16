@@ -72,7 +72,7 @@ class MonthBill {
     Map<int, PaymentRecord>? payments,
   }) : payments = payments ?? {};
 
-  double get totalExpenses => water + elec + elev + clean + forEmerg;
+  double get totalExpenses => water + elec + elev + clean;
 
   int get sharePerApt {
     if (totalExpenses <= 0 || aptsCount <= 0) return 0;
@@ -99,6 +99,8 @@ class FeedbackPost {
   final String type; // 'complaint' or 'improvement'
   final String message;
   final String? authorLabel; // null when anonymous
+  final String status; // 'pending', 'in_progress', 'resolved'
+  final String? adminReply;
   final DateTime createdAt;
 
   const FeedbackPost({
@@ -106,6 +108,8 @@ class FeedbackPost {
     required this.type,
     required this.message,
     this.authorLabel,
+    this.status = 'pending',
+    this.adminReply,
     required this.createdAt,
   });
 
@@ -115,6 +119,31 @@ class FeedbackPost {
       type: (json['type'] as String?) ?? 'complaint',
       message: (json['message'] as String?) ?? '',
       authorLabel: json['author_label'] as String?,
+      status: (json['status'] as String?) ?? 'pending',
+      adminReply: json['admin_reply'] as String?,
+      createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ?? DateTime.now(),
+    );
+  }
+}
+
+class EmergencyTransaction {
+  final String id;
+  final double amount;
+  final String reason;
+  final DateTime createdAt;
+
+  const EmergencyTransaction({
+    required this.id,
+    required this.amount,
+    required this.reason,
+    required this.createdAt,
+  });
+
+  factory EmergencyTransaction.fromJson(Map<String, dynamic> json) {
+    return EmergencyTransaction(
+      id: json['id'].toString(),
+      amount: (json['amount'] as num?)?.toDouble() ?? 0,
+      reason: (json['reason'] as String?) ?? '',
       createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ?? DateTime.now(),
     );
   }

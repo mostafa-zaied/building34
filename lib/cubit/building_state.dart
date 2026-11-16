@@ -5,6 +5,7 @@ import '../models/building_models.dart';
 
 class BuildingState {
   final bool loading;
+  final bool isAdminAuthenticated;
   final bool isAdminOpen;
   final String adminPass;
   final double baseEmergency;
@@ -19,9 +20,13 @@ class BuildingState {
   final bool isDarkMode;
   final int selectedNavIndex;
   final List<FeedbackPost> feedbackPosts;
+  final int? myAptNum;
+  final String announcement;
+  final List<EmergencyTransaction> emergencyTransactions;
 
   const BuildingState({
     this.loading = true,
+    this.isAdminAuthenticated = false,
     this.isAdminOpen = false,
     this.adminPass = 'admin123',
     this.baseEmergency = 2550,
@@ -36,6 +41,9 @@ class BuildingState {
     this.isDarkMode = true,
     this.selectedNavIndex = 0,
     this.feedbackPosts = const [],
+    this.myAptNum,
+    this.announcement = '',
+    this.emergencyTransactions = const [],
   });
 
   AppLocalizations get s => lookupAppLocalizations(Locale(localeCode));
@@ -49,6 +57,7 @@ class BuildingState {
 
   BuildingState copyWith({
     bool? loading,
+    bool? isAdminAuthenticated,
     bool? isAdminOpen,
     String? adminPass,
     double? baseEmergency,
@@ -63,9 +72,13 @@ class BuildingState {
     bool? isDarkMode,
     int? selectedNavIndex,
     List<FeedbackPost>? feedbackPosts,
+    int? Function()? myAptNum,
+    String? announcement,
+    List<EmergencyTransaction>? emergencyTransactions,
   }) {
     return BuildingState(
       loading: loading ?? this.loading,
+      isAdminAuthenticated: isAdminAuthenticated ?? this.isAdminAuthenticated,
       isAdminOpen: isAdminOpen ?? this.isAdminOpen,
       adminPass: adminPass ?? this.adminPass,
       baseEmergency: baseEmergency ?? this.baseEmergency,
@@ -80,6 +93,9 @@ class BuildingState {
       isDarkMode: isDarkMode ?? this.isDarkMode,
       selectedNavIndex: selectedNavIndex ?? this.selectedNavIndex,
       feedbackPosts: feedbackPosts ?? this.feedbackPosts,
+      myAptNum: myAptNum != null ? myAptNum() : this.myAptNum,
+      announcement: announcement ?? this.announcement,
+      emergencyTransactions: emergencyTransactions ?? this.emergencyTransactions,
     );
   }
 }

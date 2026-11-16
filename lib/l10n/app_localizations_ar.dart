@@ -79,10 +79,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get copiedToast => '✅ تم نسخ تفاصيل الشهر المحدثة للواتساب';
 
   @override
-  String get adminSectionHint =>
-      '⚙️ تعديل بنود الشهر (الوقوف على أي خانة ينير الكارت المقابل بالأعلى):';
-
-  @override
   String get aptsCountField => '🏠 عدد الشقق:';
 
   @override
@@ -237,6 +233,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get navExpenses => 'المصاريف';
 
   @override
+  String get navEmergency => 'الطوارئ';
+
+  @override
   String get navComplaints => 'شكاوى';
 
   @override
@@ -348,4 +347,109 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get monthAddedToast => '✅ تم إضافة الشهر القادم بنجاح';
+
+  @override
+  String get pinAptPrompt => 'ثبّت رقم شقتك للدفع السريع وكشف الحساب';
+
+  @override
+  String get selectAptBtn => 'اختر شقتك';
+
+  @override
+  String get myAptPrefix => 'شقتي';
+
+  @override
+  String get statementBtn => 'كشف الحساب';
+
+  @override
+  String get payNowBtn => 'ادفع الآن';
+
+  @override
+  String get changeAptTooltip => 'تغيير الشقة';
+
+  @override
+  String statementDialogTitle(String apt) {
+    return 'كشف حساب — $apt';
+  }
+
+  @override
+  String statementSummary(int paid, int unpaid) {
+    return 'مدفوع: $paid شهر  •  متبقي: $unpaid شهر';
+  }
+
+  @override
+  String get emergencyLogTitle => 'سجل حركات صندوق الطوارئ';
+
+  @override
+  String get emergencyLogEmpty => 'لا توجد مصروفات مسجلة من الصندوق حتى الآن.';
+
+  @override
+  String get emergencyAmountHint => 'المبلغ';
+
+  @override
+  String get emergencyReasonHint => 'السبب (مثال: صيانة موتور المياه)';
+
+  @override
+  String get recordExpenseBtn => 'تسجيل صرف من الطوارئ';
+
+  @override
+  String get errEmergencyInput => 'من فضلك اكتب المبلغ والسبب أولاً.';
+
+  @override
+  String get errEmergencySave =>
+      'تعذر تسجيل الحركة. تأكد من تشغيل supabase_updates.sql';
+
+  @override
+  String get unpaidReminderBtn => 'تذكير المتبقين';
+
+  @override
+  String get emergencyLogBtn => 'صرف من الطوارئ';
+
+  @override
+  String get pinNoticeBtn => 'تثبيت إعلان';
+
+  @override
+  String get noticeDialogTitle => 'تثبيت إعلان أو تنبيه هام';
+
+  @override
+  String get noticeDialogHint => 'مثال: صيانة الأسانسير يوم الخميس من 10 لـ 12';
+
+  @override
+  String get hideNoticeBtn => 'إخفاء الإعلان';
+
+  @override
+  String get adminReplyLabel => 'رد الإدارة:';
+
+  @override
+  String get updateStatusTitle => 'تحديث الحالة والرد';
+
+  @override
+  String get statusFieldLabel => 'الحالة';
+
+  @override
+  String get adminReplyHint => 'رد الإدارة (اختياري)...';
+
+  @override
+  String get statusPending => '⏳ قيد المراجعة';
+
+  @override
+  String get statusInProgress => '🔧 جاري التنفيذ';
+
+  @override
+  String get statusResolved => '✅ تم الحل';
+
+  @override
+  String get adminLogoutBtn => 'تسجيل خروج المدير';
+
+  @override
+  String get emergencyTabWithdraw => 'صرف';
+
+  @override
+  String get emergencyTabDeposit => 'إضافة';
+
+  @override
+  String get emergencyDepositReasonHint =>
+      'السبب (مثال: مساهمة إضافية أو فائض)';
+
+  @override
+  String get recordDepositBtn => 'تسجيل إضافة للطوارئ';
 }

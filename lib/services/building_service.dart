@@ -7,11 +7,15 @@ class BuildingDataState {
   final double baseEmergencyFund;
   final List<MonthBill> months;
   final Map<int, String> apartmentNames;
+  final String announcement;
+  final List<EmergencyTransaction> emergencyTransactions;
 
   BuildingDataState({
     required this.baseEmergencyFund,
     required this.months,
     required this.apartmentNames,
+    this.announcement = '',
+    this.emergencyTransactions = const [],
   });
 }
 
@@ -28,10 +32,32 @@ class BuildingService {
 
   // Local Demo state (used when Supabase keys are not yet configured or in tests)
   static double _demoBaseEmergency = 2550;
+  static String _demoAnnouncement = '';
+  static final List<EmergencyTransaction> _demoEmergencyTx = [];
   static final List<FeedbackPost> _demoFeedbackPosts = [];
+  static const List<String> _defaultResidentNames = [
+    'أستاذ حازم',
+    'د. أبو بكر',
+    'أستاذ مصطفى بركة',
+    'أستاذ محمد مجدي',
+    'أستاذ مروان',
+    'أستاذة مروة',
+    'أستاذ علاء',
+    'د. أحمد خطاب',
+    'أستاذ أحمد ياسر',
+    'م. مصطفى',
+    'أستاذ محمد جمال',
+    'م. شيماء',
+    'أستاذ معتز',
+  ];
+
   static final Map<int, ApartmentInfo> _demoApartments = {
     for (int i = 1; i <= 30; i++)
-      i: ApartmentInfo(aptNum: i, displayName: '', passcode: '${1000 + i}'),
+      i: ApartmentInfo(
+        aptNum: i,
+        displayName: i <= _defaultResidentNames.length ? _defaultResidentNames[i - 1] : '',
+        passcode: '${1000 + i}',
+      ),
   };
   static final List<MonthBill> _demoMonths = [
     MonthBill(id: 7, monthNum: 7, yearNum: 2026, water: 1080, elec: 1500, elev: 400, clean: 240, forEmerg: 0, aptsCount: 13, payments: _archivedPayments(7)),
@@ -73,6 +99,8 @@ class BuildingService {
             if (entry.value.displayName.trim().isNotEmpty)
               entry.key: entry.value.displayName.trim(),
         },
+        announcement: _demoAnnouncement,
+        emergencyTransactions: List<EmergencyTransaction>.from(_demoEmergencyTx),
       );
     }
 
@@ -121,10 +149,38 @@ class BuildingService {
       monthsMap[monthId]?.payments[record.aptNum] = record;
     }
 
+    String announcement = '';
+    try {
+      final annResp = await client.rpc('get_announcement');
+      announcement = (annResp as String?) ?? '';
+    } catch (_) {
+      try {
+        final settingsRows = await client.from('building_settings').select('announcement').limit(1);
+        if (settingsRows.isNotEmpty) {
+          announcement = (settingsRows.first['announcement'] as String?) ?? '';
+        }
+      } catch (_) {}
+    }
+
+    var emergencyTx = <EmergencyTransaction>[];
+    try {
+      final txRows = await client
+          .from('emergency_transactions')
+          .select()
+          .order('created_at', ascending: false);
+      emergencyTx = (txRows as List)
+          .map((r) => EmergencyTransaction.fromJson(Map<String, dynamic>.from(r as Map)))
+          .toList();
+    } catch (_) {
+      // Fallback if emergency_transactions table hasn't been created yet
+    }
+
     return BuildingDataState(
       baseEmergencyFund: baseEmerg,
       months: monthsMap.values.toList(),
       apartmentNames: aptNamesMap,
+      announcement: announcement,
+      emergencyTransactions: emergencyTx,
     );
   }
 
@@ -328,7 +384,7 @@ class BuildingService {
       final client = Supabase.instance.client;
       final rows = await client
           .from('feedback_posts')
-          .select('id, type, message, author_label, created_at')
+          .select()
           .order('created_at', ascending: false);
       return (rows as List)
           .map((r) => FeedbackPost.fromJson(Map<String, dynamic>.from(r as Map)))
@@ -443,6 +499,129 @@ class BuildingService {
       return (res is Map ? res['error']?.toString() : null) ?? 'err_wrong_admin_pass';
     } catch (e) {
       return 'err_apt_save_failed';
+    }
+  }
+
+  Future<String?> saveAnnouncement({
+    required String adminPass,
+    required String announcement,
+  }) async {
+    final clean = announcement.trim();
+    if (!_useSupabase) {
+      _demoAnnouncement = clean;
+      return null;
+    }
+    try {
+      final client = Supabase.instance.client;
+      final res = await client.rpc('admin_set_announcement', params: {
+        'p_admin_pass': adminPass,
+        'p_announcement': clean,
+      });
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_apt_save_failed';
+    } catch (e) {
+      return 'err_apt_save_failed';
+    }
+  }
+
+  Future<String?> addEmergencyTransaction({
+    required String adminPass,
+    required double amount,
+    required String reason,
+  }) async {
+    final cleanReason = reason.trim();
+    if (amount == 0 || cleanReason.isEmpty) return 'err_empty_message';
+
+    if (!_useSupabase) {
+      _demoBaseEmergency = (_demoBaseEmergency - amount).clamp(0, double.infinity);
+      _demoEmergencyTx.insert(
+        0,
+        EmergencyTransaction(
+          id: DateTime.now().microsecondsSinceEpoch.toString(),
+          amount: amount,
+          reason: cleanReason,
+          createdAt: DateTime.now(),
+        ),
+      );
+      return null;
+    }
+
+    try {
+      final client = Supabase.instance.client;
+      final res = await client.rpc('admin_add_emergency_tx', params: {
+        'p_admin_pass': adminPass,
+        'p_amount': amount,
+        'p_reason': cleanReason,
+      });
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
+    } catch (e) {
+      return 'err_submit_failed';
+    }
+  }
+
+  Future<String?> deleteEmergencyTransaction({
+    required String adminPass,
+    required String id,
+  }) async {
+    if (!_useSupabase) {
+      final idx = _demoEmergencyTx.indexWhere((t) => t.id == id);
+      if (idx >= 0) {
+        _demoBaseEmergency += _demoEmergencyTx[idx].amount;
+        _demoEmergencyTx.removeAt(idx);
+      }
+      return null;
+    }
+
+    try {
+      final client = Supabase.instance.client;
+      final res = await client.rpc('admin_delete_emergency_tx', params: {
+        'p_admin_pass': adminPass,
+        'p_id': int.tryParse(id) ?? 0,
+      });
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_delete_failed';
+    } catch (e) {
+      return 'err_delete_failed';
+    }
+  }
+
+  Future<String?> updateFeedbackPostStatus({
+    required String adminPass,
+    required String id,
+    required String status,
+    String? adminReply,
+  }) async {
+    final cleanReply = (adminReply ?? '').trim();
+    if (!_useSupabase) {
+      final idx = _demoFeedbackPosts.indexWhere((p) => p.id == id);
+      if (idx >= 0) {
+        final old = _demoFeedbackPosts[idx];
+        _demoFeedbackPosts[idx] = FeedbackPost(
+          id: old.id,
+          type: old.type,
+          message: old.message,
+          authorLabel: old.authorLabel,
+          status: status,
+          adminReply: cleanReply.isEmpty ? null : cleanReply,
+          createdAt: old.createdAt,
+        );
+      }
+      return null;
+    }
+
+    try {
+      final client = Supabase.instance.client;
+      final res = await client.rpc('admin_update_feedback_status', params: {
+        'p_admin_pass': adminPass,
+        'p_id': int.tryParse(id) ?? 0,
+        'p_status': status,
+        'p_admin_reply': cleanReply.isEmpty ? null : cleanReply,
+      });
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
+    } catch (e) {
+      return 'err_submit_failed';
     }
   }
 }
