@@ -263,5 +263,10 @@
   "@confirmDeleteTxBody": { "placeholders": { "amount": { "type": "String" } } },
   "confirmDeletePostBody": "Do you want to permanently delete this post?",
   "confirmCancelPaymentBody": "Do you want to cancel the payment for \"{apt}\"?",
-  "@confirmCancelPaymentBody": { "placeholders": { "apt": { "type": "String" } } }
+  "@confirmCancelPaymentBody": { "placeholders": { "apt": { "type": "String" } } },
+  "instapayTitle": "InstaPay Transfer",
+  "instapaySubtitle": "Transfer to this number, then upload receipt",
+  "copyNumberBtn": "Copy",
+  "copiedShort": "Copied ✓",
+  "openInstapayBtn": "Open InstaPay"
 }

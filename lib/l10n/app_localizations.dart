@@ -949,6 +949,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Do you want to cancel the payment for \"{apt}\"?'**
   String confirmCancelPaymentBody(String apt);
+
+  /// No description provided for @instapayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'InstaPay Transfer'**
+  String get instapayTitle;
+
+  /// No description provided for @instapaySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer to this number, then upload receipt'**
+  String get instapaySubtitle;
+
+  /// No description provided for @copyNumberBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copyNumberBtn;
+
+  /// No description provided for @copiedShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied ✓'**
+  String get copiedShort;
+
+  /// No description provided for @openInstapayBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Open InstaPay'**
+  String get openInstapayBtn;
 }
 
 class _AppLocalizationsDelegate

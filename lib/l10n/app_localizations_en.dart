@@ -493,4 +493,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String confirmCancelPaymentBody(String apt) {
     return 'Do you want to cancel the payment for \"$apt\"?';
   }
+
+  @override
+  String get instapayTitle => 'InstaPay Transfer';
+
+  @override
+  String get instapaySubtitle => 'Transfer to this number, then upload receipt';
+
+  @override
+  String get copyNumberBtn => 'Copy';
+
+  @override
+  String get copiedShort => 'Copied ✓';
+
+  @override
+  String get openInstapayBtn => 'Open InstaPay';
 }

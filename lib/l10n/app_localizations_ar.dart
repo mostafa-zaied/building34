@@ -489,4 +489,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String confirmCancelPaymentBody(String apt) {
     return 'هل تريد إلغاء تسجيل دفع \"$apt\"؟';
   }
+
+  @override
+  String get instapayTitle => 'التحويل عبر InstaPay';
+
+  @override
+  String get instapaySubtitle => 'حوّل على الرقم التالي ثم ارفع الإيصال';
+
+  @override
+  String get copyNumberBtn => 'نسخ الرقم';
+
+  @override
+  String get copiedShort => 'تم النسخ ✓';
+
+  @override
+  String get openInstapayBtn => 'فتح InstaPay';
 }
