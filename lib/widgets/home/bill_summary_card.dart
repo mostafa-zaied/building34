@@ -14,7 +14,6 @@ class BillSummaryCard extends StatelessWidget {
   final BuildingCubit cubit;
   final BuildingState state;
   final MonthBill month;
-  final VoidCallback onCopyWhatsApp;
   final TextEditingController waterCtrl;
   final TextEditingController elecCtrl;
   final TextEditingController elevCtrl;
@@ -30,7 +29,6 @@ class BillSummaryCard extends StatelessWidget {
     required this.cubit,
     required this.state,
     required this.month,
-    required this.onCopyWhatsApp,
     required this.waterCtrl,
     required this.elecCtrl,
     required this.elevCtrl,
@@ -236,75 +234,7 @@ class BillSummaryCard extends StatelessWidget {
           ),
         ),
 
-        const SizedBox(height: AppSpacing.md),
-
-        // 3. WhatsApp Share Action (directly above the copied message preview)
-        _WhatsAppShareButton(
-          label: s.copyWhatsAppBtn,
-          onTap: onCopyWhatsApp,
-          isDark: isDark,
-        ),
-
-        // 4. Copied WhatsApp Message Preview Drawer
-        AnimatedSize(
-          duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOutCubic,
-          child: state.copiedPreview == null
-              ? const SizedBox.shrink()
-              : Padding(
-                  padding: const EdgeInsetsDirectional.only(top: AppSpacing.md),
-                  child: Container(
-                    padding: const EdgeInsetsDirectional.all(AppSpacing.md),
-                    decoration: BoxDecoration(
-                      color: AppColors.card(isDark),
-                      borderRadius: BorderRadius.circular(AppRadius.lg),
-                      border: Border.all(
-                        color: AppColors.emerald.withValues(alpha: 0.45),
-                      ),
-                      boxShadow: AppShadows.card(isDark),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              s.copiedTitle,
-                              style: AppTypography.label.copyWith(
-                                color: AppColors.emeraldText(isDark),
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () => cubit.setCopiedPreview(null),
-                              borderRadius: BorderRadius.circular(AppRadius.pill),
-                              child: Padding(
-                                padding: const EdgeInsetsDirectional.all(4),
-                                child: Icon(
-                                  Icons.close_rounded,
-                                  size: 16,
-                                  color: AppColors.textSecondary(isDark),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: AppSpacing.xs),
-                        SelectableText(
-                          state.copiedPreview!,
-                          style: AppTypography.caption.copyWith(
-                            color: AppColors.textSecondary(isDark),
-                            height: 1.6,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-        ),
-
-        // 5. Admin Edit Panel (Animated)
+        // 3. Admin Edit Panel (Animated)
         AnimatedSize(
           duration: const Duration(milliseconds: 240),
           curve: Curves.easeOutCubic,
@@ -329,62 +259,6 @@ class BillSummaryCard extends StatelessWidget {
               : const SizedBox.shrink(),
         ),
       ],
-    );
-  }
-}
-
-class _WhatsAppShareButton extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-  final bool isDark;
-
-  const _WhatsAppShareButton({
-    required this.label,
-    required this.onTap,
-    required this.isDark,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        child: Ink(
-          padding: const EdgeInsetsDirectional.symmetric(
-            horizontal: AppSpacing.lg,
-            vertical: AppSpacing.md,
-          ),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [AppColors.primary, AppColors.primaryLight],
-              begin: AlignmentDirectional.centerStart,
-              end: AlignmentDirectional.centerEnd,
-            ),
-            borderRadius: BorderRadius.circular(AppRadius.lg),
-            boxShadow: AppShadows.accentGlow(
-              AppColors.primary,
-              active: false,
-              isDark: isDark,
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.share_rounded, size: 15, color: Colors.white),
-              const SizedBox(width: AppSpacing.xs),
-              Text(
-                label,
-                style: AppTypography.label.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

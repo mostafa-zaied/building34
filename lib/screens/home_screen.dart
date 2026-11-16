@@ -16,6 +16,7 @@ import '../widgets/home/apartments_grid.dart';
 import '../widgets/home/bill_summary_card.dart';
 import '../widgets/home/my_apartment_banner.dart';
 import '../widgets/home/top_bar.dart';
+import '../widgets/home/whatsapp_share_section.dart';
 
 class BuildingHomePage extends StatefulWidget {
   const BuildingHomePage({super.key});
@@ -120,7 +121,6 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
           cubit: cubit,
           state: state,
           month: m,
-          onCopyWhatsApp: () => _copyWhatsApp(cubit),
           waterCtrl: _waterCtrl,
           elecCtrl: _elecCtrl,
           elevCtrl: _elevCtrl,
@@ -279,6 +279,12 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
                           const SizedBox(height: AppSpacing.lg),
                           apartmentsSection,
                         ],
+                        const SizedBox(height: AppSpacing.lg),
+                        WhatsAppShareSection(
+                          cubit: cubit,
+                          state: state,
+                          onCopyWhatsApp: () => _copyWhatsApp(cubit),
+                        ),
                       ],
                     ),
                   ),
