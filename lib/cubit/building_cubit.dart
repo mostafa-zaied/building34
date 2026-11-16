@@ -27,6 +27,7 @@ class BuildingCubit extends Cubit<BuildingState> {
       }
 
       int? savedAptNum = state.myAptNum;
+      String? savedAptPass = state.savedAptPass;
       bool isAdminAuthed = state.isAdminAuthenticated;
       String adminPass = state.adminPass;
       try {
@@ -34,6 +35,7 @@ class BuildingCubit extends Cubit<BuildingState> {
           const Duration(milliseconds: 250),
         );
         savedAptNum = prefs.getInt('my_apt_num');
+        savedAptPass = savedAptNum != null ? prefs.getString('my_apt_pass') : null;
         final savedAdminPass = prefs.getString('admin_pass');
         if (savedAdminPass != null && savedAdminPass.isNotEmpty) {
           final err = await _service.verifyAdminPass(savedAdminPass);
@@ -57,6 +59,7 @@ class BuildingCubit extends Cubit<BuildingState> {
         selectedMonthIndex: targetIdx,
         feedbackPosts: posts,
         myAptNum: () => savedAptNum,
+        savedAptPass: () => savedAptPass,
         announcement: data.announcement,
         emergencyTransactions: data.emergencyTransactions,
       ));
@@ -130,11 +133,19 @@ class BuildingCubit extends Cubit<BuildingState> {
       authorLabel: authorLabel,
     );
     if (err != null) {
+      if (aptNum != null &&
+          aptNum == state.myAptNum &&
+          (err == 'err_wrong_apt_pass' || err.startsWith('err_wrong_apt_pass_hint:'))) {
+        await _clearSavedAptPass();
+      }
       emit(state.copyWith(
         feedbackMessage: () => '❌ ${_localizeError(err)}',
         feedbackIsError: true,
       ));
       return false;
+    }
+    if (aptNum != null && passcode != null && passcode.trim().isNotEmpty) {
+      await _saveAptSession(aptNum, passcode.trim());
     }
     final posts = await _service.fetchFeedbackPosts();
     emit(state.copyWith(
@@ -322,8 +333,13 @@ class BuildingCubit extends Cubit<BuildingState> {
       fileName: fileName,
     );
     if (err == null) {
+      await _saveAptSession(aptNum, passcode.trim());
       await loadData(preserveMonthIndex: state.selectedMonthIndex);
       return null;
+    }
+    if (aptNum == state.myAptNum &&
+        (err == 'err_wrong_apt_pass' || err.startsWith('err_wrong_apt_pass_hint:'))) {
+      await _clearSavedAptPass();
     }
     return _localizeError(err);
   }
@@ -419,14 +435,42 @@ class BuildingCubit extends Cubit<BuildingState> {
     return lines.join('\n');
   }
 
+  Future<void> _saveAptSession(int aptNum, String passcode) async {
+    emit(state.copyWith(
+      myAptNum: () => aptNum,
+      savedAptPass: () => passcode,
+    ));
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('my_apt_num', aptNum);
+      await prefs.setString('my_apt_pass', passcode);
+    } catch (_) {}
+  }
+
+  Future<void> _clearSavedAptPass() async {
+    emit(state.copyWith(savedAptPass: () => null));
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('my_apt_pass');
+    } catch (_) {}
+  }
+
   Future<void> setMyApt(int? aptNum) async {
-    emit(state.copyWith(myAptNum: () => aptNum));
+    final changed = aptNum != state.myAptNum;
+    emit(state.copyWith(
+      myAptNum: () => aptNum,
+      savedAptPass: changed ? () => null : null,
+    ));
     try {
       final prefs = await SharedPreferences.getInstance();
       if (aptNum == null) {
         await prefs.remove('my_apt_num');
+        await prefs.remove('my_apt_pass');
       } else {
         await prefs.setInt('my_apt_num', aptNum);
+        if (changed) {
+          await prefs.remove('my_apt_pass');
+        }
       }
     } catch (_) {}
   }

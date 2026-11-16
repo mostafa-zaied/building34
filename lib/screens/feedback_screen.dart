@@ -9,6 +9,7 @@ import '../cubit/building_state.dart';
 import '../l10n/app_localizations.dart';
 import '../models/building_models.dart';
 import '../widgets/common/app_button.dart';
+import '../widgets/dialogs/confirm_delete_dialog.dart';
 import '../widgets/common/app_card.dart';
 
 class FeedbackScreen extends StatefulWidget {
@@ -272,7 +273,15 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
                           constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
                         ),
                         IconButton(
-                          onPressed: () => cubit.deleteFeedbackPost(post.id),
+                          onPressed: () async {
+                            final ok = await showConfirmDeleteDialog(
+                              context: context,
+                              s: s,
+                              isDark: isDark,
+                              message: s.confirmDeletePostBody,
+                            );
+                            if (ok) await cubit.deleteFeedbackPost(post.id);
+                          },
                           icon: const Icon(Icons.delete_outline_rounded, size: 18, color: AppColors.danger),
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
@@ -462,7 +471,18 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
                             );
                           }),
                           onChanged: (v) {
-                            if (v != null) setState(() => _selectedApt = v);
+                            if (v != null) {
+                              setState(() {
+                                _selectedApt = v;
+                                if (v == state.myAptNum &&
+                                    state.savedAptPass != null &&
+                                    state.savedAptPass!.isNotEmpty) {
+                                  _passCtrl.text = state.savedAptPass!;
+                                } else {
+                                  _passCtrl.clear();
+                                }
+                              });
+                            }
                           },
                         ),
                         const SizedBox(height: AppSpacing.sm),

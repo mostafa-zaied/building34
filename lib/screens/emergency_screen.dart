@@ -8,6 +8,7 @@ import '../core/theme/app_typography.dart';
 import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
 import '../widgets/common/app_button.dart';
+import '../widgets/dialogs/confirm_delete_dialog.dart';
 
 class EmergencyScreen extends StatefulWidget {
   const EmergencyScreen({super.key});
@@ -435,7 +436,17 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                                     ),
                                     if (state.isAdminOpen)
                                       IconButton(
-                                        onPressed: () => cubit.deleteEmergencyTransaction(tx.id),
+                                        onPressed: () async {
+                                          final ok = await showConfirmDeleteDialog(
+                                            context: context,
+                                            s: s,
+                                            isDark: isDark,
+                                            message: s.confirmDeleteTxBody(
+                                              s.currency(tx.amount.abs().toInt()),
+                                            ),
+                                          );
+                                          if (ok) await cubit.deleteEmergencyTransaction(tx.id);
+                                        },
                                         icon: const Icon(Icons.delete_outline_rounded, size: 19),
                                         color: AppColors.danger,
                                         tooltip: s.deleteTooltip,

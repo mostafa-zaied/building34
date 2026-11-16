@@ -21,6 +21,7 @@ class BuildingState {
   final int selectedNavIndex;
   final List<FeedbackPost> feedbackPosts;
   final int? myAptNum;
+  final String? savedAptPass;
   final String announcement;
   final List<EmergencyTransaction> emergencyTransactions;
 
@@ -42,6 +43,7 @@ class BuildingState {
     this.selectedNavIndex = 0,
     this.feedbackPosts = const [],
     this.myAptNum,
+    this.savedAptPass,
     this.announcement = '',
     this.emergencyTransactions = const [],
   });
@@ -73,6 +75,7 @@ class BuildingState {
     int? selectedNavIndex,
     List<FeedbackPost>? feedbackPosts,
     int? Function()? myAptNum,
+    String? Function()? savedAptPass,
     String? announcement,
     List<EmergencyTransaction>? emergencyTransactions,
   }) {
@@ -94,6 +97,7 @@ class BuildingState {
       selectedNavIndex: selectedNavIndex ?? this.selectedNavIndex,
       feedbackPosts: feedbackPosts ?? this.feedbackPosts,
       myAptNum: myAptNum != null ? myAptNum() : this.myAptNum,
+      savedAptPass: savedAptPass != null ? savedAptPass() : this.savedAptPass,
       announcement: announcement ?? this.announcement,
       emergencyTransactions: emergencyTransactions ?? this.emergencyTransactions,
     );

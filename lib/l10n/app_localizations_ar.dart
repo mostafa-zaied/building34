@@ -459,4 +459,34 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get splashTagline => 'كل مصاريف عمارتك.. أوضح، أسهل، وتحت السيطرة';
+
+  @override
+  String get savedPassBadge => 'تم حفظ كلمة سر شقتك تلقائياً';
+
+  @override
+  String get changePassBtn => 'تغيير';
+
+  @override
+  String get confirmDeleteTitle => 'تأكيد الحذف';
+
+  @override
+  String get confirmDeleteBtn => 'حذف';
+
+  @override
+  String confirmDeleteAptBody(String apt) {
+    return 'هل تريد حذف \"$apt\"؟';
+  }
+
+  @override
+  String confirmDeleteTxBody(String amount) {
+    return 'هل تريد حذف هذه الحركة ($amount)؟';
+  }
+
+  @override
+  String get confirmDeletePostBody => 'هل تريد حذف هذه المشاركة نهائياً؟';
+
+  @override
+  String confirmCancelPaymentBody(String apt) {
+    return 'هل تريد إلغاء تسجيل دفع \"$apt\"؟';
+  }
 }

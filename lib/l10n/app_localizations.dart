@@ -901,6 +901,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All your building expenses.. clearer, easier, under control'**
   String get splashTagline;
+
+  /// No description provided for @savedPassBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Your apartment passcode is saved'**
+  String get savedPassBadge;
+
+  /// No description provided for @changePassBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get changePassBtn;
+
+  /// No description provided for @confirmDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Delete'**
+  String get confirmDeleteTitle;
+
+  /// No description provided for @confirmDeleteBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get confirmDeleteBtn;
+
+  /// No description provided for @confirmDeleteAptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to delete \"{apt}\"?'**
+  String confirmDeleteAptBody(String apt);
+
+  /// No description provided for @confirmDeleteTxBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to delete this transaction ({amount})?'**
+  String confirmDeleteTxBody(String amount);
+
+  /// No description provided for @confirmDeletePostBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to permanently delete this post?'**
+  String get confirmDeletePostBody;
+
+  /// No description provided for @confirmCancelPaymentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to cancel the payment for \"{apt}\"?'**
+  String confirmCancelPaymentBody(String apt);
 }
 
 class _AppLocalizationsDelegate

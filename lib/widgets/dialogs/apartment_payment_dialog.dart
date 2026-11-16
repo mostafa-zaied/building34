@@ -11,6 +11,7 @@ import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
 import '../../models/building_models.dart';
 import '../common/app_button.dart';
+import 'confirm_delete_dialog.dart';
 
 Future<void> showApartmentPaymentDialog({
   required BuildContext context,
@@ -161,6 +162,13 @@ Future<void> showApartmentPaymentDialog({
                     label: s.cancelPaymentAdmin,
                     accentColor: AppColors.danger,
                     onPressed: () async {
+                      final ok = await showConfirmDeleteDialog(
+                        context: ctx,
+                        s: s,
+                        isDark: isDark,
+                        message: s.confirmCancelPaymentBody(state.aptLabel(aptNum)),
+                      );
+                      if (!ok) return;
                       await cubit.cancelPayment(aptNum);
                       if (ctx.mounted) Navigator.pop(ctx);
                     },
@@ -175,7 +183,13 @@ Future<void> showApartmentPaymentDialog({
     return;
   }
 
-  final passCtrl = TextEditingController();
+  final hasSavedPass = state.myAptNum == aptNum &&
+      state.savedAptPass != null &&
+      state.savedAptPass!.isNotEmpty;
+  final passCtrl = TextEditingController(
+    text: hasSavedPass ? state.savedAptPass! : '',
+  );
+  bool useSavedPass = hasSavedPass;
   bool confirmed = true;
   Uint8List? pickedBytes;
   String? pickedName;
@@ -253,32 +267,81 @@ Future<void> showApartmentPaymentDialog({
                 Divider(height: 1, color: AppColors.border(isDark)),
                 const SizedBox(height: AppSpacing.md),
 
-                // Step 1: Passcode
-                Text(
-                  s.step1Passcode(!AppConfig.isSupabaseConfigured ? ' (${1000 + aptNum})' : ''),
-                  style: AppTypography.label.copyWith(
-                    color: AppColors.textPrimary(isDark),
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                TextField(
-                  controller: passCtrl,
-                  obscureText: true,
-                  style: AppTypography.body.copyWith(
-                    color: AppColors.textPrimary(isDark),
-                  ),
-                  decoration: InputDecoration(
-                    hintText: s.enterPassHint,
-                    filled: true,
-                    fillColor: AppColors.surface(isDark),
-                    prefixIcon: Icon(
-                      Icons.lock_outline_rounded,
-                      size: 18,
-                      color: AppColors.textSecondary(isDark),
+                // Step 1: Passcode (auto-remembered after first payment)
+                if (useSavedPass)
+                  Container(
+                    padding: const EdgeInsetsDirectional.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.sm + 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.emerald.withValues(alpha: isDark ? 0.14 : 0.08),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      border: Border.all(
+                        color: AppColors.emerald.withValues(alpha: 0.35),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.verified_user_outlined,
+                          size: 18,
+                          color: AppColors.emeraldText(isDark),
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: Text(
+                            s.savedPassBadge,
+                            style: AppTypography.label.copyWith(
+                              color: AppColors.emeraldText(isDark),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            setModalState(() {
+                              useSavedPass = false;
+                              passCtrl.clear();
+                            });
+                          },
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsetsDirectional.symmetric(horizontal: 8),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: Text(s.changePassBtn, style: AppTypography.caption),
+                        ),
+                      ],
+                    ),
+                  )
+                else ...[
+                  Text(
+                    s.step1Passcode(!AppConfig.isSupabaseConfigured ? ' (${1000 + aptNum})' : ''),
+                    style: AppTypography.label.copyWith(
+                      color: AppColors.textPrimary(isDark),
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                ),
+                  const SizedBox(height: AppSpacing.xs),
+                  TextField(
+                    controller: passCtrl,
+                    obscureText: true,
+                    style: AppTypography.body.copyWith(
+                      color: AppColors.textPrimary(isDark),
+                    ),
+                    decoration: InputDecoration(
+                      hintText: s.enterPassHint,
+                      filled: true,
+                      fillColor: AppColors.surface(isDark),
+                      prefixIcon: Icon(
+                        Icons.lock_outline_rounded,
+                        size: 18,
+                        color: AppColors.textSecondary(isDark),
+                      ),
+                    ),
+                  ),
+                ],
                 const SizedBox(height: AppSpacing.md),
 
                 // Confirmation Checkbox Card

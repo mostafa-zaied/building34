@@ -7,6 +7,7 @@ import '../../core/theme/app_typography.dart';
 import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
 import '../common/app_button.dart';
+import 'confirm_delete_dialog.dart';
 
 Future<void> showEmergencyLogDialog({
   required BuildContext context,
@@ -323,7 +324,17 @@ class _EmergencyLogDialogState extends State<_EmergencyLogDialog> {
                                 ),
                                 if (state.isAdminOpen)
                                   IconButton(
-                                    onPressed: () => cubit.deleteEmergencyTransaction(tx.id),
+                                    onPressed: () async {
+                                      final ok = await showConfirmDeleteDialog(
+                                        context: context,
+                                        s: state.s,
+                                        isDark: isDark,
+                                        message: state.s.confirmDeleteTxBody(
+                                          state.s.currency(tx.amount.abs().toInt()),
+                                        ),
+                                      );
+                                      if (ok) await cubit.deleteEmergencyTransaction(tx.id);
+                                    },
                                     icon: const Icon(Icons.delete_outline_rounded, size: 18),
                                     color: AppColors.danger,
                                     tooltip: state.s.deleteTooltip,

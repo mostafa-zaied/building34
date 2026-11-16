@@ -133,5 +133,13 @@
   "errCannotDeleteLastMonth": "لا يمكن حذف آخر شهر متبقي",
   "deleteMonthConfirmTitle": "حذف الشهر الحالي؟",
   "deleteMonthConfirmBody": "سيتم حذف شهر {month} ({year}) وجميع مدفوعاته نهائياً.",
-  "splashTagline": "كل مصاريف عمارتك.. أوضح، أسهل، وتحت السيطرة"
+  "splashTagline": "كل مصاريف عمارتك.. أوضح، أسهل، وتحت السيطرة",
+  "savedPassBadge": "تم حفظ كلمة سر شقتك تلقائياً",
+  "changePassBtn": "تغيير",
+  "confirmDeleteTitle": "تأكيد الحذف",
+  "confirmDeleteBtn": "حذف",
+  "confirmDeleteAptBody": "هل تريد حذف \"{apt}\"؟",
+  "confirmDeleteTxBody": "هل تريد حذف هذه الحركة ({amount})؟",
+  "confirmDeletePostBody": "هل تريد حذف هذه المشاركة نهائياً؟",
+  "confirmCancelPaymentBody": "هل تريد إلغاء تسجيل دفع \"{apt}\"؟"
 }

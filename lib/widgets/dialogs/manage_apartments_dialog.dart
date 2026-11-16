@@ -8,6 +8,7 @@ import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
 import '../../models/building_models.dart';
 import '../common/app_button.dart';
+import 'confirm_delete_dialog.dart';
 
 Future<void> showManageApartmentsDialog({
   required BuildContext context,
@@ -287,7 +288,19 @@ class _ManageApartmentsDialogState extends State<_ManageApartmentsDialog> {
                                 IconButton(
                                   onPressed: _saving || _apts.length <= 1
                                       ? null
-                                      : () => _deleteApartment(idx),
+                                      : () async {
+                                          final rawName = _nameCtrls[a.aptNum]?.text.trim() ?? '';
+                                          final aptName = rawName.isNotEmpty
+                                              ? rawName
+                                              : s.defaultAptName(a.aptNum);
+                                          final ok = await showConfirmDeleteDialog(
+                                            context: context,
+                                            s: s,
+                                            isDark: isDark,
+                                            message: s.confirmDeleteAptBody(aptName),
+                                          );
+                                          if (ok && mounted) _deleteApartment(idx);
+                                        },
                                   icon: const Icon(Icons.delete_outline_rounded, size: 19),
                                   color: AppColors.danger,
                                   padding: EdgeInsets.zero,

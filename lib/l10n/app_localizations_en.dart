@@ -463,4 +463,35 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get splashTagline =>
       'All your building expenses.. clearer, easier, under control';
+
+  @override
+  String get savedPassBadge => 'Your apartment passcode is saved';
+
+  @override
+  String get changePassBtn => 'Change';
+
+  @override
+  String get confirmDeleteTitle => 'Confirm Delete';
+
+  @override
+  String get confirmDeleteBtn => 'Delete';
+
+  @override
+  String confirmDeleteAptBody(String apt) {
+    return 'Do you want to delete \"$apt\"?';
+  }
+
+  @override
+  String confirmDeleteTxBody(String amount) {
+    return 'Do you want to delete this transaction ($amount)?';
+  }
+
+  @override
+  String get confirmDeletePostBody =>
+      'Do you want to permanently delete this post?';
+
+  @override
+  String confirmCancelPaymentBody(String apt) {
+    return 'Do you want to cancel the payment for \"$apt\"?';
+  }
 }
