@@ -7,7 +7,7 @@ import 'core/theme/app_theme.dart';
 import 'cubit/building_cubit.dart';
 import 'cubit/building_state.dart';
 import 'l10n/app_localizations.dart';
-import 'screens/main_shell.dart';
+import 'screens/splash_screen.dart';
 import 'services/building_service.dart';
 
 Future<void> main() async {
@@ -41,7 +41,7 @@ class AmaratyApp extends StatelessWidget {
             themeMode: state.isDarkMode ? ThemeMode.dark : ThemeMode.light,
             theme: AppTheme.light(),
             darkTheme: AppTheme.dark(),
-            home: const MainShell(),
+            home: const SplashScreen(),
           );
         },
       ),

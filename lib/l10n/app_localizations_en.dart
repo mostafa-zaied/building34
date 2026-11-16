@@ -454,4 +454,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recordDepositBtn => 'Record Deposit';
+
+  @override
+  String get removeMonthBtn => 'Remove Month';
+
+  @override
+  String get monthDeletedToast => '🗑️ Month removed successfully';
+
+  @override
+  String get errCannotDeleteLastMonth =>
+      'Cannot remove the last remaining month';
+
+  @override
+  String get deleteMonthConfirmTitle => 'Remove Current Month?';
+
+  @override
+  String deleteMonthConfirmBody(int month, int year) {
+    return 'Month $month ($year) and all its payments will be permanently deleted.';
+  }
+
+  @override
+  String get splashTagline =>
+      'All your building expenses.. clearer, easier, under control';
 }

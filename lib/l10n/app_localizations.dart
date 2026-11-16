@@ -883,6 +883,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Record Deposit'**
   String get recordDepositBtn;
+
+  /// No description provided for @removeMonthBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Month'**
+  String get removeMonthBtn;
+
+  /// No description provided for @monthDeletedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'🗑️ Month removed successfully'**
+  String get monthDeletedToast;
+
+  /// No description provided for @errCannotDeleteLastMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot remove the last remaining month'**
+  String get errCannotDeleteLastMonth;
+
+  /// No description provided for @deleteMonthConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Current Month?'**
+  String get deleteMonthConfirmTitle;
+
+  /// No description provided for @deleteMonthConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Month {month} ({year}) and all its payments will be permanently deleted.'**
+  String deleteMonthConfirmBody(int month, int year);
+
+  /// No description provided for @splashTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'All your building expenses.. clearer, easier, under control'**
+  String get splashTagline;
 }
 
 class _AppLocalizationsDelegate

@@ -502,6 +502,29 @@ class BuildingService {
     }
   }
 
+  Future<String?> deleteMonthAsAdmin({
+    required String adminPass,
+    required int monthId,
+  }) async {
+    if (!_useSupabase) {
+      if (_demoMonths.length <= 1) return 'err_cannot_delete_last_month';
+      _demoMonths.removeWhere((m) => m.id == monthId);
+      return null;
+    }
+
+    try {
+      final client = Supabase.instance.client;
+      final res = await client.rpc('admin_delete_month', params: {
+        'p_admin_pass': adminPass,
+        'p_month_id': monthId,
+      });
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_delete_failed';
+    } catch (e) {
+      return 'err_delete_failed';
+    }
+  }
+
   Future<String?> saveAnnouncement({
     required String adminPass,
     required String announcement,

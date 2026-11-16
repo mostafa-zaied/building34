@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../core/theme/app_colors.dart';
@@ -42,15 +43,43 @@ class MainShell extends StatelessWidget {
           FeedbackScreen(type: 'improvement'),
         ];
 
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            final isWide = constraints.maxWidth >= 720;
-            final isExtended = constraints.maxWidth >= 1024;
+        final bgDecoration = BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: isDark
+                ? const [Color(0xFF0A1124), AppColors.darkBg]
+                : const [Color(0xFFEEF2FF), AppColors.lightBg],
+            stops: const [0.0, 0.35],
+          ),
+        );
 
-            if (isWide) {
-              return Scaffold(
-                body: SafeArea(
-                  child: Row(
+        final overlayStyle = isDark
+            ? SystemUiOverlayStyle.light.copyWith(
+                statusBarColor: Colors.transparent,
+                systemNavigationBarColor: AppColors.darkBg,
+                systemNavigationBarIconBrightness: Brightness.light,
+              )
+            : SystemUiOverlayStyle.dark.copyWith(
+                statusBarColor: Colors.transparent,
+                systemNavigationBarColor: AppColors.lightBg,
+                systemNavigationBarIconBrightness: Brightness.dark,
+              );
+
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: overlayStyle,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final isWide = constraints.maxWidth >= 720;
+              final isExtended = constraints.maxWidth >= 1024;
+
+              if (isWide) {
+                return Scaffold(
+                  backgroundColor: isDark ? const Color(0xFF0A1124) : const Color(0xFFEEF2FF),
+                  body: Container(
+                    decoration: bgDecoration,
+                    child: SafeArea(
+                      child: Row(
                     children: [
                       NavigationRail(
                         selectedIndex: state.selectedNavIndex,
@@ -139,16 +168,21 @@ class MainShell extends StatelessWidget {
                     ],
                   ),
                 ),
+              ),
               );
             }
 
             return Scaffold(
               extendBody: true,
-              body: SafeArea(
-                bottom: false,
-                child: IndexedStack(
-                  index: state.selectedNavIndex,
-                  children: screens,
+              backgroundColor: isDark ? const Color(0xFF0A1124) : const Color(0xFFEEF2FF),
+              body: Container(
+                decoration: bgDecoration,
+                child: SafeArea(
+                  bottom: false,
+                  child: IndexedStack(
+                    index: state.selectedNavIndex,
+                    children: screens,
+                  ),
                 ),
               ),
               bottomNavigationBar: _FloatingBottomNav(
@@ -179,7 +213,8 @@ class MainShell extends StatelessWidget {
                 ],
               ),
             );
-          },
+            },
+          ),
         );
       },
     );

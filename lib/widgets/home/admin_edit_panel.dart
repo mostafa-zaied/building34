@@ -75,6 +75,21 @@ class AdminEditPanel extends StatelessWidget {
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: AppSecondaryButton(
+                label: s.removeMonthBtn,
+                icon: Icons.delete_outline_rounded,
+                accentColor: AppColors.danger,
+                onPressed: state.months.length <= 1
+                    ? null
+                    : () => _confirmDeleteMonth(context, cubit, state),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Row(
+          children: [
+            Expanded(
+              child: AppSecondaryButton(
                 label: s.unpaidReminderBtn,
                 icon: Icons.notifications_active_outlined,
                 accentColor: AppColors.amber,
@@ -85,14 +100,16 @@ class AdminEditPanel extends StatelessWidget {
                 },
               ),
             ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: AppSecondaryButton(
+                label: s.pinNoticeBtn,
+                icon: Icons.campaign_outlined,
+                accentColor: AppColors.primaryLight,
+                onPressed: () => _showAnnouncementDialog(context, cubit, state),
+              ),
+            ),
           ],
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        AppSecondaryButton(
-          label: s.pinNoticeBtn,
-          icon: Icons.campaign_outlined,
-          accentColor: AppColors.primaryLight,
-          onPressed: () => _showAnnouncementDialog(context, cubit, state),
         ),
         const SizedBox(height: AppSpacing.sm),
         AppSecondaryButton(
@@ -103,6 +120,46 @@ class AdminEditPanel extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _confirmDeleteMonth(
+    BuildContext context,
+    BuildingCubit cubit,
+    BuildingState state,
+  ) async {
+    final m = state.currentMonth;
+    if (m == null) return;
+    final isDark = state.isDarkMode;
+    final s = state.s;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.card(isDark),
+        title: Text(
+          s.deleteMonthConfirmTitle,
+          style: AppTypography.headline.copyWith(fontSize: 15),
+        ),
+        content: Text(
+          s.deleteMonthConfirmBody(m.monthNum, m.yearNum),
+          style: AppTypography.body.copyWith(color: AppColors.textSecondary(isDark)),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(s.cancel),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.danger),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(s.removeMonthBtn, style: const TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await cubit.deleteCurrentMonth();
+    }
   }
 
   Future<void> _showAnnouncementDialog(

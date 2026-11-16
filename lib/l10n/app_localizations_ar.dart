@@ -452,4 +452,24 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get recordDepositBtn => 'تسجيل إضافة للطوارئ';
+
+  @override
+  String get removeMonthBtn => 'حذف الشهر';
+
+  @override
+  String get monthDeletedToast => '🗑️ تم حذف الشهر بنجاح';
+
+  @override
+  String get errCannotDeleteLastMonth => 'لا يمكن حذف آخر شهر متبقي';
+
+  @override
+  String get deleteMonthConfirmTitle => 'حذف الشهر الحالي؟';
+
+  @override
+  String deleteMonthConfirmBody(int month, int year) {
+    return 'سيتم حذف شهر $month ($year) وجميع مدفوعاته نهائياً.';
+  }
+
+  @override
+  String get splashTagline => 'كل مصاريف عمارتك.. أوضح، أسهل، وتحت السيطرة';
 }

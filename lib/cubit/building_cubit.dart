@@ -97,6 +97,8 @@ class BuildingCubit extends Cubit<BuildingState> {
         return s.errSubmitFailed;
       case 'err_delete_failed':
         return s.errDeleteFailed;
+      case 'err_cannot_delete_last_month':
+        return s.errCannotDeleteLastMonth;
       default:
         return err;
     }
@@ -277,6 +279,29 @@ class BuildingCubit extends Cubit<BuildingState> {
     await loadData(preserveMonthIndex: state.months.length);
     emit(state.copyWith(
       feedbackMessage: () => state.s.monthAddedToast,
+      feedbackIsError: false,
+    ));
+  }
+
+  Future<void> deleteCurrentMonth() async {
+    if (!state.isAdminOpen) return;
+    final m = state.currentMonth;
+    if (m == null) return;
+    final err = await _service.deleteMonthAsAdmin(
+      adminPass: state.adminPass,
+      monthId: m.id,
+    );
+    if (err != null) {
+      emit(state.copyWith(
+        feedbackMessage: () => '❌ ${_localizeError(err)}',
+        feedbackIsError: true,
+      ));
+      return;
+    }
+    final nextIdx = state.selectedMonthIndex > 0 ? state.selectedMonthIndex - 1 : 0;
+    await loadData(preserveMonthIndex: nextIdx);
+    emit(state.copyWith(
+      feedbackMessage: () => state.s.monthDeletedToast,
       feedbackIsError: false,
     ));
   }

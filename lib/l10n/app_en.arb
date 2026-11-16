@@ -250,5 +250,17 @@
   "emergencyTabWithdraw": "Withdraw",
   "emergencyTabDeposit": "Deposit",
   "emergencyDepositReasonHint": "Reason (e.g. extra contribution or surplus)",
-  "recordDepositBtn": "Record Deposit"
+  "recordDepositBtn": "Record Deposit",
+  "removeMonthBtn": "Remove Month",
+  "monthDeletedToast": "🗑️ Month removed successfully",
+  "errCannotDeleteLastMonth": "Cannot remove the last remaining month",
+  "deleteMonthConfirmTitle": "Remove Current Month?",
+  "deleteMonthConfirmBody": "Month {month} ({year}) and all its payments will be permanently deleted.",
+  "@deleteMonthConfirmBody": {
+    "placeholders": {
+      "month": { "type": "int" },
+      "year": { "type": "int" }
+    }
+  },
+  "splashTagline": "All your building expenses.. clearer, easier, under control"
 }

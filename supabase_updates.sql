@@ -146,3 +146,33 @@ BEGIN
   RETURN jsonb_build_object('ok', true);
 END;
 $$;
+
+-- 4. Remove Month RPC (admin only, prevents deleting the last remaining month)
+CREATE OR REPLACE FUNCTION public.admin_delete_month(
+  p_admin_pass TEXT,
+  p_month_id BIGINT
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_pass TEXT;
+  v_count INT;
+BEGIN
+  SELECT admin_password INTO v_pass FROM public.building_settings WHERE id = 1;
+  IF v_pass IS NULL OR p_admin_pass <> v_pass THEN
+    RETURN jsonb_build_object('ok', false, 'error', 'err_wrong_admin_pass');
+  END IF;
+
+  SELECT COUNT(*) INTO v_count FROM public.months;
+  IF v_count <= 1 THEN
+    RETURN jsonb_build_object('ok', false, 'error', 'err_cannot_delete_last_month');
+  END IF;
+
+  DELETE FROM public.payments WHERE month_id = p_month_id;
+  DELETE FROM public.months WHERE id = p_month_id;
+
+  RETURN jsonb_build_object('ok', true);
+END;
+$$;

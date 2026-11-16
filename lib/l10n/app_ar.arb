@@ -130,5 +130,11 @@
   "emergencyTabWithdraw": "صرف",
   "emergencyTabDeposit": "إضافة",
   "emergencyDepositReasonHint": "السبب (مثال: مساهمة إضافية أو فائض)",
-  "recordDepositBtn": "تسجيل إضافة للطوارئ"
+  "recordDepositBtn": "تسجيل إضافة للطوارئ",
+  "removeMonthBtn": "حذف الشهر",
+  "monthDeletedToast": "🗑️ تم حذف الشهر بنجاح",
+  "errCannotDeleteLastMonth": "لا يمكن حذف آخر شهر متبقي",
+  "deleteMonthConfirmTitle": "حذف الشهر الحالي؟",
+  "deleteMonthConfirmBody": "سيتم حذف شهر {month} ({year}) وجميع مدفوعاته نهائياً.",
+  "splashTagline": "كل مصاريف عمارتك.. أوضح، أسهل، وتحت السيطرة"
 }
