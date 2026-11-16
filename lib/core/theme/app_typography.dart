@@ -3,10 +3,19 @@ import 'package:flutter/material.dart';
 /// Typography hierarchy for Amaraty.
 abstract final class AppTypography {
   static const TextStyle heroAmount = TextStyle(
-    fontSize: 26,
+    fontSize: 30,
     fontWeight: FontWeight.w800,
-    letterSpacing: -0.5,
+    letterSpacing: -0.6,
     height: 1.1,
+    fontFeatures: [FontFeature.tabularFigures()],
+  );
+
+  static const TextStyle statAmount = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.w800,
+    letterSpacing: -0.3,
+    height: 1.15,
+    fontFeatures: [FontFeature.tabularFigures()],
   );
 
   static const TextStyle headline = TextStyle(

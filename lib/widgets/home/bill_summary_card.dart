@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_shadows.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
 import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
 import '../../models/building_models.dart';
-import '../common/app_button.dart';
-import '../common/app_card.dart';
 import '../common/expense_stat_card.dart';
-import '../common/glow_box.dart';
 import 'admin_edit_panel.dart';
 
 class BillSummaryCard extends StatelessWidget {
@@ -48,184 +46,277 @@ class BillSummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = state.s;
     final isDark = state.isDarkMode;
-    final newEmergTotal = (state.baseEmergency + month.forEmerg).toInt();
+    final isAptsHighlighted = state.highlightedKey == 'apts';
 
-    return AppCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: AppSpacing.sm,
-            runSpacing: AppSpacing.sm,
-            children: [
-              Text(
-                s.billTitle(month.monthNum),
-                style: AppTypography.headline.copyWith(fontSize: 15),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // 1. Compact Monthly Expense Categories Grid (Top)
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final cards = [
+              ExpenseStatCard(
+                label: s.waterLabel,
+                value: s.currency(month.water.toInt()),
+                color: AppColors.water,
+                highlighted: state.highlightedKey == 'water',
               ),
-              AppPrimaryButton(
-                label: s.copyWhatsAppBtn,
-                icon: Icons.copy_rounded,
-                onPressed: onCopyWhatsApp,
+              ExpenseStatCard(
+                label: s.elecLabel,
+                value: s.currency(month.elec.toInt()),
+                color: AppColors.electricity,
+                highlighted: state.highlightedKey == 'elec',
+              ),
+              ExpenseStatCard(
+                label: s.elevLabel,
+                value: s.currency(month.elev.toInt()),
+                color: AppColors.elevator,
+                highlighted: state.highlightedKey == 'elev',
+              ),
+              ExpenseStatCard(
+                label: s.cleanLabel,
+                value: s.currency(month.clean.toInt()),
+                color: AppColors.cleaning,
+                highlighted: state.highlightedKey == 'clean',
+              ),
+              ExpenseStatCard(
+                label: s.forEmergLabel,
+                value: s.currency(month.forEmerg.toInt()),
+                color: AppColors.reserve,
+                highlighted: state.highlightedKey == 'emerg',
+              ),
+            ];
+
+            if (constraints.maxWidth < 500) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(child: cards[0]),
+                      const SizedBox(width: AppSpacing.xs),
+                      Expanded(child: cards[1]),
+                      const SizedBox(width: AppSpacing.xs),
+                      Expanded(child: cards[2]),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Row(
+                    children: [
+                      Expanded(child: cards[3]),
+                      const SizedBox(width: AppSpacing.xs),
+                      Expanded(child: cards[4]),
+                    ],
+                  ),
+                ],
+              );
+            }
+
+            return Row(
+              children: [
+                Expanded(child: cards[0]),
+                const SizedBox(width: AppSpacing.xs),
+                Expanded(child: cards[1]),
+                const SizedBox(width: AppSpacing.xs),
+                Expanded(child: cards[2]),
+                const SizedBox(width: AppSpacing.xs),
+                Expanded(child: cards[3]),
+                const SizedBox(width: AppSpacing.xs),
+                Expanded(child: cards[4]),
+              ],
+            );
+          },
+        ),
+
+        const SizedBox(height: AppSpacing.md),
+
+        // 2. Luxury Hero Financial Summary Card (Below Services, without Emergency Strip)
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 240),
+          curve: Curves.easeOutCubic,
+          padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: AlignmentDirectional.topStart,
+              end: AlignmentDirectional.bottomEnd,
+              colors: isDark
+                  ? const [Color(0xFF131C31), Color(0xFF1A1838)]
+                  : const [Color(0xFFFFFFFF), Color(0xFFF2F4FF)],
+            ),
+            borderRadius: BorderRadius.circular(AppRadius.xl),
+            border: Border.all(
+              color: isAptsHighlighted
+                  ? AppColors.primary
+                  : (isDark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : AppColors.primary.withValues(alpha: 0.14)),
+              width: isAptsHighlighted ? 1.6 : 1.0,
+            ),
+            boxShadow: isAptsHighlighted
+                ? AppShadows.accentGlow(AppColors.primary, active: true, isDark: isDark)
+                : AppShadows.heroCard(isDark),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                      color: AppColors.primaryLight,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      s.billTitle(month.monthNum),
+                      style: AppTypography.headline.copyWith(
+                        color: AppColors.textPrimary(isDark),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.md),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          s.sharePerAptLabel,
+                          style: AppTypography.label.copyWith(
+                            color: AppColors.textSecondary(isDark),
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.xxs),
+                        Text(
+                          s.currency(month.sharePerApt),
+                          style: AppTypography.heroAmount.copyWith(
+                            color: isDark ? Colors.white : AppColors.primaryDark,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsetsDirectional.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.sm,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.04)
+                          : AppColors.primary.withValues(alpha: 0.06),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      border: Border.all(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.06)
+                            : AppColors.primary.withValues(alpha: 0.12),
+                      ),
+                    ),
+                    child: Text(
+                      s.totalExpensesLine(month.totalExpenses.toInt(), month.aptsCount),
+                      style: AppTypography.label.copyWith(
+                        color: AppColors.textPrimary(isDark),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.md),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final cards = [
-                ExpenseStatCard(label: s.waterLabel, value: '${month.water.toInt()}', color: AppColors.water, highlighted: state.highlightedKey == 'water'),
-                ExpenseStatCard(label: s.elecLabel, value: '${month.elec.toInt()}', color: AppColors.electricity, highlighted: state.highlightedKey == 'elec'),
-                ExpenseStatCard(label: s.elevLabel, value: '${month.elev.toInt()}', color: AppColors.elevator, highlighted: state.highlightedKey == 'elev'),
-                ExpenseStatCard(label: s.cleanLabel, value: '${month.clean.toInt()}', color: AppColors.cleaning, highlighted: state.highlightedKey == 'clean'),
-                ExpenseStatCard(label: s.forEmergLabel, value: '${month.forEmerg.toInt()}', color: AppColors.reserve, highlighted: state.highlightedKey == 'emerg'),
-              ];
+        ),
 
-              if (constraints.maxWidth < 460) {
-                return Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(child: cards[0]),
-                        const SizedBox(width: AppSpacing.xs),
-                        Expanded(child: cards[1]),
-                        const SizedBox(width: AppSpacing.xs),
-                        Expanded(child: cards[2]),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Row(
-                      children: [
-                        Expanded(child: cards[3]),
-                        const SizedBox(width: AppSpacing.xs),
-                        Expanded(child: cards[4]),
-                        const SizedBox(width: AppSpacing.xs),
-                        const Spacer(),
-                      ],
-                    ),
-                  ],
-                );
-              }
+        const SizedBox(height: AppSpacing.md),
 
-              return Row(
-                children: [
-                  Expanded(child: cards[0]),
-                  const SizedBox(width: AppSpacing.xs),
-                  Expanded(child: cards[1]),
-                  const SizedBox(width: AppSpacing.xs),
-                  Expanded(child: cards[2]),
-                  const SizedBox(width: AppSpacing.xs),
-                  Expanded(child: cards[3]),
-                  const SizedBox(width: AppSpacing.xs),
-                  Expanded(child: cards[4]),
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: AppSpacing.md),
-          GlowBox(
-            glowColor: AppColors.primary,
-            isHighlighted: state.highlightedKey == 'apts',
-            padding: const EdgeInsetsDirectional.all(AppSpacing.md),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        s.totalExpensesLine(month.totalExpenses.toInt(), month.aptsCount),
-                        style: AppTypography.label.copyWith(fontWeight: FontWeight.w700),
+        // 3. WhatsApp Share Action (directly above the copied message preview)
+        _WhatsAppShareButton(
+          label: s.copyWhatsAppBtn,
+          onTap: onCopyWhatsApp,
+          isDark: isDark,
+        ),
+
+        // 4. Copied WhatsApp Message Preview Drawer
+        AnimatedSize(
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOutCubic,
+          child: state.copiedPreview == null
+              ? const SizedBox.shrink()
+              : Padding(
+                  padding: const EdgeInsetsDirectional.only(top: AppSpacing.md),
+                  child: Container(
+                    padding: const EdgeInsetsDirectional.all(AppSpacing.md),
+                    decoration: BoxDecoration(
+                      color: AppColors.card(isDark),
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                      border: Border.all(
+                        color: AppColors.emerald.withValues(alpha: 0.45),
                       ),
-                      const SizedBox(height: AppSpacing.xxs),
-                      Text(
-                        s.emergencySummaryLine(newEmergTotal, state.baseEmergency.toInt(), month.forEmerg.toInt()),
-                        style: AppTypography.caption.copyWith(
-                          color: AppColors.emeraldText(isDark),
-                          fontWeight: FontWeight.w600,
+                      boxShadow: AppShadows.card(isDark),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              s.copiedTitle,
+                              style: AppTypography.label.copyWith(
+                                color: AppColors.emeraldText(isDark),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () => cubit.setCopiedPreview(null),
+                              borderRadius: BorderRadius.circular(AppRadius.pill),
+                              child: Padding(
+                                padding: const EdgeInsetsDirectional.all(4),
+                                child: Icon(
+                                  Icons.close_rounded,
+                                  size: 16,
+                                  color: AppColors.textSecondary(isDark),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: AppSpacing.xs),
+                        SelectableText(
+                          state.copiedPreview!,
+                          style: AppTypography.caption.copyWith(
+                            color: AppColors.textSecondary(isDark),
+                            height: 1.6,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(width: AppSpacing.sm),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      s.sharePerAptLabel,
-                      style: AppTypography.caption.copyWith(color: AppColors.textSecondary(isDark)),
-                    ),
-                    Text(
-                      s.currency(month.sharePerApt),
-                      style: AppTypography.heroAmount.copyWith(
-                        fontSize: 21,
-                        color: AppColors.primaryText(isDark),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 220),
-            curve: Curves.easeOutCubic,
-            child: state.copiedPreview == null
-                ? const SizedBox.shrink()
-                : Padding(
-                    padding: const EdgeInsetsDirectional.only(top: AppSpacing.md),
-                    child: Container(
-                      padding: const EdgeInsetsDirectional.all(AppSpacing.md),
-                      decoration: BoxDecoration(
-                        color: AppColors.surface(isDark),
-                        borderRadius: BorderRadius.circular(AppRadius.md),
-                        border: Border.all(color: AppColors.emerald.withValues(alpha: 0.65)),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                s.copiedTitle,
-                                style: AppTypography.caption.copyWith(
-                                  color: AppColors.emeraldText(isDark),
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              InkWell(
-                                onTap: () => cubit.setCopiedPreview(null),
-                                borderRadius: BorderRadius.circular(AppRadius.pill),
-                                child: Padding(
-                                  padding: const EdgeInsetsDirectional.all(2),
-                                  child: Icon(
-                                    Icons.close_rounded,
-                                    size: 16,
-                                    color: AppColors.textSecondary(isDark),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: AppSpacing.xs),
-                          SelectableText(
-                            state.copiedPreview!,
-                            style: AppTypography.caption.copyWith(height: 1.55),
-                          ),
-                        ],
-                      ),
-                    ),
+        ),
+
+        // 5. Admin Edit Panel (Animated)
+        AnimatedSize(
+          duration: const Duration(milliseconds: 240),
+          curve: Curves.easeOutCubic,
+          child: state.isAdminOpen
+              ? Container(
+                  margin: const EdgeInsetsDirectional.only(top: AppSpacing.md),
+                  padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
+                  decoration: BoxDecoration(
+                    color: AppColors.card(isDark),
+                    borderRadius: BorderRadius.circular(AppRadius.xl),
+                    border: Border.all(color: AppColors.border(isDark)),
+                    boxShadow: AppShadows.card(isDark),
                   ),
-          ),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 240),
-            curve: Curves.easeOutCubic,
-            child: state.isAdminOpen
-                ? AdminEditPanel(
+                  child: AdminEditPanel(
                     cubit: cubit,
                     state: state,
                     waterCtrl: waterCtrl,
@@ -237,10 +328,66 @@ class BillSummaryCard extends StatelessWidget {
                     baseEmergCtrl: baseEmergCtrl,
                     onFieldChanged: onFieldChanged,
                     onOpenManageApts: onOpenManageApts,
-                  )
-                : const SizedBox.shrink(),
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ),
+      ],
+    );
+  }
+}
+
+class _WhatsAppShareButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+  final bool isDark;
+
+  const _WhatsAppShareButton({
+    required this.label,
+    required this.onTap,
+    required this.isDark,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        child: Ink(
+          padding: const EdgeInsetsDirectional.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
           ),
-        ],
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [AppColors.primary, AppColors.accentViolet],
+              begin: AlignmentDirectional.centerStart,
+              end: AlignmentDirectional.centerEnd,
+            ),
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+            boxShadow: AppShadows.accentGlow(
+              AppColors.primary,
+              active: false,
+              isDark: isDark,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.share_rounded, size: 15, color: Colors.white),
+              const SizedBox(width: AppSpacing.xs),
+              Text(
+                label,
+                style: AppTypography.label.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

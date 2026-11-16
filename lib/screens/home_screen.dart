@@ -151,58 +151,77 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
         return LayoutBuilder(
           builder: (context, constraints) {
             final isDesktopDash = constraints.maxWidth >= 900;
+            final isWideNav = constraints.maxWidth >= 720;
+            final isDark = state.isDarkMode;
 
-            return Align(
-              alignment: Alignment.topCenter,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: isDesktopDash ? 1080 : 580),
-                child: SingleChildScrollView(
-                  padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (!AppConfig.isSupabaseConfigured)
-                        Container(
-                          margin: const EdgeInsetsDirectional.only(bottom: AppSpacing.md),
-                          padding: const EdgeInsetsDirectional.symmetric(
-                            horizontal: AppSpacing.md,
-                            vertical: AppSpacing.sm,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.card(state.isDarkMode),
-                            borderRadius: BorderRadius.circular(AppRadius.md),
-                            border: Border.all(color: AppColors.amber.withValues(alpha: 0.5)),
-                          ),
-                          child: Text(
-                            s.demoBanner,
-                            style: AppTypography.caption.copyWith(
-                              color: state.isDarkMode ? AppColors.amber : AppColors.amberDarkText,
+            return Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: isDark
+                      ? const [Color(0xFF0A1124), AppColors.darkBg]
+                      : const [Color(0xFFEEF2FF), AppColors.lightBg],
+                  stops: const [0.0, 0.35],
+                ),
+              ),
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: isDesktopDash ? 1120 : 600),
+                  child: SingleChildScrollView(
+                    padding: EdgeInsetsDirectional.fromSTEB(
+                      AppSpacing.lg,
+                      AppSpacing.md,
+                      AppSpacing.lg,
+                      isWideNav ? AppSpacing.xxl : 104,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (!AppConfig.isSupabaseConfigured)
+                          Container(
+                            margin: const EdgeInsetsDirectional.only(bottom: AppSpacing.md),
+                            padding: const EdgeInsetsDirectional.symmetric(
+                              horizontal: AppSpacing.md,
+                              vertical: AppSpacing.sm,
                             ),
-                            textAlign: TextAlign.center,
+                            decoration: BoxDecoration(
+                              color: AppColors.card(isDark),
+                              borderRadius: BorderRadius.circular(AppRadius.md),
+                              border: Border.all(color: AppColors.amber.withValues(alpha: 0.4)),
+                            ),
+                            child: Text(
+                              s.demoBanner,
+                              style: AppTypography.caption.copyWith(
+                                color: isDark ? AppColors.amber : AppColors.amberDarkText,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
+                        TopBar(
+                          cubit: cubit,
+                          state: state,
+                          month: m,
+                          onToggleAdmin: () => _toggleAdminPanel(cubit, state),
                         ),
-                      TopBar(
-                        cubit: cubit,
-                        state: state,
-                        month: m,
-                        onToggleAdmin: () => _toggleAdminPanel(cubit, state),
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      if (isDesktopDash)
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(flex: 6, child: billCard),
-                            const SizedBox(width: AppSpacing.lg),
-                            Expanded(flex: 5, child: apartmentsCard),
-                          ],
-                        )
-                      else ...[
-                        billCard,
-                        const SizedBox(height: AppSpacing.md),
-                        apartmentsCard,
+                        const SizedBox(height: AppSpacing.lg),
+                        if (isDesktopDash)
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(flex: 6, child: billCard),
+                              const SizedBox(width: AppSpacing.lg),
+                              Expanded(flex: 5, child: apartmentsCard),
+                            ],
+                          )
+                        else ...[
+                          billCard,
+                          const SizedBox(height: AppSpacing.lg),
+                          apartmentsCard,
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
               ),

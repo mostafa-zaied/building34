@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_shadows.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
 import '../../cubit/building_state.dart';
 import '../../models/building_models.dart';
-import '../common/app_card.dart';
 import 'apartment_card.dart';
 
 class ApartmentsGrid extends StatelessWidget {
@@ -25,25 +25,65 @@ class ApartmentsGrid extends StatelessWidget {
     final s = state.s;
     final isDark = state.isDarkMode;
     final paidCount = month.payments.length;
-    final progress = month.aptsCount > 0 ? (paidCount / month.aptsCount).clamp(0.0, 1.0) : 0.0;
+    final progress = month.aptsCount > 0
+        ? (paidCount / month.aptsCount).clamp(0.0, 1.0)
+        : 0.0;
 
-    return AppCard(
+    return Container(
+      padding: const EdgeInsetsDirectional.all(AppSpacing.xl),
+      decoration: BoxDecoration(
+        color: AppColors.card(isDark),
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: AppColors.border(isDark)),
+        boxShadow: AppShadows.card(isDark),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Header: Title + Paid progress counter pill + percentage
           Wrap(
             alignment: WrapAlignment.spaceBetween,
             crossAxisAlignment: WrapCrossAlignment.center,
             spacing: AppSpacing.sm,
             runSpacing: AppSpacing.sm,
             children: [
-              Text(s.tapAptTitle, style: AppTypography.title),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: isDark ? 0.14 : 0.10),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
+                    ),
+                    child: Icon(
+                      Icons.grid_view_rounded,
+                      size: 16,
+                      color: AppColors.primaryText(isDark),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Text(
+                    s.tapAptTitle,
+                    style: AppTypography.headline.copyWith(
+                      fontSize: 15,
+                      color: AppColors.textPrimary(isDark),
+                    ),
+                  ),
+                ],
+              ),
               Container(
-                padding: const EdgeInsetsDirectional.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsetsDirectional.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
-                  color: AppColors.emerald.withValues(alpha: 0.12),
+                  color: AppColors.emerald.withValues(alpha: isDark ? 0.14 : 0.10),
                   borderRadius: BorderRadius.circular(AppRadius.pill),
-                  border: Border.all(color: AppColors.emerald.withValues(alpha: 0.35)),
+                  border: Border.all(
+                    color: AppColors.emerald.withValues(alpha: 0.30),
+                  ),
                 ),
                 child: Text(
                   s.paidCounter(paidCount, month.aptsCount),
@@ -55,43 +95,71 @@ class ApartmentsGrid extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.sm),
+
+          const SizedBox(height: AppSpacing.md),
+
+          // Sleek animated gradient progress bar
           ClipRRect(
             borderRadius: BorderRadius.circular(AppRadius.pill),
             child: TweenAnimationBuilder<double>(
               tween: Tween<double>(begin: 0, end: progress),
-              duration: const Duration(milliseconds: 400),
+              duration: const Duration(milliseconds: 450),
               curve: Curves.easeOutCubic,
-              builder: (_, val, _) => LinearProgressIndicator(
-                value: val,
-                minHeight: 5,
-                backgroundColor: AppColors.surface(isDark),
-                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.emerald),
+              builder: (_, val, _) => Container(
+                height: 7,
+                width: double.infinity,
+                color: AppColors.surface(isDark),
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: FractionallySizedBox(
+                    widthFactor: val,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [AppColors.emerald, AppColors.emeraldLight],
+                        ),
+                        borderRadius: BorderRadius.circular(AppRadius.pill),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
-          const SizedBox(height: AppSpacing.md),
+
+          const SizedBox(height: AppSpacing.lg),
+
+          // Responsive Apartment Grid
           LayoutBuilder(
             builder: (context, constraints) {
-              final aspect = constraints.maxWidth < 400 ? 1.25 : 1.45;
+              final w = constraints.maxWidth;
+              final crossAxisCount = w < 340
+                  ? 2
+                  : (w < 640 ? 3 : 4);
+              final aspect = w < 360 ? 1.25 : 1.38;
+
               return GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: month.aptsCount,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
+                  crossAxisCount: crossAxisCount,
                   mainAxisSpacing: AppSpacing.sm,
                   crossAxisSpacing: AppSpacing.sm,
                   childAspectRatio: aspect,
                 ),
                 itemBuilder: (context, idx) {
                   final aptNum = idx + 1;
-                  final isPaid = month.payments.containsKey(aptNum);
+                  final payment = month.payments[aptNum];
+                  final isPaid = payment != null;
+
                   return ApartmentCard(
                     aptNum: aptNum,
                     label: state.aptLabel(aptNum),
-                    statusText: isPaid ? s.paidBadge : '⏳ ${s.currency(month.sharePerApt)}',
+                    amountText: s.currency(month.sharePerApt),
+                    paidLabel: s.paidBadge,
                     isPaid: isPaid,
+                    hasReceipt: payment?.receiptUrl != null,
                     onTap: () => onTapApartment(aptNum),
                   );
                 },

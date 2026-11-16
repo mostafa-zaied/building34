@@ -7,7 +7,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('مصاريف العمارة لشهر 11:'), findsOneWidget);
-    expect(find.text('300 ج'), findsOneWidget);
+    expect(find.text('300 ج'), findsWidgets);
     expect(find.text('شقة 1'), findsOneWidget);
     expect(find.text('شقة 13'), findsOneWidget);
   });

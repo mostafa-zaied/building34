@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../core/theme/app_colors.dart';
+import '../core/theme/app_shadows.dart';
 import '../core/theme/app_spacing.dart';
 import '../core/theme/app_typography.dart';
 import '../cubit/building_cubit.dart';
@@ -15,7 +16,8 @@ class MainShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<BuildingCubit, BuildingState>(
-      listenWhen: (prev, curr) => prev.feedbackMessage != curr.feedbackMessage && curr.feedbackMessage != null,
+      listenWhen: (prev, curr) =>
+          prev.feedbackMessage != curr.feedbackMessage && curr.feedbackMessage != null,
       listener: (context, state) {
         if (state.feedbackMessage != null) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -53,9 +55,10 @@ class MainShell extends StatelessWidget {
                         onDestinationSelected: cubit.selectNav,
                         extended: isExtended,
                         minExtendedWidth: 215,
-                        backgroundColor: AppColors.card(isDark),
+                        backgroundColor: AppColors.surface(isDark),
                         indicatorColor: AppColors.primary.withValues(alpha: 0.16),
                         selectedIconTheme: IconThemeData(color: AppColors.primaryText(isDark)),
+                        unselectedIconTheme: IconThemeData(color: AppColors.textSecondary(isDark)),
                         selectedLabelTextStyle: AppTypography.label.copyWith(
                           color: AppColors.primaryText(isDark),
                           fontWeight: FontWeight.w700,
@@ -75,13 +78,17 @@ class MainShell extends StatelessWidget {
                                 padding: const EdgeInsetsDirectional.all(AppSpacing.sm),
                                 decoration: BoxDecoration(
                                   gradient: const LinearGradient(
-                                    colors: [AppColors.primary, AppColors.emerald],
+                                    colors: [AppColors.primary, AppColors.accentViolet],
                                     begin: AlignmentDirectional.topStart,
                                     end: AlignmentDirectional.bottomEnd,
                                   ),
                                   borderRadius: BorderRadius.circular(AppRadius.md),
                                 ),
-                                child: const Icon(Icons.apartment_rounded, size: 20, color: Colors.white),
+                                child: const Icon(
+                                  Icons.apartment_rounded,
+                                  size: 20,
+                                  color: Colors.white,
+                                ),
                               ),
                               if (isExtended) ...[
                                 const SizedBox(width: AppSpacing.sm),
@@ -95,8 +102,8 @@ class MainShell extends StatelessWidget {
                         ),
                         destinations: [
                           NavigationRailDestination(
-                            icon: const Icon(Icons.receipt_long_outlined),
-                            selectedIcon: const Icon(Icons.receipt_long_rounded),
+                            icon: const Icon(Icons.account_balance_wallet_outlined),
+                            selectedIcon: const Icon(Icons.account_balance_wallet_rounded),
                             label: Text(s.navExpenses),
                           ),
                           NavigationRailDestination(
@@ -105,7 +112,7 @@ class MainShell extends StatelessWidget {
                             label: Text(s.navComplaints),
                           ),
                           NavigationRailDestination(
-                            icon: const Icon(Icons.lightbulb_outline),
+                            icon: const Icon(Icons.lightbulb_outline_rounded),
                             selectedIcon: const Icon(Icons.lightbulb_rounded),
                             label: Text(s.navImprovements),
                           ),
@@ -129,45 +136,161 @@ class MainShell extends StatelessWidget {
             }
 
             return Scaffold(
+              extendBody: true,
               body: SafeArea(
+                bottom: false,
                 child: IndexedStack(
                   index: state.selectedNavIndex,
                   children: screens,
                 ),
               ),
-              bottomNavigationBar: Container(
-                decoration: BoxDecoration(
-                  border: Border(top: BorderSide(color: AppColors.border(isDark))),
-                ),
-                child: NavigationBar(
-                  selectedIndex: state.selectedNavIndex,
-                  onDestinationSelected: cubit.selectNav,
-                  backgroundColor: AppColors.card(isDark),
-                  indicatorColor: AppColors.primary.withValues(alpha: 0.16),
-                  height: 68,
-                  destinations: [
-                    NavigationDestination(
-                      icon: const Icon(Icons.receipt_long_outlined),
-                      selectedIcon: Icon(Icons.receipt_long_rounded, color: AppColors.primaryText(isDark)),
-                      label: s.navExpenses,
-                    ),
-                    NavigationDestination(
-                      icon: const Icon(Icons.campaign_outlined),
-                      selectedIcon: Icon(Icons.campaign_rounded, color: AppColors.primaryText(isDark)),
-                      label: s.navComplaints,
-                    ),
-                    NavigationDestination(
-                      icon: const Icon(Icons.lightbulb_outline),
-                      selectedIcon: Icon(Icons.lightbulb_rounded, color: AppColors.primaryText(isDark)),
-                      label: s.navImprovements,
-                    ),
-                  ],
-                ),
+              bottomNavigationBar: _FloatingBottomNav(
+                selectedIndex: state.selectedNavIndex,
+                onSelect: cubit.selectNav,
+                isDark: isDark,
+                items: [
+                  _NavItemData(
+                    icon: Icons.account_balance_wallet_outlined,
+                    selectedIcon: Icons.account_balance_wallet_rounded,
+                    label: s.navExpenses,
+                  ),
+                  _NavItemData(
+                    icon: Icons.campaign_outlined,
+                    selectedIcon: Icons.campaign_rounded,
+                    label: s.navComplaints,
+                  ),
+                  _NavItemData(
+                    icon: Icons.lightbulb_outline_rounded,
+                    selectedIcon: Icons.lightbulb_rounded,
+                    label: s.navImprovements,
+                  ),
+                ],
               ),
             );
           },
         );
       },
+    );
+  }
+}
+
+class _NavItemData {
+  final IconData icon;
+  final IconData selectedIcon;
+  final String label;
+
+  const _NavItemData({
+    required this.icon,
+    required this.selectedIcon,
+    required this.label,
+  });
+}
+
+class _FloatingBottomNav extends StatelessWidget {
+  final int selectedIndex;
+  final ValueChanged<int> onSelect;
+  final bool isDark;
+  final List<_NavItemData> items;
+
+  const _FloatingBottomNav({
+    required this.selectedIndex,
+    required this.onSelect,
+    required this.isDark,
+    required this.items,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(
+          AppSpacing.lg,
+          0,
+          AppSpacing.lg,
+          AppSpacing.md,
+        ),
+        child: Container(
+          height: 66,
+          padding: const EdgeInsetsDirectional.symmetric(
+            horizontal: AppSpacing.xs,
+            vertical: AppSpacing.xs,
+          ),
+          decoration: BoxDecoration(
+            color: isDark
+                ? AppColors.darkCardElevated.withValues(alpha: 0.96)
+                : Colors.white.withValues(alpha: 0.96),
+            borderRadius: BorderRadius.circular(AppRadius.xxl),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : AppColors.lightBorder,
+            ),
+            boxShadow: AppShadows.floatingNav(isDark),
+          ),
+          child: Row(
+            children: List.generate(items.length, (index) {
+              final item = items[index];
+              final selected = index == selectedIndex;
+
+              return Expanded(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => onSelect(index),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 240),
+                    curve: Curves.easeOutCubic,
+                    height: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: selected
+                          ? LinearGradient(
+                              colors: [
+                                AppColors.primary.withValues(alpha: isDark ? 0.24 : 0.14),
+                                AppColors.accentViolet.withValues(alpha: isDark ? 0.16 : 0.08),
+                              ],
+                              begin: AlignmentDirectional.topStart,
+                              end: AlignmentDirectional.bottomEnd,
+                            )
+                          : null,
+                      borderRadius: BorderRadius.circular(AppRadius.xl),
+                      border: selected
+                          ? Border.all(
+                              color: AppColors.primary.withValues(alpha: 0.32),
+                            )
+                          : null,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          selected ? item.selectedIcon : item.icon,
+                          size: 20,
+                          color: selected
+                              ? AppColors.primaryText(isDark)
+                              : AppColors.textSecondary(isDark),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          item.label,
+                          style: AppTypography.caption.copyWith(
+                            fontSize: 11,
+                            fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                            color: selected
+                                ? AppColors.primaryText(isDark)
+                                : AppColors.textSecondary(isDark),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ),
+        ),
+      ),
     );
   }
 }
