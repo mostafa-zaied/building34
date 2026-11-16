@@ -81,8 +81,10 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
 
   Future<void> _copyWhatsApp(BuildingCubit cubit) async {
     final text = cubit.buildWhatsAppMessage();
-    await Clipboard.setData(ClipboardData(text: text));
     cubit.setCopiedPreview(text);
+    try {
+      await Clipboard.setData(ClipboardData(text: text));
+    } catch (_) {}
   }
 
   Future<void> _toggleAdminPanel(BuildingCubit cubit, BuildingState state) async {

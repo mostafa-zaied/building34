@@ -95,8 +95,10 @@ class AdminEditPanel extends StatelessWidget {
                 accentColor: AppColors.amber,
                 onPressed: () async {
                   final text = cubit.buildUnpaidReminderMessage();
-                  await Clipboard.setData(ClipboardData(text: text));
                   cubit.setCopiedPreview(text);
+                  try {
+                    await Clipboard.setData(ClipboardData(text: text));
+                  } catch (_) {}
                 },
               ),
             ),
