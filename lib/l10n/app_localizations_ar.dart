@@ -9,7 +9,7 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
-  String get appTitle => 'مصاريف العمارة';
+  String get appTitle => 'MABNA CARE';
 
   @override
   String get demoBanner =>
@@ -458,7 +458,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get splashTagline => 'كل مصاريف عمارتك.. أوضح، أسهل، وتحت السيطرة';
+  String get splashTagline => 'عمارتك.. مسؤوليتنا.';
 
   @override
   String get savedPassBadge => 'تم حفظ كلمة سر شقتك تلقائياً';

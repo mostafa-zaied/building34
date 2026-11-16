@@ -1,6 +1,6 @@
 {
   "@@locale": "ar",
-  "appTitle": "مصاريف العمارة",
+  "appTitle": "MABNA CARE",
   "demoBanner": "🧪 وضع التجربة المحلي — أضف بيانات Supabase في lib/config.dart للنشر الفعلي",
   "monthOption": "شهر {monthNum} ({yearNum})",
   "emergencyBadge": "🛡️ الطوارئ: {amount} ج",
@@ -133,7 +133,7 @@
   "errCannotDeleteLastMonth": "لا يمكن حذف آخر شهر متبقي",
   "deleteMonthConfirmTitle": "حذف الشهر الحالي؟",
   "deleteMonthConfirmBody": "سيتم حذف شهر {month} ({year}) وجميع مدفوعاته نهائياً.",
-  "splashTagline": "كل مصاريف عمارتك.. أوضح، أسهل، وتحت السيطرة",
+  "splashTagline": "عمارتك.. مسؤوليتنا.",
   "savedPassBadge": "تم حفظ كلمة سر شقتك تلقائياً",
   "changePassBtn": "تغيير",
   "confirmDeleteTitle": "تأكيد الحذف",

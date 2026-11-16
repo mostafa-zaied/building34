@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Building Expenses'**
+  /// **'MABNA CARE'**
   String get appTitle;
 
   /// No description provided for @demoBanner.
@@ -899,7 +899,7 @@ abstract class AppLocalizations {
   /// No description provided for @splashTagline.
   ///
   /// In en, this message translates to:
-  /// **'All your building expenses.. clearer, easier, under control'**
+  /// **'Your Building, Our Care.'**
   String get splashTagline;
 
   /// No description provided for @savedPassBadge.

@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Building Expenses';
+  String get appTitle => 'MABNA CARE';
 
   @override
   String get demoBanner =>
@@ -461,8 +461,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get splashTagline =>
-      'All your building expenses.. clearer, easier, under control';
+  String get splashTagline => 'Your Building, Our Care.';
 
   @override
   String get savedPassBadge => 'Your apartment passcode is saved';

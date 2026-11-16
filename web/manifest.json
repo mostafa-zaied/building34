@@ -1,11 +1,11 @@
 {
-    "name": "Amaraty - مصاريف العمارة",
-    "short_name": "Amaraty",
+    "name": "MABNA CARE — مبنى كير",
+    "short_name": "MABNA CARE",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#090D16",
-    "theme_color": "#4F46E5",
-    "description": "Smart Building & Monthly Expenses Management",
+    "background_color": "#F5F8FF",
+    "theme_color": "#2457C5",
+    "description": "Your Building, Our Care.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

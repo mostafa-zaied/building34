@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appTitle": "Building Expenses",
+  "appTitle": "MABNA CARE",
   "demoBanner": "🧪 Local Demo Mode — Add Supabase keys in lib/config.dart for live deployment",
   "monthOption": "Month {monthNum} ({yearNum})",
   "@monthOption": {
@@ -252,7 +252,7 @@
       "year": { "type": "int" }
     }
   },
-  "splashTagline": "All your building expenses.. clearer, easier, under control",
+  "splashTagline": "Your Building, Our Care.",
   "savedPassBadge": "Your apartment passcode is saved",
   "changePassBtn": "Change",
   "confirmDeleteTitle": "Confirm Delete",
