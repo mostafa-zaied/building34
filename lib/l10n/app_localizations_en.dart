@@ -352,7 +352,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get monthAddedToast => '✅ Next month added';
 
   @override
-  String get pinAptPrompt => 'Pin your apartment for quick payment & statement';
+  String get pinAptPrompt => 'Pin your apartment for quick payment';
 
   @override
   String get selectAptBtn => 'Select Apt';
@@ -361,23 +361,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myAptPrefix => 'My Apt';
 
   @override
-  String get statementBtn => 'Statement';
-
-  @override
   String get payNowBtn => 'Pay Now';
 
   @override
   String get changeAptTooltip => 'Change apartment';
-
-  @override
-  String statementDialogTitle(String apt) {
-    return 'Payment Statement — $apt';
-  }
-
-  @override
-  String statementSummary(int paid, int unpaid) {
-    return 'Paid: $paid  •  Remaining: $unpaid';
-  }
 
   @override
   String get emergencyLogTitle => 'Emergency Fund Log';

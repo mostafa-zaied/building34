@@ -11,7 +11,6 @@ import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
 import '../../models/building_models.dart';
 import '../common/app_button.dart';
-import 'apartment_statement_dialog.dart';
 
 Future<void> showApartmentPaymentDialog({
   required BuildContext context,
@@ -23,7 +22,6 @@ Future<void> showApartmentPaymentDialog({
 }) async {
   final s = state.s;
   final isDark = state.isDarkMode;
-  final statementLabel = s.statementBtn;
 
   final existing = month.payments[aptNum];
   if (existing != null) {
@@ -157,38 +155,17 @@ Future<void> showApartmentPaymentDialog({
                     ],
                   ),
                 ),
-                const SizedBox(height: AppSpacing.lg),
-                Row(
-                  children: [
-                    Expanded(
-                      child: AppSecondaryButton(
-                        label: statementLabel,
-                        icon: Icons.receipt_long_rounded,
-                        onPressed: () {
-                          Navigator.pop(ctx);
-                          showApartmentStatementDialog(
-                            context: context,
-                            state: state,
-                            aptNum: aptNum,
-                          );
-                        },
-                      ),
-                    ),
-                    if (state.isAdminOpen) ...[
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: AppSecondaryButton(
-                          label: s.cancelPaymentAdmin,
-                          accentColor: AppColors.danger,
-                          onPressed: () async {
-                            await cubit.cancelPayment(aptNum);
-                            if (ctx.mounted) Navigator.pop(ctx);
-                          },
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
+                if (state.isAdminOpen) ...[
+                  const SizedBox(height: AppSpacing.lg),
+                  AppSecondaryButton(
+                    label: s.cancelPaymentAdmin,
+                    accentColor: AppColors.danger,
+                    onPressed: () async {
+                      await cubit.cancelPayment(aptNum);
+                      if (ctx.mounted) Navigator.pop(ctx);
+                    },
+                  ),
+                ],
               ],
             ),
           ),
@@ -268,46 +245,6 @@ Future<void> showApartmentPaymentDialog({
                             ),
                           ),
                         ],
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        Navigator.pop(ctx);
-                        showApartmentStatementDialog(
-                          context: context,
-                          state: state,
-                          aptNum: aptNum,
-                        );
-                      },
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                      child: Container(
-                        padding: const EdgeInsetsDirectional.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.surface(isDark),
-                          borderRadius: BorderRadius.circular(AppRadius.pill),
-                          border: Border.all(color: AppColors.border(isDark)),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.receipt_long_rounded,
-                              size: 14,
-                              color: AppColors.primaryText(isDark),
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              statementLabel,
-                              style: AppTypography.caption.copyWith(
-                                color: AppColors.textPrimary(isDark),
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
                     ),
                   ],

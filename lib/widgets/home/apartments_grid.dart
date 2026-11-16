@@ -134,7 +134,6 @@ class ApartmentsGrid extends StatelessWidget {
             builder: (context, constraints) {
               final w = constraints.maxWidth;
               final crossAxisCount = w < 640 ? 2 : 4;
-              final aspect = w < 640 ? 1.75 : 1.55;
 
               return GridView.builder(
                 shrinkWrap: true,
@@ -144,7 +143,7 @@ class ApartmentsGrid extends StatelessWidget {
                   crossAxisCount: crossAxisCount,
                   mainAxisSpacing: AppSpacing.sm,
                   crossAxisSpacing: AppSpacing.sm,
-                  childAspectRatio: aspect,
+                  mainAxisExtent: 74,
                 ),
                 itemBuilder: (context, idx) {
                   final aptNum = idx + 1;

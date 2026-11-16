@@ -689,7 +689,7 @@ abstract class AppLocalizations {
   /// No description provided for @pinAptPrompt.
   ///
   /// In en, this message translates to:
-  /// **'Pin your apartment for quick payment & statement'**
+  /// **'Pin your apartment for quick payment'**
   String get pinAptPrompt;
 
   /// No description provided for @selectAptBtn.
@@ -704,12 +704,6 @@ abstract class AppLocalizations {
   /// **'My Apt'**
   String get myAptPrefix;
 
-  /// No description provided for @statementBtn.
-  ///
-  /// In en, this message translates to:
-  /// **'Statement'**
-  String get statementBtn;
-
   /// No description provided for @payNowBtn.
   ///
   /// In en, this message translates to:
@@ -721,18 +715,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Change apartment'**
   String get changeAptTooltip;
-
-  /// No description provided for @statementDialogTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Payment Statement — {apt}'**
-  String statementDialogTitle(String apt);
-
-  /// No description provided for @statementSummary.
-  ///
-  /// In en, this message translates to:
-  /// **'Paid: {paid}  •  Remaining: {unpaid}'**
-  String statementSummary(int paid, int unpaid);
 
   /// No description provided for @emergencyLogTitle.
   ///

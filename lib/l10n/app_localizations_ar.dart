@@ -349,7 +349,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get monthAddedToast => '✅ تم إضافة الشهر القادم بنجاح';
 
   @override
-  String get pinAptPrompt => 'ثبّت رقم شقتك للدفع السريع وكشف الحساب';
+  String get pinAptPrompt => 'ثبّت رقم شقتك للدفع السريع';
 
   @override
   String get selectAptBtn => 'اختر شقتك';
@@ -358,23 +358,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get myAptPrefix => 'شقتي';
 
   @override
-  String get statementBtn => 'كشف الحساب';
-
-  @override
   String get payNowBtn => 'ادفع الآن';
 
   @override
   String get changeAptTooltip => 'تغيير الشقة';
-
-  @override
-  String statementDialogTitle(String apt) {
-    return 'كشف حساب — $apt';
-  }
-
-  @override
-  String statementSummary(int paid, int unpaid) {
-    return 'مدفوع: $paid شهر  •  متبقي: $unpaid شهر';
-  }
 
   @override
   String get emergencyLogTitle => 'سجل حركات صندوق الطوارئ';

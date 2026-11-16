@@ -11,7 +11,6 @@ import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
 import '../widgets/dialogs/admin_login_dialog.dart';
 import '../widgets/dialogs/apartment_payment_dialog.dart';
-import '../widgets/dialogs/apartment_statement_dialog.dart';
 import '../widgets/dialogs/manage_apartments_dialog.dart';
 import '../widgets/home/apartments_grid.dart';
 import '../widgets/home/bill_summary_card.dart';
@@ -161,11 +160,6 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
             month: m,
             aptNum: aptNum,
             picker: _picker,
-          ),
-          onTapStatement: (aptNum) => showApartmentStatementDialog(
-            context: context,
-            state: state,
-            aptNum: aptNum,
           ),
         );
 

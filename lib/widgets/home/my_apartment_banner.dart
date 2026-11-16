@@ -13,7 +13,6 @@ class MyApartmentBanner extends StatelessWidget {
   final BuildingState state;
   final MonthBill month;
   final ValueChanged<int> onTapPay;
-  final ValueChanged<int> onTapStatement;
 
   const MyApartmentBanner({
     super.key,
@@ -21,7 +20,6 @@ class MyApartmentBanner extends StatelessWidget {
     required this.state,
     required this.month,
     required this.onTapPay,
-    required this.onTapStatement,
   });
 
   @override
@@ -158,23 +156,8 @@ class MyApartmentBanner extends StatelessWidget {
               ],
             ),
           ),
-          TextButton(
-            onPressed: () => onTapStatement(myApt),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsetsDirectional.symmetric(horizontal: 10, vertical: 6),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: Text(
-              s.statementBtn,
-              style: AppTypography.caption.copyWith(
-                color: AppColors.textSecondary(isDark),
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
           if (!isPaid) ...[
-            const SizedBox(width: AppSpacing.xxs),
+            const SizedBox(width: AppSpacing.xs),
             InkWell(
               onTap: () => onTapPay(myApt),
               borderRadius: BorderRadius.circular(AppRadius.pill),

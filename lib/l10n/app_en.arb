@@ -211,21 +211,11 @@
   "errDeleteFailed": "Could not delete post",
   "addNextMonthBtn": "Next Month",
   "monthAddedToast": "✅ Next month added",
-  "pinAptPrompt": "Pin your apartment for quick payment & statement",
+  "pinAptPrompt": "Pin your apartment for quick payment",
   "selectAptBtn": "Select Apt",
   "myAptPrefix": "My Apt",
-  "statementBtn": "Statement",
   "payNowBtn": "Pay Now",
   "changeAptTooltip": "Change apartment",
-  "statementDialogTitle": "Payment Statement — {apt}",
-  "@statementDialogTitle": { "placeholders": { "apt": { "type": "String" } } },
-  "statementSummary": "Paid: {paid}  •  Remaining: {unpaid}",
-  "@statementSummary": {
-    "placeholders": {
-      "paid": { "type": "int" },
-      "unpaid": { "type": "int" }
-    }
-  },
   "emergencyLogTitle": "Emergency Fund Log",
   "emergencyLogEmpty": "No withdrawals recorded yet.",
   "emergencyAmountHint": "Amount",
