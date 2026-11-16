@@ -200,7 +200,7 @@ abstract class AppLocalizations {
   /// **'{amount} EGP'**
   String currency(int amount);
 
-  /// No description provided for @copiedTitle.
+  /// No description provided for @copiedTitle
   ///
   /// In en, this message translates to:
   /// **'✅ Copied for WhatsApp:'**
