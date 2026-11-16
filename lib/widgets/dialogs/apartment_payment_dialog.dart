@@ -214,7 +214,7 @@ Future<void> showApartmentPaymentDialog({
                       height: 38,
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [AppColors.primary, AppColors.accentViolet],
+                          colors: [AppColors.primary, AppColors.primaryLight],
                         ),
                         borderRadius: BorderRadius.circular(AppRadius.md),
                       ),

@@ -109,7 +109,7 @@ class MainShell extends StatelessWidget {
                                 padding: const EdgeInsetsDirectional.all(AppSpacing.sm),
                                 decoration: BoxDecoration(
                                   gradient: const LinearGradient(
-                                    colors: [AppColors.primary, AppColors.accentViolet],
+                                    colors: [AppColors.primary, AppColors.primaryLight],
                                     begin: AlignmentDirectional.topStart,
                                     end: AlignmentDirectional.bottomEnd,
                                   ),
@@ -293,7 +293,7 @@ class _FloatingBottomNav extends StatelessWidget {
                           ? LinearGradient(
                               colors: [
                                 AppColors.primary.withValues(alpha: isDark ? 0.24 : 0.14),
-                                AppColors.accentViolet.withValues(alpha: isDark ? 0.16 : 0.08),
+                                AppColors.primaryLight.withValues(alpha: isDark ? 0.16 : 0.08),
                               ],
                               begin: AlignmentDirectional.topStart,
                               end: AlignmentDirectional.bottomEnd,

@@ -358,7 +358,7 @@ class _WhatsAppShareButton extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [AppColors.primary, AppColors.accentViolet],
+              colors: [AppColors.primary, AppColors.primaryLight],
               begin: AlignmentDirectional.centerStart,
               end: AlignmentDirectional.centerEnd,
             ),

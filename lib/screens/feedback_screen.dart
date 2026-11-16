@@ -120,7 +120,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
                               color: accent,
                               borderRadius: BorderRadius.circular(AppRadius.sm),
                             ),
-                            labelColor: Colors.black,
+                            labelColor: AppColors.onPrimaryAction(isDark),
                             unselectedLabelColor: AppColors.textSecondary(isDark),
                             labelStyle: AppTypography.label.copyWith(fontWeight: FontWeight.w700),
                             tabs: [

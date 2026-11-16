@@ -66,7 +66,7 @@ class TopBar extends StatelessWidget {
                 height: 34,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [AppColors.primary, AppColors.accentViolet],
+                    colors: [AppColors.primary, AppColors.primaryLight],
                     begin: AlignmentDirectional.topStart,
                     end: AlignmentDirectional.bottomEnd,
                   ),

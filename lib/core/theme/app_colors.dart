@@ -1,52 +1,77 @@
 import 'package:flutter/material.dart';
 
-/// Centralized color tokens for Amaraty's Light and Dark themes.
+/// Centralized Royal Blue & Ice color tokens for Amaraty.
 abstract final class AppColors {
-  // Brand & Accents
-  static const Color primary = Color(0xFF6366F1);
-  static const Color primaryLight = Color(0xFF818CF8);
-  static const Color primaryDark = Color(0xFF4338CA);
-  static const Color accentViolet = Color(0xFF8B5CF6);
+  // Brand Primary — Royal Blue
+  static const Color primary = Color(0xFF2457C5);
+  static const Color primaryLight = Color(0xFF477BE8);
+  static const Color primaryDark = Color(0xFF1A4199);
 
-  static const Color emerald = Color(0xFF10B981);
-  static const Color emeraldLight = Color(0xFF34D399);
-  static const Color emeraldDarkText = Color(0xFF059669);
-  static const Color amber = Color(0xFFF59E0B);
-  static const Color amberDarkText = Color(0xFFB45309);
-  static const Color danger = Color(0xFFEF4444);
+  // Compatibility Brand Aliases
+  static const Color coral = primary;
+  static const Color sage = primaryLight;
 
-  // Category Accents
-  static const Color water = Color(0xFF38BDF8);
-  static const Color electricity = Color(0xFFFACC15);
-  static const Color elevator = Color(0xFFA78BFA);
-  static const Color cleaning = Color(0xFFF472B6);
-  static const Color reserve = Color(0xFF10B981);
+  // Semantic Financial & Status Colors
+  static const Color success = Color(0xFF21865B);
+  static const Color successLight = Color(0xFF3DA879);
+  static const Color successDarkText = Color(0xFF1B6E4B);
 
-  // Dark Theme Surfaces (Deep Midnight Navy)
-  static const Color darkBg = Color(0xFF060913);
-  static const Color darkSurface = Color(0xFF0C1220);
-  static const Color darkCard = Color(0xFF121A2B);
-  static const Color darkCardElevated = Color(0xFF172136);
-  static const Color darkBorder = Color(0x12FFFFFF); // ~7% white hairline
-  static const Color darkTextPrimary = Color(0xFFF8FAFC);
-  static const Color darkTextSecondary = Color(0xFF94A3B8);
+  static const Color emerald = success;
+  static const Color emeraldLight = successLight;
+  static const Color emeraldDarkText = successDarkText;
 
-  // Light Theme Surfaces (Crisp Luxury Alabaster)
-  static const Color lightBg = Color(0xFFF4F6FB);
-  static const Color lightSurface = Color(0xFFF8FAFC);
-  static const Color lightCard = Color(0xFFFFFFFF);
-  static const Color lightCardElevated = Color(0xFFF5F7FF);
-  static const Color lightBorder = Color(0xFFE2E8F0);
-  static const Color lightTextPrimary = Color(0xFF0F172A);
-  static const Color lightTextSecondary = Color(0xFF64748B);
+  static const Color amber = Color(0xFFD99525);
+  static const Color amberDarkText = Color(0xFFB07414);
 
+  static const Color danger = Color(0xFFD94B55);
+  static const Color dangerDarkText = Color(0xFFB8353F);
+
+  static const Color info = primary;
+  static const Color disabled = Color(0xFFD6DFEE);
+
+  // Expense Category Accents
+  static const Color water = primaryLight;
+  static const Color electricity = amber;
+  static const Color elevator = Color(0xFF64748B);
+  static const Color cleaning = success;
+  static const Color reserve = primary;
+
+  // Light Theme Surfaces (Royal Blue & Ice — Default)
+  static const Color lightBg = Color(0xFFF5F8FF);
+  static const Color lightBgTop = Color(0xFFF5F8FF);
+  static const Color lightSurface = Color(0xFFEAF1FF); // Ice Surface
+  static const Color lightCard = Color(0xFFFFFFFF); // White Card
+  static const Color lightCardElevated = Color(0xFFFFFFFF);
+  static const Color lightBorder = Color(0xFFE2E9F5);
+  static const Color lightTextPrimary = Color(0xFF202D46);
+  static const Color lightTextSecondary = Color(0xFF77839A);
+
+  // Dark Theme Companion Surfaces
+  static const Color darkBg = Color(0xFF0F1626);
+  static const Color darkBgTop = Color(0xFF141D31);
+  static const Color darkSurface = Color(0xFF182238);
+  static const Color darkCard = Color(0xFF1D2942);
+  static const Color darkCardElevated = Color(0xFF243250);
+  static const Color darkBorder = Color(0xFF2D3D5E);
+  static const Color darkTextPrimary = Color(0xFFF5F8FF);
+  static const Color darkTextSecondary = Color(0xFF9BA8C2);
+
+  // Adaptive Surface & Typography Helpers
   static Color bg(bool isDark) => isDark ? darkBg : lightBg;
+  static Color bgTop(bool isDark) => isDark ? darkBgTop : lightBgTop;
   static Color surface(bool isDark) => isDark ? darkSurface : lightSurface;
   static Color card(bool isDark) => isDark ? darkCard : lightCard;
   static Color cardElevated(bool isDark) => isDark ? darkCardElevated : lightCardElevated;
   static Color border(bool isDark) => isDark ? darkBorder : lightBorder;
   static Color textPrimary(bool isDark) => isDark ? darkTextPrimary : lightTextPrimary;
   static Color textSecondary(bool isDark) => isDark ? darkTextSecondary : lightTextSecondary;
-  static Color emeraldText(bool isDark) => isDark ? emeraldLight : emeraldDarkText;
-  static Color primaryText(bool isDark) => isDark ? primaryLight : primaryDark;
+
+  // Semantic Financial Status Helpers
+  static Color emeraldText(bool isDark) => isDark ? successLight : successDarkText;
+  static Color primaryText(bool isDark) => isDark ? primaryLight : primary;
+  static Color dangerText(bool isDark) => isDark ? danger : dangerDarkText;
+  static Color warningText(bool isDark) => isDark ? amber : amberDarkText;
+
+  static Color onPrimaryAction(bool isDark) => Colors.white;
+  static Color primaryActionBg(bool isDark) => isDark ? primaryLight : primary;
 }
