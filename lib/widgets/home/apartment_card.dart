@@ -80,7 +80,7 @@ class _ApartmentCardState extends State<ApartmentCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Top row: Full apartment label (+ check icon when paid)
+                // Top row: Full apartment label + clean status circle icon
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -100,8 +100,8 @@ class _ApartmentCardState extends State<ApartmentCard> {
                         ),
                       ),
                     ),
-                    if (widget.isPaid) ...[
-                      const SizedBox(width: AppSpacing.xs),
+                    const SizedBox(width: AppSpacing.xs),
+                    if (widget.isPaid)
                       Container(
                         width: 22,
                         height: 22,
@@ -114,15 +114,31 @@ class _ApartmentCardState extends State<ApartmentCard> {
                           size: 13,
                           color: AppColors.emeraldText(isDark),
                         ),
+                      )
+                    else
+                      Tooltip(
+                        message: widget.pendingLabel,
+                        child: Container(
+                          width: 22,
+                          height: 22,
+                          decoration: BoxDecoration(
+                            color: AppColors.amber.withValues(alpha: 0.16),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.schedule_rounded,
+                            size: 13,
+                            color: AppColors.amber,
+                          ),
+                        ),
                       ),
-                    ],
                   ],
                 ),
 
-                // Row 2: Amount (or Paid label) + Optional Extra Charge pill (or receipt icon)
+                // Bottom row: Amount or Paid state + optional extra badge / receipt indicator
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Flexible(
                       child: Text(
@@ -131,7 +147,7 @@ class _ApartmentCardState extends State<ApartmentCard> {
                             : widget.amountText,
                         style: (widget.isPaid ? AppTypography.label : AppTypography.statAmount)
                             .copyWith(
-                          fontSize: widget.isPaid ? 12 : 14.5,
+                          fontSize: widget.isPaid ? 11.5 : 14,
                           fontWeight: FontWeight.w800,
                           color: widget.isPaid
                               ? AppColors.emeraldText(isDark)
@@ -157,7 +173,7 @@ class _ApartmentCardState extends State<ApartmentCard> {
                         child: Text(
                           widget.extraBadgeText!,
                           style: AppTypography.caption.copyWith(
-                            fontSize: 9.5,
+                            fontSize: 10,
                             fontWeight: FontWeight.w700,
                             color: AppColors.warningText(isDark),
                           ),
@@ -171,34 +187,6 @@ class _ApartmentCardState extends State<ApartmentCard> {
                       ),
                   ],
                 ),
-
-                // Row 3: Separate row for Pending badge when unpaid
-                if (!widget.isPaid)
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsetsDirectional.symmetric(
-                          horizontal: 7,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.amber.withValues(alpha: isDark ? 0.16 : 0.12),
-                          borderRadius: BorderRadius.circular(AppRadius.pill),
-                          border: Border.all(
-                            color: AppColors.amber.withValues(alpha: 0.45),
-                          ),
-                        ),
-                        child: Text(
-                          widget.pendingLabel,
-                          style: AppTypography.caption.copyWith(
-                            fontSize: 9.5,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.amber,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
               ],
             ),
           ),

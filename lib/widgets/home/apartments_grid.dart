@@ -143,7 +143,7 @@ class ApartmentsGrid extends StatelessWidget {
                   crossAxisCount: crossAxisCount,
                   mainAxisSpacing: AppSpacing.sm,
                   crossAxisSpacing: AppSpacing.sm,
-                  mainAxisExtent: 96,
+                  mainAxisExtent: 74,
                 ),
                 itemBuilder: (context, idx) {
                   final aptNum = idx + 1;
