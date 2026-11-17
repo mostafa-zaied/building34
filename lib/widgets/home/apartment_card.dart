@@ -10,6 +10,7 @@ class ApartmentCard extends StatefulWidget {
   final String label;
   final String amountText;
   final String paidLabel;
+  final String pendingLabel;
   final bool isPaid;
   final bool hasReceipt;
   final String? extraBadgeText;
@@ -21,6 +22,7 @@ class ApartmentCard extends StatefulWidget {
     required this.label,
     required this.amountText,
     required this.paidLabel,
+    required this.pendingLabel,
     required this.isPaid,
     required this.hasReceipt,
     this.extraBadgeText,
@@ -78,24 +80,28 @@ class _ApartmentCardState extends State<ApartmentCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Top row: Apartment label + clean status icon
+                // Top row: Full apartment label (+ check icon when paid)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Expanded(
-                      child: Text(
-                        widget.label,
-                        style: AppTypography.title.copyWith(
-                          color: AppColors.textPrimary(isDark),
-                          fontWeight: FontWeight.w700,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: AlignmentDirectional.centerStart,
+                        child: Text(
+                          widget.label,
+                          style: AppTypography.title.copyWith(
+                            color: AppColors.textPrimary(isDark),
+                            fontWeight: FontWeight.w700,
+                          ),
+                          maxLines: 1,
+                          softWrap: false,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(width: AppSpacing.xs),
-                    if (widget.isPaid)
+                    if (widget.isPaid) ...[
+                      const SizedBox(width: AppSpacing.xs),
                       Container(
                         width: 22,
                         height: 22,
@@ -108,24 +114,15 @@ class _ApartmentCardState extends State<ApartmentCard> {
                           size: 13,
                           color: AppColors.emeraldText(isDark),
                         ),
-                      )
-                    else
-                      Container(
-                        width: 8,
-                        height: 8,
-                        margin: const EdgeInsetsDirectional.only(end: 4),
-                        decoration: BoxDecoration(
-                          color: AppColors.amber.withValues(alpha: 0.85),
-                          shape: BoxShape.circle,
-                        ),
                       ),
+                    ],
                   ],
                 ),
 
-                // Bottom row: Amount or Paid state + optional receipt indicator
+                // Row 2: Amount (or Paid label) + Optional Extra Charge pill (or receipt icon)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Flexible(
                       child: Text(
@@ -134,7 +131,7 @@ class _ApartmentCardState extends State<ApartmentCard> {
                             : widget.amountText,
                         style: (widget.isPaid ? AppTypography.label : AppTypography.statAmount)
                             .copyWith(
-                          fontSize: widget.isPaid ? 11.5 : 14,
+                          fontSize: widget.isPaid ? 12 : 14.5,
                           fontWeight: FontWeight.w800,
                           color: widget.isPaid
                               ? AppColors.emeraldText(isDark)
@@ -144,7 +141,7 @@ class _ApartmentCardState extends State<ApartmentCard> {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    if (widget.extraBadgeText != null && !widget.isPaid) ...[
+                    if (widget.extraBadgeText != null && !widget.isPaid)
                       Container(
                         padding: const EdgeInsetsDirectional.symmetric(
                           horizontal: 6,
@@ -160,13 +157,12 @@ class _ApartmentCardState extends State<ApartmentCard> {
                         child: Text(
                           widget.extraBadgeText!,
                           style: AppTypography.caption.copyWith(
-                            fontSize: 10,
+                            fontSize: 9.5,
                             fontWeight: FontWeight.w700,
                             color: AppColors.warningText(isDark),
                           ),
                         ),
                       ),
-                    ],
                     if (widget.hasReceipt)
                       Icon(
                         Icons.receipt_long_rounded,
@@ -175,6 +171,34 @@ class _ApartmentCardState extends State<ApartmentCard> {
                       ),
                   ],
                 ),
+
+                // Row 3: Separate row for Pending badge when unpaid
+                if (!widget.isPaid)
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsetsDirectional.symmetric(
+                          horizontal: 7,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.amber.withValues(alpha: isDark ? 0.16 : 0.12),
+                          borderRadius: BorderRadius.circular(AppRadius.pill),
+                          border: Border.all(
+                            color: AppColors.amber.withValues(alpha: 0.45),
+                          ),
+                        ),
+                        child: Text(
+                          widget.pendingLabel,
+                          style: AppTypography.caption.copyWith(
+                            fontSize: 9.5,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.amber,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
           ),

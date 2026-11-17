@@ -88,7 +88,10 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get paidBadge => 'دفعت';
+  String get paidBadge => 'تم الدفع';
+
+  @override
+  String get pendingPaymentBadge => 'قيد الانتظار';
 
   @override
   String get adminLoginTitle => 'دخول المسؤول';
@@ -142,7 +145,14 @@ class AppLocalizationsAr extends AppLocalizations {
   String get enterPassHint => 'اكتب كلمة السر...';
 
   @override
-  String get step2Image => '2. إرفاق صورة الإيصال (إجباري)';
+  String get step2Image => 'إرفاق صورة الإيصال (إجباري)';
+
+  @override
+  String get unlockAptSubtitle =>
+      'أدخل كلمة سر الشقة لفتح التفاصيل (تُحفظ تلقائياً بعد أول مرة)';
+
+  @override
+  String get unlockAptBtn => 'فتح الشقة';
 
   @override
   String get receiptRequiredNote =>

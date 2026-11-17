@@ -74,6 +74,7 @@
     }
   },
   "paidBadge": "Paid",
+  "pendingPaymentBadge": "Pending",
   "adminLoginTitle": "Admin Login",
   "adminPassHint": "Enter admin password...",
   "cancel": "Cancel",
@@ -110,7 +111,9 @@
     }
   },
   "enterPassHint": "Enter passcode...",
-  "step2Image": "2. Transfer Screenshot (Required)",
+  "step2Image": "Transfer Screenshot (Required)",
+  "unlockAptSubtitle": "Enter apartment passcode to open details (saved after first time)",
+  "unlockAptBtn": "Unlock Apartment",
   "receiptRequiredNote": "Please attach the receipt screenshot to verify the paid amount (whether exact, higher, or lower).",
   "errReceiptRequired": "Please attach the receipt screenshot before confirming payment.",
   "noReceiptAttached": "Confirmed without receipt image",

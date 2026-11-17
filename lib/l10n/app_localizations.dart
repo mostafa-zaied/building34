@@ -236,6 +236,12 @@ abstract class AppLocalizations {
   /// **'Paid'**
   String get paidBadge;
 
+  /// No description provided for @pendingPaymentBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pendingPaymentBadge;
+
   /// No description provided for @adminLoginTitle.
   ///
   /// In en, this message translates to:
@@ -329,8 +335,20 @@ abstract class AppLocalizations {
   /// No description provided for @step2Image.
   ///
   /// In en, this message translates to:
-  /// **'2. Transfer Screenshot (Required)'**
+  /// **'Transfer Screenshot (Required)'**
   String get step2Image;
+
+  /// No description provided for @unlockAptSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter apartment passcode to open details (saved after first time)'**
+  String get unlockAptSubtitle;
+
+  /// No description provided for @unlockAptBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock Apartment'**
+  String get unlockAptBtn;
 
   /// No description provided for @receiptRequiredNote.
   ///

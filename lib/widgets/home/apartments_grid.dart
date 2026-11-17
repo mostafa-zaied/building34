@@ -143,7 +143,7 @@ class ApartmentsGrid extends StatelessWidget {
                   crossAxisCount: crossAxisCount,
                   mainAxisSpacing: AppSpacing.sm,
                   crossAxisSpacing: AppSpacing.sm,
-                  mainAxisExtent: 74,
+                  mainAxisExtent: 96,
                 ),
                 itemBuilder: (context, idx) {
                   final aptNum = idx + 1;
@@ -156,6 +156,7 @@ class ApartmentsGrid extends StatelessWidget {
                     label: state.aptLabel(aptNum),
                     amountText: s.currency(month.dueFor(aptNum)),
                     paidLabel: s.paidBadge,
+                    pendingLabel: s.pendingPaymentBadge,
                     isPaid: isPaid,
                     hasReceipt: payment?.receiptUrl != null,
                     extraBadgeText: extraTotal > 0 ? s.extraBadge(extraTotal) : null,

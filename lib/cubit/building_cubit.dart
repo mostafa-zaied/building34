@@ -511,6 +511,15 @@ class BuildingCubit extends Cubit<BuildingState> {
     return lines.join('\n');
   }
 
+  Future<String?> unlockApartment(int aptNum, String passcode) async {
+    final err = await _service.verifyApartmentPasscode(aptNum, passcode);
+    if (err != null) {
+      return _localizeError(err);
+    }
+    await _saveAptSession(aptNum, passcode.trim());
+    return null;
+  }
+
   Future<void> _saveAptSession(int aptNum, String passcode) async {
     emit(state.copyWith(
       myAptNum: () => aptNum,

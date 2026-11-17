@@ -363,3 +363,27 @@ BEGIN
   VALUES (v_vid, p_event_type);
 END;
 $$;
+
+-- 7. Verify Apartment Passcode before opening apartment details
+CREATE OR REPLACE FUNCTION public.verify_apartment_passcode(
+  p_apt_num INT,
+  p_passcode TEXT
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_expected TEXT;
+BEGIN
+  SELECT passcode INTO v_expected
+  FROM public.apartments
+  WHERE apt_num = p_apt_num;
+
+  IF v_expected IS NULL OR trim(COALESCE(p_passcode, '')) <> v_expected THEN
+    RETURN jsonb_build_object('ok', false, 'error', 'err_wrong_apt_pass');
+  END IF;
+
+  RETURN jsonb_build_object('ok', true);
+END;
+$$;

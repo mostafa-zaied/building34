@@ -25,6 +25,21 @@ Future<void> showApartmentPaymentDialog({
   final s = state.s;
   final isDark = state.isDarkMode;
 
+  final isUnlocked = state.isAdminOpen ||
+      (state.myAptNum == aptNum &&
+          state.savedAptPass != null &&
+          state.savedAptPass!.isNotEmpty);
+
+  if (!isUnlocked) {
+    final unlocked = await _showUnlockApartmentDialog(
+      context: context,
+      cubit: cubit,
+      state: state,
+      aptNum: aptNum,
+    );
+    if (!unlocked || !context.mounted) return;
+  }
+
   final existing = month.payments[aptNum];
   if (existing != null) {
     await showDialog<void>(
@@ -184,13 +199,6 @@ Future<void> showApartmentPaymentDialog({
     return;
   }
 
-  final hasSavedPass = state.myAptNum == aptNum &&
-      state.savedAptPass != null &&
-      state.savedAptPass!.isNotEmpty;
-  final passCtrl = TextEditingController(
-    text: hasSavedPass ? state.savedAptPass! : '',
-  );
-  bool useSavedPass = hasSavedPass;
   Uint8List? pickedBytes;
   String? pickedName;
   String? errMsg;
@@ -437,84 +445,7 @@ Future<void> showApartmentPaymentDialog({
                 ),
                 const SizedBox(height: AppSpacing.md),
 
-                // Step 1: Passcode (auto-remembered after first payment)
-                if (useSavedPass)
-                  Container(
-                    padding: const EdgeInsetsDirectional.symmetric(
-                      horizontal: AppSpacing.md,
-                      vertical: AppSpacing.sm + 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.emerald.withValues(alpha: isDark ? 0.14 : 0.08),
-                      borderRadius: BorderRadius.circular(AppRadius.md),
-                      border: Border.all(
-                        color: AppColors.emerald.withValues(alpha: 0.35),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.verified_user_outlined,
-                          size: 18,
-                          color: AppColors.emeraldText(isDark),
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                        Expanded(
-                          child: Text(
-                            s.savedPassBadge,
-                            style: AppTypography.label.copyWith(
-                              color: AppColors.emeraldText(isDark),
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            setModalState(() {
-                              useSavedPass = false;
-                              passCtrl.clear();
-                            });
-                          },
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsetsDirectional.symmetric(horizontal: 8),
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: Text(s.changePassBtn, style: AppTypography.caption),
-                        ),
-                      ],
-                    ),
-                  )
-                else ...[
-                  Text(
-                    s.step1Passcode(!AppConfig.isSupabaseConfigured ? ' (${1000 + aptNum})' : ''),
-                    style: AppTypography.label.copyWith(
-                      color: AppColors.textPrimary(isDark),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  TextField(
-                    controller: passCtrl,
-                    obscureText: true,
-                    style: AppTypography.body.copyWith(
-                      color: AppColors.textPrimary(isDark),
-                    ),
-                    decoration: InputDecoration(
-                      hintText: s.enterPassHint,
-                      filled: true,
-                      fillColor: AppColors.surface(isDark),
-                      prefixIcon: Icon(
-                        Icons.lock_outline_rounded,
-                        size: 18,
-                        color: AppColors.textSecondary(isDark),
-                      ),
-                    ),
-                  ),
-                ],
-                const SizedBox(height: AppSpacing.md),
-
-                // Step 2: Mandatory receipt image
+                // Mandatory receipt image
                 Text(
                   s.step2Image,
                   style: AppTypography.label.copyWith(
@@ -667,7 +598,7 @@ Future<void> showApartmentPaymentDialog({
                                 setModalState(() => submitting = true);
                                 final resErr = await cubit.submitPayment(
                                   aptNum: aptNum,
-                                  passcode: passCtrl.text,
+                                  passcode: cubit.state.savedAptPass ?? '',
                                   imageBytes: pickedBytes,
                                   fileName: pickedName,
                                 );
@@ -691,5 +622,167 @@ Future<void> showApartmentPaymentDialog({
       ),
     ),
   );
+}
+
+Future<bool> _showUnlockApartmentDialog({
+  required BuildContext context,
+  required BuildingCubit cubit,
+  required BuildingState state,
+  required int aptNum,
+}) async {
+  final s = state.s;
+  final isDark = state.isDarkMode;
+  final passCtrl = TextEditingController();
+  String? errMsg;
+  bool checking = false;
+  bool unlocked = false;
+
+  Future<void> submit(
+    BuildContext ctx,
+    void Function(VoidCallback) setModalState,
+  ) async {
+    setModalState(() {
+      checking = true;
+      errMsg = null;
+    });
+    final err = await cubit.unlockApartment(aptNum, passCtrl.text);
+    if (err != null) {
+      setModalState(() {
+        checking = false;
+        errMsg = err;
+      });
+      return;
+    }
+    unlocked = true;
+    if (ctx.mounted) Navigator.pop(ctx);
+  }
+
+  await showDialog<void>(
+    context: context,
+    builder: (ctx) => StatefulBuilder(
+      builder: (ctx, setModalState) => Dialog(
+        insetPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.xl,
+        ),
+        backgroundColor: AppColors.card(isDark),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+          side: BorderSide(color: AppColors.border(isDark)),
+        ),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 400),
+          child: Padding(
+            padding: const EdgeInsetsDirectional.all(AppSpacing.xl),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [AppColors.primary, AppColors.primaryLight],
+                        ),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                      ),
+                      child: const Icon(
+                        Icons.lock_outline_rounded,
+                        size: 19,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            state.aptLabel(aptNum),
+                            style: AppTypography.headline.copyWith(
+                              fontSize: 16,
+                              color: AppColors.textPrimary(isDark),
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            s.unlockAptSubtitle,
+                            style: AppTypography.caption.copyWith(
+                              color: AppColors.textSecondary(isDark),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                TextField(
+                  controller: passCtrl,
+                  obscureText: true,
+                  autofocus: true,
+                  onSubmitted: checking ? null : (_) => submit(ctx, setModalState),
+                  style: AppTypography.body.copyWith(
+                    color: AppColors.textPrimary(isDark),
+                  ),
+                  decoration: InputDecoration(
+                    hintText: s.enterPassHint,
+                    filled: true,
+                    fillColor: AppColors.surface(isDark),
+                    prefixIcon: Icon(
+                      Icons.vpn_key_outlined,
+                      size: 18,
+                      color: AppColors.textSecondary(isDark),
+                    ),
+                  ),
+                ),
+                if (errMsg != null) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    errMsg!,
+                    textAlign: TextAlign.center,
+                    style: AppTypography.caption.copyWith(
+                      color: AppColors.danger,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: AppSpacing.lg),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: checking ? null : () => Navigator.pop(ctx),
+                        child: Text(
+                          s.cancel,
+                          style: AppTypography.label.copyWith(
+                            color: AppColors.textSecondary(isDark),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      flex: 2,
+                      child: AppPrimaryButton(
+                        label: s.unlockAptBtn,
+                        icon: Icons.lock_open_rounded,
+                        loading: checking,
+                        onPressed: checking ? null : () => submit(ctx, setModalState),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
   Future.delayed(const Duration(milliseconds: 350), passCtrl.dispose);
+  return unlocked;
 }

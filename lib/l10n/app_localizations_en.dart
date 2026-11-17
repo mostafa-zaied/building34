@@ -91,6 +91,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paidBadge => 'Paid';
 
   @override
+  String get pendingPaymentBadge => 'Pending';
+
+  @override
   String get adminLoginTitle => 'Admin Login';
 
   @override
@@ -142,7 +145,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterPassHint => 'Enter passcode...';
 
   @override
-  String get step2Image => '2. Transfer Screenshot (Required)';
+  String get step2Image => 'Transfer Screenshot (Required)';
+
+  @override
+  String get unlockAptSubtitle =>
+      'Enter apartment passcode to open details (saved after first time)';
+
+  @override
+  String get unlockAptBtn => 'Unlock Apartment';
 
   @override
   String get receiptRequiredNote =>

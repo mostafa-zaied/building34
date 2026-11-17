@@ -810,4 +810,24 @@ class BuildingService {
       // Ignore silently if SQL update not yet applied
     }
   }
+
+  Future<String?> verifyApartmentPasscode(int aptNum, String passcode) async {
+    final clean = passcode.trim();
+    if (!_useSupabase) {
+      final expected = _demoApartments[aptNum]?.passcode ?? '${1000 + aptNum}';
+      if (clean != expected) return 'err_wrong_apt_pass';
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc('verify_apartment_passcode', params: {
+        'p_apt_num': aptNum,
+        'p_passcode': clean,
+      });
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_wrong_apt_pass';
+    } catch (_) {
+      return 'err_wrong_apt_pass';
+    }
+  }
 }
