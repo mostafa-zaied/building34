@@ -26,6 +26,7 @@ class BuildingState {
   final List<EmergencyTransaction> emergencyTransactions;
   final PageViewStats? pageViewStats;
   final bool hasVotedUpcomingDirectory;
+  final bool requireAptPassOnOpen;
 
   const BuildingState({
     this.loading = true,
@@ -50,6 +51,7 @@ class BuildingState {
     this.emergencyTransactions = const [],
     this.pageViewStats,
     this.hasVotedUpcomingDirectory = false,
+    this.requireAptPassOnOpen = true,
   });
 
   AppLocalizations get s => lookupAppLocalizations(Locale(localeCode));
@@ -84,6 +86,7 @@ class BuildingState {
     List<EmergencyTransaction>? emergencyTransactions,
     PageViewStats? Function()? pageViewStats,
     bool? hasVotedUpcomingDirectory,
+    bool? requireAptPassOnOpen,
   }) {
     return BuildingState(
       loading: loading ?? this.loading,
@@ -109,6 +112,7 @@ class BuildingState {
       pageViewStats: pageViewStats != null ? pageViewStats() : this.pageViewStats,
       hasVotedUpcomingDirectory:
           hasVotedUpcomingDirectory ?? this.hasVotedUpcomingDirectory,
+      requireAptPassOnOpen: requireAptPassOnOpen ?? this.requireAptPassOnOpen,
     );
   }
 }

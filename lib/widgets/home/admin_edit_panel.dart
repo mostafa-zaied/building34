@@ -7,6 +7,7 @@ import '../../core/theme/app_typography.dart';
 import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
 import '../../models/building_models.dart';
+import '../../screens/admin_settings_screen.dart';
 import '../common/app_button.dart';
 import '../dialogs/extra_charges_dialog.dart';
 import 'admin_input_field.dart';
@@ -142,6 +143,20 @@ class AdminEditPanel extends StatelessWidget {
               ),
             ),
           ],
+        ),
+
+        const SizedBox(height: AppSpacing.sm),
+        _AdminActionTile(
+          label: state.localeCode == 'ar' ? 'الإعدادات (Settings)' : 'Settings',
+          icon: Icons.settings_outlined,
+          isDark: isDark,
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const AdminSettingsScreen(),
+              ),
+            );
+          },
         ),
 
         const SizedBox(height: AppSpacing.md),

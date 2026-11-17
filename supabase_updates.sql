@@ -387,3 +387,48 @@ BEGIN
   RETURN jsonb_build_object('ok', true);
 END;
 $$;
+
+
+-- 8. Admin Setting: Require Apartment Passcode before opening apartment details
+ALTER TABLE public.building_settings
+  ADD COLUMN IF NOT EXISTS require_apt_pass_on_open BOOLEAN NOT NULL DEFAULT TRUE;
+
+CREATE OR REPLACE FUNCTION public.get_require_apt_pass_on_open()
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_val BOOLEAN;
+BEGIN
+  SELECT COALESCE(require_apt_pass_on_open, TRUE)
+  INTO v_val
+  FROM public.building_settings
+  WHERE id = 1;
+  RETURN COALESCE(v_val, TRUE);
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.admin_set_require_apt_pass_on_open(
+  p_admin_pass TEXT,
+  p_enabled BOOLEAN
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_pass TEXT;
+BEGIN
+  SELECT admin_password INTO v_pass FROM public.building_settings WHERE id = 1;
+  IF v_pass IS NULL OR p_admin_pass <> v_pass THEN
+    RETURN jsonb_build_object('ok', false, 'error', 'err_wrong_admin_pass');
+  END IF;
+
+  UPDATE public.building_settings
+  SET require_apt_pass_on_open = COALESCE(p_enabled, TRUE)
+  WHERE id = 1;
+
+  RETURN jsonb_build_object('ok', true, 'enabled', COALESCE(p_enabled, TRUE));
+END;
+$$;

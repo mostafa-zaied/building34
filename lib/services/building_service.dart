@@ -9,6 +9,7 @@ class BuildingDataState {
   final Map<int, String> apartmentNames;
   final String announcement;
   final List<EmergencyTransaction> emergencyTransactions;
+  final bool requireAptPassOnOpen;
 
   BuildingDataState({
     required this.baseEmergencyFund,
@@ -16,6 +17,7 @@ class BuildingDataState {
     required this.apartmentNames,
     this.announcement = '',
     this.emergencyTransactions = const [],
+    this.requireAptPassOnOpen = true,
   });
 }
 
@@ -33,6 +35,7 @@ class BuildingService {
   // Local Demo state (used when Supabase keys are not yet configured or in tests)
   static double _demoBaseEmergency = 2550;
   static String _demoAnnouncement = '';
+  static bool _demoRequireAptPassOnOpen = true;
   static final List<EmergencyTransaction> _demoEmergencyTx = [];
   static final List<FeedbackPost> _demoFeedbackPosts = [];
   static final List<({String visitorId, DateTime createdAt})> _demoPageViews = [];
@@ -103,6 +106,7 @@ class BuildingService {
         },
         announcement: _demoAnnouncement,
         emergencyTransactions: List<EmergencyTransaction>.from(_demoEmergencyTx),
+        requireAptPassOnOpen: _demoRequireAptPassOnOpen,
       );
     }
 
@@ -188,12 +192,21 @@ class BuildingService {
       }
     } catch (_) {}
 
+    bool requireAptPassOnOpen = true;
+    try {
+      final resp = await client.rpc('get_require_apt_pass_on_open');
+      if (resp is bool) {
+        requireAptPassOnOpen = resp;
+      }
+    } catch (_) {}
+
     return BuildingDataState(
       baseEmergencyFund: baseEmerg,
       months: monthsMap.values.toList(),
       apartmentNames: aptNamesMap,
       announcement: announcement,
       emergencyTransactions: emergencyTx,
+      requireAptPassOnOpen: requireAptPassOnOpen,
     );
   }
 
@@ -828,6 +841,30 @@ class BuildingService {
       return (res is Map ? res['error']?.toString() : null) ?? 'err_wrong_apt_pass';
     } catch (_) {
       return 'err_wrong_apt_pass';
+    }
+  }
+
+  Future<String?> setRequireAptPassOnOpenAsAdmin({
+    required String adminPass,
+    required bool enabled,
+  }) async {
+    if (!_useSupabase) {
+      _demoRequireAptPassOnOpen = enabled;
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'admin_set_require_apt_pass_on_open',
+        params: {
+          'p_admin_pass': adminPass,
+          'p_enabled': enabled,
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
+    } catch (_) {
+      return 'err_submit_failed';
     }
   }
 }

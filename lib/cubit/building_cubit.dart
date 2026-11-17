@@ -91,6 +91,7 @@ class BuildingCubit extends Cubit<BuildingState> {
         emergencyTransactions: data.emergencyTransactions,
         pageViewStats: () => viewStats,
         hasVotedUpcomingDirectory: hasVotedUpcoming,
+        requireAptPassOnOpen: data.requireAptPassOnOpen,
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -260,6 +261,23 @@ class BuildingCubit extends Cubit<BuildingState> {
     final stats = await _service.fetchPageViewStatsAsAdmin(state.adminPass);
     if (stats != null) {
       emit(state.copyWith(pageViewStats: () => stats));
+    }
+  }
+
+  Future<void> setRequireAptPassOnOpen(bool enabled) async {
+    if (!state.isAdminAuthenticated) return;
+    final prev = state.requireAptPassOnOpen;
+    emit(state.copyWith(requireAptPassOnOpen: enabled));
+    final err = await _service.setRequireAptPassOnOpenAsAdmin(
+      adminPass: state.adminPass,
+      enabled: enabled,
+    );
+    if (err != null) {
+      emit(state.copyWith(
+        requireAptPassOnOpen: prev,
+        feedbackMessage: () => '❌ ${_localizeError(err)}',
+        feedbackIsError: true,
+      ));
     }
   }
 
