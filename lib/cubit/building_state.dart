@@ -24,6 +24,7 @@ class BuildingState {
   final String? savedAptPass;
   final String announcement;
   final List<EmergencyTransaction> emergencyTransactions;
+  final PageViewStats? pageViewStats;
 
   const BuildingState({
     this.loading = true,
@@ -46,6 +47,7 @@ class BuildingState {
     this.savedAptPass,
     this.announcement = '',
     this.emergencyTransactions = const [],
+    this.pageViewStats,
   });
 
   AppLocalizations get s => lookupAppLocalizations(Locale(localeCode));
@@ -78,6 +80,7 @@ class BuildingState {
     String? Function()? savedAptPass,
     String? announcement,
     List<EmergencyTransaction>? emergencyTransactions,
+    PageViewStats? Function()? pageViewStats,
   }) {
     return BuildingState(
       loading: loading ?? this.loading,
@@ -100,6 +103,7 @@ class BuildingState {
       savedAptPass: savedAptPass != null ? savedAptPass() : this.savedAptPass,
       announcement: announcement ?? this.announcement,
       emergencyTransactions: emergencyTransactions ?? this.emergencyTransactions,
+      pageViewStats: pageViewStats != null ? pageViewStats() : this.pageViewStats,
     );
   }
 }

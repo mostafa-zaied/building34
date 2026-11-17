@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,6 +9,7 @@ import 'building_state.dart';
 
 class BuildingCubit extends Cubit<BuildingState> {
   final BuildingService _service;
+  bool _viewRecordedThisSession = false;
 
   BuildingCubit(this._service) : super(const BuildingState());
 
@@ -30,12 +33,19 @@ class BuildingCubit extends Cubit<BuildingState> {
       String? savedAptPass = state.savedAptPass;
       bool isAdminAuthed = state.isAdminAuthenticated;
       String adminPass = state.adminPass;
+      String visitorId = '';
       try {
         final prefs = await SharedPreferences.getInstance().timeout(
           const Duration(milliseconds: 250),
         );
         savedAptNum = prefs.getInt('my_apt_num');
         savedAptPass = savedAptNum != null ? prefs.getString('my_apt_pass') : null;
+        visitorId = prefs.getString('visitor_id') ?? '';
+        if (visitorId.isEmpty) {
+          final rnd = Random().nextInt(999999);
+          visitorId = 'v_${DateTime.now().microsecondsSinceEpoch}_$rnd';
+          await prefs.setString('visitor_id', visitorId);
+        }
         final savedAdminPass = prefs.getString('admin_pass');
         if (savedAdminPass != null && savedAdminPass.isNotEmpty) {
           final err = await _service.verifyAdminPass(savedAdminPass);
@@ -48,6 +58,19 @@ class BuildingCubit extends Cubit<BuildingState> {
           }
         }
       } catch (_) {}
+
+      if (!_viewRecordedThisSession) {
+        _viewRecordedThisSession = true;
+        final idToRecord = visitorId.isNotEmpty
+            ? visitorId
+            : 'v_${DateTime.now().microsecondsSinceEpoch}';
+        unawaited(_service.recordPageView(idToRecord));
+      }
+
+      PageViewStats? viewStats = state.pageViewStats;
+      if (isAdminAuthed) {
+        viewStats = await _service.fetchPageViewStatsAsAdmin(adminPass);
+      }
 
       emit(state.copyWith(
         loading: false,
@@ -62,6 +85,7 @@ class BuildingCubit extends Cubit<BuildingState> {
         savedAptPass: () => savedAptPass,
         announcement: data.announcement,
         emergencyTransactions: data.emergencyTransactions,
+        pageViewStats: () => viewStats,
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -188,16 +212,30 @@ class BuildingCubit extends Cubit<BuildingState> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('admin_pass', clean);
     } catch (_) {}
+    final viewStats = await _service.fetchPageViewStatsAsAdmin(clean);
     emit(state.copyWith(
       adminPass: clean,
       isAdminAuthenticated: true,
       isAdminOpen: true,
+      pageViewStats: () => viewStats,
     ));
   }
 
   void toggleAdminEditMode() {
     if (!state.isAdminAuthenticated) return;
-    emit(state.copyWith(isAdminOpen: !state.isAdminOpen));
+    final nextOpen = !state.isAdminOpen;
+    emit(state.copyWith(isAdminOpen: nextOpen));
+    if (nextOpen) {
+      unawaited(refreshPageViewStats());
+    }
+  }
+
+  Future<void> refreshPageViewStats() async {
+    if (!state.isAdminAuthenticated) return;
+    final stats = await _service.fetchPageViewStatsAsAdmin(state.adminPass);
+    if (stats != null) {
+      emit(state.copyWith(pageViewStats: () => stats));
+    }
   }
 
   void closeAdmin() {
@@ -212,6 +250,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     emit(state.copyWith(
       isAdminAuthenticated: false,
       isAdminOpen: false,
+      pageViewStats: () => null,
     ));
   }
 

@@ -242,3 +242,68 @@ BEGIN
   RETURN jsonb_build_object('ok', true);
 END;
 $$;
+
+-- 5. Page Views / Visit Analytics (Admin-only visibility)
+CREATE TABLE IF NOT EXISTS public.page_views (
+  id BIGSERIAL PRIMARY KEY,
+  visitor_id TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_page_views_created_at
+  ON public.page_views (created_at DESC);
+
+ALTER TABLE public.page_views ENABLE ROW LEVEL SECURITY;
+
+CREATE OR REPLACE FUNCTION public.record_page_view(
+  p_visitor_id TEXT
+)
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  IF p_visitor_id IS NULL OR length(trim(p_visitor_id)) = 0 THEN
+    RETURN;
+  END IF;
+  INSERT INTO public.page_views (visitor_id)
+  VALUES (left(trim(p_visitor_id), 120));
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.admin_get_page_view_stats(
+  p_admin_pass TEXT
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_pass TEXT;
+  v_total BIGINT;
+  v_unique BIGINT;
+  v_today BIGINT;
+  v_week BIGINT;
+BEGIN
+  SELECT admin_password INTO v_pass FROM public.building_settings WHERE id = 1;
+  IF v_pass IS NULL OR p_admin_pass <> v_pass THEN
+    RETURN jsonb_build_object('ok', false, 'error', 'err_wrong_admin_pass');
+  END IF;
+
+  SELECT
+    COUNT(*),
+    COUNT(DISTINCT visitor_id),
+    COUNT(*) FILTER (WHERE created_at >= date_trunc('day', NOW())),
+    COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '7 days')
+  INTO v_total, v_unique, v_today, v_week
+  FROM public.page_views;
+
+  RETURN jsonb_build_object(
+    'ok', true,
+    'total_views', COALESCE(v_total, 0),
+    'unique_visitors', COALESCE(v_unique, 0),
+    'today_views', COALESCE(v_today, 0),
+    'week_views', COALESCE(v_week, 0)
+  );
+END;
+$$;

@@ -210,3 +210,26 @@ class EmergencyTransaction {
     );
   }
 }
+
+class PageViewStats {
+  final int totalViews;
+  final int uniqueVisitors;
+  final int todayViews;
+  final int weekViews;
+
+  const PageViewStats({
+    this.totalViews = 0,
+    this.uniqueVisitors = 0,
+    this.todayViews = 0,
+    this.weekViews = 0,
+  });
+
+  factory PageViewStats.fromJson(Map<String, dynamic> json) {
+    return PageViewStats(
+      totalViews: (json['total_views'] as num?)?.toInt() ?? 0,
+      uniqueVisitors: (json['unique_visitors'] as num?)?.toInt() ?? 0,
+      todayViews: (json['today_views'] as num?)?.toInt() ?? 0,
+      weekViews: (json['week_views'] as num?)?.toInt() ?? 0,
+    );
+  }
+}

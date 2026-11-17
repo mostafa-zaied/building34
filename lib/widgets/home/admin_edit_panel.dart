@@ -6,6 +6,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
 import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
+import '../../models/building_models.dart';
 import '../common/app_button.dart';
 import '../dialogs/extra_charges_dialog.dart';
 import 'admin_input_field.dart';
@@ -141,6 +142,14 @@ class AdminEditPanel extends StatelessWidget {
               ),
             ),
           ],
+        ),
+
+        const SizedBox(height: AppSpacing.md),
+        _AdminViewsCard(
+          isDark: isDark,
+          isAr: state.localeCode == 'ar',
+          stats: state.pageViewStats,
+          onRefresh: cubit.refreshPageViewStats,
         ),
 
         const SizedBox(height: AppSpacing.sm),
@@ -313,6 +322,135 @@ class _AdminActionTile extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AdminViewsCard extends StatelessWidget {
+  final bool isDark;
+  final bool isAr;
+  final PageViewStats? stats;
+  final VoidCallback onRefresh;
+
+  const _AdminViewsCard({
+    required this.isDark,
+    required this.isAr,
+    required this.stats,
+    required this.onRefresh,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final s = stats;
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.surface(isDark),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: AppColors.border(isDark)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.visibility_outlined,
+                size: 16,
+                color: AppColors.primaryText(isDark),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  isAr ? 'إحصائيات الزيارات (للمدير فقط)' : 'Link Views (Admin Only)',
+                  style: AppTypography.label.copyWith(
+                    color: AppColors.textPrimary(isDark),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              IconButton(
+                onPressed: onRefresh,
+                tooltip: isAr ? 'تحديث' : 'Refresh',
+                visualDensity: VisualDensity.compact,
+                icon: Icon(
+                  Icons.refresh_rounded,
+                  size: 16,
+                  color: AppColors.textSecondary(isDark),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          if (s == null)
+            Text(
+              isAr
+                  ? 'اضغط تحديث لعرض الإحصائيات (تأكد من تشغيل SQL في Supabase)'
+                  : 'Tap refresh to load stats (ensure Supabase SQL is applied)',
+              style: AppTypography.caption.copyWith(
+                color: AppColors.textSecondary(isDark),
+              ),
+            )
+          else
+            Row(
+              children: [
+                _statPill(
+                  label: isAr ? 'إجمالي الفتح' : 'Total',
+                  value: '${s.totalViews}',
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                _statPill(
+                  label: isAr ? 'زوار فريدون' : 'Unique',
+                  value: '${s.uniqueVisitors}',
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                _statPill(
+                  label: isAr ? 'اليوم' : 'Today',
+                  value: '${s.todayViews}',
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                _statPill(
+                  label: isAr ? '7 أيام' : '7 Days',
+                  value: '${s.weekViews}',
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _statPill({required String label, required String value}) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+        decoration: BoxDecoration(
+          color: AppColors.card(isDark),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+          border: Border.all(color: AppColors.border(isDark)),
+        ),
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: AppTypography.headline.copyWith(
+                fontSize: 15,
+                color: AppColors.primaryText(isDark),
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.caption.copyWith(
+                fontSize: 11,
+                color: AppColors.textSecondary(isDark),
+              ),
+            ),
+          ],
         ),
       ),
     );

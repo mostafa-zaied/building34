@@ -35,6 +35,7 @@ class BuildingService {
   static String _demoAnnouncement = '';
   static final List<EmergencyTransaction> _demoEmergencyTx = [];
   static final List<FeedbackPost> _demoFeedbackPosts = [];
+  static final List<({String visitorId, DateTime createdAt})> _demoPageViews = [];
   static const List<String> _defaultResidentNames = [
     'أستاذ حازم',
     'د. أبو بكر',
@@ -731,6 +732,53 @@ class BuildingService {
       return (res is Map ? res['error']?.toString() : null) ?? 'err_delete_failed';
     } catch (_) {
       return 'err_delete_failed';
+    }
+  }
+
+  Future<void> recordPageView(String visitorId) async {
+    final clean = visitorId.trim();
+    if (clean.isEmpty) return;
+
+    if (!_useSupabase) {
+      _demoPageViews.add((visitorId: clean, createdAt: DateTime.now()));
+      return;
+    }
+
+    try {
+      await Supabase.instance.client.rpc('record_page_view', params: {
+        'p_visitor_id': clean,
+      });
+    } catch (_) {
+      // Ignore silently if analytics RPC isn't deployed yet
+    }
+  }
+
+  Future<PageViewStats?> fetchPageViewStatsAsAdmin(String adminPass) async {
+    if (!_useSupabase) {
+      final now = DateTime.now();
+      final todayStart = DateTime(now.year, now.month, now.day);
+      final weekStart = now.subtract(const Duration(days: 7));
+      final unique = _demoPageViews.map((e) => e.visitorId).toSet().length;
+      final today = _demoPageViews.where((e) => !e.createdAt.isBefore(todayStart)).length;
+      final week = _demoPageViews.where((e) => !e.createdAt.isBefore(weekStart)).length;
+      return PageViewStats(
+        totalViews: _demoPageViews.length,
+        uniqueVisitors: unique,
+        todayViews: today,
+        weekViews: week,
+      );
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc('admin_get_page_view_stats', params: {
+        'p_admin_pass': adminPass,
+      });
+      if (res is Map && res['ok'] == true) {
+        return PageViewStats.fromJson(Map<String, dynamic>.from(res));
+      }
+      return null;
+    } catch (_) {
+      return null;
     }
   }
 }
