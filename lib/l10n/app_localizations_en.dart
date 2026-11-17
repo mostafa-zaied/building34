@@ -475,4 +475,58 @@ class AppLocalizationsEn extends AppLocalizations {
   String extraBadge(int amount) {
     return '+$amount extra';
   }
+
+  @override
+  String get upcomingBadge => '🚀 Coming Soon — Upcoming';
+
+  @override
+  String get upcomingDirTitle => 'Neighborhood Services Directory';
+
+  @override
+  String get upcomingDirSubtitle =>
+      'Soon you will be able to add and browse trusted local restaurants, pharmacies, and technicians around the building in one tap.';
+
+  @override
+  String get upcomingInterestedBtn => 'I am interested 👍';
+
+  @override
+  String get upcomingVotedBtn => 'Interest recorded';
+
+  @override
+  String get upcomingHintBefore =>
+      'Let us know if this service would be helpful to you.';
+
+  @override
+  String get upcomingHintAfter =>
+      'Thanks for sharing! Your feedback means a lot to us.';
+
+  @override
+  String get catRestaurants => '🍽️ Restaurants & Cafes';
+
+  @override
+  String get catPharmacies => '💊 Pharmacies';
+
+  @override
+  String get catSupermarket => '🛒 Supermarkets';
+
+  @override
+  String get catProduce => '🥬 Fruits & Vegetables';
+
+  @override
+  String get catBakery => '🥖 Bakery & Sweets';
+
+  @override
+  String get catMaintenance => '🔧 Maintenance & Techs';
+
+  @override
+  String get catLaundry => '🧺 Laundry';
+
+  @override
+  String get catCars => '🚗 Car Services';
+
+  @override
+  String get catStationery => '📚 Stationery & Print';
+
+  @override
+  String get catOther => '📌 Other Services';
 }

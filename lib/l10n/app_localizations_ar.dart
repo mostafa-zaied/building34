@@ -473,4 +473,56 @@ class AppLocalizationsAr extends AppLocalizations {
   String extraBadge(int amount) {
     return '+$amount إضافي';
   }
+
+  @override
+  String get upcomingBadge => '🚀 قريباً — Upcoming';
+
+  @override
+  String get upcomingDirTitle => 'دليل خدمات المنطقة بمشاركة السكان';
+
+  @override
+  String get upcomingDirSubtitle =>
+      'قريباً ستتمكن من إضافة وتصفح أفضل المطاعم، الصيدليات، وفنيي الصيانة المجرّبين حول عمارتنا والتواصل معهم بضغطة واحدة.';
+
+  @override
+  String get upcomingInterestedBtn => 'أنا مهتم بهذه الخدمة 👍';
+
+  @override
+  String get upcomingVotedBtn => 'تم تسجيل اهتمامك بنجاح';
+
+  @override
+  String get upcomingHintBefore => 'شاركنا برأيك هل الخدمة دي مفيدة ليك؟';
+
+  @override
+  String get upcomingHintAfter => 'شكراً لمشاركتك! رأيك مهم جداً لينا.';
+
+  @override
+  String get catRestaurants => '🍽️ مطاعم وكافيهات';
+
+  @override
+  String get catPharmacies => '💊 صيدليات';
+
+  @override
+  String get catSupermarket => '🛒 سوبر ماركت وبقالة';
+
+  @override
+  String get catProduce => '🥬 خضار وفاكهة';
+
+  @override
+  String get catBakery => '🥖 مخبز وحلواني';
+
+  @override
+  String get catMaintenance => '🔧 صيانة وفنيين';
+
+  @override
+  String get catLaundry => '🧺 مغسلة وكوي';
+
+  @override
+  String get catCars => '🚗 خدمات سيارات';
+
+  @override
+  String get catStationery => '📚 مكتبة وتصوير';
+
+  @override
+  String get catOther => '📌 خدمات أخرى';
 }

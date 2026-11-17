@@ -286,5 +286,22 @@
   },
   "extraChargeAddedToast": "Extra charge added",
   "extraBadge": "+{amount} extra",
-  "@extraBadge": { "placeholders": { "amount": { "type": "int" } } }
+  "@extraBadge": { "placeholders": { "amount": { "type": "int" } } },
+  "upcomingBadge": "🚀 Coming Soon — Upcoming",
+  "upcomingDirTitle": "Neighborhood Services Directory",
+  "upcomingDirSubtitle": "Soon you will be able to add and browse trusted local restaurants, pharmacies, and technicians around the building in one tap.",
+  "upcomingInterestedBtn": "I am interested 👍",
+  "upcomingVotedBtn": "Interest recorded",
+  "upcomingHintBefore": "Let us know if this service would be helpful to you.",
+  "upcomingHintAfter": "Thanks for sharing! Your feedback means a lot to us.",
+  "catRestaurants": "🍽️ Restaurants & Cafes",
+  "catPharmacies": "💊 Pharmacies",
+  "catSupermarket": "🛒 Supermarkets",
+  "catProduce": "🥬 Fruits & Vegetables",
+  "catBakery": "🥖 Bakery & Sweets",
+  "catMaintenance": "🔧 Maintenance & Techs",
+  "catLaundry": "🧺 Laundry",
+  "catCars": "🚗 Car Services",
+  "catStationery": "📚 Stationery & Print",
+  "catOther": "📌 Other Services"
 }

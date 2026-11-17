@@ -11,40 +11,25 @@ import '../widgets/common/app_card.dart';
 class UpcomingDirectoryScreen extends StatelessWidget {
   const UpcomingDirectoryScreen({super.key});
 
-  static const List<String> _categoriesAr = [
-    '🍽️ مطاعم وكافيهات',
-    '💊 صيدليات',
-    '🛒 سوبر ماركت وبقالة',
-    '🥬 خضار وفاكهة',
-    '🥖 مخبز وحلواني',
-    '🔧 صيانة وفنيين',
-    '🧺 مغسلة وكوي',
-    '🚗 خدمات سيارات',
-    '📚 مكتبة وتصوير',
-    '📌 خدمات أخرى',
-  ];
-
-  static const List<String> _categoriesEn = [
-    '🍽️ Restaurants & Cafes',
-    '💊 Pharmacies',
-    '🛒 Supermarkets',
-    '🥬 Fruits & Vegetables',
-    '🥖 Bakery & Sweets',
-    '🔧 Maintenance & Techs',
-    '🧺 Laundry',
-    '🚗 Car Services',
-    '📚 Stationery & Print',
-    '📌 Other Services',
-  ];
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<BuildingCubit, BuildingState>(
       builder: (context, state) {
         final isDark = state.isDarkMode;
-        final isAr = state.localeCode == 'ar';
+        final s = state.s;
         final voted = state.hasVotedUpcomingDirectory;
-        final categories = isAr ? _categoriesAr : _categoriesEn;
+        final categories = [
+          s.catRestaurants,
+          s.catPharmacies,
+          s.catSupermarket,
+          s.catProduce,
+          s.catBakery,
+          s.catMaintenance,
+          s.catLaundry,
+          s.catCars,
+          s.catStationery,
+          s.catOther,
+        ];
 
         return Center(
           child: SingleChildScrollView(
@@ -71,9 +56,7 @@ class UpcomingDirectoryScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(AppRadius.pill),
                       ),
                       child: Text(
-                        isAr
-                            ? '🚀 قريباً في التحديث القادم — Upcoming'
-                            : '🚀 Coming Soon — Upcoming',
+                        s.upcomingBadge,
                         style: AppTypography.label.copyWith(
                           color: AppColors.primaryText(isDark),
                           fontWeight: FontWeight.w700,
@@ -82,9 +65,7 @@ class UpcomingDirectoryScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: AppSpacing.lg),
                     Text(
-                      isAr
-                          ? 'دليل خدمات المنطقة بمشاركة السكان'
-                          : 'Neighborhood Services Directory',
+                      s.upcomingDirTitle,
                       textAlign: TextAlign.center,
                       style: AppTypography.title.copyWith(
                         fontSize: 20,
@@ -94,9 +75,7 @@ class UpcomingDirectoryScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
-                      isAr
-                          ? 'قريباً ستتمكن من إضافة وتصفح أفضل المطاعم، الصيدليات، وفنيي الصيانة المجرّبين حول عمارتنا والتواصل معهم بضغطة واحدة.'
-                          : 'Soon you will be able to add and browse trusted local restaurants, pharmacies, and technicians around the building in one tap.',
+                      s.upcomingDirSubtitle,
                       textAlign: TextAlign.center,
                       style: AppTypography.body.copyWith(
                         color: AppColors.textSecondary(isDark),
@@ -162,13 +141,7 @@ class UpcomingDirectoryScreen extends StatelessWidget {
                           size: 18,
                         ),
                         label: Text(
-                          voted
-                              ? (isAr
-                                  ? 'تم تسجيل اهتمامك بنجاح'
-                                  : 'Interest recorded')
-                              : (isAr
-                                  ? 'أنا مهتم بهذه الخدمة 👍'
-                                  : 'I am interested 👍'),
+                          voted ? s.upcomingVotedBtn : s.upcomingInterestedBtn,
                           style: AppTypography.label.copyWith(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
@@ -179,13 +152,7 @@ class UpcomingDirectoryScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
-                      voted
-                          ? (isAr
-                              ? 'شكراً لك! صوتك وصل وسيساعدنا في إطلاق الدليل قريباً.'
-                              : 'Thank you! Your vote helps us launch this directory soon.')
-                          : (isAr
-                              ? 'تصويتك يساعدنا في إطلاق الميزة أسرع لسكان العمارة'
-                              : 'Your vote helps us prioritize launching this feature'),
+                      voted ? s.upcomingHintAfter : s.upcomingHintBefore,
                       textAlign: TextAlign.center,
                       style: AppTypography.caption.copyWith(
                         color: AppColors.textSecondary(isDark),

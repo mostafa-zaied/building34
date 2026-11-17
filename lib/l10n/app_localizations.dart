@@ -943,6 +943,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'+{amount} extra'**
   String extraBadge(int amount);
+
+  /// No description provided for @upcomingBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'🚀 Coming Soon — Upcoming'**
+  String get upcomingBadge;
+
+  /// No description provided for @upcomingDirTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Neighborhood Services Directory'**
+  String get upcomingDirTitle;
+
+  /// No description provided for @upcomingDirSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Soon you will be able to add and browse trusted local restaurants, pharmacies, and technicians around the building in one tap.'**
+  String get upcomingDirSubtitle;
+
+  /// No description provided for @upcomingInterestedBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'I am interested 👍'**
+  String get upcomingInterestedBtn;
+
+  /// No description provided for @upcomingVotedBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Interest recorded'**
+  String get upcomingVotedBtn;
+
+  /// No description provided for @upcomingHintBefore.
+  ///
+  /// In en, this message translates to:
+  /// **'Let us know if this service would be helpful to you.'**
+  String get upcomingHintBefore;
+
+  /// No description provided for @upcomingHintAfter.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for sharing! Your feedback means a lot to us.'**
+  String get upcomingHintAfter;
+
+  /// No description provided for @catRestaurants.
+  ///
+  /// In en, this message translates to:
+  /// **'🍽️ Restaurants & Cafes'**
+  String get catRestaurants;
+
+  /// No description provided for @catPharmacies.
+  ///
+  /// In en, this message translates to:
+  /// **'💊 Pharmacies'**
+  String get catPharmacies;
+
+  /// No description provided for @catSupermarket.
+  ///
+  /// In en, this message translates to:
+  /// **'🛒 Supermarkets'**
+  String get catSupermarket;
+
+  /// No description provided for @catProduce.
+  ///
+  /// In en, this message translates to:
+  /// **'🥬 Fruits & Vegetables'**
+  String get catProduce;
+
+  /// No description provided for @catBakery.
+  ///
+  /// In en, this message translates to:
+  /// **'🥖 Bakery & Sweets'**
+  String get catBakery;
+
+  /// No description provided for @catMaintenance.
+  ///
+  /// In en, this message translates to:
+  /// **'🔧 Maintenance & Techs'**
+  String get catMaintenance;
+
+  /// No description provided for @catLaundry.
+  ///
+  /// In en, this message translates to:
+  /// **'🧺 Laundry'**
+  String get catLaundry;
+
+  /// No description provided for @catCars.
+  ///
+  /// In en, this message translates to:
+  /// **'🚗 Car Services'**
+  String get catCars;
+
+  /// No description provided for @catStationery.
+  ///
+  /// In en, this message translates to:
+  /// **'📚 Stationery & Print'**
+  String get catStationery;
+
+  /// No description provided for @catOther.
+  ///
+  /// In en, this message translates to:
+  /// **'📌 Other Services'**
+  String get catOther;
 }
 
 class _AppLocalizationsDelegate

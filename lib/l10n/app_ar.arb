@@ -140,5 +140,22 @@
   "totalDueLabel": "الإجمالي المطلوب",
   "confirmDeleteExtraBody": "هل تريد حذف هذا البند الإضافي ({amount})؟",
   "extraChargeAddedToast": "تم إضافة الرسوم الإضافية",
-  "extraBadge": "+{amount} إضافي"
+  "extraBadge": "+{amount} إضافي",
+  "upcomingBadge": "🚀 قريباً — Upcoming",
+  "upcomingDirTitle": "دليل خدمات المنطقة بمشاركة السكان",
+  "upcomingDirSubtitle": "قريباً ستتمكن من إضافة وتصفح أفضل المطاعم، الصيدليات، وفنيي الصيانة المجرّبين حول عمارتنا والتواصل معهم بضغطة واحدة.",
+  "upcomingInterestedBtn": "أنا مهتم بهذه الخدمة 👍",
+  "upcomingVotedBtn": "تم تسجيل اهتمامك بنجاح",
+  "upcomingHintBefore": "شاركنا برأيك هل الخدمة دي مفيدة ليك؟",
+  "upcomingHintAfter": "شكراً لمشاركتك! رأيك مهم جداً لينا.",
+  "catRestaurants": "🍽️ مطاعم وكافيهات",
+  "catPharmacies": "💊 صيدليات",
+  "catSupermarket": "🛒 سوبر ماركت وبقالة",
+  "catProduce": "🥬 خضار وفاكهة",
+  "catBakery": "🥖 مخبز وحلواني",
+  "catMaintenance": "🔧 صيانة وفنيين",
+  "catLaundry": "🧺 مغسلة وكوي",
+  "catCars": "🚗 خدمات سيارات",
+  "catStationery": "📚 مكتبة وتصوير",
+  "catOther": "📌 خدمات أخرى"
 }
