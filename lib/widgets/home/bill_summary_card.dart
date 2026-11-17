@@ -185,28 +185,36 @@ class BillSummaryCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: AppSpacing.md),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.end,
+                spacing: AppSpacing.md,
+                runSpacing: AppSpacing.sm,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          s.sharePerAptLabel,
-                          style: AppTypography.label.copyWith(
-                            color: AppColors.textSecondary(isDark),
-                          ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        s.sharePerAptLabel,
+                        style: AppTypography.label.copyWith(
+                          color: AppColors.textSecondary(isDark),
                         ),
-                        const SizedBox(height: AppSpacing.xxs),
-                        Text(
+                      ),
+                      const SizedBox(height: AppSpacing.xxs),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: AlignmentDirectional.centerStart,
+                        child: Text(
                           s.currency(month.sharePerApt),
+                          maxLines: 1,
+                          softWrap: false,
                           style: AppTypography.heroAmount.copyWith(
                             color: isDark ? Colors.white : AppColors.primaryDark,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                   Container(
                     padding: const EdgeInsetsDirectional.symmetric(
