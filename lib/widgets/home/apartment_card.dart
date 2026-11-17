@@ -12,7 +12,7 @@ class ApartmentCard extends StatefulWidget {
   final String paidLabel;
   final bool isPaid;
   final bool hasReceipt;
-  final bool hasExtraCharge;
+  final String? extraBadgeText;
   final VoidCallback onTap;
 
   const ApartmentCard({
@@ -23,7 +23,7 @@ class ApartmentCard extends StatefulWidget {
     required this.paidLabel,
     required this.isPaid,
     required this.hasReceipt,
-    this.hasExtraCharge = false,
+    this.extraBadgeText,
     required this.onTap,
   });
 
@@ -144,11 +144,27 @@ class _ApartmentCardState extends State<ApartmentCard> {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    if (widget.hasExtraCharge && !widget.isPaid) ...[
-                      Icon(
-                        Icons.add_circle_outline_rounded,
-                        size: 13,
-                        color: AppColors.warningText(isDark),
+                    if (widget.extraBadgeText != null && !widget.isPaid) ...[
+                      Container(
+                        padding: const EdgeInsetsDirectional.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.amber.withValues(alpha: isDark ? 0.16 : 0.14),
+                          borderRadius: BorderRadius.circular(AppRadius.pill),
+                          border: Border.all(
+                            color: AppColors.amber.withValues(alpha: 0.4),
+                          ),
+                        ),
+                        child: Text(
+                          widget.extraBadgeText!,
+                          style: AppTypography.caption.copyWith(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.warningText(isDark),
+                          ),
+                        ),
                       ),
                     ],
                     if (widget.hasReceipt)

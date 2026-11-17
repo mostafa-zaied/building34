@@ -191,7 +191,6 @@ Future<void> showApartmentPaymentDialog({
     text: hasSavedPass ? state.savedAptPass! : '',
   );
   bool useSavedPass = hasSavedPass;
-  bool confirmed = true;
   Uint8List? pickedBytes;
   String? pickedName;
   String? errMsg;
@@ -515,62 +514,6 @@ Future<void> showApartmentPaymentDialog({
                 ],
                 const SizedBox(height: AppSpacing.md),
 
-                // Confirmation Checkbox Card
-                InkWell(
-                  borderRadius: BorderRadius.circular(AppRadius.lg),
-                  onTap: () {
-                    setModalState(() {
-                      confirmed = !confirmed;
-                      if (confirmed) errMsg = null;
-                    });
-                  },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 180),
-                    padding: const EdgeInsetsDirectional.symmetric(
-                      horizontal: AppSpacing.md,
-                      vertical: AppSpacing.sm,
-                    ),
-                    decoration: BoxDecoration(
-                      color: confirmed
-                          ? AppColors.emerald.withValues(alpha: isDark ? 0.12 : 0.08)
-                          : AppColors.surface(isDark),
-                      borderRadius: BorderRadius.circular(AppRadius.lg),
-                      border: Border.all(
-                        color: confirmed
-                            ? AppColors.emerald.withValues(alpha: 0.45)
-                            : AppColors.border(isDark),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Checkbox(
-                          value: confirmed,
-                          activeColor: AppColors.emerald,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          onChanged: (v) {
-                            setModalState(() {
-                              confirmed = v ?? false;
-                              if (confirmed) errMsg = null;
-                            });
-                          },
-                        ),
-                        Expanded(
-                          child: Text(
-                            s.confirmPaidCheckbox,
-                            style: AppTypography.label.copyWith(
-                              color: AppColors.textPrimary(isDark),
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.md),
-
                 // Step 2: Optional receipt image
                 Text(
                   s.step2Image,
@@ -707,10 +650,6 @@ Future<void> showApartmentPaymentDialog({
                         onPressed: submitting
                             ? null
                             : () async {
-                                if (!confirmed) {
-                                  setModalState(() => errMsg = s.errConfirmCheckbox);
-                                  return;
-                                }
                                 setModalState(() => submitting = true);
                                 final resErr = await cubit.submitPayment(
                                   aptNum: aptNum,

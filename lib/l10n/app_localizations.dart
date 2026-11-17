@@ -332,18 +332,6 @@ abstract class AppLocalizations {
   /// **'2. Transfer Screenshot (Optional)'**
   String get step2Image;
 
-  /// No description provided for @confirmPaidCheckbox.
-  ///
-  /// In en, this message translates to:
-  /// **'I confirm I have paid this month\'s share'**
-  String get confirmPaidCheckbox;
-
-  /// No description provided for @errConfirmCheckbox.
-  ///
-  /// In en, this message translates to:
-  /// **'Please check the payment confirmation box first!'**
-  String get errConfirmCheckbox;
-
   /// No description provided for @noReceiptAttached.
   ///
   /// In en, this message translates to:
@@ -949,6 +937,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Extra charge added'**
   String get extraChargeAddedToast;
+
+  /// No description provided for @extraBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'+{amount} extra'**
+  String extraBadge(int amount);
 }
 
 class _AppLocalizationsDelegate

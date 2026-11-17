@@ -111,8 +111,6 @@
   },
   "enterPassHint": "Enter passcode...",
   "step2Image": "2. Transfer Screenshot (Optional)",
-  "confirmPaidCheckbox": "I confirm I have paid this month's share",
-  "errConfirmCheckbox": "Please check the payment confirmation box first!",
   "noReceiptAttached": "Confirmed without receipt image",
   "pickImagePrompt": "Tap here to select receipt image",
   "chosenFile": "Selected: {name}",
@@ -286,5 +284,7 @@
       }
     }
   },
-  "extraChargeAddedToast": "Extra charge added"
+  "extraChargeAddedToast": "Extra charge added",
+  "extraBadge": "+{amount} extra",
+  "@extraBadge": { "placeholders": { "amount": { "type": "int" } } }
 }

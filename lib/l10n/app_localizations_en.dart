@@ -145,13 +145,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get step2Image => '2. Transfer Screenshot (Optional)';
 
   @override
-  String get confirmPaidCheckbox => 'I confirm I have paid this month\'s share';
-
-  @override
-  String get errConfirmCheckbox =>
-      'Please check the payment confirmation box first!';
-
-  @override
   String get noReceiptAttached => 'Confirmed without receipt image';
 
   @override
@@ -477,4 +470,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get extraChargeAddedToast => 'Extra charge added';
+
+  @override
+  String extraBadge(int amount) {
+    return '+$amount extra';
+  }
 }

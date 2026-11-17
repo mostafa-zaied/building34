@@ -150,6 +150,7 @@ class ApartmentsGrid extends StatelessWidget {
                   final payment = month.payments[aptNum];
                   final isPaid = payment != null;
 
+                  final extraTotal = month.extraTotalFor(aptNum);
                   return ApartmentCard(
                     aptNum: aptNum,
                     label: state.aptLabel(aptNum),
@@ -157,7 +158,7 @@ class ApartmentsGrid extends StatelessWidget {
                     paidLabel: s.paidBadge,
                     isPaid: isPaid,
                     hasReceipt: payment?.receiptUrl != null,
-                    hasExtraCharge: month.extraTotalFor(aptNum) > 0,
+                    extraBadgeText: extraTotal > 0 ? s.extraBadge(extraTotal) : null,
                     onTap: () => onTapApartment(aptNum),
                   );
                 },

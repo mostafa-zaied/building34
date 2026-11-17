@@ -39,8 +39,6 @@
   "step1Passcode": "1. كلمة سر الشقة{demoHint}",
   "enterPassHint": "اكتب كلمة السر...",
   "step2Image": "2. إرفاق صورة التحويل (اختياري)",
-  "confirmPaidCheckbox": "أؤكد أنني قمت بسداد نصيب هذا الشهر",
-  "errConfirmCheckbox": "يرجى تفعيل علامة تأكيد الدفع أولاً!",
   "noReceiptAttached": "تم تأكيد الدفع بدون إرفاق صورة",
   "pickImagePrompt": "اضغط هنا لاختيار صورة الإيصال",
   "chosenFile": "تم اختيار: {name}",
@@ -141,5 +139,6 @@
   "monthShareLine": "نصيب الشهر",
   "totalDueLabel": "الإجمالي المطلوب",
   "confirmDeleteExtraBody": "هل تريد حذف هذا البند الإضافي ({amount})؟",
-  "extraChargeAddedToast": "تم إضافة الرسوم الإضافية"
+  "extraChargeAddedToast": "تم إضافة الرسوم الإضافية",
+  "extraBadge": "+{amount} إضافي"
 }

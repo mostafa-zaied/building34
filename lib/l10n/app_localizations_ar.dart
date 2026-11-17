@@ -145,12 +145,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get step2Image => '2. إرفاق صورة التحويل (اختياري)';
 
   @override
-  String get confirmPaidCheckbox => 'أؤكد أنني قمت بسداد نصيب هذا الشهر';
-
-  @override
-  String get errConfirmCheckbox => 'يرجى تفعيل علامة تأكيد الدفع أولاً!';
-
-  @override
   String get noReceiptAttached => 'تم تأكيد الدفع بدون إرفاق صورة';
 
   @override
@@ -474,4 +468,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get extraChargeAddedToast => 'تم إضافة الرسوم الإضافية';
+
+  @override
+  String extraBadge(int amount) {
+    return '+$amount إضافي';
+  }
 }
