@@ -13,9 +13,9 @@ import '../widgets/dialogs/confirm_delete_dialog.dart';
 import '../widgets/common/app_card.dart';
 
 class FeedbackScreen extends StatefulWidget {
-  final String type; // 'complaint' or 'improvement'
+  final String initialType; // 'complaint' or 'improvement'
 
-  const FeedbackScreen({super.key, required this.type});
+  const FeedbackScreen({super.key, this.initialType = 'complaint'});
 
   @override
   State<FeedbackScreen> createState() => _FeedbackScreenState();
@@ -25,6 +25,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
   late final TabController _tabCtrl;
   final _msgCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
+  late String _selectedType;
+  String _filterType = 'all'; // 'all' | 'complaint' | 'improvement'
   bool _isAnonymous = true;
   int _selectedApt = 1;
   bool _submitting = false;
@@ -32,6 +34,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
   @override
   void initState() {
     super.initState();
+    _selectedType = widget.initialType;
     _tabCtrl = TabController(length: 2, vsync: this);
   }
 
@@ -48,7 +51,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
     if (text.isEmpty) return;
     setState(() => _submitting = true);
     final ok = await cubit.submitFeedbackPost(
-      type: widget.type,
+      type: _selectedType,
       message: text,
       aptNum: _isAnonymous ? null : _selectedApt,
       passcode: _isAnonymous ? null : _passCtrl.text,
@@ -80,12 +83,16 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
         final s = state.s;
         final isDark = state.isDarkMode;
 
-        final isComplaint = widget.type == 'complaint';
+        final isAr = state.localeCode == 'ar';
+        final isComplaint = _selectedType == 'complaint';
         final accent = isComplaint ? AppColors.amber : AppColors.emerald;
         final aptsCount = state.currentMonth?.aptsCount ?? 13;
         if (_selectedApt > aptsCount) _selectedApt = 1;
 
-        final posts = state.feedbackPosts.where((p) => p.type == widget.type).toList();
+        final allPosts = state.feedbackPosts;
+        final posts = _filterType == 'all'
+            ? allPosts
+            : allPosts.where((p) => p.type == _filterType).toList();
 
         return Align(
           alignment: Alignment.topCenter,
@@ -104,16 +111,14 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
                         Row(
                           children: [
                             Icon(
-                              isComplaint
-                                  ? Icons.campaign_outlined
-                                  : Icons.lightbulb_outline_rounded,
+                              Icons.forum_outlined,
                               size: 20,
-                              color: accent,
+                              color: AppColors.primaryText(isDark),
                             ),
                             const SizedBox(width: AppSpacing.xs),
                             Expanded(
                               child: Text(
-                                isComplaint ? s.complaintsTitle : s.improvementsTitle,
+                                isAr ? 'الشكاوى والمقترحات' : 'Complaints & Suggestions',
                                 style: AppTypography.headline,
                               ),
                             ),
@@ -132,7 +137,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
                             dividerColor: Colors.transparent,
                             indicatorSize: TabBarIndicatorSize.tab,
                             indicator: BoxDecoration(
-                              color: accent,
+                              color: AppColors.primaryActionBg(isDark),
                               borderRadius: BorderRadius.circular(AppRadius.sm),
                             ),
                             labelColor: AppColors.onPrimaryAction(isDark),
@@ -140,12 +145,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
                             labelStyle: AppTypography.label.copyWith(fontWeight: FontWeight.w700),
                             tabs: [
                               Tab(
-                                text: isComplaint
-                                    ? s.tabViewComplaints(posts.length)
-                                    : s.tabViewImprovements(posts.length),
+                                text: isAr
+                                    ? 'عرض المشاركات (${allPosts.length})'
+                                    : 'View Posts (${allPosts.length})',
                               ),
                               Tab(
-                                text: isComplaint ? s.tabAddComplaint : s.tabAddImprovement,
+                                text: isAr ? 'إضافة شكوى / مقترح' : 'Add Post',
                               ),
                             ],
                           ),
@@ -234,35 +239,89 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
       );
     }
 
-    return ListView.separated(
-      itemCount: posts.length,
-      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-      itemBuilder: (context, index) {
-        final post = posts[index];
-        final isAnon = post.authorLabel == null || post.authorLabel!.trim().isEmpty;
-        return AppCard(
-          padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: const EdgeInsetsDirectional.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface(isDark),
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                      border: Border.all(color: accent.withValues(alpha: 0.45)),
-                    ),
-                    child: Text(
-                      isAnon ? s.anonymousAuthor : '🏠 ${post.authorLabel}',
-                      style: AppTypography.caption.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: isAnon ? AppColors.textSecondary(isDark) : accent,
-                      ),
-                    ),
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Wrap(
+          spacing: AppSpacing.xs,
+          runSpacing: AppSpacing.xs,
+          children: [
+            _filterChip(
+              label: state.localeCode == 'ar' ? 'الكل' : 'All',
+              value: 'all',
+              isDark: isDark,
+            ),
+            _filterChip(
+              label: state.localeCode == 'ar' ? '📢 الشكاوى' : '📢 Complaints',
+              value: 'complaint',
+              isDark: isDark,
+            ),
+            _filterChip(
+              label: state.localeCode == 'ar' ? '💡 المقترحات' : '💡 Suggestions',
+              value: 'improvement',
+              isDark: isDark,
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Expanded(
+          child: ListView.separated(
+            itemCount: posts.length,
+            separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+            itemBuilder: (context, index) {
+              final post = posts[index];
+              final isAnon = post.authorLabel == null || post.authorLabel!.trim().isEmpty;
+              final postIsComplaint = post.type == 'complaint';
+              final postAccent = postIsComplaint ? AppColors.amber : AppColors.emerald;
+              final typeLabel = state.localeCode == 'ar'
+                  ? (postIsComplaint ? '📢 شكوى' : '💡 مقترح')
+                  : (postIsComplaint ? '📢 Complaint' : '💡 Suggestion');
+              return AppCard(
+                padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                          child: Wrap(
+                            spacing: 6,
+                            runSpacing: 4,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsetsDirectional.symmetric(horizontal: 9, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: postAccent.withValues(alpha: 0.14),
+                                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                                ),
+                                child: Text(
+                                  typeLabel,
+                                  style: AppTypography.caption.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: postAccent,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsetsDirectional.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: AppColors.surface(isDark),
+                                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                                  border: Border.all(color: postAccent.withValues(alpha: 0.45)),
+                                ),
+                                child: Text(
+                                  isAnon ? s.anonymousAuthor : '🏠 ${post.authorLabel}',
+                                  style: AppTypography.caption.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: isAnon ? AppColors.textSecondary(isDark) : postAccent,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -349,6 +408,67 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
           ),
         );
       },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _filterChip({
+    required String label,
+    required String value,
+    required bool isDark,
+  }) {
+    final selected = _filterType == value;
+    return ChoiceChip(
+      label: Text(label),
+      selected: selected,
+      onSelected: (_) => setState(() => _filterType = value),
+      selectedColor: AppColors.primary.withValues(alpha: 0.18),
+      backgroundColor: AppColors.surface(isDark),
+      labelStyle: AppTypography.caption.copyWith(
+        fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+        color: selected ? AppColors.primaryText(isDark) : AppColors.textSecondary(isDark),
+      ),
+      side: BorderSide(
+        color: selected ? AppColors.primary : AppColors.border(isDark),
+      ),
+    );
+  }
+
+  Widget _typeToggleButton({
+    required String label,
+    required bool selected,
+    required Color color,
+    required bool isDark,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 12),
+          decoration: BoxDecoration(
+            color: selected ? color.withValues(alpha: 0.16) : AppColors.surface(isDark),
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            border: Border.all(
+              color: selected ? color : AppColors.border(isDark),
+              width: selected ? 1.5 : 1,
+            ),
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: AppTypography.label.copyWith(
+                fontWeight: FontWeight.w700,
+                color: selected ? color : AppColors.textSecondary(isDark),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -439,6 +559,35 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Text(
+              state.localeCode == 'ar' ? 'النوع' : 'Type',
+              style: AppTypography.label.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Row(
+              children: [
+                Expanded(
+                  child: _typeToggleButton(
+                    label: state.localeCode == 'ar' ? '📢 شكوى' : '📢 Complaint',
+                    selected: _selectedType == 'complaint',
+                    color: AppColors.amber,
+                    isDark: isDark,
+                    onTap: () => setState(() => _selectedType = 'complaint'),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: _typeToggleButton(
+                    label: state.localeCode == 'ar' ? '💡 مقترح' : '💡 Suggestion',
+                    selected: _selectedType == 'improvement',
+                    color: AppColors.emerald,
+                    isDark: isDark,
+                    onTap: () => setState(() => _selectedType = 'improvement'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.md),
             TextField(
               controller: _msgCtrl,
               maxLines: 4,

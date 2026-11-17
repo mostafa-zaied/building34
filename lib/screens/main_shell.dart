@@ -11,6 +11,7 @@ import '../cubit/building_state.dart';
 import 'emergency_screen.dart';
 import 'feedback_screen.dart';
 import 'home_screen.dart';
+import 'upcoming_directory_screen.dart';
 
 class MainShell extends StatelessWidget {
   const MainShell({super.key});
@@ -39,8 +40,8 @@ class MainShell extends StatelessWidget {
         const screens = [
           BuildingHomePage(),
           EmergencyScreen(),
-          FeedbackScreen(type: 'complaint'),
-          FeedbackScreen(type: 'improvement'),
+          FeedbackScreen(),
+          UpcomingDirectoryScreen(),
         ];
 
         final bgDecoration = BoxDecoration(
@@ -143,14 +144,37 @@ class MainShell extends StatelessWidget {
                             label: Text(s.navEmergency),
                           ),
                           NavigationRailDestination(
-                            icon: const Icon(Icons.campaign_outlined),
-                            selectedIcon: const Icon(Icons.campaign_rounded),
-                            label: Text(s.navComplaints),
+                            icon: const Icon(Icons.forum_outlined),
+                            selectedIcon: const Icon(Icons.forum_rounded),
+                            label: Text(
+                              state.localeCode == 'ar' ? 'الشكاوى والمقترحات' : 'Feedback',
+                            ),
                           ),
                           NavigationRailDestination(
-                            icon: const Icon(Icons.lightbulb_outline_rounded),
-                            selectedIcon: const Icon(Icons.lightbulb_rounded),
-                            label: Text(s.navImprovements),
+                            icon: const Icon(Icons.explore_outlined),
+                            selectedIcon: const Icon(Icons.explore_rounded),
+                            label: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(state.localeCode == 'ar' ? 'خدمات المنطقة' : 'Services'),
+                                const SizedBox(width: 6),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.amber,
+                                    borderRadius: BorderRadius.circular(AppRadius.pill),
+                                  ),
+                                  child: Text(
+                                    state.localeCode == 'ar' ? 'قريباً' : 'Soon',
+                                    style: const TextStyle(
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -201,14 +225,15 @@ class MainShell extends StatelessWidget {
                     label: s.navEmergency,
                   ),
                   _NavItemData(
-                    icon: Icons.campaign_outlined,
-                    selectedIcon: Icons.campaign_rounded,
-                    label: s.navComplaints,
+                    icon: Icons.forum_outlined,
+                    selectedIcon: Icons.forum_rounded,
+                    label: state.localeCode == 'ar' ? 'شكاوى ومقترحات' : 'Feedback',
                   ),
                   _NavItemData(
-                    icon: Icons.lightbulb_outline_rounded,
-                    selectedIcon: Icons.lightbulb_rounded,
-                    label: s.navImprovements,
+                    icon: Icons.explore_outlined,
+                    selectedIcon: Icons.explore_rounded,
+                    label: state.localeCode == 'ar' ? 'خدمات' : 'Services',
+                    badge: state.localeCode == 'ar' ? 'قريباً' : 'Soon',
                   ),
                 ],
               ),
@@ -225,11 +250,13 @@ class _NavItemData {
   final IconData icon;
   final IconData selectedIcon;
   final String label;
+  final String? badge;
 
   const _NavItemData({
     required this.icon,
     required this.selectedIcon,
     required this.label,
+    this.badge,
   });
 }
 
@@ -306,29 +333,57 @@ class _FloatingBottomNav extends StatelessWidget {
                             )
                           : null,
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    child: Stack(
+                      clipBehavior: Clip.none,
                       children: [
-                        Icon(
-                          selected ? item.selectedIcon : item.icon,
-                          size: 20,
-                          color: selected
-                              ? AppColors.primaryText(isDark)
-                              : AppColors.textSecondary(isDark),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          item.label,
-                          style: AppTypography.caption.copyWith(
-                            fontSize: 11,
-                            fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-                            color: selected
-                                ? AppColors.primaryText(isDark)
-                                : AppColors.textSecondary(isDark),
+                        Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                selected ? item.selectedIcon : item.icon,
+                                size: 20,
+                                color: selected
+                                    ? AppColors.primaryText(isDark)
+                                    : AppColors.textSecondary(isDark),
+                              ),
+                              const SizedBox(height: 3),
+                              Text(
+                                item.label,
+                                style: AppTypography.caption.copyWith(
+                                  fontSize: 11,
+                                  fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                                  color: selected
+                                      ? AppColors.primaryText(isDark)
+                                      : AppColors.textSecondary(isDark),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
+                        if (item.badge != null)
+                          PositionedDirectional(
+                            top: 2,
+                            end: 2,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                              decoration: BoxDecoration(
+                                color: AppColors.amber,
+                                borderRadius: BorderRadius.circular(AppRadius.pill),
+                              ),
+                              child: Text(
+                                item.badge!,
+                                style: const TextStyle(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                  height: 1.1,
+                                ),
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ),

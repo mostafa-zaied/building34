@@ -394,26 +394,44 @@ class _AdminViewsCard extends StatelessWidget {
               ),
             )
           else
-            Row(
+            Column(
               children: [
-                _statPill(
-                  label: isAr ? 'إجمالي الفتح' : 'Total',
-                  value: '${s.totalViews}',
+                Row(
+                  children: [
+                    _statPill(
+                      label: isAr ? 'إجمالي الفتح' : 'Total',
+                      value: '${s.totalViews}',
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    _statPill(
+                      label: isAr ? 'زوار فريدون' : 'Unique',
+                      value: '${s.uniqueVisitors}',
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    _statPill(
+                      label: isAr ? 'اليوم' : 'Today',
+                      value: '${s.todayViews}',
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    _statPill(
+                      label: isAr ? '7 أيام' : '7 Days',
+                      value: '${s.weekViews}',
+                    ),
+                  ],
                 ),
-                const SizedBox(width: AppSpacing.xs),
-                _statPill(
-                  label: isAr ? 'زوار فريدون' : 'Unique',
-                  value: '${s.uniqueVisitors}',
-                ),
-                const SizedBox(width: AppSpacing.xs),
-                _statPill(
-                  label: isAr ? 'اليوم' : 'Today',
-                  value: '${s.todayViews}',
-                ),
-                const SizedBox(width: AppSpacing.xs),
-                _statPill(
-                  label: isAr ? '7 أيام' : '7 Days',
-                  value: '${s.weekViews}',
+                const SizedBox(height: AppSpacing.xs),
+                Row(
+                  children: [
+                    _statPill(
+                      label: isAr ? 'فتحوا تبويب "قريباً"' : 'Opened Soon',
+                      value: '${s.upcomingOpens}',
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    _statPill(
+                      label: isAr ? 'مهتمون بخدمات المنطقة 👍' : 'Interested 👍',
+                      value: '${s.upcomingVotes}',
+                    ),
+                  ],
                 ),
               ],
             ),

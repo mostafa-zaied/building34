@@ -284,6 +284,8 @@ DECLARE
   v_unique BIGINT;
   v_today BIGINT;
   v_week BIGINT;
+  v_up_opens BIGINT;
+  v_up_votes BIGINT;
 BEGIN
   SELECT admin_password INTO v_pass FROM public.building_settings WHERE id = 1;
   IF v_pass IS NULL OR p_admin_pass <> v_pass THEN
@@ -298,12 +300,66 @@ BEGIN
   INTO v_total, v_unique, v_today, v_week
   FROM public.page_views;
 
+  SELECT
+    COUNT(*) FILTER (WHERE event_type = 'open'),
+    COUNT(*) FILTER (WHERE event_type = 'vote')
+  INTO v_up_opens, v_up_votes
+  FROM public.upcoming_directory_events;
+
   RETURN jsonb_build_object(
     'ok', true,
     'total_views', COALESCE(v_total, 0),
     'unique_visitors', COALESCE(v_unique, 0),
     'today_views', COALESCE(v_today, 0),
-    'week_views', COALESCE(v_week, 0)
+    'week_views', COALESCE(v_week, 0),
+    'upcoming_opens', COALESCE(v_up_opens, 0),
+    'upcoming_votes', COALESCE(v_up_votes, 0)
   );
+END;
+$$;
+
+-- 6. Upcoming Services Directory Interest Tracking (Admin-only stats)
+CREATE TABLE IF NOT EXISTS public.upcoming_directory_events (
+  id BIGSERIAL PRIMARY KEY,
+  visitor_id TEXT NOT NULL,
+  event_type TEXT NOT NULL CHECK (event_type IN ('open', 'vote')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_upcoming_dir_events_type
+  ON public.upcoming_directory_events (event_type, visitor_id);
+
+ALTER TABLE public.upcoming_directory_events ENABLE ROW LEVEL SECURITY;
+
+CREATE OR REPLACE FUNCTION public.record_upcoming_directory_event(
+  p_visitor_id TEXT,
+  p_event_type TEXT
+)
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_vid TEXT;
+BEGIN
+  IF p_visitor_id IS NULL OR length(trim(p_visitor_id)) = 0 THEN
+    RETURN;
+  END IF;
+  IF p_event_type NOT IN ('open', 'vote') THEN
+    RETURN;
+  END IF;
+  v_vid := left(trim(p_visitor_id), 120);
+
+  IF p_event_type = 'vote' THEN
+    IF EXISTS (
+      SELECT 1 FROM public.upcoming_directory_events
+      WHERE visitor_id = v_vid AND event_type = 'vote'
+    ) THEN
+      RETURN;
+    END IF;
+  END IF;
+
+  INSERT INTO public.upcoming_directory_events (visitor_id, event_type)
+  VALUES (v_vid, p_event_type);
 END;
 $$;

@@ -25,6 +25,7 @@ class BuildingState {
   final String announcement;
   final List<EmergencyTransaction> emergencyTransactions;
   final PageViewStats? pageViewStats;
+  final bool hasVotedUpcomingDirectory;
 
   const BuildingState({
     this.loading = true,
@@ -48,6 +49,7 @@ class BuildingState {
     this.announcement = '',
     this.emergencyTransactions = const [],
     this.pageViewStats,
+    this.hasVotedUpcomingDirectory = false,
   });
 
   AppLocalizations get s => lookupAppLocalizations(Locale(localeCode));
@@ -81,6 +83,7 @@ class BuildingState {
     String? announcement,
     List<EmergencyTransaction>? emergencyTransactions,
     PageViewStats? Function()? pageViewStats,
+    bool? hasVotedUpcomingDirectory,
   }) {
     return BuildingState(
       loading: loading ?? this.loading,
@@ -104,6 +107,8 @@ class BuildingState {
       announcement: announcement ?? this.announcement,
       emergencyTransactions: emergencyTransactions ?? this.emergencyTransactions,
       pageViewStats: pageViewStats != null ? pageViewStats() : this.pageViewStats,
+      hasVotedUpcomingDirectory:
+          hasVotedUpcomingDirectory ?? this.hasVotedUpcomingDirectory,
     );
   }
 }
