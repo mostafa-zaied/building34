@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../core/theme/app_colors.dart';
@@ -7,15 +8,23 @@ import '../core/theme/app_typography.dart';
 import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
 import '../widgets/common/app_card.dart';
+import '../widgets/dialogs/extra_charges_dialog.dart';
+import '../widgets/home/admin_edit_panel.dart';
 
 class AdminSettingsScreen extends StatelessWidget {
-  const AdminSettingsScreen({super.key});
+  final VoidCallback onOpenManageApts;
+
+  const AdminSettingsScreen({
+    super.key,
+    required this.onOpenManageApts,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<BuildingCubit, BuildingState>(
       builder: (context, state) {
         final cubit = context.read<BuildingCubit>();
+        final s = state.s;
         final isDark = state.isDarkMode;
         final isAr = state.localeCode == 'ar';
 
@@ -54,6 +63,7 @@ class AdminSettingsScreen extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
                 children: [
+                  // 1. Security / Passcode Gate Toggle
                   AppCard(
                     padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
                     child: Column(
@@ -135,6 +145,112 @@ class AdminSettingsScreen extends StatelessWidget {
                       ],
                     ),
                   ),
+
+                  const SizedBox(height: AppSpacing.lg),
+
+                  // 2. Building & Month Management Actions
+                  AppCard(
+                    padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          isAr ? 'إدارة العمارة والشهور' : 'Building & Month Management',
+                          style: AppTypography.headline.copyWith(
+                            fontSize: 15,
+                            color: AppColors.textPrimary(isDark),
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AdminActionTile(
+                                label: s.manageAptsBtn,
+                                icon: Icons.vpn_key_outlined,
+                                isDark: isDark,
+                                onTap: onOpenManageApts,
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: AdminActionTile(
+                                label: s.extraChargesBtn,
+                                icon: Icons.add_card_rounded,
+                                isDark: isDark,
+                                onTap: () => showExtraChargesDialog(
+                                  context: context,
+                                  cubit: cubit,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AdminActionTile(
+                                label: s.unpaidReminderBtn,
+                                icon: Icons.notifications_active_outlined,
+                                isDark: isDark,
+                                onTap: () async {
+                                  final text = cubit.buildUnpaidReminderMessage();
+                                  cubit.setCopiedPreview(text);
+                                  try {
+                                    await Clipboard.setData(ClipboardData(text: text));
+                                  } catch (_) {}
+                                  if (context.mounted) Navigator.pop(context);
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: AdminActionTile(
+                                label: s.pinNoticeBtn,
+                                icon: Icons.campaign_outlined,
+                                isDark: isDark,
+                                onTap: () => _showAnnouncementDialog(
+                                  context,
+                                  cubit,
+                                  state,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AdminActionTile(
+                                label: s.addNextMonthBtn,
+                                icon: Icons.calendar_month_outlined,
+                                isDark: isDark,
+                                onTap: cubit.addNextMonth,
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: AdminActionTile(
+                                label: s.removeMonthBtn,
+                                icon: Icons.delete_outline_rounded,
+                                isDark: isDark,
+                                isDestructive: true,
+                                onTap: state.months.length <= 1
+                                    ? null
+                                    : () => _confirmDeleteMonth(
+                                          context,
+                                          cubit,
+                                          state,
+                                        ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -142,5 +258,90 @@ class AdminSettingsScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> _confirmDeleteMonth(
+    BuildContext context,
+    BuildingCubit cubit,
+    BuildingState state,
+  ) async {
+    final m = state.currentMonth;
+    if (m == null) return;
+    final isDark = state.isDarkMode;
+    final s = state.s;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.card(isDark),
+        title: Text(
+          s.deleteMonthConfirmTitle,
+          style: AppTypography.headline.copyWith(fontSize: 15),
+        ),
+        content: Text(
+          s.deleteMonthConfirmBody(m.monthNum, m.yearNum),
+          style: AppTypography.body.copyWith(color: AppColors.textSecondary(isDark)),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(s.cancel),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.danger),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(s.removeMonthBtn, style: const TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await cubit.deleteCurrentMonth();
+    }
+  }
+
+  Future<void> _showAnnouncementDialog(
+    BuildContext context,
+    BuildingCubit cubit,
+    BuildingState state,
+  ) async {
+    final ctrl = TextEditingController(text: state.announcement);
+    final isDark = state.isDarkMode;
+    final s = state.s;
+
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.card(isDark),
+        title: Text(s.noticeDialogTitle, style: AppTypography.headline.copyWith(fontSize: 15)),
+        content: TextField(
+          controller: ctrl,
+          maxLines: 3,
+          decoration: InputDecoration(hintText: s.noticeDialogHint),
+        ),
+        actions: [
+          if (state.announcement.trim().isNotEmpty)
+            TextButton(
+              onPressed: () async {
+                await cubit.saveAnnouncement('');
+                if (ctx.mounted) Navigator.pop(ctx);
+              },
+              child: Text(s.hideNoticeBtn, style: const TextStyle(color: AppColors.danger)),
+            ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(s.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await cubit.saveAnnouncement(ctrl.text);
+              if (ctx.mounted) Navigator.pop(ctx);
+            },
+            child: Text(s.saveAll),
+          ),
+        ],
+      ),
+    );
+    Future.delayed(const Duration(milliseconds: 350), ctrl.dispose);
   }
 }

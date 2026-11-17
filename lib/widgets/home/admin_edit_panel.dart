@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
@@ -9,7 +8,6 @@ import '../../cubit/building_state.dart';
 import '../../models/building_models.dart';
 import '../../screens/admin_settings_screen.dart';
 import '../common/app_button.dart';
-import '../dialogs/extra_charges_dialog.dart';
 import 'admin_input_field.dart';
 
 class AdminEditPanel extends StatelessWidget {
@@ -65,95 +63,17 @@ class AdminEditPanel extends StatelessWidget {
           ],
         ),
 
-        const SizedBox(height: AppSpacing.lg),
-        Divider(height: 1, color: AppColors.border(isDark)),
         const SizedBox(height: AppSpacing.md),
-
-        // 2. Calm, Unified 2-Column Action Grid
-        Row(
-          children: [
-            Expanded(
-              child: _AdminActionTile(
-                label: s.manageAptsBtn,
-                icon: Icons.vpn_key_outlined,
-                isDark: isDark,
-                onTap: onOpenManageApts,
-              ),
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              child: _AdminActionTile(
-                label: s.extraChargesBtn,
-                icon: Icons.add_card_rounded,
-                isDark: isDark,
-                onTap: () => showExtraChargesDialog(context: context, cubit: cubit),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        Row(
-          children: [
-            Expanded(
-              child: _AdminActionTile(
-                label: s.unpaidReminderBtn,
-                icon: Icons.notifications_active_outlined,
-                isDark: isDark,
-                onTap: () async {
-                  final text = cubit.buildUnpaidReminderMessage();
-                  cubit.setCopiedPreview(text);
-                  try {
-                    await Clipboard.setData(ClipboardData(text: text));
-                  } catch (_) {}
-                },
-              ),
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              child: _AdminActionTile(
-                label: s.pinNoticeBtn,
-                icon: Icons.campaign_outlined,
-                isDark: isDark,
-                onTap: () => _showAnnouncementDialog(context, cubit, state),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        Row(
-          children: [
-            Expanded(
-              child: _AdminActionTile(
-                label: s.addNextMonthBtn,
-                icon: Icons.calendar_month_outlined,
-                isDark: isDark,
-                onTap: cubit.addNextMonth,
-              ),
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              child: _AdminActionTile(
-                label: s.removeMonthBtn,
-                icon: Icons.delete_outline_rounded,
-                isDark: isDark,
-                isDestructive: true,
-                onTap: state.months.length <= 1
-                    ? null
-                    : () => _confirmDeleteMonth(context, cubit, state),
-              ),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: AppSpacing.sm),
-        _AdminActionTile(
+        AdminActionTile(
           label: state.localeCode == 'ar' ? 'الإعدادات (Settings)' : 'Settings',
           icon: Icons.settings_outlined,
           isDark: isDark,
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (_) => const AdminSettingsScreen(),
+                builder: (_) => AdminSettingsScreen(
+                  onOpenManageApts: onOpenManageApts,
+                ),
               ),
             );
           },
@@ -188,101 +108,17 @@ class AdminEditPanel extends StatelessWidget {
       ],
     );
   }
-
-  Future<void> _confirmDeleteMonth(
-    BuildContext context,
-    BuildingCubit cubit,
-    BuildingState state,
-  ) async {
-    final m = state.currentMonth;
-    if (m == null) return;
-    final isDark = state.isDarkMode;
-    final s = state.s;
-
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.card(isDark),
-        title: Text(
-          s.deleteMonthConfirmTitle,
-          style: AppTypography.headline.copyWith(fontSize: 15),
-        ),
-        content: Text(
-          s.deleteMonthConfirmBody(m.monthNum, m.yearNum),
-          style: AppTypography.body.copyWith(color: AppColors.textSecondary(isDark)),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(s.cancel),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.danger),
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(s.removeMonthBtn, style: const TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-    if (confirmed == true) {
-      await cubit.deleteCurrentMonth();
-    }
-  }
-
-  Future<void> _showAnnouncementDialog(
-    BuildContext context,
-    BuildingCubit cubit,
-    BuildingState state,
-  ) async {
-    final ctrl = TextEditingController(text: state.announcement);
-    final isDark = state.isDarkMode;
-    final s = state.s;
-
-    await showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.card(isDark),
-        title: Text(s.noticeDialogTitle, style: AppTypography.headline.copyWith(fontSize: 15)),
-        content: TextField(
-          controller: ctrl,
-          maxLines: 3,
-          decoration: InputDecoration(hintText: s.noticeDialogHint),
-        ),
-        actions: [
-          if (state.announcement.trim().isNotEmpty)
-            TextButton(
-              onPressed: () async {
-                await cubit.saveAnnouncement('');
-                if (ctx.mounted) Navigator.pop(ctx);
-              },
-              child: Text(s.hideNoticeBtn, style: const TextStyle(color: AppColors.danger)),
-            ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(s.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              await cubit.saveAnnouncement(ctrl.text);
-              if (ctx.mounted) Navigator.pop(ctx);
-            },
-            child: Text(s.saveAll),
-          ),
-        ],
-      ),
-    );
-    Future.delayed(const Duration(milliseconds: 350), ctrl.dispose);
-  }
 }
 
-class _AdminActionTile extends StatelessWidget {
+class AdminActionTile extends StatelessWidget {
   final String label;
   final IconData icon;
   final bool isDark;
   final bool isDestructive;
   final VoidCallback? onTap;
 
-  const _AdminActionTile({
+  const AdminActionTile({
+    super.key,
     required this.label,
     required this.icon,
     required this.isDark,
