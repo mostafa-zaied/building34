@@ -176,3 +176,69 @@ BEGIN
   RETURN jsonb_build_object('ok', true);
 END;
 $$;
+
+-- 5. Apartment Extra Charges (per-apartment repairs/dues within a month)
+CREATE TABLE IF NOT EXISTS public.apartment_extra_charges (
+  id BIGSERIAL PRIMARY KEY,
+  month_id BIGINT NOT NULL REFERENCES public.months(id) ON DELETE CASCADE,
+  apt_num INT NOT NULL,
+  amount NUMERIC NOT NULL,
+  reason TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE public.apartment_extra_charges ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public read apartment_extra_charges" ON public.apartment_extra_charges;
+CREATE POLICY "Public read apartment_extra_charges"
+  ON public.apartment_extra_charges FOR SELECT USING (true);
+
+CREATE OR REPLACE FUNCTION public.admin_add_extra_charge(
+  p_admin_pass TEXT,
+  p_month_id BIGINT,
+  p_apt_nums INT[],
+  p_amount NUMERIC,
+  p_reason TEXT
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_pass TEXT;
+  v_apt INT;
+BEGIN
+  SELECT admin_password INTO v_pass FROM public.building_settings WHERE id = 1;
+  IF v_pass IS NULL OR p_admin_pass <> v_pass THEN
+    RETURN jsonb_build_object('ok', false, 'error', 'err_wrong_admin_pass');
+  END IF;
+
+  FOREACH v_apt IN ARRAY p_apt_nums LOOP
+    INSERT INTO public.apartment_extra_charges (month_id, apt_num, amount, reason)
+    VALUES (p_month_id, v_apt, p_amount, p_reason);
+  END LOOP;
+
+  RETURN jsonb_build_object('ok', true);
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.admin_delete_extra_charge(
+  p_admin_pass TEXT,
+  p_id BIGINT
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_pass TEXT;
+BEGIN
+  SELECT admin_password INTO v_pass FROM public.building_settings WHERE id = 1;
+  IF v_pass IS NULL OR p_admin_pass <> v_pass THEN
+    RETURN jsonb_build_object('ok', false, 'error', 'err_wrong_admin_pass');
+  END IF;
+
+  DELETE FROM public.apartment_extra_charges WHERE id = p_id;
+  RETURN jsonb_build_object('ok', true);
+END;
+$$;

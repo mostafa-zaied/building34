@@ -47,6 +47,35 @@ class PaymentRecord {
   }
 }
 
+class ApartmentExtraCharge {
+  final String id;
+  final int monthId;
+  final int aptNum;
+  final double amount;
+  final String reason;
+  final DateTime createdAt;
+
+  const ApartmentExtraCharge({
+    required this.id,
+    required this.monthId,
+    required this.aptNum,
+    required this.amount,
+    required this.reason,
+    required this.createdAt,
+  });
+
+  factory ApartmentExtraCharge.fromJson(Map<String, dynamic> json) {
+    return ApartmentExtraCharge(
+      id: json['id'].toString(),
+      monthId: json['month_id'] as int? ?? 0,
+      aptNum: json['apt_num'] as int? ?? 0,
+      amount: (json['amount'] as num?)?.toDouble() ?? 0,
+      reason: (json['reason'] as String?) ?? '',
+      createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ?? DateTime.now(),
+    );
+  }
+}
+
 class MonthBill {
   final int id;
   final int monthNum;
@@ -58,6 +87,7 @@ class MonthBill {
   double forEmerg;
   int aptsCount;
   final Map<int, PaymentRecord> payments;
+  final List<ApartmentExtraCharge> extraCharges;
 
   MonthBill({
     required this.id,
@@ -70,7 +100,9 @@ class MonthBill {
     required this.forEmerg,
     required this.aptsCount,
     Map<int, PaymentRecord>? payments,
-  }) : payments = payments ?? {};
+    List<ApartmentExtraCharge>? extraCharges,
+  })  : payments = payments ?? {},
+        extraCharges = extraCharges ?? [];
 
   double get totalExpenses => water + elec + elev + clean;
 
@@ -78,6 +110,36 @@ class MonthBill {
     if (totalExpenses <= 0 || aptsCount <= 0) return 0;
     return (totalExpenses / aptsCount).ceil();
   }
+
+  List<ApartmentExtraCharge> extraChargesFor(int aptNum) =>
+      extraCharges.where((e) => e.aptNum == aptNum).toList();
+
+  int extraTotalFor(int aptNum) => extraCharges
+      .where((e) => e.aptNum == aptNum)
+      .fold<double>(0, (sum, e) => sum + e.amount)
+      .round();
+
+  int dueFor(int aptNum) => sharePerApt + extraTotalFor(aptNum);
+
+  int get totalCollected {
+    int sum = 0;
+    for (final aptNum in payments.keys) {
+      if (aptNum >= 1 && aptNum <= aptsCount) {
+        sum += dueFor(aptNum);
+      }
+    }
+    return sum;
+  }
+
+  int get totalExpected {
+    int sum = 0;
+    for (int i = 1; i <= aptsCount; i++) {
+      sum += dueFor(i);
+    }
+    return sum;
+  }
+
+  int get totalRemaining => (totalExpected - totalCollected).clamp(0, totalExpected);
 
   factory MonthBill.fromJson(Map<String, dynamic> json) {
     return MonthBill(

@@ -504,4 +504,42 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get openInstapayBtn => 'فتح InstaPay';
+
+  @override
+  String get extraChargesBtn => 'رسوم إضافية لشقق';
+
+  @override
+  String get extraChargesTitle => 'رسوم إضافية خاصة بشقق';
+
+  @override
+  String get selectAptsLabel => 'اختر الشقة أو الشقق:';
+
+  @override
+  String get extraAmountHint => 'المبلغ الإضافي لكل شقة';
+
+  @override
+  String get extraReasonHint => 'السبب (مثال: تصليح كالون أو محبس)';
+
+  @override
+  String get addExtraChargeBtn => 'إضافة الرسوم';
+
+  @override
+  String get extraChargesListTitle => 'الرسوم الإضافية المسجلة لهذا الشهر:';
+
+  @override
+  String get noExtraChargesYet => 'لا توجد رسوم إضافية مسجلة لهذا الشهر.';
+
+  @override
+  String get monthShareLine => 'نصيب الشهر';
+
+  @override
+  String get totalDueLabel => 'الإجمالي المطلوب';
+
+  @override
+  String confirmDeleteExtraBody(String amount) {
+    return 'هل تريد حذف هذا البند الإضافي ($amount)؟';
+  }
+
+  @override
+  String get extraChargeAddedToast => '✅ تم إضافة الرسوم الإضافية';
 }

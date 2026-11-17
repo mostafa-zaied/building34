@@ -145,7 +145,7 @@ class MyApartmentBanner extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  isPaid ? s.paidBadge : s.currency(month.sharePerApt),
+                  isPaid ? s.paidBadge : s.currency(month.dueFor(myApt)),
                   style: AppTypography.caption.copyWith(
                     color: isPaid
                         ? AppColors.emeraldText(isDark)

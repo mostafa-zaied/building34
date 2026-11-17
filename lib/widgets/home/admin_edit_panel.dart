@@ -7,6 +7,7 @@ import '../../core/theme/app_typography.dart';
 import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
 import '../common/app_button.dart';
+import '../dialogs/extra_charges_dialog.dart';
 import 'admin_input_field.dart';
 
 class AdminEditPanel extends StatelessWidget {
@@ -112,6 +113,13 @@ class AdminEditPanel extends StatelessWidget {
               ),
             ),
           ],
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        AppSecondaryButton(
+          label: s.extraChargesBtn,
+          icon: Icons.add_card_rounded,
+          accentColor: AppColors.primaryText(state.isDarkMode),
+          onPressed: () => showExtraChargesDialog(context: context, cubit: cubit),
         ),
         const SizedBox(height: AppSpacing.sm),
         AppSecondaryButton(

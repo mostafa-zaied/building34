@@ -146,5 +146,17 @@
   "instapaySubtitle": "حوّل على الرقم التالي ثم ارفع الإيصال",
   "copyNumberBtn": "نسخ الرقم",
   "copiedShort": "تم النسخ ✓",
-  "openInstapayBtn": "فتح InstaPay"
+  "openInstapayBtn": "فتح InstaPay",
+  "extraChargesBtn": "رسوم إضافية لشقق",
+  "extraChargesTitle": "رسوم إضافية خاصة بشقق",
+  "selectAptsLabel": "اختر الشقة أو الشقق:",
+  "extraAmountHint": "المبلغ الإضافي لكل شقة",
+  "extraReasonHint": "السبب (مثال: تصليح كالون أو محبس)",
+  "addExtraChargeBtn": "إضافة الرسوم",
+  "extraChargesListTitle": "الرسوم الإضافية المسجلة لهذا الشهر:",
+  "noExtraChargesYet": "لا توجد رسوم إضافية مسجلة لهذا الشهر.",
+  "monthShareLine": "نصيب الشهر",
+  "totalDueLabel": "الإجمالي المطلوب",
+  "confirmDeleteExtraBody": "هل تريد حذف هذا البند الإضافي ({amount})؟",
+  "extraChargeAddedToast": "✅ تم إضافة الرسوم الإضافية"
 }

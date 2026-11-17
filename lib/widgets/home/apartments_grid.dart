@@ -153,10 +153,11 @@ class ApartmentsGrid extends StatelessWidget {
                   return ApartmentCard(
                     aptNum: aptNum,
                     label: state.aptLabel(aptNum),
-                    amountText: s.currency(month.sharePerApt),
+                    amountText: s.currency(month.dueFor(aptNum)),
                     paidLabel: s.paidBadge,
                     isPaid: isPaid,
                     hasReceipt: payment?.receiptUrl != null,
+                    hasExtraCharge: month.extraTotalFor(aptNum) > 0,
                     onTap: () => onTapApartment(aptNum),
                   );
                 },

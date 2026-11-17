@@ -175,6 +175,17 @@ class BuildingService {
       // Fallback if emergency_transactions table hasn't been created yet
     }
 
+    try {
+      final extraRows = await client
+          .from('apartment_extra_charges')
+          .select()
+          .order('created_at', ascending: false);
+      for (final row in (extraRows as List)) {
+        final charge = ApartmentExtraCharge.fromJson(Map<String, dynamic>.from(row as Map));
+        monthsMap[charge.monthId]?.extraCharges.add(charge);
+      }
+    } catch (_) {}
+
     return BuildingDataState(
       baseEmergencyFund: baseEmerg,
       months: monthsMap.values.toList(),
@@ -645,6 +656,81 @@ class BuildingService {
       return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
     } catch (e) {
       return 'err_submit_failed';
+    }
+  }
+
+  Future<String?> addExtraChargesAsAdmin({
+    required String adminPass,
+    required int monthId,
+    required List<int> aptNums,
+    required double amount,
+    required String reason,
+  }) async {
+    final cleanReason = reason.trim();
+    if (aptNums.isEmpty || amount <= 0 || cleanReason.isEmpty) {
+      return 'err_empty_message';
+    }
+
+    if (!_useSupabase) {
+      final idx = _demoMonths.indexWhere((m) => m.id == monthId);
+      if (idx >= 0) {
+        final now = DateTime.now();
+        for (final apt in aptNums) {
+          _demoMonths[idx].extraCharges.insert(
+            0,
+            ApartmentExtraCharge(
+              id: '${now.microsecondsSinceEpoch}_$apt',
+              monthId: monthId,
+              aptNum: apt,
+              amount: amount,
+              reason: cleanReason,
+              createdAt: now,
+            ),
+          );
+        }
+      }
+      return null;
+    }
+
+    try {
+      final client = Supabase.instance.client;
+      final res = await client.rpc('admin_add_extra_charge', params: {
+        'p_admin_pass': adminPass,
+        'p_month_id': monthId,
+        'p_apt_nums': aptNums,
+        'p_amount': amount,
+        'p_reason': cleanReason,
+      });
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
+    } catch (_) {
+      return 'err_submit_failed';
+    }
+  }
+
+  Future<String?> deleteExtraChargeAsAdmin({
+    required String adminPass,
+    required int monthId,
+    required String id,
+  }) async {
+    if (!_useSupabase) {
+      final idx = _demoMonths.indexWhere((m) => m.id == monthId);
+      if (idx >= 0) {
+        _demoMonths[idx].extraCharges.removeWhere((e) => e.id == id);
+      }
+      return null;
+    }
+
+    try {
+      final client = Supabase.instance.client;
+      final res = await client.rpc('admin_delete_extra_charge', params: {
+        'p_admin_pass': adminPass,
+        'p_id': int.tryParse(id) ?? 0,
+      });
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_delete_failed';
+    } catch (_) {
+      return 'err_delete_failed';
     }
   }
 }

@@ -254,7 +254,7 @@ Future<void> showApartmentPaymentDialog({
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            s.currency(month.sharePerApt),
+                            s.currency(month.dueFor(aptNum)),
                             style: AppTypography.statAmount.copyWith(
                               fontSize: 14,
                               color: AppColors.primaryText(isDark),
@@ -265,6 +265,91 @@ Future<void> showApartmentPaymentDialog({
                     ),
                   ],
                 ),
+                if (month.extraChargesFor(aptNum).isNotEmpty) ...[
+                  const SizedBox(height: AppSpacing.md),
+                  Container(
+                    padding: const EdgeInsetsDirectional.all(AppSpacing.md),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface(isDark),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      border: Border.all(
+                        color: AppColors.amber.withValues(alpha: 0.35),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              s.monthShareLine,
+                              style: AppTypography.caption.copyWith(
+                                color: AppColors.textSecondary(isDark),
+                              ),
+                            ),
+                            Text(
+                              s.currency(month.sharePerApt),
+                              style: AppTypography.caption.copyWith(
+                                color: AppColors.textPrimary(isDark),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                        ...month.extraChargesFor(aptNum).map(
+                          (e) => Padding(
+                            padding: const EdgeInsetsDirectional.only(top: 4),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    '+ ${e.reason}',
+                                    style: AppTypography.caption.copyWith(
+                                      color: AppColors.warningText(isDark),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  '+${s.currency(e.amount.toInt())}',
+                                  style: AppTypography.caption.copyWith(
+                                    color: AppColors.warningText(isDark),
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsetsDirectional.symmetric(vertical: 6),
+                          child: Divider(height: 1, color: AppColors.border(isDark)),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              s.totalDueLabel,
+                              style: AppTypography.label.copyWith(
+                                color: AppColors.textPrimary(isDark),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Text(
+                              s.currency(month.dueFor(aptNum)),
+                              style: AppTypography.title.copyWith(
+                                color: AppColors.primaryText(isDark),
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 const SizedBox(height: AppSpacing.md),
                 Divider(height: 1, color: AppColors.border(isDark)),
                 const SizedBox(height: AppSpacing.md),

@@ -979,6 +979,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open InstaPay'**
   String get openInstapayBtn;
+
+  /// No description provided for @extraChargesBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Extra Apt Charges'**
+  String get extraChargesBtn;
+
+  /// No description provided for @extraChargesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Extra Apartment Charges'**
+  String get extraChargesTitle;
+
+  /// No description provided for @selectAptsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Select apartment(s):'**
+  String get selectAptsLabel;
+
+  /// No description provided for @extraAmountHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Extra amount per apartment'**
+  String get extraAmountHint;
+
+  /// No description provided for @extraReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason (e.g. lock or valve repair)'**
+  String get extraReasonHint;
+
+  /// No description provided for @addExtraChargeBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Charge'**
+  String get addExtraChargeBtn;
+
+  /// No description provided for @extraChargesListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded extra charges this month:'**
+  String get extraChargesListTitle;
+
+  /// No description provided for @noExtraChargesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No extra charges recorded for this month.'**
+  String get noExtraChargesYet;
+
+  /// No description provided for @monthShareLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Share'**
+  String get monthShareLine;
+
+  /// No description provided for @totalDueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Due'**
+  String get totalDueLabel;
+
+  /// No description provided for @confirmDeleteExtraBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to delete this extra charge ({amount})?'**
+  String confirmDeleteExtraBody(String amount);
+
+  /// No description provided for @extraChargeAddedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Extra charge added'**
+  String get extraChargeAddedToast;
 }
 
 class _AppLocalizationsDelegate

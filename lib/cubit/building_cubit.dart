@@ -421,6 +421,12 @@ class BuildingCubit extends Cubit<BuildingState> {
       if (unpaidList.isNotEmpty) {
         lines.add('⏳ Remaining (${unpaidList.length}): ${unpaidList.map(state.aptLabel).join(', ')}');
       }
+      if (m.extraCharges.isNotEmpty) {
+        lines.add('➕ Extra charges:');
+        for (final e in m.extraCharges) {
+          lines.add('• ${state.aptLabel(e.aptNum)}: +${e.amount.toInt()} EGP (${e.reason})');
+        }
+      }
       return lines.join('\n');
     }
 
@@ -431,6 +437,12 @@ class BuildingCubit extends Cubit<BuildingState> {
     ];
     if (unpaidList.isNotEmpty) {
       lines.add('⏳ متبقي (${unpaidList.length} شقة): ${unpaidList.map(state.aptLabel).join('، ')}');
+    }
+    if (m.extraCharges.isNotEmpty) {
+      lines.add('➕ رسوم إضافية:');
+      for (final e in m.extraCharges) {
+        lines.add('• ${state.aptLabel(e.aptNum)}: +${e.amount.toInt()} ج (${e.reason})');
+      }
     }
     return lines.join('\n');
   }
@@ -587,5 +599,54 @@ class BuildingCubit extends Cubit<BuildingState> {
       feedbackIsError: false,
     ));
     return true;
+  }
+
+  Future<bool> addExtraCharges({
+    required List<int> aptNums,
+    required double amount,
+    required String reason,
+  }) async {
+    if (!state.isAdminOpen) return false;
+    final m = state.currentMonth;
+    if (m == null) return false;
+    final err = await _service.addExtraChargesAsAdmin(
+      adminPass: state.adminPass,
+      monthId: m.id,
+      aptNums: aptNums,
+      amount: amount,
+      reason: reason,
+    );
+    if (err != null) {
+      emit(state.copyWith(
+        feedbackMessage: () => '❌ ${_localizeError(err)}',
+        feedbackIsError: true,
+      ));
+      return false;
+    }
+    await loadData(preserveMonthIndex: state.selectedMonthIndex);
+    emit(state.copyWith(
+      feedbackMessage: () => state.s.extraChargeAddedToast,
+      feedbackIsError: false,
+    ));
+    return true;
+  }
+
+  Future<void> deleteExtraCharge(String id) async {
+    if (!state.isAdminOpen) return;
+    final m = state.currentMonth;
+    if (m == null) return;
+    final err = await _service.deleteExtraChargeAsAdmin(
+      adminPass: state.adminPass,
+      monthId: m.id,
+      id: id,
+    );
+    if (err != null) {
+      emit(state.copyWith(
+        feedbackMessage: () => '❌ ${_localizeError(err)}',
+        feedbackIsError: true,
+      ));
+      return;
+    }
+    await loadData(preserveMonthIndex: state.selectedMonthIndex);
   }
 }

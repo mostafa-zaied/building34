@@ -12,6 +12,7 @@ class ApartmentCard extends StatefulWidget {
   final String paidLabel;
   final bool isPaid;
   final bool hasReceipt;
+  final bool hasExtraCharge;
   final VoidCallback onTap;
 
   const ApartmentCard({
@@ -22,6 +23,7 @@ class ApartmentCard extends StatefulWidget {
     required this.paidLabel,
     required this.isPaid,
     required this.hasReceipt,
+    this.hasExtraCharge = false,
     required this.onTap,
   });
 
@@ -142,6 +144,13 @@ class _ApartmentCardState extends State<ApartmentCard> {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    if (widget.hasExtraCharge && !widget.isPaid) ...[
+                      Icon(
+                        Icons.add_circle_outline_rounded,
+                        size: 13,
+                        color: AppColors.warningText(isDark),
+                      ),
+                    ],
                     if (widget.hasReceipt)
                       Icon(
                         Icons.receipt_long_rounded,

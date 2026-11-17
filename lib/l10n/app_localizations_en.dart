@@ -508,4 +508,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openInstapayBtn => 'Open InstaPay';
+
+  @override
+  String get extraChargesBtn => 'Extra Apt Charges';
+
+  @override
+  String get extraChargesTitle => 'Extra Apartment Charges';
+
+  @override
+  String get selectAptsLabel => 'Select apartment(s):';
+
+  @override
+  String get extraAmountHint => 'Extra amount per apartment';
+
+  @override
+  String get extraReasonHint => 'Reason (e.g. lock or valve repair)';
+
+  @override
+  String get addExtraChargeBtn => 'Add Charge';
+
+  @override
+  String get extraChargesListTitle => 'Recorded extra charges this month:';
+
+  @override
+  String get noExtraChargesYet => 'No extra charges recorded for this month.';
+
+  @override
+  String get monthShareLine => 'Monthly Share';
+
+  @override
+  String get totalDueLabel => 'Total Due';
+
+  @override
+  String confirmDeleteExtraBody(String amount) {
+    return 'Do you want to delete this extra charge ($amount)?';
+  }
+
+  @override
+  String get extraChargeAddedToast => '✅ Extra charge added';
 }
