@@ -329,8 +329,20 @@ abstract class AppLocalizations {
   /// No description provided for @step2Image.
   ///
   /// In en, this message translates to:
-  /// **'2. Transfer Screenshot (Optional)'**
+  /// **'2. Transfer Screenshot (Required)'**
   String get step2Image;
+
+  /// No description provided for @receiptRequiredNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Please attach the receipt screenshot to verify the paid amount (whether exact, higher, or lower).'**
+  String get receiptRequiredNote;
+
+  /// No description provided for @errReceiptRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please attach the receipt screenshot before confirming payment.'**
+  String get errReceiptRequired;
 
   /// No description provided for @noReceiptAttached.
   ///

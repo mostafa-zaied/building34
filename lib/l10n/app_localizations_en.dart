@@ -142,7 +142,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterPassHint => 'Enter passcode...';
 
   @override
-  String get step2Image => '2. Transfer Screenshot (Optional)';
+  String get step2Image => '2. Transfer Screenshot (Required)';
+
+  @override
+  String get receiptRequiredNote =>
+      'Please attach the receipt screenshot to verify the paid amount (whether exact, higher, or lower).';
+
+  @override
+  String get errReceiptRequired =>
+      'Please attach the receipt screenshot before confirming payment.';
 
   @override
   String get noReceiptAttached => 'Confirmed without receipt image';

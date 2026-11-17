@@ -110,7 +110,9 @@
     }
   },
   "enterPassHint": "Enter passcode...",
-  "step2Image": "2. Transfer Screenshot (Optional)",
+  "step2Image": "2. Transfer Screenshot (Required)",
+  "receiptRequiredNote": "Please attach the receipt screenshot to verify the paid amount (whether exact, higher, or lower).",
+  "errReceiptRequired": "Please attach the receipt screenshot before confirming payment.",
   "noReceiptAttached": "Confirmed without receipt image",
   "pickImagePrompt": "Tap here to select receipt image",
   "chosenFile": "Selected: {name}",

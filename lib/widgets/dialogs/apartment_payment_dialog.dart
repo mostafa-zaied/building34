@@ -514,12 +514,20 @@ Future<void> showApartmentPaymentDialog({
                 ],
                 const SizedBox(height: AppSpacing.md),
 
-                // Step 2: Optional receipt image
+                // Step 2: Mandatory receipt image
                 Text(
                   s.step2Image,
                   style: AppTypography.label.copyWith(
-                    color: AppColors.textSecondary(isDark),
+                    color: AppColors.textPrimary(isDark),
                     fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  s.receiptRequiredNote,
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.textSecondary(isDark),
+                    height: 1.4,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
@@ -650,6 +658,12 @@ Future<void> showApartmentPaymentDialog({
                         onPressed: submitting
                             ? null
                             : () async {
+                                if (pickedBytes == null) {
+                                  setModalState(() {
+                                    errMsg = s.errReceiptRequired;
+                                  });
+                                  return;
+                                }
                                 setModalState(() => submitting = true);
                                 final resErr = await cubit.submitPayment(
                                   aptNum: aptNum,

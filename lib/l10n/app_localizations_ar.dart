@@ -142,7 +142,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get enterPassHint => 'اكتب كلمة السر...';
 
   @override
-  String get step2Image => '2. إرفاق صورة التحويل (اختياري)';
+  String get step2Image => '2. إرفاق صورة الإيصال (إجباري)';
+
+  @override
+  String get receiptRequiredNote =>
+      'يُرجى إرفاق صورة الإيصال للتحقق من المبلغ المدفوع (سواء كان مطابقاً أو أكثر أو أقل من المطلوب).';
+
+  @override
+  String get errReceiptRequired =>
+      'برجاء إرفاق صورة الإيصال أولاً قبل تأكيد الدفع.';
 
   @override
   String get noReceiptAttached => 'تم تأكيد الدفع بدون إرفاق صورة';
