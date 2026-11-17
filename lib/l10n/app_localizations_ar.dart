@@ -13,7 +13,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get demoBanner =>
-      '🧪 وضع التجربة المحلي — أضف بيانات Supabase في lib/config.dart للنشر الفعلي';
+      'وضع التجربة المحلي — أضف بيانات Supabase في lib/config.dart للنشر الفعلي';
 
   @override
   String monthOption(int monthNum, int yearNum) {
@@ -21,15 +21,10 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String emergencyBadge(int amount) {
-    return '🛡️ الطوارئ: $amount ج';
-  }
+  String get editBtn => 'تعديل';
 
   @override
-  String get editBtn => '⚙️ تعديل';
-
-  @override
-  String get closeBtn => '✓ إغلاق';
+  String get closeBtn => 'إغلاق';
 
   @override
   String billTitle(int monthNum) {
@@ -40,28 +35,20 @@ class AppLocalizationsAr extends AppLocalizations {
   String get copyWhatsAppBtn => 'نسخ للواتساب';
 
   @override
-  String get waterLabel => '💧 مياه';
+  String get waterLabel => 'مياه';
 
   @override
-  String get elecLabel => '⚡ كهرباء';
+  String get elecLabel => 'كهرباء';
 
   @override
-  String get elevLabel => '🛗 أسانسير';
+  String get elevLabel => 'أسانسير';
 
   @override
-  String get cleanLabel => '🧹 منظفات';
-
-  @override
-  String get forEmergLabel => '🛡️ للطوارئ';
+  String get cleanLabel => 'منظفات';
 
   @override
   String totalExpensesLine(int total, int apts) {
     return '• إجمالي المصاريف: $total ج (÷ $apts شقة)';
-  }
-
-  @override
-  String emergencySummaryLine(int total, int base, int added) {
-    return '• صندوق الطوارئ: $total ج ($base متاح + $added هذا الشهر)';
   }
 
   @override
@@ -73,19 +60,16 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get copiedTitle => '✅ الرسالة المنسوخة للواتساب:';
+  String get copiedTitle => 'الرسالة المنسوخة للواتساب:';
 
   @override
-  String get copiedToast => '✅ تم نسخ تفاصيل الشهر المحدثة للواتساب';
+  String get copiedToast => 'تم نسخ تفاصيل الشهر المحدثة للواتساب';
 
   @override
-  String get aptsCountField => '🏠 عدد الشقق:';
+  String get aptsCountField => 'عدد الشقق:';
 
   @override
-  String get baseEmergField => '💰 رصيد الطوارئ المتاح سابقاً:';
-
-  @override
-  String get saveChangesBtn => '💾 حفظ التعديلات';
+  String get saveChangesBtn => 'حفظ التعديلات';
 
   @override
   String get manageAptsBtn => 'أسماء وباسورد الشقق';
@@ -104,10 +88,10 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get paidBadge => '✅ دفعت';
+  String get paidBadge => 'دفعت';
 
   @override
-  String get adminLoginTitle => '🔐 دخول المسؤول';
+  String get adminLoginTitle => 'دخول المسؤول';
 
   @override
   String get adminPassHint => 'أدخل كلمة سر المسؤول...';
@@ -122,7 +106,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get login => 'دخول';
 
   @override
-  String get manageAptsTitle => '🔑 إدارة أسماء وكلمات سر الشقق';
+  String get manageAptsTitle => 'إدارة أسماء وكلمات سر الشقق';
 
   @override
   String get optionalName => 'الاسم (اختياري)';
@@ -136,7 +120,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get passcodeLabel => 'كلمة السر';
 
   @override
-  String get saveAll => '💾 حفظ الكل';
+  String get saveAll => 'حفظ الكل';
 
   @override
   String get saving => 'جاري الحفظ...';
@@ -147,15 +131,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get receiptAttachedPreviously => 'تم إرفاق الإيصال مسبقاً';
-
-  @override
-  String get cancelPaymentAdmin => '❌ إلغاء الدفع (المسؤول)';
-
-  @override
-  String dueDialogTitle(String aptLabel, int share) {
-    return '$aptLabel — مطلوب $share ج';
-  }
+  String get cancelPaymentAdmin => 'إلغاء الدفع (المسؤول)';
 
   @override
   String step1Passcode(String demoHint) {
@@ -172,59 +148,24 @@ class AppLocalizationsAr extends AppLocalizations {
   String get confirmPaidCheckbox => 'أؤكد أنني قمت بسداد نصيب هذا الشهر';
 
   @override
-  String get errConfirmCheckbox => '❌ يرجى تفعيل علامة تأكيد الدفع أولاً!';
+  String get errConfirmCheckbox => 'يرجى تفعيل علامة تأكيد الدفع أولاً!';
 
   @override
   String get noReceiptAttached => 'تم تأكيد الدفع بدون إرفاق صورة';
 
   @override
-  String get pickImagePrompt => '📸 اضغط هنا لاختيار صورة الإيصال';
+  String get pickImagePrompt => 'اضغط هنا لاختيار صورة الإيصال';
 
   @override
   String chosenFile(String name) {
-    return '✅ تم اختيار: $name';
+    return 'تم اختيار: $name';
   }
 
   @override
-  String get errMissingImage => '❌ يجب إرفاق صورة التحويل أولاً!';
-
-  @override
-  String get confirmPaymentBtn => '✅ تأكيد الدفع';
+  String get confirmPaymentBtn => 'تأكيد الدفع';
 
   @override
   String get uploadingBtn => 'جاري الرفع...';
-
-  @override
-  String whatsappHeader(int monthNum, int yearNum) {
-    return '🏢 *مصاريف العمارة لشهر $monthNum ($yearNum)*';
-  }
-
-  @override
-  String whatsappTotal(int total) {
-    return '💰 *الإجمالي:* $total ج';
-  }
-
-  @override
-  String whatsappShare(int apts, int share) {
-    return '📌 *نصيب الشقة ($apts شقة):* $share ج';
-  }
-
-  @override
-  String whatsappEmergency(int total, int base, int added) {
-    return '🛡️ *صندوق الطوارئ:* $total ج ($base متاح + $added هذا الشهر)';
-  }
-
-  @override
-  String get whatsappLinkPrompt =>
-      '🔗 *افتح اللينك لتسجيل الدفع وإرفاق صورة التحويل:*';
-
-  @override
-  String whatsappPaidStatus(int paid, int total) {
-    return '✅ *المدفوع ($paid/$total):*';
-  }
-
-  @override
-  String get whatsappNonePaid => '• لا يوجد بعد';
 
   @override
   String get addApartmentBtn => '+ إضافة شقة جديدة';
@@ -242,10 +183,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get navImprovements => 'مقترحات';
 
   @override
-  String get complaintsTitle => '📢 شكاوى السكان';
+  String get complaintsTitle => 'شكاوى السكان';
 
   @override
-  String get improvementsTitle => '💡 المقترحات';
+  String get improvementsTitle => 'المقترحات';
 
   @override
   String get writeComplaintHint => 'اكتب الشكوى هنا...';
@@ -263,13 +204,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get submitPostBtn => 'إرسال';
 
   @override
-  String get anonymousAuthor => '🕵️ بدون اسم (مجهول)';
+  String get anonymousAuthor => 'بدون اسم (مجهول)';
 
   @override
   String get noPostsYet => 'لا توجد مشاركات بعد';
 
   @override
-  String get postAddedToast => '✅ تم الإرسال بنجاح';
+  String get postAddedToast => 'تم الإرسال بنجاح';
 
   @override
   String tabViewComplaints(int count) {
@@ -295,17 +236,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String errLoadData(String err) {
-    return '❌ تعذر تحميل البيانات: $err';
+    return 'تعذر تحميل البيانات: $err';
   }
 
   @override
-  String get monthSavedToast => '✅ تم حفظ تعديلات الشهر بنجاح';
+  String get monthSavedToast => 'تم حفظ تعديلات الشهر بنجاح';
 
   @override
-  String get paymentCancelledToast => '✅ تم إلغاء الدفع';
+  String get paymentCancelledToast => 'تم إلغاء الدفع';
 
   @override
-  String get aptsSavedToast => '✅ تم حفظ أسماء وكلمات سر الشقق بنجاح';
+  String get aptsSavedToast => 'تم حفظ أسماء وكلمات سر الشقق بنجاح';
 
   @override
   String get errNoMonth => 'لا يوجد شهر محدد';
@@ -346,7 +287,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addNextMonthBtn => 'إضافة الشهر القادم';
 
   @override
-  String get monthAddedToast => '✅ تم إضافة الشهر القادم بنجاح';
+  String get monthAddedToast => 'تم إضافة الشهر القادم بنجاح';
 
   @override
   String get pinAptPrompt => 'ثبّت رقم شقتك للدفع السريع';
@@ -389,9 +330,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get unpaidReminderBtn => 'تذكير المتبقين';
 
   @override
-  String get emergencyLogBtn => 'صرف من الطوارئ';
-
-  @override
   String get pinNoticeBtn => 'تثبيت إعلان';
 
   @override
@@ -416,13 +354,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get adminReplyHint => 'رد الإدارة (اختياري)...';
 
   @override
-  String get statusPending => '⏳ قيد المراجعة';
+  String get statusPending => 'قيد المراجعة';
 
   @override
-  String get statusInProgress => '🔧 جاري التنفيذ';
+  String get statusInProgress => 'جاري التنفيذ';
 
   @override
-  String get statusResolved => '✅ تم الحل';
+  String get statusResolved => 'تم الحل';
 
   @override
   String get adminLogoutBtn => 'تسجيل خروج المدير';
@@ -444,7 +382,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get removeMonthBtn => 'حذف الشهر';
 
   @override
-  String get monthDeletedToast => '🗑️ تم حذف الشهر بنجاح';
+  String get monthDeletedToast => 'تم حذف الشهر بنجاح';
 
   @override
   String get errCannotDeleteLastMonth => 'لا يمكن حذف آخر شهر متبقي';
@@ -497,12 +435,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get instapaySubtitle => 'حوّل على الرقم التالي ثم ارفع الإيصال';
 
   @override
-  String get copyNumberBtn => 'نسخ الرقم';
-
-  @override
-  String get copiedShort => 'تم النسخ ✓';
-
-  @override
   String get openInstapayBtn => 'فتح InstaPay';
 
   @override
@@ -541,5 +473,5 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get extraChargeAddedToast => '✅ تم إضافة الرسوم الإضافية';
+  String get extraChargeAddedToast => 'تم إضافة الرسوم الإضافية';
 }

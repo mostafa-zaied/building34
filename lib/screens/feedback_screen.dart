@@ -101,9 +101,23 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(
-                          isComplaint ? s.complaintsTitle : s.improvementsTitle,
-                          style: AppTypography.headline,
+                        Row(
+                          children: [
+                            Icon(
+                              isComplaint
+                                  ? Icons.campaign_outlined
+                                  : Icons.lightbulb_outline_rounded,
+                              size: 20,
+                              color: accent,
+                            ),
+                            const SizedBox(width: AppSpacing.xs),
+                            Expanded(
+                              child: Text(
+                                isComplaint ? s.complaintsTitle : s.improvementsTitle,
+                                style: AppTypography.headline,
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: AppSpacing.md),
                         Container(

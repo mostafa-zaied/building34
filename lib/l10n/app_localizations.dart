@@ -107,7 +107,7 @@ abstract class AppLocalizations {
   /// No description provided for @demoBanner.
   ///
   /// In en, this message translates to:
-  /// **'🧪 Local Demo Mode — Add Supabase keys in lib/config.dart for live deployment'**
+  /// **'Local Demo Mode — Add Supabase keys in lib/config.dart for live deployment'**
   String get demoBanner;
 
   /// No description provided for @monthOption.
@@ -116,22 +116,16 @@ abstract class AppLocalizations {
   /// **'Month {monthNum} ({yearNum})'**
   String monthOption(int monthNum, int yearNum);
 
-  /// No description provided for @emergencyBadge.
-  ///
-  /// In en, this message translates to:
-  /// **'🛡️ Emergency: {amount} EGP'**
-  String emergencyBadge(int amount);
-
   /// No description provided for @editBtn.
   ///
   /// In en, this message translates to:
-  /// **'⚙️ Edit'**
+  /// **'Edit'**
   String get editBtn;
 
   /// No description provided for @closeBtn.
   ///
   /// In en, this message translates to:
-  /// **'✓ Close'**
+  /// **'Close'**
   String get closeBtn;
 
   /// No description provided for @billTitle.
@@ -149,44 +143,32 @@ abstract class AppLocalizations {
   /// No description provided for @waterLabel.
   ///
   /// In en, this message translates to:
-  /// **'💧 Water'**
+  /// **'Water'**
   String get waterLabel;
 
   /// No description provided for @elecLabel.
   ///
   /// In en, this message translates to:
-  /// **'⚡ Elec'**
+  /// **'Elec'**
   String get elecLabel;
 
   /// No description provided for @elevLabel.
   ///
   /// In en, this message translates to:
-  /// **'🛗 Elevator'**
+  /// **'Elevator'**
   String get elevLabel;
 
   /// No description provided for @cleanLabel.
   ///
   /// In en, this message translates to:
-  /// **'🧹 Cleaning'**
+  /// **'Cleaning'**
   String get cleanLabel;
-
-  /// No description provided for @forEmergLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'🛡️ Reserve'**
-  String get forEmergLabel;
 
   /// No description provided for @totalExpensesLine.
   ///
   /// In en, this message translates to:
   /// **'• Total Expenses: {total} EGP (÷ {apts} apts)'**
   String totalExpensesLine(int total, int apts);
-
-  /// No description provided for @emergencySummaryLine.
-  ///
-  /// In en, this message translates to:
-  /// **'• Emergency Fund: {total} EGP ({base} avail + {added} this month)'**
-  String emergencySummaryLine(int total, int base, int added);
 
   /// No description provided for @sharePerAptLabel.
   ///
@@ -203,31 +185,25 @@ abstract class AppLocalizations {
   /// No description provided for @copiedTitle.
   ///
   /// In en, this message translates to:
-  /// **'✅ Copied for WhatsApp:'**
+  /// **'Copied for WhatsApp:'**
   String get copiedTitle;
 
   /// No description provided for @copiedToast.
   ///
   /// In en, this message translates to:
-  /// **'✅ Updated monthly report copied for WhatsApp'**
+  /// **'Updated monthly report copied for WhatsApp'**
   String get copiedToast;
 
   /// No description provided for @aptsCountField.
   ///
   /// In en, this message translates to:
-  /// **'🏠 Apts:'**
+  /// **'Apts:'**
   String get aptsCountField;
-
-  /// No description provided for @baseEmergField.
-  ///
-  /// In en, this message translates to:
-  /// **'💰 Previous Emergency Balance:'**
-  String get baseEmergField;
 
   /// No description provided for @saveChangesBtn.
   ///
   /// In en, this message translates to:
-  /// **'💾 Save Changes'**
+  /// **'Save Changes'**
   String get saveChangesBtn;
 
   /// No description provided for @manageAptsBtn.
@@ -257,13 +233,13 @@ abstract class AppLocalizations {
   /// No description provided for @paidBadge.
   ///
   /// In en, this message translates to:
-  /// **'✅ Paid'**
+  /// **'Paid'**
   String get paidBadge;
 
   /// No description provided for @adminLoginTitle.
   ///
   /// In en, this message translates to:
-  /// **'🔐 Admin Login'**
+  /// **'Admin Login'**
   String get adminLoginTitle;
 
   /// No description provided for @adminPassHint.
@@ -293,7 +269,7 @@ abstract class AppLocalizations {
   /// No description provided for @manageAptsTitle.
   ///
   /// In en, this message translates to:
-  /// **'🔑 Manage Apartment Names & Passwords'**
+  /// **'Manage Apartment Names & Passwords'**
   String get manageAptsTitle;
 
   /// No description provided for @optionalName.
@@ -317,7 +293,7 @@ abstract class AppLocalizations {
   /// No description provided for @saveAll.
   ///
   /// In en, this message translates to:
-  /// **'💾 Save All'**
+  /// **'Save All'**
   String get saveAll;
 
   /// No description provided for @saving.
@@ -332,23 +308,11 @@ abstract class AppLocalizations {
   /// **'File: {name}'**
   String fileLabel(String name);
 
-  /// No description provided for @receiptAttachedPreviously.
-  ///
-  /// In en, this message translates to:
-  /// **'Receipt attached previously'**
-  String get receiptAttachedPreviously;
-
   /// No description provided for @cancelPaymentAdmin.
   ///
   /// In en, this message translates to:
-  /// **'❌ Cancel Payment (Admin)'**
+  /// **'Cancel Payment (Admin)'**
   String get cancelPaymentAdmin;
-
-  /// No description provided for @dueDialogTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'{aptLabel} — Due {share} EGP'**
-  String dueDialogTitle(String aptLabel, int share);
 
   /// No description provided for @step1Passcode.
   ///
@@ -377,7 +341,7 @@ abstract class AppLocalizations {
   /// No description provided for @errConfirmCheckbox.
   ///
   /// In en, this message translates to:
-  /// **'❌ Please check the payment confirmation box first!'**
+  /// **'Please check the payment confirmation box first!'**
   String get errConfirmCheckbox;
 
   /// No description provided for @noReceiptAttached.
@@ -389,25 +353,19 @@ abstract class AppLocalizations {
   /// No description provided for @pickImagePrompt.
   ///
   /// In en, this message translates to:
-  /// **'📸 Tap here to select receipt image'**
+  /// **'Tap here to select receipt image'**
   String get pickImagePrompt;
 
   /// No description provided for @chosenFile.
   ///
   /// In en, this message translates to:
-  /// **'✅ Selected: {name}'**
+  /// **'Selected: {name}'**
   String chosenFile(String name);
-
-  /// No description provided for @errMissingImage.
-  ///
-  /// In en, this message translates to:
-  /// **'❌ Please attach the transfer screenshot first!'**
-  String get errMissingImage;
 
   /// No description provided for @confirmPaymentBtn.
   ///
   /// In en, this message translates to:
-  /// **'✅ Confirm Payment'**
+  /// **'Confirm Payment'**
   String get confirmPaymentBtn;
 
   /// No description provided for @uploadingBtn.
@@ -415,48 +373,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Uploading...'**
   String get uploadingBtn;
-
-  /// No description provided for @whatsappHeader.
-  ///
-  /// In en, this message translates to:
-  /// **'🏢 *Building Expenses — Month {monthNum} ({yearNum})*'**
-  String whatsappHeader(int monthNum, int yearNum);
-
-  /// No description provided for @whatsappTotal.
-  ///
-  /// In en, this message translates to:
-  /// **'💰 *Total:* {total} EGP'**
-  String whatsappTotal(int total);
-
-  /// No description provided for @whatsappShare.
-  ///
-  /// In en, this message translates to:
-  /// **'📌 *Share per apartment ({apts} apts):* {share} EGP'**
-  String whatsappShare(int apts, int share);
-
-  /// No description provided for @whatsappEmergency.
-  ///
-  /// In en, this message translates to:
-  /// **'🛡️ *Emergency fund:* {total} EGP ({base} avail + {added} this month)'**
-  String whatsappEmergency(int total, int base, int added);
-
-  /// No description provided for @whatsappLinkPrompt.
-  ///
-  /// In en, this message translates to:
-  /// **'🔗 *Open the link to mark your payment and attach the receipt:*'**
-  String get whatsappLinkPrompt;
-
-  /// No description provided for @whatsappPaidStatus.
-  ///
-  /// In en, this message translates to:
-  /// **'✅ *Paid ({paid}/{total}):*'**
-  String whatsappPaidStatus(int paid, int total);
-
-  /// No description provided for @whatsappNonePaid.
-  ///
-  /// In en, this message translates to:
-  /// **'• None yet'**
-  String get whatsappNonePaid;
 
   /// No description provided for @addApartmentBtn.
   ///
@@ -491,13 +407,13 @@ abstract class AppLocalizations {
   /// No description provided for @complaintsTitle.
   ///
   /// In en, this message translates to:
-  /// **'📢 Resident Complaints'**
+  /// **'Resident Complaints'**
   String get complaintsTitle;
 
   /// No description provided for @improvementsTitle.
   ///
   /// In en, this message translates to:
-  /// **'💡 Suggestions'**
+  /// **'Suggestions'**
   String get improvementsTitle;
 
   /// No description provided for @writeComplaintHint.
@@ -533,7 +449,7 @@ abstract class AppLocalizations {
   /// No description provided for @anonymousAuthor.
   ///
   /// In en, this message translates to:
-  /// **'🕵️ Anonymous'**
+  /// **'Anonymous'**
   String get anonymousAuthor;
 
   /// No description provided for @noPostsYet.
@@ -545,7 +461,7 @@ abstract class AppLocalizations {
   /// No description provided for @postAddedToast.
   ///
   /// In en, this message translates to:
-  /// **'✅ Submitted successfully'**
+  /// **'Submitted successfully'**
   String get postAddedToast;
 
   /// No description provided for @tabViewComplaints.
@@ -587,25 +503,25 @@ abstract class AppLocalizations {
   /// No description provided for @errLoadData.
   ///
   /// In en, this message translates to:
-  /// **'❌ Failed to load data: {err}'**
+  /// **'Failed to load data: {err}'**
   String errLoadData(String err);
 
   /// No description provided for @monthSavedToast.
   ///
   /// In en, this message translates to:
-  /// **'✅ Month changes saved successfully'**
+  /// **'Month changes saved successfully'**
   String get monthSavedToast;
 
   /// No description provided for @paymentCancelledToast.
   ///
   /// In en, this message translates to:
-  /// **'✅ Payment cancelled'**
+  /// **'Payment cancelled'**
   String get paymentCancelledToast;
 
   /// No description provided for @aptsSavedToast.
   ///
   /// In en, this message translates to:
-  /// **'✅ Apartment names & passwords saved'**
+  /// **'Apartment names & passwords saved'**
   String get aptsSavedToast;
 
   /// No description provided for @errNoMonth.
@@ -683,7 +599,7 @@ abstract class AppLocalizations {
   /// No description provided for @monthAddedToast.
   ///
   /// In en, this message translates to:
-  /// **'✅ Next month added'**
+  /// **'Next month added'**
   String get monthAddedToast;
 
   /// No description provided for @pinAptPrompt.
@@ -764,12 +680,6 @@ abstract class AppLocalizations {
   /// **'Unpaid Reminder'**
   String get unpaidReminderBtn;
 
-  /// No description provided for @emergencyLogBtn.
-  ///
-  /// In en, this message translates to:
-  /// **'Emergency Log'**
-  String get emergencyLogBtn;
-
   /// No description provided for @pinNoticeBtn.
   ///
   /// In en, this message translates to:
@@ -821,19 +731,19 @@ abstract class AppLocalizations {
   /// No description provided for @statusPending.
   ///
   /// In en, this message translates to:
-  /// **'⏳ Under Review'**
+  /// **'Under Review'**
   String get statusPending;
 
   /// No description provided for @statusInProgress.
   ///
   /// In en, this message translates to:
-  /// **'🔧 In Progress'**
+  /// **'In Progress'**
   String get statusInProgress;
 
   /// No description provided for @statusResolved.
   ///
   /// In en, this message translates to:
-  /// **'✅ Resolved'**
+  /// **'Resolved'**
   String get statusResolved;
 
   /// No description provided for @adminLogoutBtn.
@@ -875,7 +785,7 @@ abstract class AppLocalizations {
   /// No description provided for @monthDeletedToast.
   ///
   /// In en, this message translates to:
-  /// **'🗑️ Month removed successfully'**
+  /// **'Month removed successfully'**
   String get monthDeletedToast;
 
   /// No description provided for @errCannotDeleteLastMonth.
@@ -962,18 +872,6 @@ abstract class AppLocalizations {
   /// **'Transfer to this number, then upload receipt'**
   String get instapaySubtitle;
 
-  /// No description provided for @copyNumberBtn.
-  ///
-  /// In en, this message translates to:
-  /// **'Copy'**
-  String get copyNumberBtn;
-
-  /// No description provided for @copiedShort.
-  ///
-  /// In en, this message translates to:
-  /// **'Copied ✓'**
-  String get copiedShort;
-
   /// No description provided for @openInstapayBtn.
   ///
   /// In en, this message translates to:
@@ -1049,7 +947,7 @@ abstract class AppLocalizations {
   /// No description provided for @extraChargeAddedToast.
   ///
   /// In en, this message translates to:
-  /// **'✅ Extra charge added'**
+  /// **'Extra charge added'**
   String get extraChargeAddedToast;
 }
 

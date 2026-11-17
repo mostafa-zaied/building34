@@ -1,207 +1,187 @@
 {
   "@@locale": "en",
   "appTitle": "MABNA CARE",
-  "demoBanner": "🧪 Local Demo Mode — Add Supabase keys in lib/config.dart for live deployment",
+  "demoBanner": "Local Demo Mode — Add Supabase keys in lib/config.dart for live deployment",
   "monthOption": "Month {monthNum} ({yearNum})",
   "@monthOption": {
     "placeholders": {
-      "monthNum": { "type": "int" },
-      "yearNum": { "type": "int" }
+      "monthNum": {
+        "type": "int"
+      },
+      "yearNum": {
+        "type": "int"
+      }
     }
   },
-  "emergencyBadge": "🛡️ Emergency: {amount} EGP",
-  "@emergencyBadge": {
-    "placeholders": {
-      "amount": { "type": "int" }
-    }
-  },
-  "editBtn": "⚙️ Edit",
-  "closeBtn": "✓ Close",
+  "editBtn": "Edit",
+  "closeBtn": "Close",
   "billTitle": "Building Expenses — Month {monthNum}:",
   "@billTitle": {
     "placeholders": {
-      "monthNum": { "type": "int" }
+      "monthNum": {
+        "type": "int"
+      }
     }
   },
   "copyWhatsAppBtn": "Copy for WhatsApp",
-  "waterLabel": "💧 Water",
-  "elecLabel": "⚡ Elec",
-  "elevLabel": "🛗 Elevator",
-  "cleanLabel": "🧹 Cleaning",
-  "forEmergLabel": "🛡️ Reserve",
+  "waterLabel": "Water",
+  "elecLabel": "Elec",
+  "elevLabel": "Elevator",
+  "cleanLabel": "Cleaning",
   "totalExpensesLine": "• Total Expenses: {total} EGP (÷ {apts} apts)",
   "@totalExpensesLine": {
     "placeholders": {
-      "total": { "type": "int" },
-      "apts": { "type": "int" }
-    }
-  },
-  "emergencySummaryLine": "• Emergency Fund: {total} EGP ({base} avail + {added} this month)",
-  "@emergencySummaryLine": {
-    "placeholders": {
-      "total": { "type": "int" },
-      "base": { "type": "int" },
-      "added": { "type": "int" }
+      "total": {
+        "type": "int"
+      },
+      "apts": {
+        "type": "int"
+      }
     }
   },
   "sharePerAptLabel": "Per Apt",
   "currency": "{amount} EGP",
   "@currency": {
     "placeholders": {
-      "amount": { "type": "int" }
+      "amount": {
+        "type": "int"
+      }
     }
   },
-  "copiedTitle": "✅ Copied for WhatsApp:",
-  "copiedToast": "✅ Updated monthly report copied for WhatsApp",
-  "aptsCountField": "🏠 Apts:",
-  "baseEmergField": "💰 Previous Emergency Balance:",
-  "saveChangesBtn": "💾 Save Changes",
+  "copiedTitle": "Copied for WhatsApp:",
+  "copiedToast": "Updated monthly report copied for WhatsApp",
+  "aptsCountField": "Apts:",
+  "saveChangesBtn": "Save Changes",
   "manageAptsBtn": "Apts & Passwords",
   "tapAptTitle": "Tap your apartment to record payment",
   "paidCounter": "Paid {paid} of {total}",
   "@paidCounter": {
     "placeholders": {
-      "paid": { "type": "int" },
-      "total": { "type": "int" }
+      "paid": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "defaultAptName": "Apt {num}",
   "@defaultAptName": {
     "placeholders": {
-      "num": { "type": "int" }
+      "num": {
+        "type": "int"
+      }
     }
   },
-  "paidBadge": "✅ Paid",
-  "adminLoginTitle": "🔐 Admin Login",
+  "paidBadge": "Paid",
+  "adminLoginTitle": "Admin Login",
   "adminPassHint": "Enter admin password...",
   "cancel": "Cancel",
   "close": "Close",
   "login": "Login",
-  "manageAptsTitle": "🔑 Manage Apartment Names & Passwords",
+  "manageAptsTitle": "Manage Apartment Names & Passwords",
   "optionalName": "Name (optional)",
   "nameHint": "e.g. Apt {num} - John",
   "@nameHint": {
     "placeholders": {
-      "num": { "type": "int" }
+      "num": {
+        "type": "int"
+      }
     }
   },
   "passcodeLabel": "Passcode",
-  "saveAll": "💾 Save All",
+  "saveAll": "Save All",
   "saving": "Saving...",
   "fileLabel": "File: {name}",
   "@fileLabel": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
-  "receiptAttachedPreviously": "Receipt attached previously",
-  "cancelPaymentAdmin": "❌ Cancel Payment (Admin)",
-  "dueDialogTitle": "{aptLabel} — Due {share} EGP",
-  "@dueDialogTitle": {
-    "placeholders": {
-      "aptLabel": { "type": "String" },
-      "share": { "type": "int" }
-    }
-  },
+  "cancelPaymentAdmin": "Cancel Payment (Admin)",
   "step1Passcode": "1. Apartment Passcode{demoHint}",
   "@step1Passcode": {
     "placeholders": {
-      "demoHint": { "type": "String" }
+      "demoHint": {
+        "type": "String"
+      }
     }
   },
   "enterPassHint": "Enter passcode...",
   "step2Image": "2. Transfer Screenshot (Optional)",
   "confirmPaidCheckbox": "I confirm I have paid this month's share",
-  "errConfirmCheckbox": "❌ Please check the payment confirmation box first!",
+  "errConfirmCheckbox": "Please check the payment confirmation box first!",
   "noReceiptAttached": "Confirmed without receipt image",
-  "pickImagePrompt": "📸 Tap here to select receipt image",
-  "chosenFile": "✅ Selected: {name}",
+  "pickImagePrompt": "Tap here to select receipt image",
+  "chosenFile": "Selected: {name}",
   "@chosenFile": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
-  "errMissingImage": "❌ Please attach the transfer screenshot first!",
-  "confirmPaymentBtn": "✅ Confirm Payment",
+  "confirmPaymentBtn": "Confirm Payment",
   "uploadingBtn": "Uploading...",
-  "whatsappHeader": "🏢 *Building Expenses — Month {monthNum} ({yearNum})*",
-  "@whatsappHeader": {
-    "placeholders": {
-      "monthNum": { "type": "int" },
-      "yearNum": { "type": "int" }
-    }
-  },
-  "whatsappTotal": "💰 *Total:* {total} EGP",
-  "@whatsappTotal": {
-    "placeholders": {
-      "total": { "type": "int" }
-    }
-  },
-  "whatsappShare": "📌 *Share per apartment ({apts} apts):* {share} EGP",
-  "@whatsappShare": {
-    "placeholders": {
-      "apts": { "type": "int" },
-      "share": { "type": "int" }
-    }
-  },
-  "whatsappEmergency": "🛡️ *Emergency fund:* {total} EGP ({base} avail + {added} this month)",
-  "@whatsappEmergency": {
-    "placeholders": {
-      "total": { "type": "int" },
-      "base": { "type": "int" },
-      "added": { "type": "int" }
-    }
-  },
-  "whatsappLinkPrompt": "🔗 *Open the link to mark your payment and attach the receipt:*",
-  "whatsappPaidStatus": "✅ *Paid ({paid}/{total}):*",
-  "@whatsappPaidStatus": {
-    "placeholders": {
-      "paid": { "type": "int" },
-      "total": { "type": "int" }
-    }
-  },
-  "whatsappNonePaid": "• None yet",
   "addApartmentBtn": "+ Add Apartment",
   "navExpenses": "Expenses",
   "navEmergency": "Emergency",
   "navComplaints": "Complaints",
   "navImprovements": "Suggestions",
-  "complaintsTitle": "📢 Resident Complaints",
-  "improvementsTitle": "💡 Suggestions",
+  "complaintsTitle": "Resident Complaints",
+  "improvementsTitle": "Suggestions",
   "writeComplaintHint": "Write your complaint clearly...",
   "writeImprovementHint": "Share your suggestion to improve the building...",
   "postAnonymously": "Post anonymously (hide apartment name)",
   "selectApartment": "Apartment",
   "submitPostBtn": "Submit",
-  "anonymousAuthor": "🕵️ Anonymous",
+  "anonymousAuthor": "Anonymous",
   "noPostsYet": "No entries yet",
-  "postAddedToast": "✅ Submitted successfully",
+  "postAddedToast": "Submitted successfully",
   "tabViewComplaints": "Complaints ({count})",
   "@tabViewComplaints": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "tabAddComplaint": "New Complaint",
   "tabViewImprovements": "Suggestions ({count})",
   "@tabViewImprovements": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "tabAddImprovement": "New Suggestion",
   "languageTooltip": "Language",
   "deleteTooltip": "Delete",
-  "errLoadData": "❌ Failed to load data: {err}",
-  "@errLoadData": { "placeholders": { "err": { "type": "String" } } },
-  "monthSavedToast": "✅ Month changes saved successfully",
-  "paymentCancelledToast": "✅ Payment cancelled",
-  "aptsSavedToast": "✅ Apartment names & passwords saved",
+  "errLoadData": "Failed to load data: {err}",
+  "@errLoadData": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "monthSavedToast": "Month changes saved successfully",
+  "paymentCancelledToast": "Payment cancelled",
+  "aptsSavedToast": "Apartment names & passwords saved",
   "errNoMonth": "No month selected",
   "errWrongAdminPass": "Incorrect admin password",
   "errWrongAptPass": "Incorrect apartment passcode",
   "errWrongAptPassHint": "Incorrect apartment passcode (try {hint})",
-  "@errWrongAptPassHint": { "placeholders": { "hint": { "type": "String" } } },
+  "@errWrongAptPassHint": {
+    "placeholders": {
+      "hint": {
+        "type": "String"
+      }
+    }
+  },
   "errPaymentFailed": "Could not record payment",
   "errCancelFailed": "Could not cancel payment",
   "errAptLoadFailed": "Could not load apartments",
@@ -210,7 +190,7 @@
   "errSubmitFailed": "Could not submit post",
   "errDeleteFailed": "Could not delete post",
   "addNextMonthBtn": "Next Month",
-  "monthAddedToast": "✅ Next month added",
+  "monthAddedToast": "Next month added",
   "pinAptPrompt": "Pin your apartment for quick payment",
   "selectAptBtn": "Select Apt",
   "myAptPrefix": "My Apt",
@@ -224,7 +204,6 @@
   "errEmergencyInput": "Please enter a valid amount and reason.",
   "errEmergencySave": "Failed to save transaction.",
   "unpaidReminderBtn": "Unpaid Reminder",
-  "emergencyLogBtn": "Emergency Log",
   "pinNoticeBtn": "Pin Notice",
   "noticeDialogTitle": "Important Building Notice",
   "noticeDialogHint": "e.g. Elevator maintenance on Thursday 10–12",
@@ -233,23 +212,27 @@
   "updateStatusTitle": "Update Status & Reply",
   "statusFieldLabel": "Status",
   "adminReplyHint": "Short admin reply (optional)...",
-  "statusPending": "⏳ Under Review",
-  "statusInProgress": "🔧 In Progress",
-  "statusResolved": "✅ Resolved",
+  "statusPending": "Under Review",
+  "statusInProgress": "In Progress",
+  "statusResolved": "Resolved",
   "adminLogoutBtn": "Admin Logout",
   "emergencyTabWithdraw": "Withdraw",
   "emergencyTabDeposit": "Deposit",
   "emergencyDepositReasonHint": "Reason (e.g. extra contribution or surplus)",
   "recordDepositBtn": "Record Deposit",
   "removeMonthBtn": "Remove Month",
-  "monthDeletedToast": "🗑️ Month removed successfully",
+  "monthDeletedToast": "Month removed successfully",
   "errCannotDeleteLastMonth": "Cannot remove the last remaining month",
   "deleteMonthConfirmTitle": "Remove Current Month?",
   "deleteMonthConfirmBody": "Month {month} ({year}) and all its payments will be permanently deleted.",
   "@deleteMonthConfirmBody": {
     "placeholders": {
-      "month": { "type": "int" },
-      "year": { "type": "int" }
+      "month": {
+        "type": "int"
+      },
+      "year": {
+        "type": "int"
+      }
     }
   },
   "splashTagline": "Your Building, Our Care.",
@@ -258,16 +241,32 @@
   "confirmDeleteTitle": "Confirm Delete",
   "confirmDeleteBtn": "Delete",
   "confirmDeleteAptBody": "Do you want to delete \"{apt}\"?",
-  "@confirmDeleteAptBody": { "placeholders": { "apt": { "type": "String" } } },
+  "@confirmDeleteAptBody": {
+    "placeholders": {
+      "apt": {
+        "type": "String"
+      }
+    }
+  },
   "confirmDeleteTxBody": "Do you want to delete this transaction ({amount})?",
-  "@confirmDeleteTxBody": { "placeholders": { "amount": { "type": "String" } } },
+  "@confirmDeleteTxBody": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "confirmDeletePostBody": "Do you want to permanently delete this post?",
   "confirmCancelPaymentBody": "Do you want to cancel the payment for \"{apt}\"?",
-  "@confirmCancelPaymentBody": { "placeholders": { "apt": { "type": "String" } } },
+  "@confirmCancelPaymentBody": {
+    "placeholders": {
+      "apt": {
+        "type": "String"
+      }
+    }
+  },
   "instapayTitle": "InstaPay Transfer",
   "instapaySubtitle": "Transfer to this number, then upload receipt",
-  "copyNumberBtn": "Copy",
-  "copiedShort": "Copied ✓",
   "openInstapayBtn": "Open InstaPay",
   "extraChargesBtn": "Extra Apt Charges",
   "extraChargesTitle": "Extra Apartment Charges",
@@ -280,6 +279,12 @@
   "monthShareLine": "Monthly Share",
   "totalDueLabel": "Total Due",
   "confirmDeleteExtraBody": "Do you want to delete this extra charge ({amount})?",
-  "@confirmDeleteExtraBody": { "placeholders": { "amount": { "type": "String" } } },
-  "extraChargeAddedToast": "✅ Extra charge added"
+  "@confirmDeleteExtraBody": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "extraChargeAddedToast": "Extra charge added"
 }

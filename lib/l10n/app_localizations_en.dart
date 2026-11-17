@@ -13,7 +13,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get demoBanner =>
-      '🧪 Local Demo Mode — Add Supabase keys in lib/config.dart for live deployment';
+      'Local Demo Mode — Add Supabase keys in lib/config.dart for live deployment';
 
   @override
   String monthOption(int monthNum, int yearNum) {
@@ -21,15 +21,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String emergencyBadge(int amount) {
-    return '🛡️ Emergency: $amount EGP';
-  }
+  String get editBtn => 'Edit';
 
   @override
-  String get editBtn => '⚙️ Edit';
-
-  @override
-  String get closeBtn => '✓ Close';
+  String get closeBtn => 'Close';
 
   @override
   String billTitle(int monthNum) {
@@ -40,28 +35,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get copyWhatsAppBtn => 'Copy for WhatsApp';
 
   @override
-  String get waterLabel => '💧 Water';
+  String get waterLabel => 'Water';
 
   @override
-  String get elecLabel => '⚡ Elec';
+  String get elecLabel => 'Elec';
 
   @override
-  String get elevLabel => '🛗 Elevator';
+  String get elevLabel => 'Elevator';
 
   @override
-  String get cleanLabel => '🧹 Cleaning';
-
-  @override
-  String get forEmergLabel => '🛡️ Reserve';
+  String get cleanLabel => 'Cleaning';
 
   @override
   String totalExpensesLine(int total, int apts) {
     return '• Total Expenses: $total EGP (÷ $apts apts)';
-  }
-
-  @override
-  String emergencySummaryLine(int total, int base, int added) {
-    return '• Emergency Fund: $total EGP ($base avail + $added this month)';
   }
 
   @override
@@ -73,19 +60,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get copiedTitle => '✅ Copied for WhatsApp:';
+  String get copiedTitle => 'Copied for WhatsApp:';
 
   @override
-  String get copiedToast => '✅ Updated monthly report copied for WhatsApp';
+  String get copiedToast => 'Updated monthly report copied for WhatsApp';
 
   @override
-  String get aptsCountField => '🏠 Apts:';
+  String get aptsCountField => 'Apts:';
 
   @override
-  String get baseEmergField => '💰 Previous Emergency Balance:';
-
-  @override
-  String get saveChangesBtn => '💾 Save Changes';
+  String get saveChangesBtn => 'Save Changes';
 
   @override
   String get manageAptsBtn => 'Apts & Passwords';
@@ -104,10 +88,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get paidBadge => '✅ Paid';
+  String get paidBadge => 'Paid';
 
   @override
-  String get adminLoginTitle => '🔐 Admin Login';
+  String get adminLoginTitle => 'Admin Login';
 
   @override
   String get adminPassHint => 'Enter admin password...';
@@ -122,7 +106,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get login => 'Login';
 
   @override
-  String get manageAptsTitle => '🔑 Manage Apartment Names & Passwords';
+  String get manageAptsTitle => 'Manage Apartment Names & Passwords';
 
   @override
   String get optionalName => 'Name (optional)';
@@ -136,7 +120,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passcodeLabel => 'Passcode';
 
   @override
-  String get saveAll => '💾 Save All';
+  String get saveAll => 'Save All';
 
   @override
   String get saving => 'Saving...';
@@ -147,15 +131,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get receiptAttachedPreviously => 'Receipt attached previously';
-
-  @override
-  String get cancelPaymentAdmin => '❌ Cancel Payment (Admin)';
-
-  @override
-  String dueDialogTitle(String aptLabel, int share) {
-    return '$aptLabel — Due $share EGP';
-  }
+  String get cancelPaymentAdmin => 'Cancel Payment (Admin)';
 
   @override
   String step1Passcode(String demoHint) {
@@ -173,60 +149,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errConfirmCheckbox =>
-      '❌ Please check the payment confirmation box first!';
+      'Please check the payment confirmation box first!';
 
   @override
   String get noReceiptAttached => 'Confirmed without receipt image';
 
   @override
-  String get pickImagePrompt => '📸 Tap here to select receipt image';
+  String get pickImagePrompt => 'Tap here to select receipt image';
 
   @override
   String chosenFile(String name) {
-    return '✅ Selected: $name';
+    return 'Selected: $name';
   }
 
   @override
-  String get errMissingImage =>
-      '❌ Please attach the transfer screenshot first!';
-
-  @override
-  String get confirmPaymentBtn => '✅ Confirm Payment';
+  String get confirmPaymentBtn => 'Confirm Payment';
 
   @override
   String get uploadingBtn => 'Uploading...';
-
-  @override
-  String whatsappHeader(int monthNum, int yearNum) {
-    return '🏢 *Building Expenses — Month $monthNum ($yearNum)*';
-  }
-
-  @override
-  String whatsappTotal(int total) {
-    return '💰 *Total:* $total EGP';
-  }
-
-  @override
-  String whatsappShare(int apts, int share) {
-    return '📌 *Share per apartment ($apts apts):* $share EGP';
-  }
-
-  @override
-  String whatsappEmergency(int total, int base, int added) {
-    return '🛡️ *Emergency fund:* $total EGP ($base avail + $added this month)';
-  }
-
-  @override
-  String get whatsappLinkPrompt =>
-      '🔗 *Open the link to mark your payment and attach the receipt:*';
-
-  @override
-  String whatsappPaidStatus(int paid, int total) {
-    return '✅ *Paid ($paid/$total):*';
-  }
-
-  @override
-  String get whatsappNonePaid => '• None yet';
 
   @override
   String get addApartmentBtn => '+ Add Apartment';
@@ -244,10 +184,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navImprovements => 'Suggestions';
 
   @override
-  String get complaintsTitle => '📢 Resident Complaints';
+  String get complaintsTitle => 'Resident Complaints';
 
   @override
-  String get improvementsTitle => '💡 Suggestions';
+  String get improvementsTitle => 'Suggestions';
 
   @override
   String get writeComplaintHint => 'Write your complaint clearly...';
@@ -266,13 +206,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get submitPostBtn => 'Submit';
 
   @override
-  String get anonymousAuthor => '🕵️ Anonymous';
+  String get anonymousAuthor => 'Anonymous';
 
   @override
   String get noPostsYet => 'No entries yet';
 
   @override
-  String get postAddedToast => '✅ Submitted successfully';
+  String get postAddedToast => 'Submitted successfully';
 
   @override
   String tabViewComplaints(int count) {
@@ -298,17 +238,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String errLoadData(String err) {
-    return '❌ Failed to load data: $err';
+    return 'Failed to load data: $err';
   }
 
   @override
-  String get monthSavedToast => '✅ Month changes saved successfully';
+  String get monthSavedToast => 'Month changes saved successfully';
 
   @override
-  String get paymentCancelledToast => '✅ Payment cancelled';
+  String get paymentCancelledToast => 'Payment cancelled';
 
   @override
-  String get aptsSavedToast => '✅ Apartment names & passwords saved';
+  String get aptsSavedToast => 'Apartment names & passwords saved';
 
   @override
   String get errNoMonth => 'No month selected';
@@ -349,7 +289,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addNextMonthBtn => 'Next Month';
 
   @override
-  String get monthAddedToast => '✅ Next month added';
+  String get monthAddedToast => 'Next month added';
 
   @override
   String get pinAptPrompt => 'Pin your apartment for quick payment';
@@ -391,9 +331,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unpaidReminderBtn => 'Unpaid Reminder';
 
   @override
-  String get emergencyLogBtn => 'Emergency Log';
-
-  @override
   String get pinNoticeBtn => 'Pin Notice';
 
   @override
@@ -418,13 +355,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminReplyHint => 'Short admin reply (optional)...';
 
   @override
-  String get statusPending => '⏳ Under Review';
+  String get statusPending => 'Under Review';
 
   @override
-  String get statusInProgress => '🔧 In Progress';
+  String get statusInProgress => 'In Progress';
 
   @override
-  String get statusResolved => '✅ Resolved';
+  String get statusResolved => 'Resolved';
 
   @override
   String get adminLogoutBtn => 'Admin Logout';
@@ -446,7 +383,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get removeMonthBtn => 'Remove Month';
 
   @override
-  String get monthDeletedToast => '🗑️ Month removed successfully';
+  String get monthDeletedToast => 'Month removed successfully';
 
   @override
   String get errCannotDeleteLastMonth =>
@@ -501,12 +438,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get instapaySubtitle => 'Transfer to this number, then upload receipt';
 
   @override
-  String get copyNumberBtn => 'Copy';
-
-  @override
-  String get copiedShort => 'Copied ✓';
-
-  @override
   String get openInstapayBtn => 'Open InstaPay';
 
   @override
@@ -545,5 +476,5 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get extraChargeAddedToast => '✅ Extra charge added';
+  String get extraChargeAddedToast => 'Extra charge added';
 }

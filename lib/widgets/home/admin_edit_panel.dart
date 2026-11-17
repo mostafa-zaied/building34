@@ -29,59 +29,62 @@ class AdminEditPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = state.s;
+    final isDark = state.isDarkMode;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        AdminInputField(
-          label: s.aptsCountField,
-          controller: aptsCtrl,
-          color: AppColors.primary,
-          onFocusKey: 'apts',
-          onHighlight: cubit.setHighlight,
-          onChanged: onFieldChanged,
-        ),
-        const SizedBox(height: AppSpacing.md),
+        // 1. Primary Row: Apartments Count + Save Changes
         Row(
           children: [
             Expanded(
+              flex: 5,
+              child: AdminInputField(
+                label: s.aptsCountField,
+                controller: aptsCtrl,
+                color: AppColors.primary,
+                icon: Icons.home_work_outlined,
+                onFocusKey: 'apts',
+                onHighlight: cubit.setHighlight,
+                onChanged: onFieldChanged,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              flex: 5,
               child: AppPrimaryButton(
                 label: s.saveChangesBtn,
-                backgroundColor: AppColors.emerald,
-                foregroundColor: Colors.black,
+                icon: Icons.check_circle_outline_rounded,
+                backgroundColor: AppColors.primaryActionBg(isDark),
+                foregroundColor: AppColors.onPrimaryAction(isDark),
                 onPressed: cubit.saveAdminChanges,
               ),
             ),
-            const SizedBox(width: AppSpacing.sm),
+          ],
+        ),
+
+        const SizedBox(height: AppSpacing.lg),
+        Divider(height: 1, color: AppColors.border(isDark)),
+        const SizedBox(height: AppSpacing.md),
+
+        // 2. Calm, Unified 2-Column Action Grid
+        Row(
+          children: [
             Expanded(
-              child: AppSecondaryButton(
+              child: _AdminActionTile(
                 label: s.manageAptsBtn,
                 icon: Icons.vpn_key_outlined,
-                onPressed: onOpenManageApts,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        Row(
-          children: [
-            Expanded(
-              child: AppSecondaryButton(
-                label: s.addNextMonthBtn,
-                icon: Icons.calendar_month_outlined,
-                accentColor: AppColors.emerald,
-                onPressed: cubit.addNextMonth,
+                isDark: isDark,
+                onTap: onOpenManageApts,
               ),
             ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
-              child: AppSecondaryButton(
-                label: s.removeMonthBtn,
-                icon: Icons.delete_outline_rounded,
-                accentColor: AppColors.danger,
-                onPressed: state.months.length <= 1
-                    ? null
-                    : () => _confirmDeleteMonth(context, cubit, state),
+              child: _AdminActionTile(
+                label: s.extraChargesBtn,
+                icon: Icons.add_card_rounded,
+                isDark: isDark,
+                onTap: () => showExtraChargesDialog(context: context, cubit: cubit),
               ),
             ),
           ],
@@ -90,11 +93,11 @@ class AdminEditPanel extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: AppSecondaryButton(
+              child: _AdminActionTile(
                 label: s.unpaidReminderBtn,
                 icon: Icons.notifications_active_outlined,
-                accentColor: AppColors.amber,
-                onPressed: () async {
+                isDark: isDark,
+                onTap: () async {
                   final text = cubit.buildUnpaidReminderMessage();
                   cubit.setCopiedPreview(text);
                   try {
@@ -105,28 +108,58 @@ class AdminEditPanel extends StatelessWidget {
             ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
-              child: AppSecondaryButton(
+              child: _AdminActionTile(
                 label: s.pinNoticeBtn,
                 icon: Icons.campaign_outlined,
-                accentColor: AppColors.primaryLight,
-                onPressed: () => _showAnnouncementDialog(context, cubit, state),
+                isDark: isDark,
+                onTap: () => _showAnnouncementDialog(context, cubit, state),
               ),
             ),
           ],
         ),
         const SizedBox(height: AppSpacing.sm),
-        AppSecondaryButton(
-          label: s.extraChargesBtn,
-          icon: Icons.add_card_rounded,
-          accentColor: AppColors.primaryText(state.isDarkMode),
-          onPressed: () => showExtraChargesDialog(context: context, cubit: cubit),
+        Row(
+          children: [
+            Expanded(
+              child: _AdminActionTile(
+                label: s.addNextMonthBtn,
+                icon: Icons.calendar_month_outlined,
+                isDark: isDark,
+                onTap: cubit.addNextMonth,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: _AdminActionTile(
+                label: s.removeMonthBtn,
+                icon: Icons.delete_outline_rounded,
+                isDark: isDark,
+                isDestructive: true,
+                onTap: state.months.length <= 1
+                    ? null
+                    : () => _confirmDeleteMonth(context, cubit, state),
+              ),
+            ),
+          ],
         ),
+
         const SizedBox(height: AppSpacing.sm),
-        AppSecondaryButton(
-          label: s.adminLogoutBtn,
-          icon: Icons.logout_rounded,
-          accentColor: AppColors.danger,
-          onPressed: cubit.logoutAdmin,
+        Center(
+          child: TextButton.icon(
+            onPressed: cubit.logoutAdmin,
+            icon: Icon(
+              Icons.logout_rounded,
+              size: 15,
+              color: AppColors.textSecondary(isDark),
+            ),
+            label: Text(
+              s.adminLogoutBtn,
+              style: AppTypography.caption.copyWith(
+                color: AppColors.textSecondary(isDark),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
         ),
       ],
     );
@@ -215,5 +248,73 @@ class AdminEditPanel extends StatelessWidget {
       ),
     );
     Future.delayed(const Duration(milliseconds: 350), ctrl.dispose);
+  }
+}
+
+class _AdminActionTile extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool isDark;
+  final bool isDestructive;
+  final VoidCallback? onTap;
+
+  const _AdminActionTile({
+    required this.label,
+    required this.icon,
+    required this.isDark,
+    this.isDestructive = false,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final disabled = onTap == null;
+    final iconColor = disabled
+        ? AppColors.textSecondary(isDark).withValues(alpha: 0.45)
+        : (isDestructive
+            ? AppColors.dangerText(isDark)
+            : AppColors.primaryText(isDark));
+    final textColor = disabled
+        ? AppColors.textSecondary(isDark).withValues(alpha: 0.45)
+        : (isDestructive
+            ? AppColors.dangerText(isDark)
+            : AppColors.textPrimary(isDark));
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        child: Container(
+          padding: const EdgeInsetsDirectional.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: 11,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.surface(isDark),
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            border: Border.all(color: AppColors.border(isDark)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 16, color: iconColor),
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.label.copyWith(
+                    color: textColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

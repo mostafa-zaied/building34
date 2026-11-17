@@ -8,6 +8,7 @@ class AdminInputField extends StatelessWidget {
   final String label;
   final TextEditingController controller;
   final Color color;
+  final IconData? icon;
   final String onFocusKey;
   final ValueChanged<String?> onHighlight;
   final VoidCallback onChanged;
@@ -17,6 +18,7 @@ class AdminInputField extends StatelessWidget {
     required this.label,
     required this.controller,
     required this.color,
+    this.icon,
     required this.onFocusKey,
     required this.onHighlight,
     required this.onChanged,
@@ -45,6 +47,10 @@ class AdminInputField extends StatelessWidget {
           ),
           child: Row(
             children: [
+              if (icon != null) ...[
+                Icon(icon, size: 15, color: labelColor),
+                const SizedBox(width: 5),
+              ],
               Text(
                 label,
                 style: AppTypography.caption.copyWith(color: labelColor, fontWeight: FontWeight.w700),

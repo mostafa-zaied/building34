@@ -27,6 +27,7 @@ class TopBar extends StatelessWidget {
       .replaceAll('⚙️', '')
       .replaceAll('✖️', '')
       .replaceAll('✕', '')
+      .replaceAll('✓', '')
       .trim();
 
   @override
@@ -108,45 +109,40 @@ class TopBar extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    PopupMenuButton<String>(
-                      tooltip: s.languageTooltip,
-                      onSelected: cubit.setLocale,
-                      color: AppColors.cardElevated(isDark),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppRadius.md),
-                      ),
-                      itemBuilder: (_) => const [
-                        PopupMenuItem(
-                          value: 'ar',
-                          child: Center(child: Text('🇪🇬', style: TextStyle(fontSize: 18))),
-                        ),
-                        PopupMenuItem(
-                          value: 'en',
-                          child: Center(child: Text('🇺🇸', style: TextStyle(fontSize: 18))),
-                        ),
-                      ],
-                      child: Padding(
-                        padding: const EdgeInsetsDirectional.symmetric(
-                          horizontal: 7,
-                          vertical: 4,
-                        ),
-                        child: Text(
-                          state.localeCode == 'en' ? '🇺🇸' : '🇪🇬',
-                          style: const TextStyle(fontSize: 14),
+                    Tooltip(
+                      message: s.languageTooltip,
+                      child: InkWell(
+                        onTap: () => cubit.setLocale(state.localeCode == 'ar' ? 'en' : 'ar'),
+                        borderRadius: BorderRadius.circular(AppRadius.pill),
+                        child: Padding(
+                          padding: const EdgeInsetsDirectional.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 200),
+                            child: Text(
+                              state.localeCode == 'en' ? '🇺🇸' : '🇪🇬',
+                              key: ValueKey(state.localeCode),
+                              style: const TextStyle(fontSize: 15),
+                            ),
+                          ),
                         ),
                       ),
                     ),
+                    const SizedBox(width: 2),
                     Container(
                       width: 1,
                       height: 15,
                       color: AppColors.border(isDark),
                     ),
+                    const SizedBox(width: 2),
                     InkWell(
                       onTap: cubit.toggleTheme,
                       borderRadius: BorderRadius.circular(AppRadius.pill),
                       child: Padding(
                         padding: const EdgeInsetsDirectional.symmetric(
-                          horizontal: 7,
+                          horizontal: 10,
                           vertical: 4,
                         ),
                         child: AnimatedSwitcher(
@@ -154,7 +150,7 @@ class TopBar extends StatelessWidget {
                           child: Icon(
                             isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
                             key: ValueKey(isDark),
-                            size: 15,
+                            size: 16,
                             color: isDark ? AppColors.amber : AppColors.primary,
                           ),
                         ),
@@ -185,8 +181,8 @@ class TopBar extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                state.isAdminOpen ? Icons.close_rounded : Icons.tune_rounded,
-                                size: 13,
+                                state.isAdminOpen ? Icons.check_rounded : Icons.tune_rounded,
+                                size: 14,
                                 color: state.isAdminOpen
                                     ? AppColors.primaryText(isDark)
                                     : AppColors.textSecondary(isDark),

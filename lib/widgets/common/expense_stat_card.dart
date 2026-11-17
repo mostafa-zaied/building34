@@ -9,6 +9,7 @@ class ExpenseStatCard extends StatefulWidget {
   final String label;
   final String value;
   final Color color;
+  final IconData? icon;
   final bool highlighted;
   final bool isEditable;
   final TextEditingController? controller;
@@ -19,6 +20,7 @@ class ExpenseStatCard extends StatefulWidget {
     required this.label,
     required this.value,
     required this.color,
+    this.icon,
     required this.highlighted,
     this.isEditable = false,
     this.controller,
@@ -86,6 +88,10 @@ class _ExpenseStatCardState extends State<ExpenseStatCard> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  if (widget.icon != null) ...[
+                    Icon(widget.icon, size: 13, color: accentText),
+                    const SizedBox(width: 4),
+                  ],
                   Flexible(
                     child: Text(
                       widget.label,
