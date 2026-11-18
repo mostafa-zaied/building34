@@ -192,11 +192,9 @@ Future<void> showApartmentPaymentDialog({
                               s: s,
                               isDark: isDark,
                               message: s.confirmCancelPaymentBody(state.aptLabel(aptNum)),
+                              onConfirm: () => cubit.cancelPayment(aptNum),
                             );
-                            if (!ok) return;
-                            setCancelState(() => cancelling = true);
-                            await cubit.cancelPayment(aptNum);
-                            if (ctx.mounted) Navigator.pop(ctx);
+                            if (ok && ctx.mounted) Navigator.pop(ctx);
                           },
                   ),
                 ],

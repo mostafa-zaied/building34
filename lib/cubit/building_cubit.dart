@@ -101,6 +101,7 @@ class BuildingCubit extends Cubit<BuildingState> {
         pageViewStats: () => viewStats,
         hasVotedUpcomingDirectory: hasVotedUpcoming,
         requireAptPassOnOpen: data.requireAptPassOnOpen,
+        buildingContacts: data.buildingContacts,
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -155,7 +156,7 @@ class BuildingCubit extends Cubit<BuildingState> {
 
   void selectNav(int index) {
     emit(state.copyWith(selectedNavIndex: index));
-    if (index == 3 && !_upcomingOpenRecorded) {
+    if (index == 4 && !_upcomingOpenRecorded) {
       _upcomingOpenRecorded = true;
       final vid = _visitorId.isNotEmpty
           ? _visitorId
@@ -744,6 +745,102 @@ class BuildingCubit extends Cubit<BuildingState> {
         adminPass: state.adminPass,
         monthId: m.id,
         id: id,
+      );
+      if (err != null) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return;
+      }
+      await loadData(preserveMonthIndex: state.selectedMonthIndex);
+    });
+  }
+
+  Future<void> setUtilityReceipt({
+    required String utility,
+    Uint8List? imageBytes,
+  }) async {
+    if (!state.isAdminOpen) return;
+    final m = state.currentMonth;
+    if (m == null) return;
+    await _withBusy(() async {
+      final err = await _service.setUtilityReceiptAsAdmin(
+        adminPass: state.adminPass,
+        month: m,
+        utility: utility,
+        imageBytes: imageBytes,
+      );
+      if (err != null) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return;
+      }
+      await loadData(preserveMonthIndex: state.selectedMonthIndex);
+      emit(state.copyWith(
+        feedbackMessage: () => imageBytes != null
+            ? state.s.utilityReceiptSavedToast
+            : state.s.utilityReceiptRemovedToast,
+        feedbackIsError: false,
+      ));
+    });
+  }
+
+  Future<bool> addBuildingContact({
+    required String name,
+    required String roleDesc,
+    required String phone,
+  }) async {
+    return _withBusy(() async {
+      final err = await _service.addBuildingContact(
+        name: name,
+        roleDesc: roleDesc,
+        phone: phone,
+      );
+      if (err != null) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return false;
+      }
+      await loadData(preserveMonthIndex: state.selectedMonthIndex);
+      emit(state.copyWith(
+        feedbackMessage: () => state.s.contactAddedToast,
+        feedbackIsError: false,
+      ));
+      return true;
+    });
+  }
+
+  Future<void> deleteBuildingContact(String id) async {
+    if (!state.isAdminOpen) return;
+    await _withBusy(() async {
+      final err = await _service.deleteBuildingContactAsAdmin(
+        adminPass: state.adminPass,
+        id: id,
+      );
+      if (err != null) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return;
+      }
+      await loadData(preserveMonthIndex: state.selectedMonthIndex);
+    });
+  }
+
+  Future<void> deleteAllExtraCharges() async {
+    if (!state.isAdminOpen) return;
+    final m = state.currentMonth;
+    if (m == null) return;
+    await _withBusy(() async {
+      final err = await _service.deleteAllExtraChargesAsAdmin(
+        adminPass: state.adminPass,
+        monthId: m.id,
       );
       if (err != null) {
         emit(state.copyWith(

@@ -186,7 +186,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get navExpenses => 'المصاريف';
 
   @override
-  String get navEmergency => 'الطوارئ';
+  String get navEmergency => 'صندوق الطوارئ';
 
   @override
   String get navComplaints => 'شكاوى';
@@ -667,4 +667,104 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get errEmptyFeedbackMsg => 'يجب إدخال نص الشكوى أو المقترح أولاً';
+
+  @override
+  String get viewBillReceiptBtn => 'عرض الفاتورة';
+
+  @override
+  String get attachBillAfterPayBtn => 'إرفاق بعد الدفع';
+
+  @override
+  String get utilityPaidBadge => 'مدفوعة';
+
+  @override
+  String get utilityPendingBadge => 'بانتظار السداد';
+
+  @override
+  String utilityReceiptDialogTitle(String utility) {
+    return 'صورة $utility';
+  }
+
+  @override
+  String get removeUtilityReceiptBtn => 'حذف الفاتورة';
+
+  @override
+  String get utilityReceiptSavedToast => 'تم حفظ صورة الفاتورة بنجاح';
+
+  @override
+  String get utilityReceiptRemovedToast => 'تم حذف صورة الفاتورة';
+
+  @override
+  String get navContacts => 'أرقام الصيانة';
+
+  @override
+  String get navContactsFull => 'أرقام الصيانة';
+
+  @override
+  String get contactsTitle => 'أرقام الصيانة للعمارة';
+
+  @override
+  String get contactsSubtitle =>
+      'يمكن لأي ساكن إضافة رقم فني أو صيانة معتمد للعمارة.';
+
+  @override
+  String get addContactBtn => 'إضافة رقم';
+
+  @override
+  String get addContactTitle => 'إضافة رقم صيانة';
+
+  @override
+  String get contactNameLabel => 'الاسم / الجهة';
+
+  @override
+  String get contactNameHint => 'مثال: م/ خالد — كهربائي';
+
+  @override
+  String get contactRoleLabel => 'التخصص / الوصف';
+
+  @override
+  String get contactRoleHint => 'مثال: أعطال السلم والموتور';
+
+  @override
+  String get contactPhoneLabel => 'رقم الهاتف';
+
+  @override
+  String get contactPhoneHint => '01012345678';
+
+  @override
+  String get callBtn => 'اتصال';
+
+  @override
+  String get whatsappBtn => 'واتساب';
+
+  @override
+  String get errContactFields => 'برجاء كتابة الاسم ورقم الهاتف أولاً.';
+
+  @override
+  String get contactAddedToast => 'تمت إضافة الرقم بنجاح';
+
+  @override
+  String confirmDeleteContactBody(String name) {
+    return 'هل تريد حذف \"$name\" من قائمة الأرقام؟';
+  }
+
+  @override
+  String get noContactsYet => 'لا توجد أرقام مسجلة بعد.';
+
+  @override
+  String get deleteAllExtraChargesBtn => 'حذف الكل';
+
+  @override
+  String get confirmDeleteAllExtraBody =>
+      'هل تريد حذف جميع الرسوم الإضافية المسجلة لهذا الشهر من كل الشقق؟';
+
+  @override
+  String get selectAllBtn => 'تحديد الكل';
+
+  @override
+  String get deselectAllBtn => 'إلغاء الكل';
+
+  @override
+  String get errSelectAtLeastOneApt =>
+      'من فضلك اختر شقة على الأقل لإضافة الرسوم.';
 }

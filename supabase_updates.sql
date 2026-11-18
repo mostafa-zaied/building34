@@ -469,3 +469,107 @@ BEGIN
   RETURN json_build_object('ok', true);
 END;
 $function$;
+
+
+-- 10. Post-Payment Utility Bill Receipts on months + Building Emergency Contacts
+ALTER TABLE public.months
+  ADD COLUMN IF NOT EXISTS water_receipt_url TEXT DEFAULT '',
+  ADD COLUMN IF NOT EXISTS elec_receipt_url TEXT DEFAULT '';
+
+CREATE OR REPLACE FUNCTION public.admin_set_utility_receipt(
+  p_admin_pass TEXT,
+  p_month_id INT,
+  p_utility TEXT,
+  p_receipt_url TEXT
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_pass TEXT;
+BEGIN
+  SELECT admin_password INTO v_pass FROM public.building_settings WHERE id = 1;
+  IF v_pass IS NULL OR p_admin_pass <> v_pass THEN
+    RETURN jsonb_build_object('ok', false, 'error', 'err_wrong_admin_pass');
+  END IF;
+
+  IF p_utility = 'water' THEN
+    UPDATE public.months
+    SET water_receipt_url = COALESCE(p_receipt_url, '')
+    WHERE id = p_month_id;
+  ELSIF p_utility = 'elec' THEN
+    UPDATE public.months
+    SET elec_receipt_url = COALESCE(p_receipt_url, '')
+    WHERE id = p_month_id;
+  ELSE
+    RETURN jsonb_build_object('ok', false, 'error', 'err_submit_failed');
+  END IF;
+
+  RETURN jsonb_build_object('ok', true);
+END;
+$$;
+
+CREATE TABLE IF NOT EXISTS public.building_contacts (
+  id BIGSERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  role_desc TEXT NOT NULL DEFAULT '',
+  phone TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE public.building_contacts ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public read building_contacts" ON public.building_contacts;
+CREATE POLICY "Public read building_contacts"
+  ON public.building_contacts FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public insert building_contacts" ON public.building_contacts;
+CREATE POLICY "Public insert building_contacts"
+  ON public.building_contacts FOR INSERT WITH CHECK (
+    length(trim(name)) > 0 AND length(trim(phone)) > 0
+  );
+
+CREATE OR REPLACE FUNCTION public.admin_delete_building_contact(
+  p_admin_pass TEXT,
+  p_id BIGINT
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_pass TEXT;
+BEGIN
+  SELECT admin_password INTO v_pass FROM public.building_settings WHERE id = 1;
+  IF v_pass IS NULL OR p_admin_pass <> v_pass THEN
+    RETURN jsonb_build_object('ok', false, 'error', 'err_wrong_admin_pass');
+  END IF;
+
+  DELETE FROM public.building_contacts WHERE id = p_id;
+  RETURN jsonb_build_object('ok', true);
+END;
+$$;
+
+
+-- 11. Delete all extra charges for a month in one click
+CREATE OR REPLACE FUNCTION public.admin_delete_all_extra_charges(
+  p_admin_pass TEXT,
+  p_month_id INT
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_pass TEXT;
+BEGIN
+  SELECT admin_password INTO v_pass FROM public.building_settings WHERE id = 1;
+  IF v_pass IS NULL OR p_admin_pass <> v_pass THEN
+    RETURN jsonb_build_object('ok', false, 'error', 'err_wrong_admin_pass');
+  END IF;
+
+  DELETE FROM public.apartment_extra_charges WHERE month_id = p_month_id;
+  RETURN jsonb_build_object('ok', true);
+END;
+$$;

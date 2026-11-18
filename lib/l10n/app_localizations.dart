@@ -1297,6 +1297,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please enter your complaint or suggestion first'**
   String get errEmptyFeedbackMsg;
+
+  /// No description provided for @viewBillReceiptBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'View Receipt'**
+  String get viewBillReceiptBtn;
+
+  /// No description provided for @attachBillAfterPayBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach Receipt'**
+  String get attachBillAfterPayBtn;
+
+  /// No description provided for @utilityPaidBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get utilityPaidBadge;
+
+  /// No description provided for @utilityPendingBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get utilityPendingBadge;
+
+  /// No description provided for @utilityReceiptDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{utility} Receipt'**
+  String utilityReceiptDialogTitle(String utility);
+
+  /// No description provided for @removeUtilityReceiptBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Receipt'**
+  String get removeUtilityReceiptBtn;
+
+  /// No description provided for @utilityReceiptSavedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Utility receipt saved'**
+  String get utilityReceiptSavedToast;
+
+  /// No description provided for @utilityReceiptRemovedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Utility receipt removed'**
+  String get utilityReceiptRemovedToast;
+
+  /// No description provided for @navContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintenance'**
+  String get navContacts;
+
+  /// No description provided for @navContactsFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintenance Contacts'**
+  String get navContactsFull;
+
+  /// No description provided for @contactsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Building Maintenance Numbers'**
+  String get contactsTitle;
+
+  /// No description provided for @contactsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Any resident can add a trusted technician or maintenance number.'**
+  String get contactsSubtitle;
+
+  /// No description provided for @addContactBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Number'**
+  String get addContactBtn;
+
+  /// No description provided for @addContactTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Maintenance Number'**
+  String get addContactTitle;
+
+  /// No description provided for @contactNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name / Service'**
+  String get contactNameLabel;
+
+  /// No description provided for @contactNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Eng. Khaled — Electrician'**
+  String get contactNameHint;
+
+  /// No description provided for @contactRoleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Role / Description'**
+  String get contactRoleLabel;
+
+  /// No description provided for @contactRoleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Staircase & motor repair'**
+  String get contactRoleHint;
+
+  /// No description provided for @contactPhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get contactPhoneLabel;
+
+  /// No description provided for @contactPhoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'01012345678'**
+  String get contactPhoneHint;
+
+  /// No description provided for @callBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get callBtn;
+
+  /// No description provided for @whatsappBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get whatsappBtn;
+
+  /// No description provided for @errContactFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter name and phone number.'**
+  String get errContactFields;
+
+  /// No description provided for @contactAddedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact added'**
+  String get contactAddedToast;
+
+  /// No description provided for @confirmDeleteContactBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to delete \"{name}\" from contacts?'**
+  String confirmDeleteContactBody(String name);
+
+  /// No description provided for @noContactsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No contacts added yet.'**
+  String get noContactsYet;
+
+  /// No description provided for @deleteAllExtraChargesBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete All'**
+  String get deleteAllExtraChargesBtn;
+
+  /// No description provided for @confirmDeleteAllExtraBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to delete all extra charges for this month from all apartments?'**
+  String get confirmDeleteAllExtraBody;
+
+  /// No description provided for @selectAllBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Select All'**
+  String get selectAllBtn;
+
+  /// No description provided for @deselectAllBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Deselect All'**
+  String get deselectAllBtn;
+
+  /// No description provided for @errSelectAtLeastOneApt.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select at least one apartment to add the charge.'**
+  String get errSelectAtLeastOneApt;
 }
 
 class _AppLocalizationsDelegate

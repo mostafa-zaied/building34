@@ -437,15 +437,15 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                                     if (state.isAdminOpen)
                                       IconButton(
                                         onPressed: () async {
-                                          final ok = await showConfirmDeleteDialog(
+                                          await showConfirmDeleteDialog(
                                             context: context,
                                             s: s,
                                             isDark: isDark,
                                             message: s.confirmDeleteTxBody(
                                               s.currency(tx.amount.abs().toInt()),
                                             ),
+                                            onConfirm: () => cubit.deleteEmergencyTransaction(tx.id),
                                           );
-                                          if (ok) await cubit.deleteEmergencyTransaction(tx.id);
                                         },
                                         icon: const Icon(Icons.delete_outline_rounded, size: 19),
                                         color: AppColors.danger,

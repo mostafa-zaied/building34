@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_shadows.dart';
@@ -130,6 +133,13 @@ class BillSummaryCard extends StatelessWidget {
               ],
             );
           },
+        ),
+
+        const SizedBox(height: AppSpacing.sm),
+        _UtilityReceiptsBar(
+          cubit: cubit,
+          state: state,
+          month: month,
         ),
 
         const SizedBox(height: AppSpacing.md),
@@ -271,6 +281,203 @@ class BillSummaryCard extends StatelessWidget {
               : const SizedBox.shrink(),
         ),
       ],
+    );
+  }
+}
+
+class _UtilityReceiptsBar extends StatelessWidget {
+  final BuildingCubit cubit;
+  final BuildingState state;
+  final MonthBill month;
+
+  const _UtilityReceiptsBar({
+    required this.cubit,
+    required this.state,
+    required this.month,
+  });
+
+  Future<void> _pickAndUpload(BuildContext context, String utility) async {
+    final picker = ImagePicker();
+    final file = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
+    if (file == null) return;
+    final bytes = await file.readAsBytes();
+    await cubit.setUtilityReceipt(utility: utility, imageBytes: bytes);
+  }
+
+  Future<void> _viewReceipt(
+    BuildContext context, {
+    required String utilityKey,
+    required String label,
+    required String? url,
+    required Uint8List? localBytes,
+  }) async {
+    final isDark = state.isDarkMode;
+    final s = state.s;
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.card(isDark),
+        title: Text(
+          s.utilityReceiptDialogTitle(label),
+          style: AppTypography.headline.copyWith(fontSize: 15),
+        ),
+        content: SizedBox(
+          width: 360,
+          child: SingleChildScrollView(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              child: localBytes != null
+                  ? Image.memory(localBytes, fit: BoxFit.contain)
+                  : Image.network(url!, fit: BoxFit.contain),
+            ),
+          ),
+        ),
+        actions: [
+          if (state.isAdminOpen) ...[
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(ctx);
+                await cubit.setUtilityReceipt(utility: utilityKey, imageBytes: null);
+              },
+              child: Text(
+                s.removeUtilityReceiptBtn,
+                style: const TextStyle(color: AppColors.danger),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(ctx);
+                await _pickAndUpload(context, utilityKey);
+              },
+              child: Text(s.attachBillAfterPayBtn),
+            ),
+          ],
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(s.cancel),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = state.s;
+    final isDark = state.isDarkMode;
+    final hasWater = (month.waterReceiptUrl != null && month.waterReceiptUrl!.isNotEmpty) ||
+        month.waterLocalBytes != null;
+    final hasElec = (month.elecReceiptUrl != null && month.elecReceiptUrl!.isNotEmpty) ||
+        month.elecLocalBytes != null;
+
+    if (!hasWater && !hasElec && !state.isAdminOpen) {
+      return const SizedBox.shrink();
+    }
+
+    return Row(
+      children: [
+        Expanded(
+          child: _pill(
+            context: context,
+            isDark: isDark,
+            icon: Icons.water_drop_outlined,
+            color: AppColors.water,
+            label: s.waterLabel,
+            hasReceipt: hasWater,
+            onTap: hasWater
+                ? () => _viewReceipt(
+                      context,
+                      utilityKey: 'water',
+                      label: s.waterLabel,
+                      url: month.waterReceiptUrl,
+                      localBytes: month.waterLocalBytes,
+                    )
+                : (state.isAdminOpen ? () => _pickAndUpload(context, 'water') : null),
+          ),
+        ),
+        const SizedBox(width: AppSpacing.xs),
+        Expanded(
+          child: _pill(
+            context: context,
+            isDark: isDark,
+            icon: Icons.bolt_rounded,
+            color: AppColors.electricity,
+            label: s.elecLabel,
+            hasReceipt: hasElec,
+            onTap: hasElec
+                ? () => _viewReceipt(
+                      context,
+                      utilityKey: 'elec',
+                      label: s.elecLabel,
+                      url: month.elecReceiptUrl,
+                      localBytes: month.elecLocalBytes,
+                    )
+                : (state.isAdminOpen ? () => _pickAndUpload(context, 'elec') : null),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _pill({
+    required BuildContext context,
+    required bool isDark,
+    required IconData icon,
+    required Color color,
+    required String label,
+    required bool hasReceipt,
+    required VoidCallback? onTap,
+  }) {
+    final s = state.s;
+    final badgeText = hasReceipt
+        ? s.viewBillReceiptBtn
+        : (state.isAdminOpen ? s.attachBillAfterPayBtn : s.utilityPendingBadge);
+    final accent = hasReceipt ? AppColors.emeraldText(isDark) : color;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        child: Container(
+          padding: const EdgeInsetsDirectional.symmetric(
+            horizontal: AppSpacing.sm,
+            vertical: 8,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.surface(isDark),
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            border: Border.all(
+              color: hasReceipt
+                  ? AppColors.emerald.withValues(alpha: 0.4)
+                  : AppColors.border(isDark),
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, size: 15, color: accent),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  '$label: $badgeText',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.caption.copyWith(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: hasReceipt
+                        ? AppColors.emeraldText(isDark)
+                        : AppColors.textSecondary(isDark),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

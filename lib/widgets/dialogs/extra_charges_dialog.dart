@@ -113,12 +113,47 @@ Future<void> showExtraChargesDialog({
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Text(
-                              s.selectAptsLabel,
-                              style: AppTypography.label.copyWith(
-                                color: AppColors.textPrimary(isDark),
-                                fontWeight: FontWeight.w700,
-                              ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    s.selectAptsLabel,
+                                    style: AppTypography.label.copyWith(
+                                      color: AppColors.textPrimary(isDark),
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    setModalState(() {
+                                      if (selectedApts.length == month.aptsCount) {
+                                        selectedApts.clear();
+                                      } else {
+                                        for (int i = 1; i <= month.aptsCount; i++) {
+                                          selectedApts.add(i);
+                                        }
+                                      }
+                                    });
+                                  },
+                                  style: TextButton.styleFrom(
+                                    padding: const EdgeInsetsDirectional.symmetric(
+                                      horizontal: 8,
+                                    ),
+                                    minimumSize: Size.zero,
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                  child: Text(
+                                    selectedApts.length == month.aptsCount
+                                        ? s.deselectAllBtn
+                                        : s.selectAllBtn,
+                                    style: AppTypography.caption.copyWith(
+                                      color: AppColors.primaryText(isDark),
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                             const SizedBox(height: AppSpacing.sm),
                             Wrap(
@@ -205,11 +240,15 @@ Future<void> showExtraChargesDialog({
                                           ) ??
                                           0;
                                       final reason = reasonCtrl.text.trim();
-                                      if (selectedApts.isEmpty ||
-                                          amount <= 0 ||
-                                          reason.isEmpty) {
+                                      if (amount <= 0 || reason.isEmpty) {
                                         setModalState(
                                           () => localError = s.errEmergencyInput,
+                                        );
+                                        return;
+                                      }
+                                      if (selectedApts.isEmpty) {
+                                        setModalState(
+                                          () => localError = s.errSelectAtLeastOneApt,
                                         );
                                         return;
                                       }
@@ -236,12 +275,49 @@ Future<void> showExtraChargesDialog({
                             const SizedBox(height: AppSpacing.lg),
                             Divider(height: 1, color: AppColors.border(isDark)),
                             const SizedBox(height: AppSpacing.md),
-                            Text(
-                              s.extraChargesListTitle,
-                              style: AppTypography.label.copyWith(
-                                color: AppColors.textPrimary(isDark),
-                                fontWeight: FontWeight.w700,
-                              ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    s.extraChargesListTitle,
+                                    style: AppTypography.label.copyWith(
+                                      color: AppColors.textPrimary(isDark),
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                                if (month.extraCharges.isNotEmpty)
+                                  TextButton.icon(
+                                    onPressed: () async {
+                                      await showConfirmDeleteDialog(
+                                        context: ctx,
+                                        s: s,
+                                        isDark: isDark,
+                                        message: s.confirmDeleteAllExtraBody,
+                                        onConfirm: cubit.deleteAllExtraCharges,
+                                      );
+                                    },
+                                    style: TextButton.styleFrom(
+                                      padding: const EdgeInsetsDirectional.symmetric(
+                                        horizontal: 8,
+                                      ),
+                                      minimumSize: Size.zero,
+                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    ),
+                                    icon: Icon(
+                                      Icons.delete_sweep_outlined,
+                                      size: 16,
+                                      color: AppColors.dangerText(isDark),
+                                    ),
+                                    label: Text(
+                                      s.deleteAllExtraChargesBtn,
+                                      style: AppTypography.caption.copyWith(
+                                        color: AppColors.dangerText(isDark),
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
                             const SizedBox(height: AppSpacing.sm),
                             if (month.extraCharges.isEmpty)
@@ -296,17 +372,15 @@ Future<void> showExtraChargesDialog({
                                         ),
                                         IconButton(
                                           onPressed: () async {
-                                            final ok = await showConfirmDeleteDialog(
+                                            await showConfirmDeleteDialog(
                                               context: ctx,
                                               s: s,
                                               isDark: isDark,
                                               message: s.confirmDeleteExtraBody(
                                                 s.currency(item.amount.toInt()),
                                               ),
+                                              onConfirm: () => cubit.deleteExtraCharge(item.id),
                                             );
-                                            if (ok) {
-                                              await cubit.deleteExtraCharge(item.id);
-                                            }
                                           },
                                           icon: Icon(
                                             Icons.delete_outline_rounded,

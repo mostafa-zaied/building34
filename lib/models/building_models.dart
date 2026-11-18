@@ -86,6 +86,10 @@ class MonthBill {
   double clean;
   double forEmerg;
   int aptsCount;
+  String? waterReceiptUrl;
+  Uint8List? waterLocalBytes;
+  String? elecReceiptUrl;
+  Uint8List? elecLocalBytes;
   final Map<int, PaymentRecord> payments;
   final List<ApartmentExtraCharge> extraCharges;
 
@@ -99,6 +103,10 @@ class MonthBill {
     required this.clean,
     required this.forEmerg,
     required this.aptsCount,
+    this.waterReceiptUrl,
+    this.waterLocalBytes,
+    this.elecReceiptUrl,
+    this.elecLocalBytes,
     Map<int, PaymentRecord>? payments,
     List<ApartmentExtraCharge>? extraCharges,
   })  : payments = payments ?? {},
@@ -152,6 +160,44 @@ class MonthBill {
       clean: (json['clean'] as num?)?.toDouble() ?? 240,
       forEmerg: (json['for_emerg'] as num?)?.toDouble() ?? 0,
       aptsCount: json['apts_count'] as int? ?? 13,
+      waterReceiptUrl: (json['water_receipt_url'] as String?)?.trim(),
+      elecReceiptUrl: (json['elec_receipt_url'] as String?)?.trim(),
+    );
+  }
+}
+
+class BuildingContact {
+  final String id;
+  final String name;
+  final String roleDesc;
+  final String phone;
+  final DateTime createdAt;
+
+  const BuildingContact({
+    required this.id,
+    required this.name,
+    required this.roleDesc,
+    required this.phone,
+    required this.createdAt,
+  });
+
+  bool get supportsWhatsApp =>
+      phone.replaceAll(RegExp(r'[^0-9]'), '').length >= 10;
+
+  String get whatsappNumber {
+    final digits = phone.replaceAll(RegExp(r'[^0-9]'), '');
+    if (digits.startsWith('0')) return '2$digits';
+    return digits;
+  }
+
+  factory BuildingContact.fromJson(Map<String, dynamic> json) {
+    return BuildingContact(
+      id: json['id'].toString(),
+      name: (json['name'] as String?) ?? '',
+      roleDesc: (json['role_desc'] as String?) ?? '',
+      phone: (json['phone'] as String?) ?? '',
+      createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ??
+          DateTime.now(),
     );
   }
 }

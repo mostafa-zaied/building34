@@ -359,13 +359,13 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
                         ),
                         IconButton(
                           onPressed: () async {
-                            final ok = await showConfirmDeleteDialog(
+                            await showConfirmDeleteDialog(
                               context: context,
                               s: s,
                               isDark: isDark,
                               message: s.confirmDeletePostBody,
+                              onConfirm: () => cubit.deleteFeedbackPost(post.id),
                             );
-                            if (ok) await cubit.deleteFeedbackPost(post.id);
                           },
                           icon: const Icon(Icons.delete_outline_rounded, size: 18, color: AppColors.danger),
                           padding: EdgeInsets.zero,

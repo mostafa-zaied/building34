@@ -28,6 +28,7 @@ class BuildingState {
   final PageViewStats? pageViewStats;
   final bool hasVotedUpcomingDirectory;
   final bool requireAptPassOnOpen;
+  final List<BuildingContact> buildingContacts;
 
   const BuildingState({
     this.loading = true,
@@ -54,6 +55,7 @@ class BuildingState {
     this.pageViewStats,
     this.hasVotedUpcomingDirectory = false,
     this.requireAptPassOnOpen = true,
+    this.buildingContacts = const [],
   });
 
   AppLocalizations get s => lookupAppLocalizations(Locale(localeCode));
@@ -90,6 +92,7 @@ class BuildingState {
     PageViewStats? Function()? pageViewStats,
     bool? hasVotedUpcomingDirectory,
     bool? requireAptPassOnOpen,
+    List<BuildingContact>? buildingContacts,
   }) {
     return BuildingState(
       loading: loading ?? this.loading,
@@ -117,6 +120,7 @@ class BuildingState {
       hasVotedUpcomingDirectory:
           hasVotedUpcomingDirectory ?? this.hasVotedUpcomingDirectory,
       requireAptPassOnOpen: requireAptPassOnOpen ?? this.requireAptPassOnOpen,
+      buildingContacts: buildingContacts ?? this.buildingContacts,
     );
   }
 }

@@ -9,6 +9,7 @@ import '../core/theme/app_typography.dart';
 import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
 import '../widgets/common/busy_overlay.dart';
+import 'contacts_screen.dart';
 import 'emergency_screen.dart';
 import 'feedback_screen.dart';
 import 'home_screen.dart';
@@ -41,6 +42,7 @@ class MainShell extends StatelessWidget {
         const screens = [
           BuildingHomePage(),
           EmergencyScreen(),
+          ContactsScreen(),
           FeedbackScreen(),
           UpcomingDirectoryScreen(),
         ];
@@ -148,6 +150,11 @@ class MainShell extends StatelessWidget {
                             label: Text(s.navEmergency),
                           ),
                           NavigationRailDestination(
+                            icon: const Icon(Icons.contact_phone_outlined),
+                            selectedIcon: const Icon(Icons.contact_phone_rounded),
+                            label: Text(s.navContactsFull),
+                          ),
+                          NavigationRailDestination(
                             icon: const Icon(Icons.forum_outlined),
                             selectedIcon: const Icon(Icons.forum_rounded),
                             label: Text(s.navFeedbackFull),
@@ -225,6 +232,11 @@ class MainShell extends StatelessWidget {
                     icon: Icons.shield_outlined,
                     selectedIcon: Icons.shield_rounded,
                     label: s.navEmergency,
+                  ),
+                  _NavItemData(
+                    icon: Icons.contact_phone_outlined,
+                    selectedIcon: Icons.contact_phone_rounded,
+                    label: s.navContacts,
                   ),
                   _NavItemData(
                     icon: Icons.forum_outlined,

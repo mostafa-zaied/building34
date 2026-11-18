@@ -673,4 +673,104 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errEmptyFeedbackMsg =>
       'Please enter your complaint or suggestion first';
+
+  @override
+  String get viewBillReceiptBtn => 'View Receipt';
+
+  @override
+  String get attachBillAfterPayBtn => 'Attach Receipt';
+
+  @override
+  String get utilityPaidBadge => 'Paid';
+
+  @override
+  String get utilityPendingBadge => 'Pending';
+
+  @override
+  String utilityReceiptDialogTitle(String utility) {
+    return '$utility Receipt';
+  }
+
+  @override
+  String get removeUtilityReceiptBtn => 'Remove Receipt';
+
+  @override
+  String get utilityReceiptSavedToast => 'Utility receipt saved';
+
+  @override
+  String get utilityReceiptRemovedToast => 'Utility receipt removed';
+
+  @override
+  String get navContacts => 'Maintenance';
+
+  @override
+  String get navContactsFull => 'Maintenance Contacts';
+
+  @override
+  String get contactsTitle => 'Building Maintenance Numbers';
+
+  @override
+  String get contactsSubtitle =>
+      'Any resident can add a trusted technician or maintenance number.';
+
+  @override
+  String get addContactBtn => 'Add Number';
+
+  @override
+  String get addContactTitle => 'Add Maintenance Number';
+
+  @override
+  String get contactNameLabel => 'Name / Service';
+
+  @override
+  String get contactNameHint => 'e.g. Eng. Khaled — Electrician';
+
+  @override
+  String get contactRoleLabel => 'Role / Description';
+
+  @override
+  String get contactRoleHint => 'e.g. Staircase & motor repair';
+
+  @override
+  String get contactPhoneLabel => 'Phone Number';
+
+  @override
+  String get contactPhoneHint => '01012345678';
+
+  @override
+  String get callBtn => 'Call';
+
+  @override
+  String get whatsappBtn => 'WhatsApp';
+
+  @override
+  String get errContactFields => 'Please enter name and phone number.';
+
+  @override
+  String get contactAddedToast => 'Contact added';
+
+  @override
+  String confirmDeleteContactBody(String name) {
+    return 'Do you want to delete \"$name\" from contacts?';
+  }
+
+  @override
+  String get noContactsYet => 'No contacts added yet.';
+
+  @override
+  String get deleteAllExtraChargesBtn => 'Delete All';
+
+  @override
+  String get confirmDeleteAllExtraBody =>
+      'Do you want to delete all extra charges for this month from all apartments?';
+
+  @override
+  String get selectAllBtn => 'Select All';
+
+  @override
+  String get deselectAllBtn => 'Deselect All';
+
+  @override
+  String get errSelectAtLeastOneApt =>
+      'Please select at least one apartment to add the charge.';
 }

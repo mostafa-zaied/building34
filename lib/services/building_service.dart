@@ -10,6 +10,7 @@ class BuildingDataState {
   final String announcement;
   final List<EmergencyTransaction> emergencyTransactions;
   final bool requireAptPassOnOpen;
+  final List<BuildingContact> buildingContacts;
 
   BuildingDataState({
     required this.baseEmergencyFund,
@@ -18,6 +19,7 @@ class BuildingDataState {
     this.announcement = '',
     this.emergencyTransactions = const [],
     this.requireAptPassOnOpen = true,
+    this.buildingContacts = const [],
   });
 }
 
@@ -40,6 +42,22 @@ class BuildingService {
   static final List<FeedbackPost> _demoFeedbackPosts = [];
   static final List<({String visitorId, DateTime createdAt})> _demoPageViews = [];
   static final List<({String visitorId, String eventType})> _demoUpcomingEvents = [];
+  static final List<BuildingContact> _demoContacts = [
+    BuildingContact(
+      id: '1',
+      name: 'طوارئ الغاز الطبيعي',
+      roleDesc: 'الخط الساخن 24 ساعة',
+      phone: '129',
+      createdAt: DateTime(2026, 11, 1),
+    ),
+    BuildingContact(
+      id: '2',
+      name: 'طوارئ الكهرباء',
+      roleDesc: 'الخط الساخن للأعطال',
+      phone: '121',
+      createdAt: DateTime(2026, 11, 1),
+    ),
+  ];
   static const List<String> _defaultResidentNames = [
     'أستاذ حازم',
     'د. أبو بكر',
@@ -107,6 +125,7 @@ class BuildingService {
         announcement: _demoAnnouncement,
         emergencyTransactions: List<EmergencyTransaction>.from(_demoEmergencyTx),
         requireAptPassOnOpen: _demoRequireAptPassOnOpen,
+        buildingContacts: List<BuildingContact>.from(_demoContacts),
       );
     }
 
@@ -200,6 +219,17 @@ class BuildingService {
       }
     } catch (_) {}
 
+    var contactsList = <BuildingContact>[];
+    try {
+      final cRows = await client
+          .from('building_contacts')
+          .select()
+          .order('created_at', ascending: false);
+      contactsList = (cRows as List)
+          .map((r) => BuildingContact.fromJson(Map<String, dynamic>.from(r as Map)))
+          .toList();
+    } catch (_) {}
+
     return BuildingDataState(
       baseEmergencyFund: baseEmerg,
       months: monthsMap.values.toList(),
@@ -207,6 +237,7 @@ class BuildingService {
       announcement: announcement,
       emergencyTransactions: emergencyTx,
       requireAptPassOnOpen: requireAptPassOnOpen,
+      buildingContacts: contactsList,
     );
   }
 
@@ -867,6 +898,136 @@ class BuildingService {
       return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
     } catch (_) {
       return 'err_submit_failed';
+    }
+  }
+
+  Future<String?> setUtilityReceiptAsAdmin({
+    required String adminPass,
+    required MonthBill month,
+    required String utility,
+    Uint8List? imageBytes,
+  }) async {
+    if (!_useSupabase) {
+      if (utility == 'water') {
+        month.waterLocalBytes = imageBytes;
+        month.waterReceiptUrl = imageBytes != null ? 'local' : null;
+      } else {
+        month.elecLocalBytes = imageBytes;
+        month.elecReceiptUrl = imageBytes != null ? 'local' : null;
+      }
+      return null;
+    }
+
+    try {
+      final client = Supabase.instance.client;
+      String publicUrl = '';
+      if (imageBytes != null) {
+        final ts = DateTime.now().millisecondsSinceEpoch;
+        final storagePath = 'utility_${month.id}_${utility}_$ts.jpg';
+        await client.storage.from('receipts').uploadBinary(
+              storagePath,
+              imageBytes,
+              fileOptions: const FileOptions(upsert: true),
+            );
+        publicUrl = client.storage.from('receipts').getPublicUrl(storagePath);
+      }
+
+      final res = await client.rpc('admin_set_utility_receipt', params: {
+        'p_admin_pass': adminPass,
+        'p_month_id': month.id,
+        'p_utility': utility,
+        'p_receipt_url': publicUrl,
+      });
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
+    } catch (_) {
+      return 'err_submit_failed';
+    }
+  }
+
+  Future<String?> addBuildingContact({
+    required String name,
+    required String roleDesc,
+    required String phone,
+  }) async {
+    final cleanName = name.trim();
+    final cleanPhone = phone.trim();
+    if (cleanName.isEmpty || cleanPhone.isEmpty) return 'err_submit_failed';
+
+    if (!_useSupabase) {
+      _demoContacts.insert(
+        0,
+        BuildingContact(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          name: cleanName,
+          roleDesc: roleDesc.trim(),
+          phone: cleanPhone,
+          createdAt: DateTime.now(),
+        ),
+      );
+      return null;
+    }
+
+    try {
+      await Supabase.instance.client.from('building_contacts').insert({
+        'name': cleanName,
+        'role_desc': roleDesc.trim(),
+        'phone': cleanPhone,
+      });
+      return null;
+    } catch (_) {
+      return 'err_submit_failed';
+    }
+  }
+
+  Future<String?> deleteBuildingContactAsAdmin({
+    required String adminPass,
+    required String id,
+  }) async {
+    if (!_useSupabase) {
+      _demoContacts.removeWhere((c) => c.id == id);
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'admin_delete_building_contact',
+        params: {
+          'p_admin_pass': adminPass,
+          'p_id': int.tryParse(id) ?? 0,
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_delete_failed';
+    } catch (_) {
+      return 'err_delete_failed';
+    }
+  }
+
+  Future<String?> deleteAllExtraChargesAsAdmin({
+    required String adminPass,
+    required int monthId,
+  }) async {
+    if (!_useSupabase) {
+      final idx = _demoMonths.indexWhere((m) => m.id == monthId);
+      if (idx >= 0) {
+        _demoMonths[idx].extraCharges.clear();
+      }
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'admin_delete_all_extra_charges',
+        params: {
+          'p_admin_pass': adminPass,
+          'p_month_id': monthId,
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_delete_failed';
+    } catch (_) {
+      return 'err_delete_failed';
     }
   }
 }
