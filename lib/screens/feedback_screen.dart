@@ -30,6 +30,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
   bool _isAnonymous = true;
   int _selectedApt = 1;
   bool _submitting = false;
+  String? _msgError;
 
   @override
   void initState() {
@@ -46,10 +47,16 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
     super.dispose();
   }
 
-  Future<void> _submit(BuildingCubit cubit) async {
+  Future<void> _submit(BuildingCubit cubit, String emptyErr) async {
     final text = _msgCtrl.text.trim();
-    if (text.isEmpty) return;
-    setState(() => _submitting = true);
+    if (text.isEmpty) {
+      setState(() => _msgError = emptyErr);
+      return;
+    }
+    setState(() {
+      _msgError = null;
+      _submitting = true;
+    });
     final ok = await cubit.submitFeedbackPost(
       type: _selectedType,
       message: text,
@@ -197,44 +204,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
     required BuildingCubit cubit,
   }) {
     final s = state.s;
-    if (posts.isEmpty) {
-      return Center(
-        child: AppCard(
-          padding: const EdgeInsetsDirectional.all(AppSpacing.xxxl),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
-                decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.14),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  isComplaint ? Icons.campaign_outlined : Icons.lightbulb_outline,
-                  size: 36,
-                  color: accent,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              Text(
-                s.noPostsYet,
-                textAlign: TextAlign.center,
-                style: AppTypography.body.copyWith(color: AppColors.textSecondary(isDark)),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              AppPrimaryButton(
-                label: isComplaint ? s.tabAddComplaint : s.tabAddImprovement,
-                icon: Icons.add_rounded,
-                backgroundColor: accent,
-                foregroundColor: Colors.black,
-                onPressed: () => _tabCtrl.animateTo(1),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
+    final emptyIsSuggestion = _filterType == 'improvement';
+    final emptyAccent = emptyIsSuggestion ? AppColors.emerald : AppColors.amber;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -262,8 +233,54 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
         ),
         const SizedBox(height: AppSpacing.sm),
         Expanded(
-          child: ListView.separated(
-            itemCount: posts.length,
+          child: posts.isEmpty
+              ? Center(
+                  child: AppCard(
+                    padding: const EdgeInsetsDirectional.all(AppSpacing.xxxl),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
+                          decoration: BoxDecoration(
+                            color: emptyAccent.withValues(alpha: 0.14),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            emptyIsSuggestion
+                                ? Icons.lightbulb_outline
+                                : Icons.campaign_outlined,
+                            size: 36,
+                            color: emptyAccent,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        Text(
+                          s.noPostsYet,
+                          textAlign: TextAlign.center,
+                          style: AppTypography.body.copyWith(
+                            color: AppColors.textSecondary(isDark),
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        AppPrimaryButton(
+                          label: s.tabAddPost,
+                          icon: Icons.add_rounded,
+                          backgroundColor: emptyAccent,
+                          foregroundColor: Colors.black,
+                          onPressed: () {
+                            if (_filterType == 'complaint' || _filterType == 'improvement') {
+                              setState(() => _selectedType = _filterType);
+                            }
+                            _tabCtrl.animateTo(1);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : ListView.separated(
+                  itemCount: posts.length,
             separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
             itemBuilder: (context, index) {
               final post = posts[index];
@@ -586,8 +603,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
             TextField(
               controller: _msgCtrl,
               maxLines: 4,
+              onChanged: (_) {
+                if (_msgError != null) setState(() => _msgError = null);
+              },
               decoration: InputDecoration(
                 hintText: isComplaint ? s.writeComplaintHint : s.writeImprovementHint,
+                errorText: _msgError,
               ),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -663,7 +684,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
               backgroundColor: accent,
               foregroundColor: Colors.black,
               loading: _submitting,
-              onPressed: () => _submit(cubit),
+              onPressed: () => _submit(cubit, s.errEmptyFeedbackMsg),
             ),
           ],
         ),

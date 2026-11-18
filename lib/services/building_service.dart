@@ -218,9 +218,11 @@ class BuildingService {
     String? fileName,
   }) async {
     if (!_useSupabase) {
-      final expected = _demoApartments[aptNum]?.passcode ?? '${1000 + aptNum}';
-      if (passcode.trim() != expected) {
-        return 'err_wrong_apt_pass_hint:$expected';
+      if (_demoRequireAptPassOnOpen) {
+        final expected = _demoApartments[aptNum]?.passcode ?? '${1000 + aptNum}';
+        if (passcode.trim() != expected) {
+          return 'err_wrong_apt_pass_hint:$expected';
+        }
       }
       month.payments[aptNum] = PaymentRecord(
         aptNum: aptNum,

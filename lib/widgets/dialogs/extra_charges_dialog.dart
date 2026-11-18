@@ -7,6 +7,7 @@ import '../../core/theme/app_typography.dart';
 import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
 import '../common/app_button.dart';
+import '../common/busy_overlay.dart';
 import 'confirm_delete_dialog.dart';
 
 Future<void> showExtraChargesDialog({
@@ -50,7 +51,10 @@ Future<void> showExtraChargesDialog({
                 borderRadius: BorderRadius.circular(AppRadius.xl),
                 side: BorderSide(color: AppColors.border(isDark)),
               ),
-              child: ConstrainedBox(
+              child: BusyOverlay(
+                busy: state.busy,
+                isDark: isDark,
+                child: ConstrainedBox(
                 constraints: BoxConstraints(
                   maxWidth: 480,
                   maxHeight: MediaQuery.sizeOf(ctx).height * 0.86,
@@ -321,6 +325,7 @@ Future<void> showExtraChargesDialog({
                     ),
                   ],
                 ),
+              ),
               ),
             ),
           );

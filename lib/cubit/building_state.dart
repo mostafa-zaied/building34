@@ -5,6 +5,7 @@ import '../models/building_models.dart';
 
 class BuildingState {
   final bool loading;
+  final bool busy;
   final bool isAdminAuthenticated;
   final bool isAdminOpen;
   final String adminPass;
@@ -30,6 +31,7 @@ class BuildingState {
 
   const BuildingState({
     this.loading = true,
+    this.busy = false,
     this.isAdminAuthenticated = false,
     this.isAdminOpen = false,
     this.adminPass = 'admin123',
@@ -65,6 +67,7 @@ class BuildingState {
 
   BuildingState copyWith({
     bool? loading,
+    bool? busy,
     bool? isAdminAuthenticated,
     bool? isAdminOpen,
     String? adminPass,
@@ -90,6 +93,7 @@ class BuildingState {
   }) {
     return BuildingState(
       loading: loading ?? this.loading,
+      busy: busy ?? this.busy,
       isAdminAuthenticated: isAdminAuthenticated ?? this.isAdminAuthenticated,
       isAdminOpen: isAdminOpen ?? this.isAdminOpen,
       adminPass: adminPass ?? this.adminPass,

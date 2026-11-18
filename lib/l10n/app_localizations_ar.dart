@@ -339,9 +339,6 @@ class AppLocalizationsAr extends AppLocalizations {
       'تعذر تسجيل الحركة. تأكد من تشغيل supabase_updates.sql';
 
   @override
-  String get unpaidReminderBtn => 'تذكير المتبقين';
-
-  @override
   String get pinNoticeBtn => 'تثبيت إعلان';
 
   @override
@@ -667,4 +664,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get typeSuggestion => '💡 مقترح';
+
+  @override
+  String get errEmptyFeedbackMsg => 'يجب إدخال نص الشكوى أو المقترح أولاً';
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../core/theme/app_colors.dart';
@@ -9,6 +8,7 @@ import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
 import '../models/building_models.dart';
 import '../widgets/common/app_card.dart';
+import '../widgets/common/busy_overlay.dart';
 import '../widgets/dialogs/extra_charges_dialog.dart';
 import '../widgets/home/admin_edit_panel.dart';
 
@@ -22,20 +22,7 @@ class AdminSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<BuildingCubit, BuildingState>(
-      listenWhen: (prev, curr) =>
-          prev.feedbackMessage != curr.feedbackMessage && curr.feedbackMessage != null,
-      listener: (context, state) {
-        if (state.feedbackMessage != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.feedbackMessage!),
-              backgroundColor: state.feedbackIsError ? AppColors.danger : AppColors.emerald,
-            ),
-          );
-          context.read<BuildingCubit>().clearFeedback();
-        }
-      },
+    return BlocBuilder<BuildingCubit, BuildingState>(
       builder: (context, state) {
         final cubit = context.read<BuildingCubit>();
         final s = state.s;
@@ -59,8 +46,11 @@ class AdminSettingsScreen extends StatelessWidget {
 
         final enabled = state.requireAptPassOnOpen;
 
-        return Scaffold(
-          backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
+        return BusyOverlay(
+          busy: state.busy,
+          isDark: isDark,
+          child: Scaffold(
+            backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
           appBar: AppBar(
             backgroundColor: AppColors.surface(isDark),
             elevation: 0,
@@ -258,37 +248,15 @@ class AdminSettingsScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: AppSpacing.sm),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: AdminActionTile(
-                                label: s.unpaidReminderBtn,
-                                icon: Icons.notifications_active_outlined,
-                                isDark: isDark,
-                                onTap: () async {
-                                  final text = cubit.buildUnpaidReminderMessage();
-                                  cubit.setCopiedPreview(text);
-                                  try {
-                                    await Clipboard.setData(ClipboardData(text: text));
-                                  } catch (_) {}
-                                  if (context.mounted) Navigator.pop(context);
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: AppSpacing.sm),
-                            Expanded(
-                              child: AdminActionTile(
-                                label: s.pinNoticeBtn,
-                                icon: Icons.campaign_outlined,
-                                isDark: isDark,
-                                onTap: () => _showAnnouncementDialog(
-                                  context,
-                                  cubit,
-                                  state,
-                                ),
-                              ),
-                            ),
-                          ],
+                        AdminActionTile(
+                          label: s.pinNoticeBtn,
+                          icon: Icons.campaign_outlined,
+                          isDark: isDark,
+                          onTap: () => _showAnnouncementDialog(
+                            context,
+                            cubit,
+                            state,
+                          ),
                         ),
                         const SizedBox(height: AppSpacing.sm),
                         Row(
@@ -331,6 +299,7 @@ class AdminSettingsScreen extends StatelessWidget {
                 ],
               ),
             ),
+          ),
           ),
         );
       },

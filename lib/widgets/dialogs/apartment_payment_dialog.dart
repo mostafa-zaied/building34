@@ -12,6 +12,7 @@ import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
 import '../../models/building_models.dart';
 import '../common/app_button.dart';
+import '../common/busy_overlay.dart';
 import 'confirm_delete_dialog.dart';
 
 Future<void> showApartmentPaymentDialog({
@@ -43,9 +44,14 @@ Future<void> showApartmentPaymentDialog({
 
   final existing = month.payments[aptNum];
   if (existing != null) {
+    bool cancelling = false;
     await showDialog<void>(
       context: context,
-      builder: (ctx) => Dialog(
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setCancelState) => BusyOverlay(
+          busy: cancelling,
+          isDark: isDark,
+          child: Dialog(
         insetPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.lg,
           vertical: AppSpacing.xl,
@@ -178,21 +184,26 @@ Future<void> showApartmentPaymentDialog({
                   AppSecondaryButton(
                     label: s.cancelPaymentAdmin,
                     accentColor: AppColors.danger,
-                    onPressed: () async {
-                      final ok = await showConfirmDeleteDialog(
-                        context: ctx,
-                        s: s,
-                        isDark: isDark,
-                        message: s.confirmCancelPaymentBody(state.aptLabel(aptNum)),
-                      );
-                      if (!ok) return;
-                      await cubit.cancelPayment(aptNum);
-                      if (ctx.mounted) Navigator.pop(ctx);
-                    },
+                    onPressed: cancelling
+                        ? null
+                        : () async {
+                            final ok = await showConfirmDeleteDialog(
+                              context: ctx,
+                              s: s,
+                              isDark: isDark,
+                              message: s.confirmCancelPaymentBody(state.aptLabel(aptNum)),
+                            );
+                            if (!ok) return;
+                            setCancelState(() => cancelling = true);
+                            await cubit.cancelPayment(aptNum);
+                            if (ctx.mounted) Navigator.pop(ctx);
+                          },
                   ),
                 ],
               ],
             ),
+          ),
+        ),
           ),
         ),
       ),
@@ -200,14 +211,6 @@ Future<void> showApartmentPaymentDialog({
     return;
   }
 
-  final hasSavedPass = state.myAptNum == aptNum &&
-      state.savedAptPass != null &&
-      state.savedAptPass!.isNotEmpty;
-  final passCtrl = TextEditingController(
-    text: hasSavedPass ? state.savedAptPass! : '',
-  );
-  bool useSavedPass = hasSavedPass;
-  final showInnerPassField = !state.requireAptPassOnOpen;
   Uint8List? pickedBytes;
   String? pickedName;
   String? errMsg;
@@ -454,84 +457,6 @@ Future<void> showApartmentPaymentDialog({
                 ),
                 const SizedBox(height: AppSpacing.md),
 
-                if (showInnerPassField) ...[
-                  if (useSavedPass)
-                    Container(
-                      padding: const EdgeInsetsDirectional.symmetric(
-                        horizontal: AppSpacing.md,
-                        vertical: AppSpacing.sm + 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.emerald.withValues(alpha: isDark ? 0.14 : 0.08),
-                        borderRadius: BorderRadius.circular(AppRadius.md),
-                        border: Border.all(
-                          color: AppColors.emerald.withValues(alpha: 0.35),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.verified_user_outlined,
-                            size: 18,
-                            color: AppColors.emeraldText(isDark),
-                          ),
-                          const SizedBox(width: AppSpacing.sm),
-                          Expanded(
-                            child: Text(
-                              s.savedPassBadge,
-                              style: AppTypography.label.copyWith(
-                                color: AppColors.emeraldText(isDark),
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              setModalState(() {
-                                useSavedPass = false;
-                                passCtrl.clear();
-                              });
-                            },
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsetsDirectional.symmetric(horizontal: 8),
-                              minimumSize: Size.zero,
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: Text(s.changePassBtn, style: AppTypography.caption),
-                          ),
-                        ],
-                      ),
-                    )
-                  else ...[
-                    Text(
-                      s.step1Passcode(!AppConfig.isSupabaseConfigured ? ' (${1000 + aptNum})' : ''),
-                      style: AppTypography.label.copyWith(
-                        color: AppColors.textPrimary(isDark),
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    TextField(
-                      controller: passCtrl,
-                      obscureText: true,
-                      style: AppTypography.body.copyWith(
-                        color: AppColors.textPrimary(isDark),
-                      ),
-                      decoration: InputDecoration(
-                        hintText: s.enterPassHint,
-                        filled: true,
-                        fillColor: AppColors.surface(isDark),
-                        prefixIcon: Icon(
-                          Icons.lock_outline_rounded,
-                          size: 18,
-                          color: AppColors.textSecondary(isDark),
-                        ),
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: AppSpacing.md),
-                ],
-
                 // Mandatory receipt image
                 Text(
                   s.step2Image,
@@ -685,9 +610,7 @@ Future<void> showApartmentPaymentDialog({
                                 setModalState(() => submitting = true);
                                 final resErr = await cubit.submitPayment(
                                   aptNum: aptNum,
-                                  passcode: showInnerPassField
-                                      ? passCtrl.text
-                                      : (cubit.state.savedAptPass ?? ''),
+                                  passcode: cubit.state.savedAptPass ?? '',
                                   imageBytes: pickedBytes,
                                   fileName: pickedName,
                                 );
@@ -711,7 +634,6 @@ Future<void> showApartmentPaymentDialog({
       ),
     ),
   );
-  Future.delayed(const Duration(milliseconds: 350), passCtrl.dispose);
 }
 
 Future<bool> _showUnlockApartmentDialog({

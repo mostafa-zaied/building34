@@ -206,7 +206,6 @@
   "recordExpenseBtn": "Record Expense",
   "errEmergencyInput": "Please enter a valid amount and reason.",
   "errEmergencySave": "Failed to save transaction.",
-  "unpaidReminderBtn": "Unpaid Reminder",
   "pinNoticeBtn": "Pin Notice",
   "noticeDialogTitle": "Important Building Notice",
   "noticeDialogHint": "e.g. Elevator maintenance on Thursday 10–12",
@@ -374,5 +373,6 @@
   "filterSuggestions": "💡 Suggestions",
   "postTypeLabel": "Type",
   "typeComplaint": "📢 Complaint",
-  "typeSuggestion": "💡 Suggestion"
+  "typeSuggestion": "💡 Suggestion",
+  "errEmptyFeedbackMsg": "Please enter your complaint or suggestion first"
 }

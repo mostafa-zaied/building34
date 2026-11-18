@@ -8,6 +8,7 @@ import '../core/theme/app_spacing.dart';
 import '../core/theme/app_typography.dart';
 import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
+import '../widgets/common/busy_overlay.dart';
 import 'emergency_screen.dart';
 import 'feedback_screen.dart';
 import 'home_screen.dart';
@@ -69,7 +70,10 @@ class MainShell extends StatelessWidget {
 
         return AnnotatedRegion<SystemUiOverlayStyle>(
           value: overlayStyle,
-          child: LayoutBuilder(
+          child: BusyOverlay(
+            busy: state.busy,
+            isDark: isDark,
+            child: LayoutBuilder(
             builder: (context, constraints) {
               final isWide = constraints.maxWidth >= 720;
               final isExtended = constraints.maxWidth >= 1024;
@@ -237,6 +241,7 @@ class MainShell extends StatelessWidget {
               ),
             );
             },
+          ),
           ),
         );
       },

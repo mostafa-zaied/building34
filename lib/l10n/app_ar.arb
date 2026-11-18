@@ -99,7 +99,6 @@
   "recordExpenseBtn": "تسجيل صرف من الطوارئ",
   "errEmergencyInput": "من فضلك اكتب المبلغ والسبب أولاً.",
   "errEmergencySave": "تعذر تسجيل الحركة. تأكد من تشغيل supabase_updates.sql",
-  "unpaidReminderBtn": "تذكير المتبقين",
   "pinNoticeBtn": "تثبيت إعلان",
   "noticeDialogTitle": "تثبيت إعلان أو تنبيه هام",
   "noticeDialogHint": "مثال: صيانة الأسانسير يوم الخميس من 10 لـ 12",
@@ -199,5 +198,6 @@
   "filterSuggestions": "💡 المقترحات",
   "postTypeLabel": "النوع",
   "typeComplaint": "📢 شكوى",
-  "typeSuggestion": "💡 مقترح"
+  "typeSuggestion": "💡 مقترح",
+  "errEmptyFeedbackMsg": "يجب إدخال نص الشكوى أو المقترح أولاً"
 }

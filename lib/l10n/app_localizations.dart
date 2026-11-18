@@ -692,12 +692,6 @@ abstract class AppLocalizations {
   /// **'Failed to save transaction.'**
   String get errEmergencySave;
 
-  /// No description provided for @unpaidReminderBtn.
-  ///
-  /// In en, this message translates to:
-  /// **'Unpaid Reminder'**
-  String get unpaidReminderBtn;
-
   /// No description provided for @pinNoticeBtn.
   ///
   /// In en, this message translates to:
@@ -1297,6 +1291,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'💡 Suggestion'**
   String get typeSuggestion;
+
+  /// No description provided for @errEmptyFeedbackMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your complaint or suggestion first'**
+  String get errEmptyFeedbackMsg;
 }
 
 class _AppLocalizationsDelegate

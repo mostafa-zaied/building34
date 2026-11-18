@@ -339,9 +339,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errEmergencySave => 'Failed to save transaction.';
 
   @override
-  String get unpaidReminderBtn => 'Unpaid Reminder';
-
-  @override
   String get pinNoticeBtn => 'Pin Notice';
 
   @override
@@ -672,4 +669,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get typeSuggestion => '💡 Suggestion';
+
+  @override
+  String get errEmptyFeedbackMsg =>
+      'Please enter your complaint or suggestion first';
 }

@@ -432,3 +432,40 @@ BEGIN
   RETURN jsonb_build_object('ok', true, 'enabled', COALESCE(p_enabled, TRUE));
 END;
 $$;
+
+
+-- 9. Respect require_apt_pass_on_open setting inside verify_apt_and_record_payment
+CREATE OR REPLACE FUNCTION public.verify_apt_and_record_payment(
+  p_month_id integer,
+  p_apt_num integer,
+  p_passcode text,
+  p_receipt_url text DEFAULT NULL::text
+)
+RETURNS json
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $function$
+DECLARE
+  v_expected TEXT;
+  v_require_pass BOOLEAN;
+BEGIN
+  SELECT COALESCE(require_apt_pass_on_open, TRUE)
+  INTO v_require_pass
+  FROM public.building_settings
+  WHERE id = 1;
+
+  IF COALESCE(v_require_pass, TRUE) THEN
+    SELECT passcode INTO v_expected FROM apartments WHERE apt_num = p_apt_num;
+    IF v_expected IS NULL OR v_expected <> trim(COALESCE(p_passcode, '')) THEN
+      RETURN json_build_object('ok', false, 'error', 'كلمة سر الشقة غير صحيحة');
+    END IF;
+  END IF;
+
+  INSERT INTO payments (month_id, apt_num, receipt_url)
+  VALUES (p_month_id, p_apt_num, NULLIF(trim(COALESCE(p_receipt_url, '')), ''))
+  ON CONFLICT (month_id, apt_num) DO UPDATE
+  SET receipt_url = EXCLUDED.receipt_url, paid_at = NOW();
+
+  RETURN json_build_object('ok', true);
+END;
+$function$;
