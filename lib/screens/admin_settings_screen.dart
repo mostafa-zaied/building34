@@ -7,6 +7,7 @@ import '../core/theme/app_spacing.dart';
 import '../core/theme/app_typography.dart';
 import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
+import '../models/building_models.dart';
 import '../widgets/common/app_card.dart';
 import '../widgets/dialogs/extra_charges_dialog.dart';
 import '../widgets/home/admin_edit_panel.dart';
@@ -21,21 +22,35 @@ class AdminSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<BuildingCubit, BuildingState>(
+    return BlocConsumer<BuildingCubit, BuildingState>(
+      listenWhen: (prev, curr) =>
+          prev.feedbackMessage != curr.feedbackMessage && curr.feedbackMessage != null,
+      listener: (context, state) {
+        if (state.feedbackMessage != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.feedbackMessage!),
+              backgroundColor: state.feedbackIsError ? AppColors.danger : AppColors.emerald,
+            ),
+          );
+          context.read<BuildingCubit>().clearFeedback();
+        }
+      },
       builder: (context, state) {
         final cubit = context.read<BuildingCubit>();
         final s = state.s;
         final isDark = state.isDarkMode;
         final isAr = state.localeCode == 'ar';
+        final currentMonth = state.currentMonth;
 
         if (!state.isAdminAuthenticated) {
           return Scaffold(
             appBar: AppBar(
-              title: Text(isAr ? 'الإعدادات' : 'Settings'),
+              title: Text(s.settingsShortTitle),
             ),
             body: Center(
               child: Text(
-                isAr ? 'هذه الصفحة متاحة للمدير فقط.' : 'Admin access only.',
+                s.adminOnlyPageMsg,
                 style: AppTypography.body,
               ),
             ),
@@ -50,7 +65,7 @@ class AdminSettingsScreen extends StatelessWidget {
             backgroundColor: AppColors.surface(isDark),
             elevation: 0,
             title: Text(
-              isAr ? 'إعدادات المدير (Settings)' : 'Admin Settings',
+              s.settingsTitle,
               style: AppTypography.headline.copyWith(
                 color: AppColors.textPrimary(isDark),
               ),
@@ -90,9 +105,7 @@ class AdminSettingsScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    isAr
-                                        ? 'طلب كلمة سر الشقة قبل فتح التفاصيل'
-                                        : 'Require Apartment Passcode Before Opening',
+                                    s.requirePassOnOpenTitle,
                                     style: AppTypography.headline.copyWith(
                                       fontSize: 15,
                                       color: AppColors.textPrimary(isDark),
@@ -100,9 +113,7 @@ class AdminSettingsScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
-                                    enabled
-                                        ? (isAr ? 'مُفعّل حالياً' : 'Currently Enabled')
-                                        : (isAr ? 'مُعطّل حالياً' : 'Currently Disabled'),
+                                    enabled ? s.statusEnabled : s.statusDisabled,
                                     style: AppTypography.caption.copyWith(
                                       color: enabled
                                           ? AppColors.emeraldText(isDark)
@@ -129,13 +140,7 @@ class AdminSettingsScreen extends StatelessWidget {
                             border: Border.all(color: AppColors.border(isDark)),
                           ),
                           child: Text(
-                            enabled
-                                ? (isAr
-                                    ? 'عند التفعيل: يُجبر الساكن على إدخال كلمة سر الشقة من الخارج أول مرة قبل رؤية تفاصيل شقته أو الدفع، ولا يمكنه فتح شقق أخرى.'
-                                    : 'When enabled: Residents must enter their apartment passcode from outside before viewing details or paying.')
-                                : (isAr
-                                    ? 'عند الإيقاف: تفتح تفاصيل أي شقة مباشرة بدون طلب كلمة سر من الخارج، ويتم إدخال كلمة السر داخل نافذة الدفع فقط.'
-                                    : 'When disabled: Apartment details open directly, and the passcode is entered inside the payment dialog.'),
+                            enabled ? s.requirePassOnOpenDescOn : s.requirePassOnOpenDescOff,
                             style: AppTypography.caption.copyWith(
                               color: AppColors.textSecondary(isDark),
                               height: 1.5,
@@ -154,13 +159,79 @@ class AdminSettingsScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(
-                          isAr ? 'إدارة العمارة والشهور' : 'Building & Month Management',
-                          style: AppTypography.headline.copyWith(
-                            fontSize: 15,
-                            color: AppColors.textPrimary(isDark),
-                          ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                s.buildingMonthMgmtTitle,
+                                style: AppTypography.headline.copyWith(
+                                  fontSize: 15,
+                                  color: AppColors.textPrimary(isDark),
+                                ),
+                              ),
+                            ),
+                            if (currentMonth != null)
+                              Container(
+                                padding: const EdgeInsetsDirectional.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary.withValues(alpha: 0.14),
+                                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                                  border: Border.all(
+                                    color: AppColors.primary.withValues(alpha: 0.35),
+                                  ),
+                                ),
+                                child: Text(
+                                  s.selectedMonthBadge(
+                                    localizedMonthName(currentMonth.monthNum, isAr),
+                                    currentMonth.monthNum,
+                                    currentMonth.yearNum,
+                                  ),
+                                  style: AppTypography.caption.copyWith(
+                                    color: AppColors.primaryText(isDark),
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
+                        if (state.months.length > 1) ...[
+                          const SizedBox(height: AppSpacing.sm),
+                          SizedBox(
+                            height: 32,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: state.months.length,
+                              separatorBuilder: (_, _) => const SizedBox(width: 6),
+                              itemBuilder: (context, i) {
+                                final m = state.months[i];
+                                final selected = i == state.selectedMonthIndex;
+                                return ChoiceChip(
+                                  label: Text('${m.monthNum}/${m.yearNum}'),
+                                  selected: selected,
+                                  onSelected: (_) => cubit.selectMonth(i),
+                                  visualDensity: VisualDensity.compact,
+                                  selectedColor: AppColors.primary.withValues(alpha: 0.2),
+                                  backgroundColor: AppColors.surface(isDark),
+                                  labelStyle: AppTypography.caption.copyWith(
+                                    fontSize: 11,
+                                    fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                                    color: selected
+                                        ? AppColors.primaryText(isDark)
+                                        : AppColors.textSecondary(isDark),
+                                  ),
+                                  side: BorderSide(
+                                    color: selected
+                                        ? AppColors.primary
+                                        : AppColors.border(isDark),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
                         const SizedBox(height: AppSpacing.md),
                         Row(
                           children: [
@@ -227,13 +298,19 @@ class AdminSettingsScreen extends StatelessWidget {
                                 label: s.addNextMonthBtn,
                                 icon: Icons.calendar_month_outlined,
                                 isDark: isDark,
-                                onTap: cubit.addNextMonth,
+                                onTap: () => _confirmAddNextMonth(
+                                  context,
+                                  cubit,
+                                  state,
+                                ),
                               ),
                             ),
                             const SizedBox(width: AppSpacing.sm),
                             Expanded(
                               child: AdminActionTile(
-                                label: s.removeMonthBtn,
+                                label: currentMonth != null
+                                    ? '${s.removeMonthBtn} (${currentMonth.monthNum}/${currentMonth.yearNum})'
+                                    : s.removeMonthBtn,
                                 icon: Icons.delete_outline_rounded,
                                 isDark: isDark,
                                 isDestructive: true,
@@ -258,6 +335,60 @@ class AdminSettingsScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> _confirmAddNextMonth(
+    BuildContext context,
+    BuildingCubit cubit,
+    BuildingState state,
+  ) async {
+    final isDark = state.isDarkMode;
+    final s = state.s;
+    final isAr = state.localeCode == 'ar';
+    final now = DateTime.now();
+    final last = state.months.isNotEmpty ? state.months.last : null;
+    final nextMonth = last == null
+        ? now.month
+        : (last.monthNum == 12 ? 1 : last.monthNum + 1);
+    final nextYear = last == null
+        ? now.year
+        : (last.monthNum == 12 ? last.yearNum + 1 : last.yearNum);
+
+    final nextName = localizedMonthName(nextMonth, isAr);
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.card(isDark),
+        title: Text(
+          s.addNextMonthConfirmTitle,
+          style: AppTypography.headline.copyWith(fontSize: 15),
+        ),
+        content: Text(
+          s.addNextMonthConfirmBody(nextName, nextMonth, nextYear),
+          style: AppTypography.body.copyWith(color: AppColors.textSecondary(isDark)),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(s.cancel),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryActionBg(isDark),
+              foregroundColor: AppColors.onPrimaryAction(isDark),
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              s.addNextMonthConfirmBtn(nextName, nextMonth, nextYear),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await cubit.addNextMonth();
+    }
   }
 
   Future<void> _confirmDeleteMonth(

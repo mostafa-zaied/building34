@@ -547,4 +547,129 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get catOther => '📌 Other Services';
+
+  @override
+  String get settingsBtn => 'Settings';
+
+  @override
+  String get settingsTitle => 'Admin Settings';
+
+  @override
+  String get settingsShortTitle => 'Settings';
+
+  @override
+  String get adminOnlyPageMsg => 'Admin access only.';
+
+  @override
+  String get requirePassOnOpenTitle =>
+      'Require Apartment Passcode Before Opening';
+
+  @override
+  String get statusEnabled => 'Currently Enabled';
+
+  @override
+  String get statusDisabled => 'Currently Disabled';
+
+  @override
+  String get requirePassOnOpenDescOn =>
+      'When enabled: Residents must enter their apartment passcode from outside before viewing details or paying.';
+
+  @override
+  String get requirePassOnOpenDescOff =>
+      'When disabled: Apartment details open directly, and the passcode is entered inside the payment dialog.';
+
+  @override
+  String get buildingMonthMgmtTitle => 'Building & Month Management';
+
+  @override
+  String selectedMonthBadge(String monthName, int monthNum, int yearNum) {
+    return 'Selected: $monthName ($monthNum/$yearNum)';
+  }
+
+  @override
+  String get addNextMonthConfirmTitle => 'Add Next Month?';
+
+  @override
+  String addNextMonthConfirmBody(String monthName, int monthNum, int yearNum) {
+    return 'Month $monthName ($monthNum/$yearNum) will be added. Do you want to continue?';
+  }
+
+  @override
+  String addNextMonthConfirmBtn(String monthName, int monthNum, int yearNum) {
+    return 'Add $monthName ($monthNum/$yearNum)';
+  }
+
+  @override
+  String monthAddedNamedToast(String monthName, int monthNum, int yearNum) {
+    return '✅ Added $monthName ($monthNum/$yearNum)';
+  }
+
+  @override
+  String get adminViewsTitle => 'Link Views (Admin Only)';
+
+  @override
+  String get refreshTooltip => 'Refresh';
+
+  @override
+  String get viewsStatsLoadingHint =>
+      'Tap refresh to load stats (ensure Supabase SQL is applied)';
+
+  @override
+  String get viewsTotalLabel => 'Total';
+
+  @override
+  String get viewsUniqueLabel => 'Unique';
+
+  @override
+  String get viewsTodayLabel => 'Today';
+
+  @override
+  String get viewsWeekLabel => '7 Days';
+
+  @override
+  String get viewsUpcomingOpensLabel => 'Opened Soon';
+
+  @override
+  String get viewsUpcomingVotesLabel => 'Interested 👍';
+
+  @override
+  String get navFeedback => 'Feedback';
+
+  @override
+  String get navFeedbackFull => 'Complaints & Suggestions';
+
+  @override
+  String get navServices => 'Services';
+
+  @override
+  String get navServicesFull => 'Services';
+
+  @override
+  String get soonBadge => 'Soon';
+
+  @override
+  String tabViewAllPosts(int count) {
+    return 'View Posts ($count)';
+  }
+
+  @override
+  String get tabAddPost => 'Add Post';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get filterComplaints => '📢 Complaints';
+
+  @override
+  String get filterSuggestions => '💡 Suggestions';
+
+  @override
+  String get postTypeLabel => 'Type';
+
+  @override
+  String get typeComplaint => '📢 Complaint';
+
+  @override
+  String get typeSuggestion => '💡 Suggestion';
 }

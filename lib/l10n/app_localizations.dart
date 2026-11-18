@@ -1075,6 +1075,228 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'📌 Other Services'**
   String get catOther;
+
+  /// No description provided for @settingsBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsBtn;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Settings'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsShortTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsShortTitle;
+
+  /// No description provided for @adminOnlyPageMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin access only.'**
+  String get adminOnlyPageMsg;
+
+  /// No description provided for @requirePassOnOpenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Require Apartment Passcode Before Opening'**
+  String get requirePassOnOpenTitle;
+
+  /// No description provided for @statusEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently Enabled'**
+  String get statusEnabled;
+
+  /// No description provided for @statusDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently Disabled'**
+  String get statusDisabled;
+
+  /// No description provided for @requirePassOnOpenDescOn.
+  ///
+  /// In en, this message translates to:
+  /// **'When enabled: Residents must enter their apartment passcode from outside before viewing details or paying.'**
+  String get requirePassOnOpenDescOn;
+
+  /// No description provided for @requirePassOnOpenDescOff.
+  ///
+  /// In en, this message translates to:
+  /// **'When disabled: Apartment details open directly, and the passcode is entered inside the payment dialog.'**
+  String get requirePassOnOpenDescOff;
+
+  /// No description provided for @buildingMonthMgmtTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Building & Month Management'**
+  String get buildingMonthMgmtTitle;
+
+  /// No description provided for @selectedMonthBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected: {monthName} ({monthNum}/{yearNum})'**
+  String selectedMonthBadge(String monthName, int monthNum, int yearNum);
+
+  /// No description provided for @addNextMonthConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Next Month?'**
+  String get addNextMonthConfirmTitle;
+
+  /// No description provided for @addNextMonthConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Month {monthName} ({monthNum}/{yearNum}) will be added. Do you want to continue?'**
+  String addNextMonthConfirmBody(String monthName, int monthNum, int yearNum);
+
+  /// No description provided for @addNextMonthConfirmBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Add {monthName} ({monthNum}/{yearNum})'**
+  String addNextMonthConfirmBtn(String monthName, int monthNum, int yearNum);
+
+  /// No description provided for @monthAddedNamedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Added {monthName} ({monthNum}/{yearNum})'**
+  String monthAddedNamedToast(String monthName, int monthNum, int yearNum);
+
+  /// No description provided for @adminViewsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Link Views (Admin Only)'**
+  String get adminViewsTitle;
+
+  /// No description provided for @refreshTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refreshTooltip;
+
+  /// No description provided for @viewsStatsLoadingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap refresh to load stats (ensure Supabase SQL is applied)'**
+  String get viewsStatsLoadingHint;
+
+  /// No description provided for @viewsTotalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get viewsTotalLabel;
+
+  /// No description provided for @viewsUniqueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Unique'**
+  String get viewsUniqueLabel;
+
+  /// No description provided for @viewsTodayLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get viewsTodayLabel;
+
+  /// No description provided for @viewsWeekLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'7 Days'**
+  String get viewsWeekLabel;
+
+  /// No description provided for @viewsUpcomingOpensLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Opened Soon'**
+  String get viewsUpcomingOpensLabel;
+
+  /// No description provided for @viewsUpcomingVotesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Interested 👍'**
+  String get viewsUpcomingVotesLabel;
+
+  /// No description provided for @navFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback'**
+  String get navFeedback;
+
+  /// No description provided for @navFeedbackFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaints & Suggestions'**
+  String get navFeedbackFull;
+
+  /// No description provided for @navServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Services'**
+  String get navServices;
+
+  /// No description provided for @navServicesFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Services'**
+  String get navServicesFull;
+
+  /// No description provided for @soonBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Soon'**
+  String get soonBadge;
+
+  /// No description provided for @tabViewAllPosts.
+  ///
+  /// In en, this message translates to:
+  /// **'View Posts ({count})'**
+  String tabViewAllPosts(int count);
+
+  /// No description provided for @tabAddPost.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Post'**
+  String get tabAddPost;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @filterComplaints.
+  ///
+  /// In en, this message translates to:
+  /// **'📢 Complaints'**
+  String get filterComplaints;
+
+  /// No description provided for @filterSuggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'💡 Suggestions'**
+  String get filterSuggestions;
+
+  /// No description provided for @postTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get postTypeLabel;
+
+  /// No description provided for @typeComplaint.
+  ///
+  /// In en, this message translates to:
+  /// **'📢 Complaint'**
+  String get typeComplaint;
+
+  /// No description provided for @typeSuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'💡 Suggestion'**
+  String get typeSuggestion;
 }
 
 class _AppLocalizationsDelegate

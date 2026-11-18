@@ -146,9 +146,7 @@ class MainShell extends StatelessWidget {
                           NavigationRailDestination(
                             icon: const Icon(Icons.forum_outlined),
                             selectedIcon: const Icon(Icons.forum_rounded),
-                            label: Text(
-                              state.localeCode == 'ar' ? 'الشكاوى والمقترحات' : 'Feedback',
-                            ),
+                            label: Text(s.navFeedbackFull),
                           ),
                           NavigationRailDestination(
                             icon: const Icon(Icons.explore_outlined),
@@ -156,7 +154,7 @@ class MainShell extends StatelessWidget {
                             label: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(state.localeCode == 'ar' ? 'خدمات المنطقة' : 'Services'),
+                                Text(s.navServicesFull),
                                 const SizedBox(width: 6),
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -165,7 +163,7 @@ class MainShell extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(AppRadius.pill),
                                   ),
                                   child: Text(
-                                    state.localeCode == 'ar' ? 'قريباً' : 'Soon',
+                                    s.soonBadge,
                                     style: const TextStyle(
                                       fontSize: 9,
                                       fontWeight: FontWeight.w800,
@@ -227,13 +225,13 @@ class MainShell extends StatelessWidget {
                   _NavItemData(
                     icon: Icons.forum_outlined,
                     selectedIcon: Icons.forum_rounded,
-                    label: state.localeCode == 'ar' ? 'شكاوى ومقترحات' : 'Feedback',
+                    label: s.navFeedback,
                   ),
                   _NavItemData(
                     icon: Icons.explore_outlined,
                     selectedIcon: Icons.explore_rounded,
-                    label: state.localeCode == 'ar' ? 'خدمات' : 'Services',
-                    badge: state.localeCode == 'ar' ? 'قريباً' : 'Soon',
+                    label: s.navServices,
+                    badge: s.soonBadge,
                   ),
                 ],
               ),

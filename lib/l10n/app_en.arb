@@ -308,5 +308,71 @@
   "catLaundry": "🧺 Laundry",
   "catCars": "🚗 Car Services",
   "catStationery": "📚 Stationery & Print",
-  "catOther": "📌 Other Services"
+  "catOther": "📌 Other Services",
+  "settingsBtn": "Settings",
+  "settingsTitle": "Admin Settings",
+  "settingsShortTitle": "Settings",
+  "adminOnlyPageMsg": "Admin access only.",
+  "requirePassOnOpenTitle": "Require Apartment Passcode Before Opening",
+  "statusEnabled": "Currently Enabled",
+  "statusDisabled": "Currently Disabled",
+  "requirePassOnOpenDescOn": "When enabled: Residents must enter their apartment passcode from outside before viewing details or paying.",
+  "requirePassOnOpenDescOff": "When disabled: Apartment details open directly, and the passcode is entered inside the payment dialog.",
+  "buildingMonthMgmtTitle": "Building & Month Management",
+  "selectedMonthBadge": "Selected: {monthName} ({monthNum}/{yearNum})",
+  "@selectedMonthBadge": {
+    "placeholders": {
+      "monthName": { "type": "String" },
+      "monthNum": { "type": "int" },
+      "yearNum": { "type": "int" }
+    }
+  },
+  "addNextMonthConfirmTitle": "Add Next Month?",
+  "addNextMonthConfirmBody": "Month {monthName} ({monthNum}/{yearNum}) will be added. Do you want to continue?",
+  "@addNextMonthConfirmBody": {
+    "placeholders": {
+      "monthName": { "type": "String" },
+      "monthNum": { "type": "int" },
+      "yearNum": { "type": "int" }
+    }
+  },
+  "addNextMonthConfirmBtn": "Add {monthName} ({monthNum}/{yearNum})",
+  "@addNextMonthConfirmBtn": {
+    "placeholders": {
+      "monthName": { "type": "String" },
+      "monthNum": { "type": "int" },
+      "yearNum": { "type": "int" }
+    }
+  },
+  "monthAddedNamedToast": "✅ Added {monthName} ({monthNum}/{yearNum})",
+  "@monthAddedNamedToast": {
+    "placeholders": {
+      "monthName": { "type": "String" },
+      "monthNum": { "type": "int" },
+      "yearNum": { "type": "int" }
+    }
+  },
+  "adminViewsTitle": "Link Views (Admin Only)",
+  "refreshTooltip": "Refresh",
+  "viewsStatsLoadingHint": "Tap refresh to load stats (ensure Supabase SQL is applied)",
+  "viewsTotalLabel": "Total",
+  "viewsUniqueLabel": "Unique",
+  "viewsTodayLabel": "Today",
+  "viewsWeekLabel": "7 Days",
+  "viewsUpcomingOpensLabel": "Opened Soon",
+  "viewsUpcomingVotesLabel": "Interested 👍",
+  "navFeedback": "Feedback",
+  "navFeedbackFull": "Complaints & Suggestions",
+  "navServices": "Services",
+  "navServicesFull": "Services",
+  "soonBadge": "Soon",
+  "tabViewAllPosts": "View Posts ({count})",
+  "@tabViewAllPosts": { "placeholders": { "count": { "type": "int" } } },
+  "tabAddPost": "Add Post",
+  "filterAll": "All",
+  "filterComplaints": "📢 Complaints",
+  "filterSuggestions": "💡 Suggestions",
+  "postTypeLabel": "Type",
+  "typeComplaint": "📢 Complaint",
+  "typeSuggestion": "💡 Suggestion"
 }

@@ -370,8 +370,16 @@ class BuildingCubit extends Cubit<BuildingState> {
       return;
     }
     await loadData(preserveMonthIndex: state.months.length);
+    final added = state.currentMonth;
+    final msg = added != null
+        ? state.s.monthAddedNamedToast(
+            localizedMonthName(added.monthNum, state.localeCode == 'ar'),
+            added.monthNum,
+            added.yearNum,
+          )
+        : state.s.monthAddedToast;
     emit(state.copyWith(
-      feedbackMessage: () => state.s.monthAddedToast,
+      feedbackMessage: () => msg,
       feedbackIsError: false,
     ));
   }

@@ -239,3 +239,36 @@ class PageViewStats {
     );
   }
 }
+
+String localizedMonthName(int monthNum, bool isAr) {
+  const arMonths = [
+    'يناير',
+    'فبراير',
+    'مارس',
+    'أبريل',
+    'مايو',
+    'يونيو',
+    'يوليو',
+    'أغسطس',
+    'سبتمبر',
+    'أكتوبر',
+    'نوفمبر',
+    'ديسمبر',
+  ];
+  const enMonths = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+  if (monthNum < 1 || monthNum > 12) return '$monthNum';
+  return isAr ? arMonths[monthNum - 1] : enMonths[monthNum - 1];
+}

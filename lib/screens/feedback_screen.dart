@@ -83,7 +83,6 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
         final s = state.s;
         final isDark = state.isDarkMode;
 
-        final isAr = state.localeCode == 'ar';
         final isComplaint = _selectedType == 'complaint';
         final accent = isComplaint ? AppColors.amber : AppColors.emerald;
         final aptsCount = state.currentMonth?.aptsCount ?? 13;
@@ -118,7 +117,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
                             const SizedBox(width: AppSpacing.xs),
                             Expanded(
                               child: Text(
-                                isAr ? 'الشكاوى والمقترحات' : 'Complaints & Suggestions',
+                                s.navFeedbackFull,
                                 style: AppTypography.headline,
                               ),
                             ),
@@ -145,12 +144,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
                             labelStyle: AppTypography.label.copyWith(fontWeight: FontWeight.w700),
                             tabs: [
                               Tab(
-                                text: isAr
-                                    ? 'عرض المشاركات (${allPosts.length})'
-                                    : 'View Posts (${allPosts.length})',
+                                text: s.tabViewAllPosts(allPosts.length),
                               ),
                               Tab(
-                                text: isAr ? 'إضافة شكوى / مقترح' : 'Add Post',
+                                text: s.tabAddPost,
                               ),
                             ],
                           ),
@@ -247,17 +244,17 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
           runSpacing: AppSpacing.xs,
           children: [
             _filterChip(
-              label: state.localeCode == 'ar' ? 'الكل' : 'All',
+              label: s.filterAll,
               value: 'all',
               isDark: isDark,
             ),
             _filterChip(
-              label: state.localeCode == 'ar' ? '📢 الشكاوى' : '📢 Complaints',
+              label: s.filterComplaints,
               value: 'complaint',
               isDark: isDark,
             ),
             _filterChip(
-              label: state.localeCode == 'ar' ? '💡 المقترحات' : '💡 Suggestions',
+              label: s.filterSuggestions,
               value: 'improvement',
               isDark: isDark,
             ),
@@ -273,9 +270,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
               final isAnon = post.authorLabel == null || post.authorLabel!.trim().isEmpty;
               final postIsComplaint = post.type == 'complaint';
               final postAccent = postIsComplaint ? AppColors.amber : AppColors.emerald;
-              final typeLabel = state.localeCode == 'ar'
-                  ? (postIsComplaint ? '📢 شكوى' : '💡 مقترح')
-                  : (postIsComplaint ? '📢 Complaint' : '💡 Suggestion');
+              final typeLabel = postIsComplaint ? s.typeComplaint : s.typeSuggestion;
               return AppCard(
                 padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
                 child: Column(
@@ -560,7 +555,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              state.localeCode == 'ar' ? 'النوع' : 'Type',
+              s.postTypeLabel,
               style: AppTypography.label.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: AppSpacing.xs),
@@ -568,7 +563,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
               children: [
                 Expanded(
                   child: _typeToggleButton(
-                    label: state.localeCode == 'ar' ? '📢 شكوى' : '📢 Complaint',
+                    label: s.typeComplaint,
                     selected: _selectedType == 'complaint',
                     color: AppColors.amber,
                     isDark: isDark,
@@ -578,7 +573,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: _typeToggleButton(
-                    label: state.localeCode == 'ar' ? '💡 مقترح' : '💡 Suggestion',
+                    label: s.typeSuggestion,
                     selected: _selectedType == 'improvement',
                     color: AppColors.emerald,
                     isDark: isDark,

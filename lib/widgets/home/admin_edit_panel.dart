@@ -65,7 +65,7 @@ class AdminEditPanel extends StatelessWidget {
 
         const SizedBox(height: AppSpacing.md),
         AdminActionTile(
-          label: state.localeCode == 'ar' ? 'الإعدادات (Settings)' : 'Settings',
+          label: s.settingsBtn,
           icon: Icons.settings_outlined,
           isDark: isDark,
           onTap: () {
@@ -82,7 +82,7 @@ class AdminEditPanel extends StatelessWidget {
         const SizedBox(height: AppSpacing.md),
         _AdminViewsCard(
           isDark: isDark,
-          isAr: state.localeCode == 'ar',
+          s: s,
           stats: state.pageViewStats,
           onRefresh: cubit.refreshPageViewStats,
         ),
@@ -181,20 +181,20 @@ class AdminActionTile extends StatelessWidget {
 
 class _AdminViewsCard extends StatelessWidget {
   final bool isDark;
-  final bool isAr;
+  final dynamic s;
   final PageViewStats? stats;
   final VoidCallback onRefresh;
 
   const _AdminViewsCard({
     required this.isDark,
-    required this.isAr,
+    required this.s,
     required this.stats,
     required this.onRefresh,
   });
 
   @override
   Widget build(BuildContext context) {
-    final s = stats;
+    final st = stats;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
@@ -215,7 +215,7 @@ class _AdminViewsCard extends StatelessWidget {
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  isAr ? 'إحصائيات الزيارات (للمدير فقط)' : 'Link Views (Admin Only)',
+                  s.adminViewsTitle,
                   style: AppTypography.label.copyWith(
                     color: AppColors.textPrimary(isDark),
                     fontWeight: FontWeight.w700,
@@ -224,7 +224,7 @@ class _AdminViewsCard extends StatelessWidget {
               ),
               IconButton(
                 onPressed: onRefresh,
-                tooltip: isAr ? 'تحديث' : 'Refresh',
+                tooltip: s.refreshTooltip,
                 visualDensity: VisualDensity.compact,
                 icon: Icon(
                   Icons.refresh_rounded,
@@ -235,11 +235,9 @@ class _AdminViewsCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.xs),
-          if (s == null)
+          if (st == null)
             Text(
-              isAr
-                  ? 'اضغط تحديث لعرض الإحصائيات (تأكد من تشغيل SQL في Supabase)'
-                  : 'Tap refresh to load stats (ensure Supabase SQL is applied)',
+              s.viewsStatsLoadingHint,
               style: AppTypography.caption.copyWith(
                 color: AppColors.textSecondary(isDark),
               ),
@@ -250,23 +248,23 @@ class _AdminViewsCard extends StatelessWidget {
                 Row(
                   children: [
                     _statPill(
-                      label: isAr ? 'إجمالي الفتح' : 'Total',
-                      value: '${s.totalViews}',
+                      label: s.viewsTotalLabel,
+                      value: '${st.totalViews}',
                     ),
                     const SizedBox(width: AppSpacing.xs),
                     _statPill(
-                      label: isAr ? 'زوار فريدون' : 'Unique',
-                      value: '${s.uniqueVisitors}',
+                      label: s.viewsUniqueLabel,
+                      value: '${st.uniqueVisitors}',
                     ),
                     const SizedBox(width: AppSpacing.xs),
                     _statPill(
-                      label: isAr ? 'اليوم' : 'Today',
-                      value: '${s.todayViews}',
+                      label: s.viewsTodayLabel,
+                      value: '${st.todayViews}',
                     ),
                     const SizedBox(width: AppSpacing.xs),
                     _statPill(
-                      label: isAr ? '7 أيام' : '7 Days',
-                      value: '${s.weekViews}',
+                      label: s.viewsWeekLabel,
+                      value: '${st.weekViews}',
                     ),
                   ],
                 ),
@@ -274,13 +272,13 @@ class _AdminViewsCard extends StatelessWidget {
                 Row(
                   children: [
                     _statPill(
-                      label: isAr ? 'فتحوا تبويب "قريباً"' : 'Opened Soon',
-                      value: '${s.upcomingOpens}',
+                      label: s.viewsUpcomingOpensLabel,
+                      value: '${st.upcomingOpens}',
                     ),
                     const SizedBox(width: AppSpacing.xs),
                     _statPill(
-                      label: isAr ? 'مهتمون بخدمات المنطقة 👍' : 'Interested 👍',
-                      value: '${s.upcomingVotes}',
+                      label: s.viewsUpcomingVotesLabel,
+                      value: '${st.upcomingVotes}',
                     ),
                   ],
                 ),

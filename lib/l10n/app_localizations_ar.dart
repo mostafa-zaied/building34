@@ -543,4 +543,128 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get catOther => '📌 خدمات أخرى';
+
+  @override
+  String get settingsBtn => 'الإعدادات (Settings)';
+
+  @override
+  String get settingsTitle => 'إعدادات المدير (Settings)';
+
+  @override
+  String get settingsShortTitle => 'الإعدادات';
+
+  @override
+  String get adminOnlyPageMsg => 'هذه الصفحة متاحة للمدير فقط.';
+
+  @override
+  String get requirePassOnOpenTitle => 'طلب كلمة سر الشقة قبل فتح التفاصيل';
+
+  @override
+  String get statusEnabled => 'مُفعّل حالياً';
+
+  @override
+  String get statusDisabled => 'مُعطّل حالياً';
+
+  @override
+  String get requirePassOnOpenDescOn =>
+      'عند التفعيل: يُجبر الساكن على إدخال كلمة سر الشقة من الخارج أول مرة قبل رؤية تفاصيل شقته أو الدفع، ولا يمكنه فتح شقق أخرى.';
+
+  @override
+  String get requirePassOnOpenDescOff =>
+      'عند الإيقاف: تفتح تفاصيل أي شقة مباشرة بدون طلب كلمة سر من الخارج، ويتم إدخال كلمة السر داخل نافذة الدفع فقط.';
+
+  @override
+  String get buildingMonthMgmtTitle => 'إدارة العمارة والشهور';
+
+  @override
+  String selectedMonthBadge(String monthName, int monthNum, int yearNum) {
+    return 'المحدد: $monthName ($monthNum/$yearNum)';
+  }
+
+  @override
+  String get addNextMonthConfirmTitle => 'إضافة شهر جديد؟';
+
+  @override
+  String addNextMonthConfirmBody(String monthName, int monthNum, int yearNum) {
+    return 'سيتم إضافة شهر $monthName ($monthNum / $yearNum) إلى قائمة الشهور. هل تريد المتابعة؟';
+  }
+
+  @override
+  String addNextMonthConfirmBtn(String monthName, int monthNum, int yearNum) {
+    return 'إضافة $monthName ($monthNum/$yearNum)';
+  }
+
+  @override
+  String monthAddedNamedToast(String monthName, int monthNum, int yearNum) {
+    return '✅ تم إضافة شهر $monthName ($monthNum/$yearNum) بنجاح';
+  }
+
+  @override
+  String get adminViewsTitle => 'إحصائيات الزيارات (للمدير فقط)';
+
+  @override
+  String get refreshTooltip => 'تحديث';
+
+  @override
+  String get viewsStatsLoadingHint =>
+      'اضغط تحديث لعرض الإحصائيات (تأكد من تشغيل SQL في Supabase)';
+
+  @override
+  String get viewsTotalLabel => 'إجمالي الفتح';
+
+  @override
+  String get viewsUniqueLabel => 'زوار فريدون';
+
+  @override
+  String get viewsTodayLabel => 'اليوم';
+
+  @override
+  String get viewsWeekLabel => '7 أيام';
+
+  @override
+  String get viewsUpcomingOpensLabel => 'فتحوا تبويب \"قريباً\"';
+
+  @override
+  String get viewsUpcomingVotesLabel => 'مهتمون بخدمات المنطقة 👍';
+
+  @override
+  String get navFeedback => 'شكاوى ومقترحات';
+
+  @override
+  String get navFeedbackFull => 'الشكاوى والمقترحات';
+
+  @override
+  String get navServices => 'خدمات';
+
+  @override
+  String get navServicesFull => 'خدمات المنطقة';
+
+  @override
+  String get soonBadge => 'قريباً';
+
+  @override
+  String tabViewAllPosts(int count) {
+    return 'عرض المشاركات ($count)';
+  }
+
+  @override
+  String get tabAddPost => 'إضافة شكوى / مقترح';
+
+  @override
+  String get filterAll => 'الكل';
+
+  @override
+  String get filterComplaints => '📢 الشكاوى';
+
+  @override
+  String get filterSuggestions => '💡 المقترحات';
+
+  @override
+  String get postTypeLabel => 'النوع';
+
+  @override
+  String get typeComplaint => '📢 شكوى';
+
+  @override
+  String get typeSuggestion => '💡 مقترح';
 }
