@@ -667,3 +667,36 @@ BEGIN
   RETURN jsonb_build_object('ok', true);
 END;
 $$;
+
+
+-- 14. Allow empty passcode in admin_update_apartment so Admin can reset individual apartments
+CREATE OR REPLACE FUNCTION public.admin_update_apartment(
+  p_admin_pass text,
+  p_apt_num integer,
+  p_display_name text,
+  p_passcode text
+)
+RETURNS json
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $function$
+DECLARE
+  v_admin_pass TEXT;
+  v_clean_pass TEXT;
+BEGIN
+  SELECT admin_password INTO v_admin_pass FROM building_settings WHERE id = 1;
+  IF v_admin_pass <> trim(p_admin_pass) THEN
+    RETURN json_build_object('ok', false, 'error', 'كلمة سر المسؤول غير صحيحة');
+  END IF;
+
+  v_clean_pass := trim(COALESCE(p_passcode, ''));
+
+  INSERT INTO apartments (apt_num, display_name, passcode)
+  VALUES (p_apt_num, NULLIF(trim(COALESCE(p_display_name, '')), ''), v_clean_pass)
+  ON CONFLICT (apt_num) DO UPDATE
+  SET display_name = NULLIF(trim(COALESCE(p_display_name, '')), ''),
+      passcode = v_clean_pass;
+
+  RETURN json_build_object('ok', true);
+END;
+$function$;
