@@ -99,10 +99,15 @@
           });
         }
 
+        function registerFcmSw() {
+          const swUrl = new URL('firebase-messaging-sw.js', document.baseURI).href;
+          const swScope = new URL('firebase-cloud-messaging-push-scope', document.baseURI).pathname;
+          return navigator.serviceWorker.register(swUrl, { scope: swScope });
+        }
+
         // Auto-bind foreground listener on load if already granted
         if (typeof Notification !== 'undefined' && Notification.permission === 'granted' && 'serviceWorker' in navigator) {
-          const swUrl = new URL('firebase-messaging-sw.js', document.baseURI).href;
-          navigator.serviceWorker.register(swUrl).then(bindForegroundListener).catch(() => {});
+          registerFcmSw().then(bindForegroundListener).catch(() => {});
         }
 
         window.mabnaRequestPushToken = async function (silentOnly) {
@@ -117,13 +122,9 @@
             }
             if (perm !== 'granted') return '';
 
-            const swUrl = new URL('firebase-messaging-sw.js', document.baseURI).href;
-            const reg = await navigator.serviceWorker.register(swUrl);
+            const reg = await registerFcmSw();
             if (!reg.active) {
-              await Promise.race([
-                navigator.serviceWorker.ready,
-                new Promise((resolve) => setTimeout(resolve, 4000))
-              ]);
+              await new Promise((resolve) => setTimeout(resolve, 600));
             }
             bindForegroundListener(reg);
             const messaging = firebase.messaging();
