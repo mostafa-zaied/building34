@@ -48,6 +48,100 @@
 
   <title>MABNA CARE — مبنى كير</title>
   <link rel="manifest" href="manifest.json">
+
+  <!-- Firebase Messaging (Compat SDK for lightweight Web Push) -->
+  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-messaging-compat.js"></script>
+  <script>
+    (function () {
+      try {
+        if (typeof firebase === 'undefined') return;
+        const firebaseConfig = {
+          apiKey: "AIzaSyByMxwr0zs8X_YbnVcAjWOAGHMyqYR1M3w",
+          authDomain: "mabna-care.firebaseapp.com",
+          projectId: "mabna-care",
+          storageBucket: "mabna-care.firebasestorage.app",
+          messagingSenderId: "826365542912",
+          appId: "1:826365542912:web:d2ecd5645fcf29cf820ee5",
+          measurementId: "G-RE2XWQB14T"
+        };
+        if (!firebase.apps.length) {
+          firebase.initializeApp(firebaseConfig);
+        }
+        const VAPID_KEY = "BHJPisbQ33JIcNhSCJDsN_ci9ZvCSfC87hfdcJQTNrC0-h78dRsuyszzVNk1GfcztAE9SqELRc9N5wlgu0L9JHg";
+
+        window.mabnaGetPushPermission = function () {
+          if (typeof Notification === 'undefined' || !('serviceWorker' in navigator)) {
+            return 'unsupported';
+          }
+          return Notification.permission || 'default';
+        };
+
+        let _onMessageBound = false;
+        function bindForegroundListener(reg) {
+          if (_onMessageBound) return;
+          _onMessageBound = true;
+          const messaging = firebase.messaging();
+          messaging.onMessage((payload) => {
+            const title = payload?.notification?.title || 'MABNA CARE';
+            const body = payload?.notification?.body || '';
+            const icon = new URL('icons/Icon-192.png', document.baseURI).href;
+            if (Notification.permission === 'granted') {
+              if (reg && reg.showNotification) {
+                reg.showNotification(title, { body, icon, badge: icon });
+              } else {
+                new Notification(title, { body, icon });
+              }
+            }
+          });
+        }
+
+        // Auto-bind foreground listener on load if already granted
+        if (typeof Notification !== 'undefined' && Notification.permission === 'granted' && 'serviceWorker' in navigator) {
+          const swUrl = new URL('firebase-messaging-sw.js', document.baseURI).href;
+          navigator.serviceWorker.register(swUrl).then(bindForegroundListener).catch(() => {});
+        }
+
+        window.mabnaRequestPushToken = async function (silentOnly) {
+          try {
+            if (typeof Notification === 'undefined' || !('serviceWorker' in navigator)) {
+              return '';
+            }
+            let perm = Notification.permission;
+            if (silentOnly && perm !== 'granted') return '';
+            if (perm !== 'granted') {
+              perm = await Notification.requestPermission();
+            }
+            if (perm !== 'granted') return '';
+
+            const swUrl = new URL('firebase-messaging-sw.js', document.baseURI).href;
+            const reg = await navigator.serviceWorker.register(swUrl);
+            if (!reg.active) {
+              await Promise.race([
+                navigator.serviceWorker.ready,
+                new Promise((resolve) => setTimeout(resolve, 4000))
+              ]);
+            }
+            bindForegroundListener(reg);
+            const messaging = firebase.messaging();
+            const token = await Promise.race([
+              messaging.getToken({
+                vapidKey: VAPID_KEY,
+                serviceWorkerRegistration: reg
+              }),
+              new Promise((resolve) => setTimeout(() => resolve(''), 8000))
+            ]);
+            return token || '';
+          } catch (e) {
+            console.warn('MABNA Push error:', e);
+            return '';
+          }
+        };
+      } catch (e) {
+        console.warn('Firebase init skipped:', e);
+      }
+    })();
+  </script>
 </head>
 <body>
   <!--

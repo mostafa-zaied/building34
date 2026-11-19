@@ -892,10 +892,10 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get navAnalytics => 'لوحة التحليلات';
+  String get navAnalytics => 'التحليلات';
 
   @override
-  String get analyticsTitle => 'لوحة الشفافية والتحليلات';
+  String get analyticsTitle => 'التحليلات';
 
   @override
   String get analyticsAvgShare => 'متوسط الشقة';
@@ -955,4 +955,106 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get analyticsNoData => 'لا توجد بيانات شهور كافية للتحليل بعد.';
+
+  @override
+  String get pushCardTitle => 'إرسال إشعار فوري للسكان';
+
+  @override
+  String get pushCardSubtitle => 'أرسل تنبيه مباشر لكل السكان المسجلين من هنا.';
+
+  @override
+  String get pushTitleLabel => 'عنوان الإشعار';
+
+  @override
+  String get pushTitleHint => 'مثال: تذكير بمصاريف الشهر أو صيانة الأسانسير';
+
+  @override
+  String get pushBodyLabel => 'نص الإشعار';
+
+  @override
+  String get pushBodyHint => 'اكتب تفاصيل الإشعار هنا...';
+
+  @override
+  String get pushSendAllBtn => 'إرسال لكل السكان 🚀';
+
+  @override
+  String get errPushFieldsRequired => 'برجاء كتابة عنوان الإشعار والنص أولاً.';
+
+  @override
+  String pushSentSuccessToast(int count) {
+    return 'تم إرسال الإشعار بنجاح إلى $count جهاز';
+  }
+
+  @override
+  String get pushNoDevicesToast => 'لا توجد أجهزة مفعّلة للإشعارات بعد';
+
+  @override
+  String get pushNotConfiguredToast =>
+      'تم تجهيز الإشعارات — يتبقى فقط إضافة مفتاح Firebase في Supabase';
+
+  @override
+  String get pushSendFailedToast => 'تعذر إرسال الإشعار حالياً';
+
+  @override
+  String get pushAutoAnnouncementTitle => '📢 إعلان هام من إدارة العمارة';
+
+  @override
+  String get pushAutoNewMonthTitle => '🗓️ نزول مصاريف الشهر الجديد';
+
+  @override
+  String pushAutoNewMonthBody(String month) {
+    return 'تم إضافة مصاريف $month — ادخل على MABNA CARE لمعرفة نصيب شقتك.';
+  }
+
+  @override
+  String get pushAutoPaymentTitle => '🧾 تم تسجيل دفع جديد';
+
+  @override
+  String pushAutoPaymentBody(String apt) {
+    return '$apt رفعت إيصال سداد مصاريف الشهر.';
+  }
+
+  @override
+  String get pushAutoFeedbackTitle => '💬 مشاركة جديدة من السكان';
+
+  @override
+  String get drawerNotificationsLabel => 'الإشعارات';
+
+  @override
+  String get pushEnabledBadge => 'مُفعّلة';
+
+  @override
+  String get pushEnableAction => 'تفعيل';
+
+  @override
+  String get pushEnabledToast => '🔔 تم تفعيل الإشعارات على جهازك بنجاح';
+
+  @override
+  String get pushBlockedToast =>
+      'تعذر تفعيل الإشعارات (تأكد من السماح للإشعارات من إعدادات المتصفح أو إضافة التطبيق للشاشة الرئيسية في iPhone)';
+
+  @override
+  String get pushAudienceAdminOnly => 'للمدير فقط (تجربة)';
+
+  @override
+  String get pushAudienceAll => 'لكل السكان';
+
+  @override
+  String get pushSendAdminTestBtn => 'إرسال تجربة للمدير 🛡️';
+
+  @override
+  String get offlineBannerMsg => 'لا يوجد اتصال بالإنترنت حالياً';
+
+  @override
+  String get onlineRestoredToast => 'عاد الاتصال بالإنترنت بنجاح';
+
+  @override
+  String get noNetworkTitle => 'تعذر الاتصال بالإنترنت';
+
+  @override
+  String get noNetworkSubtitle =>
+      'تأكد من اتصالك بالإنترنت ثم اضغط إعادة المحاولة.';
+
+  @override
+  String get retryBtn => 'إعادة المحاولة';
 }

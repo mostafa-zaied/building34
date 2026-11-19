@@ -12,6 +12,7 @@ import '../cubit/building_state.dart';
 import '../widgets/dialogs/admin_login_dialog.dart';
 import '../widgets/dialogs/apartment_payment_dialog.dart';
 import '../widgets/dialogs/manage_apartments_dialog.dart';
+import '../widgets/common/app_button.dart';
 import '../widgets/common/copyright_footer.dart';
 import '../widgets/home/apartments_grid.dart';
 import '../widgets/home/bill_summary_card.dart';
@@ -116,8 +117,61 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
         final m = state.currentMonth;
         final s = state.s;
 
-        if (state.loading || m == null) {
+        if (state.loading) {
           return const Center(child: CircularProgressIndicator());
+        }
+
+        if (m == null) {
+          final isDark = state.isDarkMode;
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 340),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 68,
+                      height: 68,
+                      decoration: BoxDecoration(
+                        color: AppColors.danger.withValues(alpha: 0.14),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.wifi_off_rounded,
+                        size: 32,
+                        color: AppColors.dangerText(isDark),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    Text(
+                      s.noNetworkTitle,
+                      textAlign: TextAlign.center,
+                      style: AppTypography.headline.copyWith(
+                        fontSize: 17,
+                        color: AppColors.textPrimary(isDark),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      s.noNetworkSubtitle,
+                      textAlign: TextAlign.center,
+                      style: AppTypography.body.copyWith(
+                        color: AppColors.textSecondary(isDark),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    AppPrimaryButton(
+                      label: s.retryBtn,
+                      icon: Icons.refresh_rounded,
+                      onPressed: () => cubit.loadData(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
         }
 
         final billCard = BillSummaryCard(

@@ -10,6 +10,8 @@ import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
 import '../widgets/common/app_side_menu.dart';
 import '../widgets/common/busy_overlay.dart';
+import '../widgets/common/desktop_sidebar.dart';
+import '../widgets/common/network_banner.dart';
 import 'analytics_screen.dart';
 import 'contacts_screen.dart';
 import 'emergency_screen.dart';
@@ -110,7 +112,12 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
 
         return AnnotatedRegion<SystemUiOverlayStyle>(
           value: overlayStyle,
-          child: BusyOverlay(
+          child: NetworkStatusWrapper(
+            s: s,
+            onReconnect: () => cubit.loadData(
+              preserveMonthIndex: state.months.isNotEmpty ? state.selectedMonthIndex : null,
+            ),
+            child: BusyOverlay(
             busy: state.busy,
             isDark: isDark,
             child: LayoutBuilder(
@@ -125,169 +132,29 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                     decoration: bgDecoration,
                     child: SafeArea(
                       child: Row(
-                    children: [
-                      NavigationRail(
-                        selectedIndex: state.selectedNavIndex,
-                        onDestinationSelected: cubit.selectNav,
-                        extended: isExtended,
-                        minExtendedWidth: 215,
-                        backgroundColor: AppColors.surface(isDark),
-                        indicatorColor: AppColors.primary.withValues(alpha: 0.16),
-                        selectedIconTheme: IconThemeData(color: AppColors.primaryText(isDark)),
-                        unselectedIconTheme: IconThemeData(color: AppColors.textSecondary(isDark)),
-                        selectedLabelTextStyle: AppTypography.label.copyWith(
-                          color: AppColors.primaryText(isDark),
-                          fontWeight: FontWeight.w700,
-                        ),
-                        unselectedLabelTextStyle: AppTypography.label.copyWith(
-                          color: AppColors.textSecondary(isDark),
-                        ),
-                        leading: Padding(
-                          padding: const EdgeInsetsDirectional.symmetric(
-                            vertical: AppSpacing.lg,
-                            horizontal: AppSpacing.md,
+                        children: [
+                          DesktopSidebar(
+                            cubit: cubit,
+                            state: state,
+                            extended: isExtended,
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                padding: const EdgeInsetsDirectional.all(AppSpacing.sm),
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [AppColors.primary, AppColors.primaryLight],
-                                    begin: AlignmentDirectional.topStart,
-                                    end: AlignmentDirectional.bottomEnd,
-                                  ),
-                                  borderRadius: BorderRadius.circular(AppRadius.md),
-                                ),
-                                child: const Icon(
-                                  Icons.apartment_rounded,
-                                  size: 20,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              if (isExtended) ...[
-                                const SizedBox(width: AppSpacing.sm),
-                                Text(
-                                  s.appTitle,
-                                  style: AppTypography.title.copyWith(fontWeight: FontWeight.w800),
-                                ),
-                              ],
-                            ],
+                          VerticalDivider(
+                            width: 1,
+                            thickness: 1,
+                            color: AppColors.border(isDark),
                           ),
-                        ),
-                        destinations: [
-                          NavigationRailDestination(
-                            icon: const Icon(Icons.account_balance_wallet_outlined),
-                            selectedIcon: const Icon(Icons.account_balance_wallet_rounded),
-                            label: Text(s.navExpenses),
-                          ),
-                          NavigationRailDestination(
-                            icon: const Icon(Icons.shield_outlined),
-                            selectedIcon: const Icon(Icons.shield_rounded),
-                            label: Text(s.navEmergency),
-                          ),
-                          NavigationRailDestination(
-                            icon: const Icon(Icons.contact_phone_outlined),
-                            selectedIcon: const Icon(Icons.contact_phone_rounded),
-                            label: Text(s.navContactsFull),
-                          ),
-                          NavigationRailDestination(
-                            icon: const Icon(Icons.forum_outlined),
-                            selectedIcon: const Icon(Icons.forum_rounded),
-                            label: Text(s.navFeedbackFull),
-                          ),
-                          NavigationRailDestination(
-                            icon: const Icon(Icons.explore_outlined),
-                            selectedIcon: const Icon(Icons.explore_rounded),
-                            label: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(s.navServicesFull),
-                                const SizedBox(width: 6),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.amber,
-                                    borderRadius: BorderRadius.circular(AppRadius.pill),
-                                  ),
-                                  child: Text(
-                                    s.soonBadge,
-                                    style: const TextStyle(
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                          Expanded(
+                            child: IndexedStack(
+                              index: state.selectedNavIndex,
+                              children: screens,
                             ),
                           ),
                         ],
-                        trailing: Expanded(
-                          child: Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: AppSpacing.lg),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    tooltip: s.navAnalytics,
-                                    icon: Icon(
-                                      Icons.bar_chart_rounded,
-                                      color: AppColors.primaryText(isDark),
-                                    ),
-                                    onPressed: () => Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => const AnalyticsScreen(),
-                                      ),
-                                    ),
-                                  ),
-                                  IconButton(
-                                    tooltip: s.drawerThemeLabel,
-                                    icon: Icon(
-                                      isDark
-                                          ? Icons.light_mode_rounded
-                                          : Icons.dark_mode_rounded,
-                                      size: 20,
-                                      color: isDark ? AppColors.amber : AppColors.primary,
-                                    ),
-                                    onPressed: cubit.toggleTheme,
-                                  ),
-                                  IconButton(
-                                    tooltip: s.languageTooltip,
-                                    icon: Text(
-                                      state.localeCode == 'en' ? '🇺🇸' : '🇪🇬',
-                                      style: const TextStyle(fontSize: 16),
-                                    ),
-                                    onPressed: () => cubit.setLocale(
-                                      state.localeCode == 'ar' ? 'en' : 'ar',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
                       ),
-                      VerticalDivider(
-                        width: 1,
-                        thickness: 1,
-                        color: AppColors.border(isDark),
-                      ),
-                      Expanded(
-                        child: IndexedStack(
-                          index: state.selectedNavIndex,
-                          children: screens,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
-              );
-            }
+                );
+              }
 
             final mobileBottomNavIndex = switch (state.selectedNavIndex) {
               0 => 0,
@@ -327,23 +194,25 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                   ),
                 ),
                 centerTitle: true,
-                actions: [
-                  IconButton(
-                    tooltip: s.navAnalytics,
-                    icon: Icon(
-                      Icons.bar_chart_rounded,
-                      color: AppColors.primaryText(isDark),
-                    ),
-                    onPressed: () {
-                      if (_isDrawerOpen) _closeDrawer();
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const AnalyticsScreen(),
+                actions: constraints.maxWidth >= 140
+                    ? [
+                        IconButton(
+                          tooltip: s.navAnalytics,
+                          icon: Icon(
+                            Icons.bar_chart_rounded,
+                            color: AppColors.primaryText(isDark),
+                          ),
+                          onPressed: () {
+                            if (_isDrawerOpen) _closeDrawer();
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const AnalyticsScreen(),
+                              ),
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
-                ],
+                      ]
+                    : null,
               ),
               body: Container(
                 decoration: bgDecoration,
@@ -393,11 +262,14 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                 final tiltY = -dirSign * 0.26 * t;
                 final radius = 28.0 * t;
 
-                final matrix = Matrix4.identity()
-                  ..setEntry(3, 2, 0.0012)
-                  ..translateByDouble(slideX, 0.0, 0.0, 1.0)
-                  ..scaleByDouble(scale, scale, 1.0, 1.0)
-                  ..rotateY(tiltY);
+                final matrix = Matrix4.identity();
+                if (isOpen) {
+                  matrix
+                    ..setEntry(3, 2, 0.0012)
+                    ..translateByDouble(slideX, 0.0, 0.0, 1.0)
+                    ..scaleByDouble(scale, scale, 1.0, 1.0)
+                    ..rotateY(tiltY);
+                }
 
                 return PopScope(
                   canPop: !isOpen,
@@ -492,6 +364,7 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
               child: frontScaffold,
             );
             },
+          ),
           ),
           ),
         );

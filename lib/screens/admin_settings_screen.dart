@@ -7,6 +7,7 @@ import '../core/theme/app_typography.dart';
 import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
 import '../models/building_models.dart';
+import '../widgets/common/app_button.dart';
 import '../widgets/common/app_card.dart';
 import '../widgets/common/busy_overlay.dart';
 import '../widgets/dialogs/extra_charges_dialog.dart';
@@ -296,6 +297,11 @@ class AdminSettingsScreen extends StatelessWidget {
                       ],
                     ),
                   ),
+
+                  const SizedBox(height: AppSpacing.md),
+
+                  // 4. Manual Push Notification Broadcast Card
+                  _PushNotificationCard(cubit: cubit, state: state),
                 ],
               ),
             ),
@@ -443,5 +449,242 @@ class AdminSettingsScreen extends StatelessWidget {
       ),
     );
     Future.delayed(const Duration(milliseconds: 350), ctrl.dispose);
+  }
+}
+
+class _PushNotificationCard extends StatefulWidget {
+  final BuildingCubit cubit;
+  final BuildingState state;
+
+  const _PushNotificationCard({
+    required this.cubit,
+    required this.state,
+  });
+
+  @override
+  State<_PushNotificationCard> createState() => _PushNotificationCardState();
+}
+
+class _PushNotificationCardState extends State<_PushNotificationCard> {
+  final _titleCtrl = TextEditingController();
+  final _bodyCtrl = TextEditingController();
+  bool _adminsOnly = true;
+  bool _sending = false;
+  String? _localErr;
+
+  @override
+  void dispose() {
+    _titleCtrl.dispose();
+    _bodyCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _send() async {
+    final s = widget.state.s;
+    final title = _titleCtrl.text.trim();
+    final body = _bodyCtrl.text.trim();
+    if (title.isEmpty || body.isEmpty) {
+      setState(() => _localErr = s.errPushFieldsRequired);
+      return;
+    }
+    setState(() {
+      _sending = true;
+      _localErr = null;
+    });
+    final ok = await widget.cubit.sendManualPushNotification(
+      title: title,
+      body: body,
+      adminsOnly: _adminsOnly,
+    );
+    if (!mounted) return;
+    setState(() {
+      _sending = false;
+      if (ok) {
+        _titleCtrl.clear();
+        _bodyCtrl.clear();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = widget.state.s;
+    final isDark = widget.state.isDarkMode;
+
+    return AppCard(
+      padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                child: Icon(
+                  Icons.notifications_active_rounded,
+                  size: 20,
+                  color: AppColors.primaryText(isDark),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      s.pushCardTitle,
+                      style: AppTypography.title.copyWith(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary(isDark),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      s.pushCardSubtitle,
+                      style: AppTypography.caption.copyWith(
+                        color: AppColors.textSecondary(isDark),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          // Audience toggle: Admin Only (Test) by default vs All Residents
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: AppColors.surface(isDark),
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              border: Border.all(color: AppColors.border(isDark)),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: _sending ? null : () => setState(() => _adminsOnly = true),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      padding: const EdgeInsets.symmetric(vertical: 9),
+                      decoration: BoxDecoration(
+                        color: _adminsOnly
+                            ? AppColors.primary.withValues(alpha: 0.18)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                      ),
+                      child: Text(
+                        s.pushAudienceAdminOnly,
+                        textAlign: TextAlign.center,
+                        style: AppTypography.caption.copyWith(
+                          fontWeight: FontWeight.w800,
+                          color: _adminsOnly
+                              ? AppColors.primaryText(isDark)
+                              : AppColors.textSecondary(isDark),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: _sending ? null : () => setState(() => _adminsOnly = false),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      padding: const EdgeInsets.symmetric(vertical: 9),
+                      decoration: BoxDecoration(
+                        color: !_adminsOnly
+                            ? AppColors.emerald.withValues(alpha: 0.18)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                      ),
+                      child: Text(
+                        s.pushAudienceAll,
+                        textAlign: TextAlign.center,
+                        style: AppTypography.caption.copyWith(
+                          fontWeight: FontWeight.w800,
+                          color: !_adminsOnly
+                              ? AppColors.emeraldText(isDark)
+                              : AppColors.textSecondary(isDark),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          TextField(
+            controller: _titleCtrl,
+            enabled: !_sending,
+            onChanged: (_) {
+              if (_localErr != null) setState(() => _localErr = null);
+            },
+            style: AppTypography.body.copyWith(
+              color: AppColors.textPrimary(isDark),
+            ),
+            decoration: InputDecoration(
+              labelText: s.pushTitleLabel,
+              hintText: s.pushTitleHint,
+              filled: true,
+              fillColor: AppColors.surface(isDark),
+              prefixIcon: Icon(
+                Icons.title_rounded,
+                size: 18,
+                color: AppColors.textSecondary(isDark),
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          TextField(
+            controller: _bodyCtrl,
+            enabled: !_sending,
+            maxLines: 3,
+            minLines: 2,
+            onChanged: (_) {
+              if (_localErr != null) setState(() => _localErr = null);
+            },
+            style: AppTypography.body.copyWith(
+              color: AppColors.textPrimary(isDark),
+            ),
+            decoration: InputDecoration(
+              labelText: s.pushBodyLabel,
+              hintText: s.pushBodyHint,
+              filled: true,
+              fillColor: AppColors.surface(isDark),
+              alignLabelWithHint: true,
+            ),
+          ),
+          if (_localErr != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              _localErr!,
+              style: AppTypography.caption.copyWith(
+                color: AppColors.dangerText(isDark),
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+          const SizedBox(height: AppSpacing.md),
+          SizedBox(
+            width: double.infinity,
+            child: AppPrimaryButton(
+              label: _adminsOnly ? s.pushSendAdminTestBtn : s.pushSendAllBtn,
+              icon: _adminsOnly ? Icons.shield_outlined : Icons.send_rounded,
+              loading: _sending,
+              onPressed: _sending ? null : _send,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

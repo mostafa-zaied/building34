@@ -4,9 +4,11 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/utils/push_notifications.dart';
 import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
 import '../../screens/admin_settings_screen.dart';
+import '../../screens/admin_views_screen.dart';
 import '../../screens/analytics_screen.dart';
 import '../dialogs/admin_login_dialog.dart';
 import '../dialogs/manage_apartments_dialog.dart';
@@ -281,6 +283,48 @@ class AppSideMenu extends StatelessWidget {
                       state.localeCode == 'ar' ? 'en' : 'ar',
                     ),
                   ),
+                  Builder(
+                    builder: (_) {
+                      final isGranted = getPushPermissionStatus() == 'granted';
+                      return _drawerTile(
+                        icon: isGranted
+                            ? Icons.notifications_active_rounded
+                            : Icons.notifications_none_rounded,
+                        label: s.drawerNotificationsLabel,
+                        isDark: isDark,
+                        trailing: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isGranted
+                                ? AppColors.emerald.withValues(alpha: 0.16)
+                                : AppColors.primary.withValues(alpha: 0.14),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
+                            border: Border.all(
+                              color: isGranted
+                                  ? AppColors.emerald.withValues(alpha: 0.4)
+                                  : AppColors.primary.withValues(alpha: 0.35),
+                            ),
+                          ),
+                          child: Text(
+                            isGranted ? s.pushEnabledBadge : s.pushEnableAction,
+                            style: AppTypography.caption.copyWith(
+                              fontWeight: FontWeight.w800,
+                              color: isGranted
+                                  ? AppColors.emeraldText(isDark)
+                                  : AppColors.primaryText(isDark),
+                            ),
+                          ),
+                        ),
+                        onTap: () async {
+                          _close(context);
+                          await cubit.enablePushNotifications();
+                        },
+                      );
+                    },
+                  ),
 
                   const SizedBox(height: AppSpacing.sm),
                   Divider(height: 1, color: AppColors.border(isDark)),
@@ -319,6 +363,20 @@ class AppSideMenu extends StatelessWidget {
                                 state: cubit.state,
                               ),
                             ),
+                          ),
+                        );
+                      },
+                    ),
+                    _drawerTile(
+                      icon: Icons.visibility_outlined,
+                      label: s.adminViewsTitle,
+                      isDark: isDark,
+                      accentColor: AppColors.primaryText(isDark),
+                      onTap: () {
+                        _close(context);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const AdminViewsScreen(),
                           ),
                         );
                       },

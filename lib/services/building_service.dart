@@ -1137,4 +1137,73 @@ class BuildingService {
       return 'err_submit_failed';
     }
   }
+
+  /// Registers or updates an FCM web push token in Supabase `push_tokens`.
+  Future<bool> registerPushToken({
+    required String token,
+    int? aptNum,
+    bool isAdmin = false,
+  }) async {
+    final clean = token.trim();
+    if (clean.isEmpty) return false;
+    if (!_useSupabase) return true;
+
+    try {
+      await Supabase.instance.client.rpc('register_push_token', params: {
+        'p_token': clean,
+        'p_apt_num': aptNum,
+        'p_is_admin': isAdmin,
+        'p_platform': 'web',
+      });
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Invokes the Supabase `send-push` Edge Function.
+  /// Returns `(ok, sentCount, notConfigured, error)`.
+  Future<({bool ok, int sent, bool notConfigured, String? error})> sendPushNotification({
+    required String title,
+    required String body,
+    String audience = 'all',
+    String? adminPass,
+    String? eventType,
+  }) async {
+    if (!_useSupabase) {
+      return (ok: true, sent: 1, notConfigured: false, error: null);
+    }
+
+    try {
+      final resp = await Supabase.instance.client.functions.invoke(
+        'send-push',
+        body: {
+          'title': title.trim(),
+          'body': body.trim(),
+          'audience': audience,
+          if (adminPass != null && adminPass.isNotEmpty) 'admin_pass': adminPass,
+          'event_type': ?eventType,
+        },
+      );
+      final data = resp.data;
+      if (data is Map) {
+        if (data['not_configured'] == true) {
+          return (ok: false, sent: 0, notConfigured: true, error: null);
+        }
+        if (data['ok'] == true) {
+          final sent = (data['sent'] as num?)?.toInt() ?? 0;
+          return (ok: true, sent: sent, notConfigured: false, error: null);
+        }
+        return (
+          ok: false,
+          sent: 0,
+          notConfigured: false,
+          error: data['error']?.toString() ?? 'err_submit_failed',
+        );
+      }
+      return (ok: false, sent: 0, notConfigured: false, error: 'err_submit_failed');
+    } catch (_) {
+      return (ok: false, sent: 0, notConfigured: false, error: 'err_submit_failed');
+    }
+  }
 }

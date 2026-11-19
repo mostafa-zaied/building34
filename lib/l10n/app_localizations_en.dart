@@ -903,7 +903,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navAnalytics => 'Analytics';
 
   @override
-  String get analyticsTitle => 'Transparency & Analytics';
+  String get analyticsTitle => 'Analytics';
 
   @override
   String get analyticsAvgShare => 'Avg / Apt';
@@ -963,4 +963,109 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get analyticsNoData => 'Not enough monthly data to analyze yet.';
+
+  @override
+  String get pushCardTitle => 'Send Push Notification';
+
+  @override
+  String get pushCardSubtitle =>
+      'Send an instant alert directly to all subscribed residents.';
+
+  @override
+  String get pushTitleLabel => 'Notification Title';
+
+  @override
+  String get pushTitleHint =>
+      'e.g., Monthly dues reminder or elevator maintenance';
+
+  @override
+  String get pushBodyLabel => 'Notification Message';
+
+  @override
+  String get pushBodyHint => 'Write your notification details here...';
+
+  @override
+  String get pushSendAllBtn => 'Send to All Residents 🚀';
+
+  @override
+  String get errPushFieldsRequired =>
+      'Please enter both a title and message first.';
+
+  @override
+  String pushSentSuccessToast(int count) {
+    return 'Notification sent to $count devices';
+  }
+
+  @override
+  String get pushNoDevicesToast => 'No devices subscribed to notifications yet';
+
+  @override
+  String get pushNotConfiguredToast =>
+      'Push system ready — only the Firebase key in Supabase is pending';
+
+  @override
+  String get pushSendFailedToast => 'Could not send notification right now';
+
+  @override
+  String get pushAutoAnnouncementTitle => '📢 Important Building Announcement';
+
+  @override
+  String get pushAutoNewMonthTitle => '🗓️ New Monthly Bill Available';
+
+  @override
+  String pushAutoNewMonthBody(String month) {
+    return 'Expenses for $month are now live on MABNA CARE.';
+  }
+
+  @override
+  String get pushAutoPaymentTitle => '🧾 New Payment Uploaded';
+
+  @override
+  String pushAutoPaymentBody(String apt) {
+    return '$apt uploaded a monthly payment receipt.';
+  }
+
+  @override
+  String get pushAutoFeedbackTitle => '💬 New Resident Feedback';
+
+  @override
+  String get drawerNotificationsLabel => 'Notifications';
+
+  @override
+  String get pushEnabledBadge => 'Enabled';
+
+  @override
+  String get pushEnableAction => 'Enable';
+
+  @override
+  String get pushEnabledToast => '🔔 Push notifications enabled on this device';
+
+  @override
+  String get pushBlockedToast =>
+      'Could not enable notifications (allow notifications in browser settings, or Add to Home Screen on iPhone)';
+
+  @override
+  String get pushAudienceAdminOnly => 'Admin Only (Test)';
+
+  @override
+  String get pushAudienceAll => 'All Residents';
+
+  @override
+  String get pushSendAdminTestBtn => 'Send Test to Admin 🛡️';
+
+  @override
+  String get offlineBannerMsg => 'No internet connection';
+
+  @override
+  String get onlineRestoredToast => 'Back online — connection restored';
+
+  @override
+  String get noNetworkTitle => 'No Internet Connection';
+
+  @override
+  String get noNetworkSubtitle =>
+      'Check your connection and tap Retry to reload.';
+
+  @override
+  String get retryBtn => 'Retry';
 }

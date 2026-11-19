@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../core/utils/push_notifications.dart';
 import '../models/building_models.dart';
 import '../services/building_service.dart';
 import 'building_state.dart';
@@ -27,8 +28,15 @@ class BuildingCubit extends Cubit<BuildingState> {
   Future<void> loadData({int? preserveMonthIndex}) async {
     emit(state.copyWith(loading: true));
     try {
-      final data = await _service.fetchAll();
-      final posts = await _service.fetchFeedbackPosts();
+      late final BuildingDataState data;
+      try {
+        data = await _service.fetchAll().timeout(const Duration(seconds: 15));
+      } catch (_) {
+        // Silent 1-time auto-retry for transient server/DNS blips
+        await Future<void>.delayed(const Duration(milliseconds: 1500));
+        data = await _service.fetchAll().timeout(const Duration(seconds: 15));
+      }
+      final posts = await _service.fetchFeedbackPosts().timeout(const Duration(seconds: 12));
       int targetIdx = preserveMonthIndex ?? state.selectedMonthIndex;
       if (preserveMonthIndex == null && state.months.isEmpty) {
         final novIndex = data.months.indexWhere((m) => m.monthNum == 11);
@@ -218,6 +226,15 @@ class BuildingCubit extends Cubit<BuildingState> {
       feedbackMessage: () => state.s.postAddedToast,
       feedbackIsError: false,
     ));
+    // Auto-notify admins (fire-and-forget)
+    final preview = message.trim();
+    final senderPrefix = authorLabel != null ? '$authorLabel: ' : '';
+    _triggerAutoPush(
+      title: state.s.pushAutoFeedbackTitle,
+      body: '$senderPrefix$preview',
+      audience: 'admins',
+      eventType: 'feedback_submitted',
+    );
     return true;
   }
 
@@ -263,6 +280,7 @@ class BuildingCubit extends Cubit<BuildingState> {
         isAdminOpen: true,
         pageViewStats: () => viewStats,
       ));
+      unawaited(syncPushTokenIfGranted());
     });
   }
 
@@ -414,6 +432,17 @@ class BuildingCubit extends Cubit<BuildingState> {
         feedbackMessage: () => msg,
         feedbackIsError: false,
       ));
+      if (added != null) {
+        final monthLabel =
+            '${localizedMonthName(added.monthNum, state.localeCode == 'ar')} (${added.monthNum}/${added.yearNum})';
+        _triggerAutoPush(
+          title: state.s.pushAutoNewMonthTitle,
+          body: state.s.pushAutoNewMonthBody(monthLabel),
+          audience: 'all',
+          adminPass: state.adminPass,
+          eventType: 'new_month',
+        );
+      }
     });
   }
 
@@ -460,6 +489,13 @@ class BuildingCubit extends Cubit<BuildingState> {
     if (err == null) {
       await _saveAptSession(aptNum, passcode.trim());
       await loadData(preserveMonthIndex: state.selectedMonthIndex);
+      // Auto-notify admins that an apartment uploaded a payment receipt
+      _triggerAutoPush(
+        title: state.s.pushAutoPaymentTitle,
+        body: state.s.pushAutoPaymentBody(state.aptLabel(aptNum)),
+        audience: 'admins',
+        eventType: 'payment_uploaded',
+      );
       return null;
     }
     if (aptNum == state.myAptNum &&
@@ -704,7 +740,128 @@ class BuildingCubit extends Cubit<BuildingState> {
         feedbackMessage: () => state.s.monthSavedToast,
         feedbackIsError: false,
       ));
+      if (text.trim().isNotEmpty) {
+        _triggerAutoPush(
+          title: state.s.pushAutoAnnouncementTitle,
+          body: text.trim(),
+          audience: 'all',
+          adminPass: state.adminPass,
+          eventType: 'announcement',
+        );
+      }
     });
+  }
+
+  /// Requests browser push notification permission and registers the FCM token.
+  Future<bool> enablePushNotifications() async {
+    var ok = false;
+    await _withBusy(() async {
+      final token = await requestPushToken(silentOnly: false);
+      if (token == null || token.isEmpty) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${state.s.pushBlockedToast}',
+          feedbackIsError: true,
+        ));
+        return;
+      }
+      final saved = await _service.registerPushToken(
+        token: token,
+        aptNum: state.myAptNum,
+        isAdmin: state.isAdminAuthenticated,
+      );
+      ok = saved;
+      emit(state.copyWith(
+        feedbackMessage: () => saved
+            ? state.s.pushEnabledToast
+            : '❌ ${state.s.pushBlockedToast}',
+        feedbackIsError: !saved,
+      ));
+    });
+    return ok;
+  }
+
+  /// Silently syncs the FCM token (including `is_admin` / `apt_num`) if already granted.
+  Future<void> syncPushTokenIfGranted() async {
+    try {
+      final token = await requestPushToken(silentOnly: true);
+      if (token == null || token.isEmpty) return;
+      await _service.registerPushToken(
+        token: token,
+        aptNum: state.myAptNum,
+        isAdmin: state.isAdminAuthenticated,
+      );
+    } catch (_) {}
+  }
+
+  /// Fire-and-forget automatic push notification trigger.
+  void _triggerAutoPush({
+    required String title,
+    required String body,
+    required String audience,
+    String? adminPass,
+    String? eventType,
+  }) {
+    _service
+        .sendPushNotification(
+          title: title,
+          body: body,
+          audience: audience,
+          adminPass: adminPass,
+          eventType: eventType,
+        )
+        .catchError((_) => (ok: false, sent: 0, notConfigured: false, error: null));
+  }
+
+  /// Sends a manual broadcast notification from Admin Settings.
+  /// Defaults to `adminsOnly: true` so the admin can safely test on their own device first.
+  Future<bool> sendManualPushNotification({
+    required String title,
+    required String body,
+    bool adminsOnly = true,
+  }) async {
+    if (!state.isAdminAuthenticated) return false;
+    final cleanTitle = title.trim();
+    final cleanBody = body.trim();
+    if (cleanTitle.isEmpty || cleanBody.isEmpty) {
+      emit(state.copyWith(
+        feedbackMessage: () => '❌ ${state.s.errPushFieldsRequired}',
+        feedbackIsError: true,
+      ));
+      return false;
+    }
+
+    var success = false;
+    await _withBusy(() async {
+      final res = await _service.sendPushNotification(
+        title: cleanTitle,
+        body: cleanBody,
+        audience: adminsOnly ? 'admins' : 'all',
+        adminPass: state.adminPass,
+        eventType: adminsOnly ? 'admin_test' : 'manual_broadcast',
+      );
+      if (res.notConfigured) {
+        emit(state.copyWith(
+          feedbackMessage: () => 'ℹ️ ${state.s.pushNotConfiguredToast}',
+          feedbackIsError: false,
+        ));
+        return;
+      }
+      if (!res.ok) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${state.s.pushSendFailedToast}',
+          feedbackIsError: true,
+        ));
+        return;
+      }
+      success = true;
+      emit(state.copyWith(
+        feedbackMessage: () => res.sent > 0
+            ? state.s.pushSentSuccessToast(res.sent)
+            : state.s.pushNoDevicesToast,
+        feedbackIsError: false,
+      ));
+    });
+    return success;
   }
 
   Future<bool> addEmergencyTransaction(double amount, String reason) async {

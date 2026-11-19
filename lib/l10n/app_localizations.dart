@@ -1721,7 +1721,7 @@ abstract class AppLocalizations {
   /// No description provided for @analyticsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Transparency & Analytics'**
+  /// **'Analytics'**
   String get analyticsTitle;
 
   /// No description provided for @analyticsAvgShare.
@@ -1812,6 +1812,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not enough monthly data to analyze yet.'**
   String get analyticsNoData;
+
+  /// No description provided for @pushCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Push Notification'**
+  String get pushCardTitle;
+
+  /// No description provided for @pushCardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send an instant alert directly to all subscribed residents.'**
+  String get pushCardSubtitle;
+
+  /// No description provided for @pushTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification Title'**
+  String get pushTitleLabel;
+
+  /// No description provided for @pushTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Monthly dues reminder or elevator maintenance'**
+  String get pushTitleHint;
+
+  /// No description provided for @pushBodyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification Message'**
+  String get pushBodyLabel;
+
+  /// No description provided for @pushBodyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write your notification details here...'**
+  String get pushBodyHint;
+
+  /// No description provided for @pushSendAllBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Send to All Residents 🚀'**
+  String get pushSendAllBtn;
+
+  /// No description provided for @errPushFieldsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter both a title and message first.'**
+  String get errPushFieldsRequired;
+
+  /// No description provided for @pushSentSuccessToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification sent to {count} devices'**
+  String pushSentSuccessToast(int count);
+
+  /// No description provided for @pushNoDevicesToast.
+  ///
+  /// In en, this message translates to:
+  /// **'No devices subscribed to notifications yet'**
+  String get pushNoDevicesToast;
+
+  /// No description provided for @pushNotConfiguredToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Push system ready — only the Firebase key in Supabase is pending'**
+  String get pushNotConfiguredToast;
+
+  /// No description provided for @pushSendFailedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send notification right now'**
+  String get pushSendFailedToast;
+
+  /// No description provided for @pushAutoAnnouncementTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'📢 Important Building Announcement'**
+  String get pushAutoAnnouncementTitle;
+
+  /// No description provided for @pushAutoNewMonthTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'🗓️ New Monthly Bill Available'**
+  String get pushAutoNewMonthTitle;
+
+  /// No description provided for @pushAutoNewMonthBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses for {month} are now live on MABNA CARE.'**
+  String pushAutoNewMonthBody(String month);
+
+  /// No description provided for @pushAutoPaymentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'🧾 New Payment Uploaded'**
+  String get pushAutoPaymentTitle;
+
+  /// No description provided for @pushAutoPaymentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{apt} uploaded a monthly payment receipt.'**
+  String pushAutoPaymentBody(String apt);
+
+  /// No description provided for @pushAutoFeedbackTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'💬 New Resident Feedback'**
+  String get pushAutoFeedbackTitle;
+
+  /// No description provided for @drawerNotificationsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get drawerNotificationsLabel;
+
+  /// No description provided for @pushEnabledBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabled'**
+  String get pushEnabledBadge;
+
+  /// No description provided for @pushEnableAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable'**
+  String get pushEnableAction;
+
+  /// No description provided for @pushEnabledToast.
+  ///
+  /// In en, this message translates to:
+  /// **'🔔 Push notifications enabled on this device'**
+  String get pushEnabledToast;
+
+  /// No description provided for @pushBlockedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not enable notifications (allow notifications in browser settings, or Add to Home Screen on iPhone)'**
+  String get pushBlockedToast;
+
+  /// No description provided for @pushAudienceAdminOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Only (Test)'**
+  String get pushAudienceAdminOnly;
+
+  /// No description provided for @pushAudienceAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All Residents'**
+  String get pushAudienceAll;
+
+  /// No description provided for @pushSendAdminTestBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Test to Admin 🛡️'**
+  String get pushSendAdminTestBtn;
+
+  /// No description provided for @offlineBannerMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection'**
+  String get offlineBannerMsg;
+
+  /// No description provided for @onlineRestoredToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Back online — connection restored'**
+  String get onlineRestoredToast;
+
+  /// No description provided for @noNetworkTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Internet Connection'**
+  String get noNetworkTitle;
+
+  /// No description provided for @noNetworkSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and tap Retry to reload.'**
+  String get noNetworkSubtitle;
+
+  /// No description provided for @retryBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retryBtn;
 }
 
 class _AppLocalizationsDelegate
