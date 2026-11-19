@@ -597,7 +597,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get adminViewsTitle => 'إحصائيات الزيارات (للمدير فقط)';
+  String get adminViewsTitle => 'إحصائيات';
 
   @override
   String get refreshTooltip => 'تحديث';

@@ -23,7 +23,7 @@ jobs:
         run: flutter pub get
 
       - name: Build Flutter Web for Firebase Hosting
-        run: flutter build web --release --base-href "/"
+        run: flutter build web --release --base-href "/" --pwa-strategy=none
 
       - name: Deploy to Firebase Hosting (mabna-care.web.app)
         uses: FirebaseExtended/action-hosting-deploy@v0

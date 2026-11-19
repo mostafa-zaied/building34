@@ -602,7 +602,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get adminViewsTitle => 'Link Views (Admin Only)';
+  String get adminViewsTitle => 'Statistics';
 
   @override
   String get refreshTooltip => 'Refresh';

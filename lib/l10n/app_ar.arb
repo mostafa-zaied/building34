@@ -177,7 +177,7 @@
   "addNextMonthConfirmBody": "سيتم إضافة شهر {monthName} ({monthNum} / {yearNum}) إلى قائمة الشهور. هل تريد المتابعة؟",
   "addNextMonthConfirmBtn": "إضافة {monthName} ({monthNum}/{yearNum})",
   "monthAddedNamedToast": "✅ تم إضافة شهر {monthName} ({monthNum}/{yearNum}) بنجاح",
-  "adminViewsTitle": "إحصائيات الزيارات (للمدير فقط)",
+  "adminViewsTitle": "إحصائيات",
   "refreshTooltip": "تحديث",
   "viewsStatsLoadingHint": "اضغط تحديث لعرض الإحصائيات (تأكد من تشغيل SQL في Supabase)",
   "viewsTotalLabel": "إجمالي الفتح",

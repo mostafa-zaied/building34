@@ -1163,7 +1163,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminViewsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Link Views (Admin Only)'**
+  /// **'Statistics'**
   String get adminViewsTitle;
 
   /// No description provided for @refreshTooltip.

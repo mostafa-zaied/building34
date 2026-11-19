@@ -351,7 +351,7 @@
       "yearNum": { "type": "int" }
     }
   },
-  "adminViewsTitle": "Link Views (Admin Only)",
+  "adminViewsTitle": "Statistics",
   "refreshTooltip": "Refresh",
   "viewsStatsLoadingHint": "Tap refresh to load stats (ensure Supabase SQL is applied)",
   "viewsTotalLabel": "Total",
