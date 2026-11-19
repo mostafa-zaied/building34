@@ -810,4 +810,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passNotSetYet => 'Not set yet';
+
+  @override
+  String get resetAllPasswordsBtn => 'Reset All Passwords';
+
+  @override
+  String get confirmResetAllPasswordsBody =>
+      'Do you want to reset passwords for all apartments? Each resident will be asked to set a new passcode.';
+
+  @override
+  String get allPasswordsResetToast =>
+      'All apartment passwords have been reset';
 }

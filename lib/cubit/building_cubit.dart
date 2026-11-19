@@ -622,6 +622,29 @@ class BuildingCubit extends Cubit<BuildingState> {
     });
   }
 
+  Future<bool> resetAllApartmentPasscodes() async {
+    if (!state.isAdminOpen) return false;
+    return _withBusy(() async {
+      final err = await _service.resetAllApartmentPasscodesAsAdmin(
+        state.adminPass,
+      );
+      if (err != null) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return false;
+      }
+      await _clearSavedAptPass();
+      await loadData(preserveMonthIndex: state.selectedMonthIndex);
+      emit(state.copyWith(
+        feedbackMessage: () => state.s.allPasswordsResetToast,
+        feedbackIsError: false,
+      ));
+      return true;
+    });
+  }
+
   Future<void> _saveAptSession(int aptNum, String passcode) async {
     emit(state.copyWith(
       myAptNum: () => aptNum,

@@ -418,5 +418,8 @@
   "errPassAlreadySet": "A passcode is already set for this apartment.",
   "forgotPassHint": "Forgot passcode? Contact the building admin to reset it.",
   "resetPassBtn": "Reset",
-  "passNotSetYet": "Not set yet"
+  "passNotSetYet": "Not set yet",
+  "resetAllPasswordsBtn": "Reset All Passwords",
+  "confirmResetAllPasswordsBody": "Do you want to reset passwords for all apartments? Each resident will be asked to set a new passcode.",
+  "allPasswordsResetToast": "All apartment passwords have been reset"
 }

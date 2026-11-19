@@ -1549,6 +1549,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not set yet'**
   String get passNotSetYet;
+
+  /// No description provided for @resetAllPasswordsBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset All Passwords'**
+  String get resetAllPasswordsBtn;
+
+  /// No description provided for @confirmResetAllPasswordsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to reset passwords for all apartments? Each resident will be asked to set a new passcode.'**
+  String get confirmResetAllPasswordsBody;
+
+  /// No description provided for @allPasswordsResetToast.
+  ///
+  /// In en, this message translates to:
+  /// **'All apartment passwords have been reset'**
+  String get allPasswordsResetToast;
 }
 
 class _AppLocalizationsDelegate

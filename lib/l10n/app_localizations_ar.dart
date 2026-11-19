@@ -802,4 +802,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get passNotSetYet => 'لم يُعيّنها الساكن بعد';
+
+  @override
+  String get resetAllPasswordsBtn => 'Reset All Passwords';
+
+  @override
+  String get confirmResetAllPasswordsBody =>
+      'هل تريد إعادة تعيين كلمة السر لجميع الشقق؟ سيُطلب من كل ساكن تعيين كلمة سر جديدة.';
+
+  @override
+  String get allPasswordsResetToast =>
+      'تمت إعادة تعيين كلمات السر لجميع الشقق بنجاح';
 }

@@ -423,6 +423,61 @@ class _ManageApartmentsDialogState extends State<_ManageApartmentsDialog> {
                     ),
                   ),
                 ),
+                const SizedBox(height: AppSpacing.sm),
+
+                // Reset All Passwords Button
+                InkWell(
+                  onTap: _saving
+                      ? null
+                      : () async {
+                          await showConfirmDeleteDialog(
+                            context: context,
+                            s: s,
+                            isDark: isDark,
+                            confirmLabel: s.resetAllPasswordsBtn,
+                            message: s.confirmResetAllPasswordsBody,
+                            onConfirm: () async {
+                              final ok = await widget.cubit.resetAllApartmentPasscodes();
+                              if (ok && mounted) {
+                                setState(() {
+                                  for (final ctrl in _passCtrls.values) {
+                                    ctrl.clear();
+                                  }
+                                });
+                              }
+                            },
+                          );
+                        },
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                  child: Container(
+                    padding: const EdgeInsetsDirectional.symmetric(vertical: AppSpacing.md),
+                    decoration: BoxDecoration(
+                      color: AppColors.danger.withValues(alpha: isDark ? 0.12 : 0.08),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      border: Border.all(
+                        color: AppColors.danger.withValues(alpha: 0.45),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.lock_reset_rounded,
+                          size: 18,
+                          color: AppColors.dangerText(isDark),
+                        ),
+                        const SizedBox(width: AppSpacing.xs),
+                        Text(
+                          s.resetAllPasswordsBtn,
+                          style: AppTypography.label.copyWith(
+                            color: AppColors.dangerText(isDark),
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 const SizedBox(height: AppSpacing.md),
 
                 // Action buttons

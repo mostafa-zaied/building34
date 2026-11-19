@@ -241,5 +241,8 @@
   "errPassAlreadySet": "تم تعيين كلمة سر لهذه الشقة بالفعل.",
   "forgotPassHint": "نسيت كلمة السر؟ تواصل مع مدير العمارة لإعادة تعيينها.",
   "resetPassBtn": "إعادة تعيين",
-  "passNotSetYet": "لم يُعيّنها الساكن بعد"
+  "passNotSetYet": "لم يُعيّنها الساكن بعد",
+  "resetAllPasswordsBtn": "Reset All Passwords",
+  "confirmResetAllPasswordsBody": "هل تريد إعادة تعيين كلمة السر لجميع الشقق؟ سيُطلب من كل ساكن تعيين كلمة سر جديدة.",
+  "allPasswordsResetToast": "تمت إعادة تعيين كلمات السر لجميع الشقق بنجاح"
 }
