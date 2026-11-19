@@ -8,6 +8,7 @@ import '../core/theme/app_spacing.dart';
 import '../core/theme/app_typography.dart';
 import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
+import '../widgets/common/app_side_menu.dart';
 import '../widgets/common/busy_overlay.dart';
 import 'contacts_screen.dart';
 import 'emergency_screen.dart';
@@ -205,22 +206,62 @@ class MainShell extends StatelessWidget {
               );
             }
 
+            final mobileBottomNavIndex = switch (state.selectedNavIndex) {
+              0 => 0,
+              1 => 1,
+              3 => 2,
+              _ => -1,
+            };
+
             return Scaffold(
               extendBody: true,
               backgroundColor: isDark ? const Color(0xFF0A1124) : const Color(0xFFEEF2FF),
+              drawer: AppSideMenu(cubit: cubit, state: state),
+              appBar: AppBar(
+                backgroundColor: isDark
+                    ? const Color(0xFF0A1124)
+                    : const Color(0xFFEEF2FF),
+                elevation: 0,
+                scrolledUnderElevation: 0,
+                toolbarHeight: 50,
+                leading: Builder(
+                  builder: (ctx) => IconButton(
+                    icon: Icon(
+                      Icons.menu_rounded,
+                      color: AppColors.textPrimary(isDark),
+                    ),
+                    onPressed: () => Scaffold.of(ctx).openDrawer(),
+                  ),
+                ),
+                title: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      s.appTitle,
+                      style: AppTypography.headline.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary(isDark),
+                      ),
+                    ),
+                  ],
+                ),
+                centerTitle: true,
+              ),
               body: Container(
                 decoration: bgDecoration,
-                child: SafeArea(
-                  bottom: false,
-                  child: IndexedStack(
-                    index: state.selectedNavIndex,
-                    children: screens,
-                  ),
+                child: IndexedStack(
+                  index: state.selectedNavIndex,
+                  children: screens,
                 ),
               ),
               bottomNavigationBar: _FloatingBottomNav(
-                selectedIndex: state.selectedNavIndex,
-                onSelect: cubit.selectNav,
+                selectedIndex: mobileBottomNavIndex,
+                onSelect: (idx) {
+                  if (idx == 0) cubit.selectNav(0);
+                  if (idx == 1) cubit.selectNav(1);
+                  if (idx == 2) cubit.selectNav(3);
+                },
                 isDark: isDark,
                 items: [
                   _NavItemData(
@@ -234,20 +275,9 @@ class MainShell extends StatelessWidget {
                     label: s.navEmergency,
                   ),
                   _NavItemData(
-                    icon: Icons.contact_phone_outlined,
-                    selectedIcon: Icons.contact_phone_rounded,
-                    label: s.navContacts,
-                  ),
-                  _NavItemData(
                     icon: Icons.forum_outlined,
                     selectedIcon: Icons.forum_rounded,
                     label: s.navFeedback,
-                  ),
-                  _NavItemData(
-                    icon: Icons.explore_outlined,
-                    selectedIcon: Icons.explore_rounded,
-                    label: s.navServices,
-                    badge: s.soonBadge,
                   ),
                 ],
               ),

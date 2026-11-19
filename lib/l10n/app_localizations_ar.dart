@@ -813,4 +813,36 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get allPasswordsResetToast =>
       'تمت إعادة تعيين كلمات السر لجميع الشقق بنجاح';
+
+  @override
+  String get drawerExtraSections => 'أقسام إضافية';
+
+  @override
+  String get drawerPreferences => 'تفضيلات التطبيق';
+
+  @override
+  String get drawerThemeLabel => 'المظهر';
+
+  @override
+  String get drawerThemeDark => 'ليلي';
+
+  @override
+  String get drawerThemeLight => 'نهاري';
+
+  @override
+  String get drawerLanguageLabel => 'اللغة';
+
+  @override
+  String get drawerAdminSection => 'الإدارة';
+
+  @override
+  String get drawerAdminLogin => 'دخول المدير';
+
+  @override
+  String get contactManagerBtn => 'تواصل مع المسؤول';
+
+  @override
+  String drawerMyAptLabel(String apt) {
+    return 'شقتك: $apt';
+  }
 }

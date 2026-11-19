@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_shadows.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
 import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
 import '../../models/building_models.dart';
 import '../common/app_button.dart';
+import '../common/app_card.dart';
+import '../common/busy_overlay.dart';
 import 'confirm_delete_dialog.dart';
 
 Future<void> showManageApartmentsDialog({
@@ -15,26 +17,31 @@ Future<void> showManageApartmentsDialog({
   required BuildingCubit cubit,
   required BuildingState state,
 }) {
-  return showDialog<void>(
-    context: context,
-    builder: (_) => _ManageApartmentsDialog(cubit: cubit, state: state),
+  return Navigator.of(context).push<void>(
+    MaterialPageRoute(
+      builder: (_) => BlocProvider.value(
+        value: cubit,
+        child: ManageApartmentsScreen(cubit: cubit, state: state),
+      ),
+    ),
   );
 }
 
-class _ManageApartmentsDialog extends StatefulWidget {
+class ManageApartmentsScreen extends StatefulWidget {
   final BuildingCubit cubit;
   final BuildingState state;
 
-  const _ManageApartmentsDialog({
+  const ManageApartmentsScreen({
+    super.key,
     required this.cubit,
     required this.state,
   });
 
   @override
-  State<_ManageApartmentsDialog> createState() => _ManageApartmentsDialogState();
+  State<ManageApartmentsScreen> createState() => _ManageApartmentsScreenState();
 }
 
-class _ManageApartmentsDialogState extends State<_ManageApartmentsDialog> {
+class _ManageApartmentsScreenState extends State<ManageApartmentsScreen> {
   final _scrollCtrl = ScrollController();
   final Map<int, TextEditingController> _nameCtrls = {};
   final Map<int, TextEditingController> _passCtrls = {};
@@ -74,9 +81,9 @@ class _ManageApartmentsDialogState extends State<_ManageApartmentsDialog> {
 
   void _addNewApartment() {
     final nextNum = _apts.isEmpty ? 1 : _apts.last.aptNum + 1;
-    final newApt = ApartmentInfo(aptNum: nextNum, passcode: '${1000 + nextNum}');
+    final newApt = ApartmentInfo(aptNum: nextNum, passcode: '');
     _nameCtrls[nextNum] = TextEditingController(text: '');
-    _passCtrls[nextNum] = TextEditingController(text: newApt.passcode);
+    _passCtrls[nextNum] = TextEditingController(text: '');
     setState(() {
       _apts = [..._apts, newApt];
     });
@@ -97,7 +104,7 @@ class _ManageApartmentsDialogState extends State<_ManageApartmentsDialog> {
     for (int i = 0; i < _apts.length; i++) {
       if (i == index) continue;
       final num = _apts[i].aptNum;
-      oldCtrls.add((_nameCtrls[num]?.text ?? '', _passCtrls[num]?.text ?? '${1000 + num}'));
+      oldCtrls.add((_nameCtrls[num]?.text ?? '', _passCtrls[num]?.text ?? ''));
     }
 
     for (final c in _nameCtrls.values) {
@@ -125,7 +132,7 @@ class _ManageApartmentsDialogState extends State<_ManageApartmentsDialog> {
 
   Future<void> _saveAll() async {
     setState(() => _saving = true);
-    final m = widget.state.currentMonth;
+    final m = widget.cubit.state.currentMonth;
     if (m != null && _apts.length != m.aptsCount) {
       widget.cubit.updateCurrentMonthFields(
         water: m.water,
@@ -134,7 +141,7 @@ class _ManageApartmentsDialogState extends State<_ManageApartmentsDialog> {
         clean: m.clean,
         forEmerg: m.forEmerg,
         aptsCount: _apts.length,
-        baseEmergency: widget.state.baseEmergency,
+        baseEmergency: widget.cubit.state.baseEmergency,
       );
       await widget.cubit.saveAdminChanges();
     }
@@ -159,360 +166,349 @@ class _ManageApartmentsDialogState extends State<_ManageApartmentsDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final s = widget.state.s;
-    final isDark = widget.state.isDarkMode;
-    final maxH = MediaQuery.sizeOf(context).height * 0.84;
+    return BlocBuilder<BuildingCubit, BuildingState>(
+      builder: (context, liveState) {
+        final s = liveState.s;
+        final isDark = liveState.isDarkMode;
 
-    return Dialog(
-      insetPadding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.lg,
-        vertical: AppSpacing.xl,
-      ),
-      backgroundColor: AppColors.card(isDark),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadius.xl),
-        side: BorderSide(color: AppColors.border(isDark)),
-      ),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: 520, maxHeight: maxH),
-        child: Padding(
-          padding: const EdgeInsetsDirectional.all(AppSpacing.xl),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Header
-              Row(
+        return BusyOverlay(
+          busy: _saving || liveState.busy,
+          isDark: isDark,
+          child: Scaffold(
+            backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
+            appBar: AppBar(
+              backgroundColor: AppColors.surface(isDark),
+              elevation: 0,
+              title: Row(
                 children: [
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [AppColors.primary, AppColors.primaryLight],
-                        begin: AlignmentDirectional.topStart,
-                        end: AlignmentDirectional.bottomEnd,
-                      ),
-                      borderRadius: BorderRadius.circular(AppRadius.md),
-                    ),
-                    child: const Icon(
-                      Icons.vpn_key_rounded,
-                      size: 18,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Text(
-                      s.manageAptsTitle,
+                      s.manageAptsTitle.replaceAll('🔑', '').trim(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: AppTypography.headline.copyWith(
-                        fontSize: 16,
                         color: AppColors.textPrimary(isDark),
                       ),
                     ),
                   ),
-                  IconButton(
-                    onPressed: _saving ? null : () => Navigator.pop(context),
-                    icon: Icon(
-                      Icons.close_rounded,
-                      size: 20,
-                      color: AppColors.textSecondary(isDark),
+                  if (!_loading && _error == null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.14),
+                        borderRadius: BorderRadius.circular(AppRadius.pill),
+                      ),
+                      child: Text(
+                        '${_apts.length}',
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.primaryText(isDark),
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
                     ),
-                    splashRadius: 20,
-                  ),
                 ],
               ),
-              const SizedBox(height: AppSpacing.md),
-              Divider(height: 1, color: AppColors.border(isDark)),
-              const SizedBox(height: AppSpacing.md),
-
-              // Body
-              if (_loading)
-                const Padding(
-                  padding: EdgeInsetsDirectional.symmetric(vertical: 48),
-                  child: Center(child: CircularProgressIndicator()),
-                )
-              else if (_error != null)
-                Padding(
-                  padding: const EdgeInsetsDirectional.symmetric(vertical: 32),
-                  child: SelectableText(
-                    '❌ $_error',
-                    textAlign: TextAlign.center,
-                    style: AppTypography.body.copyWith(color: AppColors.danger),
-                  ),
-                )
-              else ...[
-                Flexible(
-                  child: ListView.separated(
-                    controller: _scrollCtrl,
-                    shrinkWrap: true,
-                    itemCount: _apts.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-                    itemBuilder: (_, idx) {
-                      final a = _apts[idx];
-                      return Container(
-                        padding: const EdgeInsetsDirectional.all(AppSpacing.md),
-                        decoration: BoxDecoration(
-                          color: AppColors.surface(isDark),
-                          borderRadius: BorderRadius.circular(AppRadius.lg),
-                          border: Border.all(color: AppColors.border(isDark)),
-                          boxShadow: AppShadows.card(isDark),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            // Card top bar: Apartment badge + Delete icon
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            ),
+            body: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : _error != null
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(AppSpacing.xl),
+                          child: AppCard(
+                            padding: const EdgeInsets.all(AppSpacing.xl),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                Container(
-                                  padding: const EdgeInsetsDirectional.symmetric(
-                                    horizontal: 10,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primary.withValues(alpha: 0.14),
-                                    borderRadius: BorderRadius.circular(AppRadius.pill),
-                                    border: Border.all(
-                                      color: AppColors.primary.withValues(alpha: 0.28),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    s.defaultAptName(a.aptNum),
-                                    style: AppTypography.label.copyWith(
-                                      color: AppColors.primaryText(isDark),
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
-                                IconButton(
-                                  onPressed: _saving || _apts.length <= 1
-                                      ? null
-                                      : () async {
-                                          final rawName = _nameCtrls[a.aptNum]?.text.trim() ?? '';
-                                          final aptName = rawName.isNotEmpty
-                                              ? rawName
-                                              : s.defaultAptName(a.aptNum);
-                                          final ok = await showConfirmDeleteDialog(
-                                            context: context,
-                                            s: s,
-                                            isDark: isDark,
-                                            message: s.confirmDeleteAptBody(aptName),
-                                          );
-                                          if (ok && mounted) _deleteApartment(idx);
-                                        },
-                                  icon: const Icon(Icons.delete_outline_rounded, size: 19),
-                                  color: AppColors.danger,
-                                  padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                                  tooltip: s.deleteTooltip,
+                                Icon(Icons.error_outline_rounded, size: 36, color: AppColors.danger),
+                                const SizedBox(height: AppSpacing.md),
+                                Text(
+                                  _error!,
+                                  textAlign: TextAlign.center,
+                                  style: AppTypography.body.copyWith(color: AppColors.danger),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: AppSpacing.sm),
+                          ),
+                        ),
+                      )
+                    : Align(
+                        alignment: Alignment.topCenter,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 680),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              // Apartments List
+                              Expanded(
+                                child: ListView.separated(
+                                  controller: _scrollCtrl,
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
+                                    AppSpacing.lg,
+                                    AppSpacing.md,
+                                    AppSpacing.lg,
+                                    AppSpacing.lg,
+                                  ),
+                                  itemCount: _apts.length,
+                                  separatorBuilder: (_, _) =>
+                                      const SizedBox(height: AppSpacing.sm),
+                                  itemBuilder: (context, idx) {
+                                    final a = _apts[idx];
+                                    return AppCard(
+                                      padding: const EdgeInsetsDirectional.all(AppSpacing.md),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsetsDirectional.symmetric(
+                                                  horizontal: 10,
+                                                  vertical: 4,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: AppColors.primary.withValues(alpha: 0.14),
+                                                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                                                ),
+                                                child: Text(
+                                                  s.defaultAptName(a.aptNum),
+                                                  style: AppTypography.caption.copyWith(
+                                                    color: AppColors.primaryText(isDark),
+                                                    fontWeight: FontWeight.w800,
+                                                  ),
+                                                ),
+                                              ),
+                                              const Spacer(),
+                                              if (_apts.length > 1)
+                                                IconButton(
+                                                  tooltip: s.deleteTooltip,
+                                                  visualDensity: VisualDensity.compact,
+                                                  onPressed: _saving
+                                                      ? null
+                                                      : () async {
+                                                          final label = (_nameCtrls[a.aptNum]
+                                                                          ?.text
+                                                                          .trim()
+                                                                          .isNotEmpty ==
+                                                                      true)
+                                                              ? _nameCtrls[a.aptNum]!.text.trim()
+                                                              : s.defaultAptName(a.aptNum);
+                                                          final ok = await showConfirmDeleteDialog(
+                                                            context: context,
+                                                            s: s,
+                                                            isDark: isDark,
+                                                            message: s.confirmDeleteAptBody(label),
+                                                          );
+                                                          if (ok) _deleteApartment(idx);
+                                                        },
+                                                  icon: Icon(
+                                                    Icons.delete_outline_rounded,
+                                                    size: 18,
+                                                    color: AppColors.dangerText(isDark),
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: AppSpacing.sm),
+                                          TextField(
+                                            controller: _nameCtrls[a.aptNum],
+                                            style: AppTypography.body.copyWith(
+                                              color: AppColors.textPrimary(isDark),
+                                            ),
+                                            decoration: InputDecoration(
+                                              labelText: s.optionalName,
+                                              filled: true,
+                                              fillColor: AppColors.surface(isDark),
+                                              prefixIcon: Icon(
+                                                Icons.person_outline_rounded,
+                                                size: 17,
+                                                color: AppColors.textSecondary(isDark),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: AppSpacing.sm),
+                                          TextField(
+                                            controller: _passCtrls[a.aptNum],
+                                            style: AppTypography.body.copyWith(
+                                              color: AppColors.textPrimary(isDark),
+                                              fontWeight: FontWeight.w700,
+                                              fontFeatures: const [
+                                                FontFeature.tabularFigures(),
+                                              ],
+                                            ),
+                                            decoration: InputDecoration(
+                                              labelText: s.passcodeLabel,
+                                              hintText: s.passNotSetYet,
+                                              filled: true,
+                                              fillColor: AppColors.surface(isDark),
+                                              prefixIcon: Icon(
+                                                Icons.lock_outline_rounded,
+                                                size: 17,
+                                                color: AppColors.textSecondary(isDark),
+                                              ),
+                                              suffixIcon: IconButton(
+                                                tooltip: s.resetPassBtn,
+                                                icon: Icon(
+                                                  Icons.lock_reset_rounded,
+                                                  size: 18,
+                                                  color: AppColors.dangerText(isDark),
+                                                ),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _passCtrls[a.aptNum]?.clear();
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
 
-                            // Card inputs row: Spacious Name + Passcode fields
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  flex: 3,
-                                  child: TextField(
-                                    controller: _nameCtrls[a.aptNum],
-                                    style: AppTypography.body.copyWith(
-                                      color: AppColors.textPrimary(isDark),
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                    decoration: InputDecoration(
-                                      labelText: s.optionalName,
-                                      hintText: s.nameHint(a.aptNum),
-                                      filled: true,
-                                      fillColor: AppColors.card(isDark),
-                                      prefixIcon: Icon(
-                                        Icons.person_outline_rounded,
-                                        size: 17,
-                                        color: AppColors.textSecondary(isDark),
-                                      ),
-                                      contentPadding: const EdgeInsetsDirectional.symmetric(
-                                        horizontal: AppSpacing.md,
-                                        vertical: AppSpacing.md,
-                                      ),
-                                    ),
+                              // Sticky Bottom Action Bar
+                              Container(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                  AppSpacing.lg,
+                                  AppSpacing.sm,
+                                  AppSpacing.lg,
+                                  AppSpacing.md,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.surface(isDark),
+                                  border: Border(
+                                    top: BorderSide(color: AppColors.border(isDark)),
                                   ),
                                 ),
-                                const SizedBox(width: AppSpacing.sm),
-                                Expanded(
-                                  flex: 2,
-                                  child: TextField(
-                                    controller: _passCtrls[a.aptNum],
-                                    style: AppTypography.body.copyWith(
-                                      color: AppColors.textPrimary(isDark),
-                                      fontWeight: FontWeight.w700,
-                                      fontFeatures: const [FontFeature.tabularFigures()],
-                                    ),
-                                    decoration: InputDecoration(
-                                      labelText: s.passcodeLabel,
-                                      hintText: s.passNotSetYet,
-                                      filled: true,
-                                      fillColor: AppColors.card(isDark),
-                                      prefixIcon: Icon(
-                                        Icons.lock_outline_rounded,
-                                        size: 17,
-                                        color: AppColors.textSecondary(isDark),
+                                child: SafeArea(
+                                  top: false,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: _TopActionButton(
+                                              label: s.addApartmentBtn,
+                                              icon: Icons.add_home_rounded,
+                                              color: AppColors.emerald,
+                                              textColor: AppColors.emeraldText(isDark),
+                                              isDark: isDark,
+                                              onTap: _saving ? null : _addNewApartment,
+                                            ),
+                                          ),
+                                          const SizedBox(width: AppSpacing.sm),
+                                          Expanded(
+                                            child: _TopActionButton(
+                                              label: s.resetAllPasswordsBtn,
+                                              icon: Icons.lock_reset_rounded,
+                                              color: AppColors.danger,
+                                              textColor: AppColors.dangerText(isDark),
+                                              isDark: isDark,
+                                              onTap: _saving
+                                                  ? null
+                                                  : () async {
+                                                      await showConfirmDeleteDialog(
+                                                        context: context,
+                                                        s: s,
+                                                        isDark: isDark,
+                                                        confirmLabel: s.resetAllPasswordsBtn,
+                                                        message: s.confirmResetAllPasswordsBody,
+                                                        onConfirm: () async {
+                                                          final ok = await widget.cubit
+                                                              .resetAllApartmentPasscodes();
+                                                          if (ok && mounted) {
+                                                            setState(() {
+                                                              for (final ctrl in _passCtrls.values) {
+                                                                ctrl.clear();
+                                                              }
+                                                            });
+                                                          }
+                                                        },
+                                                      );
+                                                    },
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      suffixIcon: IconButton(
-                                        tooltip: s.resetPassBtn,
-                                        icon: Icon(
-                                          Icons.lock_reset_rounded,
-                                          size: 17,
-                                          color: AppColors.dangerText(isDark),
+                                      const SizedBox(height: AppSpacing.sm),
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: AppPrimaryButton(
+                                          label: _saving ? s.saving : s.saveAll,
+                                          icon: Icons.check_circle_outline_rounded,
+                                          loading: _saving,
+                                          onPressed: _saving ? null : _saveAll,
                                         ),
-                                        onPressed: () {
-                                          setState(() {
-                                            _passCtrls[a.aptNum]?.clear();
-                                          });
-                                        },
                                       ),
-                                      contentPadding: const EdgeInsetsDirectional.symmetric(
-                                        horizontal: AppSpacing.md,
-                                        vertical: AppSpacing.md,
-                                      ),
-                                    ),
+                                    ],
                                   ),
                                 ),
-                              ],
-                            ),
-                          ],
+                              ),
+                            ],
+                          ),
                         ),
-                      );
-                    },
+                      ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _TopActionButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color color;
+  final Color textColor;
+  final bool isDark;
+  final VoidCallback? onTap;
+
+  const _TopActionButton({
+    required this.label,
+    required this.icon,
+    required this.color,
+    required this.textColor,
+    required this.isDark,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        child: Container(
+          padding: const EdgeInsetsDirectional.symmetric(
+            horizontal: AppSpacing.sm,
+            vertical: 11,
+          ),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: isDark ? 0.14 : 0.08),
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            border: Border.all(color: color.withValues(alpha: 0.45)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 17, color: textColor),
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.caption.copyWith(
+                    color: textColor,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: AppSpacing.md),
-
-                // Add Apartment Button
-                InkWell(
-                  onTap: _saving ? null : _addNewApartment,
-                  borderRadius: BorderRadius.circular(AppRadius.md),
-                  child: Container(
-                    padding: const EdgeInsetsDirectional.symmetric(vertical: AppSpacing.md),
-                    decoration: BoxDecoration(
-                      color: AppColors.emerald.withValues(alpha: isDark ? 0.12 : 0.08),
-                      borderRadius: BorderRadius.circular(AppRadius.md),
-                      border: Border.all(
-                        color: AppColors.emerald.withValues(alpha: 0.45),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.add_home_rounded,
-                          size: 18,
-                          color: AppColors.emeraldText(isDark),
-                        ),
-                        const SizedBox(width: AppSpacing.xs),
-                        Text(
-                          s.addApartmentBtn,
-                          style: AppTypography.label.copyWith(
-                            color: AppColors.emeraldText(isDark),
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-
-                // Reset All Passwords Button
-                InkWell(
-                  onTap: _saving
-                      ? null
-                      : () async {
-                          await showConfirmDeleteDialog(
-                            context: context,
-                            s: s,
-                            isDark: isDark,
-                            confirmLabel: s.resetAllPasswordsBtn,
-                            message: s.confirmResetAllPasswordsBody,
-                            onConfirm: () async {
-                              final ok = await widget.cubit.resetAllApartmentPasscodes();
-                              if (ok && mounted) {
-                                setState(() {
-                                  for (final ctrl in _passCtrls.values) {
-                                    ctrl.clear();
-                                  }
-                                });
-                              }
-                            },
-                          );
-                        },
-                  borderRadius: BorderRadius.circular(AppRadius.md),
-                  child: Container(
-                    padding: const EdgeInsetsDirectional.symmetric(vertical: AppSpacing.md),
-                    decoration: BoxDecoration(
-                      color: AppColors.danger.withValues(alpha: isDark ? 0.12 : 0.08),
-                      borderRadius: BorderRadius.circular(AppRadius.md),
-                      border: Border.all(
-                        color: AppColors.danger.withValues(alpha: 0.45),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.lock_reset_rounded,
-                          size: 18,
-                          color: AppColors.dangerText(isDark),
-                        ),
-                        const SizedBox(width: AppSpacing.xs),
-                        Text(
-                          s.resetAllPasswordsBtn,
-                          style: AppTypography.label.copyWith(
-                            color: AppColors.dangerText(isDark),
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.md),
-
-                // Action buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextButton(
-                        onPressed: _saving ? null : () => Navigator.pop(context),
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsetsDirectional.symmetric(vertical: AppSpacing.md),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(AppRadius.md),
-                          ),
-                        ),
-                        child: Text(
-                          s.cancel,
-                          style: AppTypography.label.copyWith(
-                            color: AppColors.textSecondary(isDark),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      flex: 2,
-                      child: AppPrimaryButton(
-                        label: _saving ? s.saving : s.saveAll,
-                        icon: Icons.check_rounded,
-                        loading: _saving,
-                        onPressed: _saving ? null : _saveAll,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ],
           ),
         ),

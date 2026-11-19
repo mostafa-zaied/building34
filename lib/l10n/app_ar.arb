@@ -244,5 +244,15 @@
   "passNotSetYet": "لم يُعيّنها الساكن بعد",
   "resetAllPasswordsBtn": "Reset All Passwords",
   "confirmResetAllPasswordsBody": "هل تريد إعادة تعيين كلمة السر لجميع الشقق؟ سيُطلب من كل ساكن تعيين كلمة سر جديدة.",
-  "allPasswordsResetToast": "تمت إعادة تعيين كلمات السر لجميع الشقق بنجاح"
+  "allPasswordsResetToast": "تمت إعادة تعيين كلمات السر لجميع الشقق بنجاح",
+  "drawerExtraSections": "أقسام إضافية",
+  "drawerPreferences": "تفضيلات التطبيق",
+  "drawerThemeLabel": "المظهر",
+  "drawerThemeDark": "ليلي",
+  "drawerThemeLight": "نهاري",
+  "drawerLanguageLabel": "اللغة",
+  "drawerAdminSection": "الإدارة",
+  "drawerAdminLogin": "دخول المدير",
+  "contactManagerBtn": "تواصل مع المسؤول",
+  "drawerMyAptLabel": "شقتك: {apt}"
 }

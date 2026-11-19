@@ -1567,6 +1567,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All apartment passwords have been reset'**
   String get allPasswordsResetToast;
+
+  /// No description provided for @drawerExtraSections.
+  ///
+  /// In en, this message translates to:
+  /// **'More Sections'**
+  String get drawerExtraSections;
+
+  /// No description provided for @drawerPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'App Preferences'**
+  String get drawerPreferences;
+
+  /// No description provided for @drawerThemeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get drawerThemeLabel;
+
+  /// No description provided for @drawerThemeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get drawerThemeDark;
+
+  /// No description provided for @drawerThemeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get drawerThemeLight;
+
+  /// No description provided for @drawerLanguageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get drawerLanguageLabel;
+
+  /// No description provided for @drawerAdminSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Administration'**
+  String get drawerAdminSection;
+
+  /// No description provided for @drawerAdminLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Login'**
+  String get drawerAdminLogin;
+
+  /// No description provided for @contactManagerBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Manager'**
+  String get contactManagerBtn;
+
+  /// No description provided for @drawerMyAptLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Apt: {apt}'**
+  String drawerMyAptLabel(String apt);
 }
 
 class _AppLocalizationsDelegate

@@ -421,5 +421,16 @@
   "passNotSetYet": "Not set yet",
   "resetAllPasswordsBtn": "Reset All Passwords",
   "confirmResetAllPasswordsBody": "Do you want to reset passwords for all apartments? Each resident will be asked to set a new passcode.",
-  "allPasswordsResetToast": "All apartment passwords have been reset"
+  "allPasswordsResetToast": "All apartment passwords have been reset",
+  "drawerExtraSections": "More Sections",
+  "drawerPreferences": "App Preferences",
+  "drawerThemeLabel": "Theme",
+  "drawerThemeDark": "Dark",
+  "drawerThemeLight": "Light",
+  "drawerLanguageLabel": "Language",
+  "drawerAdminSection": "Administration",
+  "drawerAdminLogin": "Admin Login",
+  "contactManagerBtn": "Contact Manager",
+  "drawerMyAptLabel": "Your Apt: {apt}",
+  "@drawerMyAptLabel": { "placeholders": { "apt": { "type": "String" } } }
 }

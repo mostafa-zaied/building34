@@ -821,4 +821,36 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get allPasswordsResetToast =>
       'All apartment passwords have been reset';
+
+  @override
+  String get drawerExtraSections => 'More Sections';
+
+  @override
+  String get drawerPreferences => 'App Preferences';
+
+  @override
+  String get drawerThemeLabel => 'Theme';
+
+  @override
+  String get drawerThemeDark => 'Dark';
+
+  @override
+  String get drawerThemeLight => 'Light';
+
+  @override
+  String get drawerLanguageLabel => 'Language';
+
+  @override
+  String get drawerAdminSection => 'Administration';
+
+  @override
+  String get drawerAdminLogin => 'Admin Login';
+
+  @override
+  String get contactManagerBtn => 'Contact Manager';
+
+  @override
+  String drawerMyAptLabel(String apt) {
+    return 'Your Apt: $apt';
+  }
 }
