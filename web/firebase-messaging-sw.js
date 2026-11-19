@@ -11,6 +11,9 @@ firebase.initializeApp({
   measurementId: "G-RE2XWQB14T"
 });
 
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));
+
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
