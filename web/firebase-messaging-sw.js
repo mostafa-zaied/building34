@@ -22,13 +22,13 @@ messaging.onBackgroundMessage((payload) => {
     body,
     icon,
     badge: icon,
-    data: { url: 'https://mostafa-zaied.github.io/mabna-care/' },
+    data: { url: 'https://mabna-care.web.app/' },
   });
 });
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const targetUrl = event.notification?.data?.url || 'https://mostafa-zaied.github.io/mabna-care/';
+  const targetUrl = event.notification?.data?.url || 'https://mabna-care.web.app/';
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
       for (const client of windowClients) {
