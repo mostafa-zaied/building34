@@ -1068,4 +1068,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get retryBtn => 'Retry';
+
+  @override
+  String get installAppNavLabel => 'Install App';
+
+  @override
+  String get installAppTitle => 'Install MABNA CARE as an App';
+
+  @override
+  String get installAppSubtitle =>
+      'Install the app on your home screen for 1-tap access without a browser bar and instant notifications.';
+
+  @override
+  String get installAppNowBtn => 'Install App Now';
+
+  @override
+  String get installAppAlreadyInstalled =>
+      'App is already installed on your device ✅';
+
+  @override
+  String get installAndroidTitle => 'How to install on Android (Chrome)';
+
+  @override
+  String get installAndroidStep1 =>
+      'Tap the three dots menu (⋮) at the top corner of Chrome.';
+
+  @override
+  String get installAndroidStep2 =>
+      'Select \"Install app\" or \"Install and create shortcut\" → \"Install\".';
+
+  @override
+  String get installAndroidStep3 =>
+      'Tap \"Install\" on the confirmation popup — the app icon will appear on your home screen.';
+
+  @override
+  String get installIosTitle => 'How to install on iPhone (Safari)';
+
+  @override
+  String get installIosStep1 => 'Make sure you open the link in Safari.';
+
+  @override
+  String get installIosStep2 =>
+      'Tap the Share icon at the bottom of the screen.';
+
+  @override
+  String get installIosStep3 =>
+      'Select \"Add to Home Screen\" and then tap \"Add\".';
 }

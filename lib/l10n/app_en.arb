@@ -503,5 +503,18 @@
   "onlineRestoredToast": "Back online — connection restored",
   "noNetworkTitle": "No Internet Connection",
   "noNetworkSubtitle": "Check your connection and tap Retry to reload.",
-  "retryBtn": "Retry"
+  "retryBtn": "Retry",
+  "installAppNavLabel": "Install App",
+  "installAppTitle": "Install MABNA CARE as an App",
+  "installAppSubtitle": "Install the app on your home screen for 1-tap access without a browser bar and instant notifications.",
+  "installAppNowBtn": "Install App Now",
+  "installAppAlreadyInstalled": "App is already installed on your device ✅",
+  "installAndroidTitle": "How to install on Android (Chrome)",
+  "installAndroidStep1": "Tap the three dots menu (⋮) at the top corner of Chrome.",
+  "installAndroidStep2": "Select \"Install app\" or \"Install and create shortcut\" → \"Install\".",
+  "installAndroidStep3": "Tap \"Install\" on the confirmation popup — the app icon will appear on your home screen.",
+  "installIosTitle": "How to install on iPhone (Safari)",
+  "installIosStep1": "Make sure you open the link in Safari.",
+  "installIosStep2": "Tap the Share icon at the bottom of the screen.",
+  "installIosStep3": "Select \"Add to Home Screen\" and then tap \"Add\"."
 }

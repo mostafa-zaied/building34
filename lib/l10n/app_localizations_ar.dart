@@ -1057,4 +1057,49 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get retryBtn => 'إعادة المحاولة';
+
+  @override
+  String get installAppNavLabel => 'تثبيت التطبيق';
+
+  @override
+  String get installAppTitle => 'تثبيت MABNA CARE كتطبيق';
+
+  @override
+  String get installAppSubtitle =>
+      'ثبّت التطبيق على شاشة موبايلك الرئيسية ليفتح بضغطة واحدة بدون متصفح ويستقبل الإشعارات الفورية.';
+
+  @override
+  String get installAppNowBtn => 'تثبيت التطبيق الآن';
+
+  @override
+  String get installAppAlreadyInstalled => 'التطبيق مثبّت بالفعل على جهازك ✅';
+
+  @override
+  String get installAndroidTitle => 'طريقة التثبيت على أندرويد (Chrome)';
+
+  @override
+  String get installAndroidStep1 =>
+      'اضغط على الثلاث نقاط (⋮) أعلى يسار أو يمين متصفح Chrome.';
+
+  @override
+  String get installAndroidStep2 =>
+      'اختر \"Install app\" أو \"Install and create shortcut\" ثم اختر \"Install\".';
+
+  @override
+  String get installAndroidStep3 =>
+      'اضغط \"Install\" في النافذة التي ستظهر — وسيُضاف التطبيق بأيقونته على شاشتك الرئيسية.';
+
+  @override
+  String get installIosTitle => 'طريقة التثبيت على آيفون (Safari)';
+
+  @override
+  String get installIosStep1 => 'تأكد من فتح الرابط في متصفح Safari.';
+
+  @override
+  String get installIosStep2 =>
+      'اضغط على أيقونة المشاركة (Share) في أسفل الشاشة.';
+
+  @override
+  String get installIosStep3 =>
+      'اختر \"Add to Home Screen\" (إضافة إلى الشاشة الرئيسية) ثم اضغط \"Add\".';
 }

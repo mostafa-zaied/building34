@@ -10,6 +10,7 @@ import '../../cubit/building_state.dart';
 import '../../screens/admin_settings_screen.dart';
 import '../../screens/admin_views_screen.dart';
 import '../../screens/analytics_screen.dart';
+import '../../screens/install_app_screen.dart';
 import '../dialogs/admin_login_dialog.dart';
 import '../dialogs/manage_apartments_dialog.dart';
 
@@ -284,6 +285,17 @@ class DesktopSidebar extends StatelessWidget {
                     ),
                   ),
                   onTap: cubit.enablePushNotifications,
+                ),
+                _tile(
+                  icon: Icons.install_mobile_rounded,
+                  label: s.installAppNavLabel,
+                  isDark: isDark,
+                  accentColor: AppColors.emeraldText(isDark),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const InstallAppScreen(),
+                    ),
+                  ),
                 ),
 
                 const SizedBox(height: AppSpacing.sm),

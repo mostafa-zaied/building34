@@ -87,12 +87,13 @@
             const title = payload?.notification?.title || 'MABNA CARE';
             const body = payload?.notification?.body || '';
             const icon = new URL('icons/Icon-192.png', document.baseURI).href;
+            const badge = new URL('icons/notification-badge.png', document.baseURI).href;
             if (Notification.permission === 'granted') {
               try {
-                new Notification(title, { body, icon });
+                new Notification(title, { body, icon, badge });
               } catch (_) {
                 if (reg && reg.showNotification) {
-                  reg.showNotification(title, { body, icon, badge: icon });
+                  reg.showNotification(title, { body, icon, badge });
                 }
               }
             }
@@ -144,6 +145,33 @@
       } catch (e) {
         console.warn('Firebase init skipped:', e);
       }
+
+      // Capture native PWA install prompt (Android / Desktop Chrome)
+      window._mabnaInstallPrompt = null;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        window._mabnaInstallPrompt = e;
+      });
+      window.addEventListener('appinstalled', () => {
+        window._mabnaInstallPrompt = null;
+      });
+      window.mabnaIsStandalone = function () {
+        return (
+          window.matchMedia('(display-mode: standalone)').matches ||
+          window.navigator.standalone === true
+        );
+      };
+      window.mabnaCanInstallPrompt = function () {
+        return window._mabnaInstallPrompt != null;
+      };
+      window.mabnaTriggerInstallPrompt = async function () {
+        const promptEvent = window._mabnaInstallPrompt;
+        if (!promptEvent) return false;
+        promptEvent.prompt();
+        const choice = await promptEvent.userChoice;
+        window._mabnaInstallPrompt = null;
+        return choice && choice.outcome === 'accepted';
+      };
     })();
   </script>
 </head>

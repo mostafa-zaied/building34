@@ -315,5 +315,18 @@
   "onlineRestoredToast": "عاد الاتصال بالإنترنت بنجاح",
   "noNetworkTitle": "تعذر الاتصال بالإنترنت",
   "noNetworkSubtitle": "تأكد من اتصالك بالإنترنت ثم اضغط إعادة المحاولة.",
-  "retryBtn": "إعادة المحاولة"
+  "retryBtn": "إعادة المحاولة",
+  "installAppNavLabel": "تثبيت التطبيق",
+  "installAppTitle": "تثبيت MABNA CARE كتطبيق",
+  "installAppSubtitle": "ثبّت التطبيق على شاشة موبايلك الرئيسية ليفتح بضغطة واحدة بدون متصفح ويستقبل الإشعارات الفورية.",
+  "installAppNowBtn": "تثبيت التطبيق الآن",
+  "installAppAlreadyInstalled": "التطبيق مثبّت بالفعل على جهازك ✅",
+  "installAndroidTitle": "طريقة التثبيت على أندرويد (Chrome)",
+  "installAndroidStep1": "اضغط على الثلاث نقاط (⋮) أعلى يسار أو يمين متصفح Chrome.",
+  "installAndroidStep2": "اختر \"Install app\" أو \"Install and create shortcut\" ثم اختر \"Install\".",
+  "installAndroidStep3": "اضغط \"Install\" في النافذة التي ستظهر — وسيُضاف التطبيق بأيقونته على شاشتك الرئيسية.",
+  "installIosTitle": "طريقة التثبيت على آيفون (Safari)",
+  "installIosStep1": "تأكد من فتح الرابط في متصفح Safari.",
+  "installIosStep2": "اضغط على أيقونة المشاركة (Share) في أسفل الشاشة.",
+  "installIosStep3": "اختر \"Add to Home Screen\" (إضافة إلى الشاشة الرئيسية) ثم اضغط \"Add\"."
 }

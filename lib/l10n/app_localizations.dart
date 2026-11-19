@@ -1998,6 +1998,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get retryBtn;
+
+  /// No description provided for @installAppNavLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Install App'**
+  String get installAppNavLabel;
+
+  /// No description provided for @installAppTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Install MABNA CARE as an App'**
+  String get installAppTitle;
+
+  /// No description provided for @installAppSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Install the app on your home screen for 1-tap access without a browser bar and instant notifications.'**
+  String get installAppSubtitle;
+
+  /// No description provided for @installAppNowBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Install App Now'**
+  String get installAppNowBtn;
+
+  /// No description provided for @installAppAlreadyInstalled.
+  ///
+  /// In en, this message translates to:
+  /// **'App is already installed on your device ✅'**
+  String get installAppAlreadyInstalled;
+
+  /// No description provided for @installAndroidTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How to install on Android (Chrome)'**
+  String get installAndroidTitle;
+
+  /// No description provided for @installAndroidStep1.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the three dots menu (⋮) at the top corner of Chrome.'**
+  String get installAndroidStep1;
+
+  /// No description provided for @installAndroidStep2.
+  ///
+  /// In en, this message translates to:
+  /// **'Select \"Install app\" or \"Install and create shortcut\" → \"Install\".'**
+  String get installAndroidStep2;
+
+  /// No description provided for @installAndroidStep3.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap \"Install\" on the confirmation popup — the app icon will appear on your home screen.'**
+  String get installAndroidStep3;
+
+  /// No description provided for @installIosTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How to install on iPhone (Safari)'**
+  String get installIosTitle;
+
+  /// No description provided for @installIosStep1.
+  ///
+  /// In en, this message translates to:
+  /// **'Make sure you open the link in Safari.'**
+  String get installIosStep1;
+
+  /// No description provided for @installIosStep2.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the Share icon at the bottom of the screen.'**
+  String get installIosStep2;
+
+  /// No description provided for @installIosStep3.
+  ///
+  /// In en, this message translates to:
+  /// **'Select \"Add to Home Screen\" and then tap \"Add\".'**
+  String get installIosStep3;
 }
 
 class _AppLocalizationsDelegate
