@@ -1217,7 +1217,7 @@ abstract class AppLocalizations {
   /// No description provided for @navFeedback.
   ///
   /// In en, this message translates to:
-  /// **'Feedback'**
+  /// **'Opinions'**
   String get navFeedback;
 
   /// No description provided for @navFeedbackFull.

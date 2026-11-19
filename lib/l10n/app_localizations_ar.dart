@@ -625,7 +625,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get viewsUpcomingVotesLabel => 'مهتمون بخدمات المنطقة 👍';
 
   @override
-  String get navFeedback => 'شكاوى ومقترحات';
+  String get navFeedback => 'آراء';
 
   @override
   String get navFeedbackFull => 'الشكاوى والمقترحات';

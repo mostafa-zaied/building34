@@ -630,7 +630,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get viewsUpcomingVotesLabel => 'Interested 👍';
 
   @override
-  String get navFeedback => 'Feedback';
+  String get navFeedback => 'Opinions';
 
   @override
   String get navFeedbackFull => 'Complaints & Suggestions';
