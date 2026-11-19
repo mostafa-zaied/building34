@@ -69,12 +69,13 @@
           firebase.initializeApp(firebaseConfig);
         }
 
-        // Clean up any legacy flutter_service_worker.js so stale builds never stick
+        // Clean up any legacy flutter_service_worker.js or sub-scoped SW so stale builds never stick
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.getRegistrations().then((regs) => {
             for (const r of regs) {
               const url = (r.active && r.active.scriptURL) || (r.waiting && r.waiting.scriptURL) || '';
-              if (url.includes('flutter_service_worker.js')) {
+              const scope = r.scope || '';
+              if (url.includes('flutter_service_worker.js') || scope.includes('firebase-cloud-messaging-push-scope')) {
                 r.unregister();
               }
             }
@@ -112,10 +113,22 @@
           });
         }
 
-        function registerFcmSw() {
+        async function registerFcmSw() {
           const swUrl = new URL('firebase-messaging-sw.js', document.baseURI).href;
-          const swScope = new URL('firebase-cloud-messaging-push-scope', document.baseURI).pathname;
-          return navigator.serviceWorker.register(swUrl, { scope: swScope });
+          const reg = await navigator.serviceWorker.register(swUrl);
+          const sw = reg.installing || reg.waiting;
+          if (sw && !reg.active) {
+            await new Promise((resolve) => {
+              const timer = setTimeout(resolve, 3500);
+              sw.addEventListener('statechange', () => {
+                if (sw.state === 'activated') {
+                  clearTimeout(timer);
+                  resolve();
+                }
+              });
+            });
+          }
+          return reg;
         }
 
         // Auto-bind foreground listener on load if already granted
@@ -136,9 +149,6 @@
             if (perm !== 'granted') return '';
 
             const reg = await registerFcmSw();
-            if (!reg.active) {
-              await new Promise((resolve) => setTimeout(resolve, 600));
-            }
             bindForegroundListener(reg);
             const messaging = firebase.messaging();
             const token = await Promise.race([

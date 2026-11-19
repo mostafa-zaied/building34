@@ -108,6 +108,7 @@ class BuildingCubit extends Cubit<BuildingState> {
         buildingContacts: data.buildingContacts,
         apartmentHasPasscode: data.apartmentHasPasscode,
       ));
+      unawaited(syncPushTokenIfGranted());
     } catch (e) {
       emit(state.copyWith(
         loading: false,
