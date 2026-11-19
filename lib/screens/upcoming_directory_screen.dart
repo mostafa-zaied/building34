@@ -17,7 +17,6 @@ class UpcomingDirectoryScreen extends StatelessWidget {
       builder: (context, state) {
         final isDark = state.isDarkMode;
         final s = state.s;
-        final voted = state.hasVotedUpcomingDirectory;
         final categories = [
           s.catRestaurants,
           s.catPharmacies,
@@ -112,51 +111,6 @@ class UpcomingDirectoryScreen extends StatelessWidget {
                             ),
                           )
                           .toList(),
-                    ),
-                    const SizedBox(height: AppSpacing.xl),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: voted
-                            ? null
-                            : () => context
-                                .read<BuildingCubit>()
-                                .voteUpcomingDirectory(),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: voted
-                              ? AppColors.emerald
-                              : AppColors.primaryActionBg(isDark),
-                          disabledBackgroundColor: AppColors.emerald,
-                          foregroundColor: Colors.white,
-                          disabledForegroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(AppRadius.md),
-                          ),
-                        ),
-                        icon: Icon(
-                          voted
-                              ? Icons.check_circle_rounded
-                              : Icons.thumb_up_alt_outlined,
-                          size: 18,
-                        ),
-                        label: Text(
-                          voted ? s.upcomingVotedBtn : s.upcomingInterestedBtn,
-                          style: AppTypography.label.copyWith(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      voted ? s.upcomingHintAfter : s.upcomingHintBefore,
-                      textAlign: TextAlign.center,
-                      style: AppTypography.caption.copyWith(
-                        color: AppColors.textSecondary(isDark),
-                      ),
                     ),
                   ],
                 ),

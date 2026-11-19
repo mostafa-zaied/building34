@@ -500,18 +500,6 @@ class AppLocalizationsAr extends AppLocalizations {
       'قريباً ستتمكن من إضافة وتصفح أفضل المطاعم، الصيدليات، وفنيي الصيانة المجرّبين حول عمارتنا والتواصل معهم بضغطة واحدة.';
 
   @override
-  String get upcomingInterestedBtn => 'أنا مهتم بهذه الخدمة 👍';
-
-  @override
-  String get upcomingVotedBtn => 'تم تسجيل اهتمامك بنجاح';
-
-  @override
-  String get upcomingHintBefore => 'شاركنا برأيك هل الخدمة دي مفيدة ليك؟';
-
-  @override
-  String get upcomingHintAfter => 'شكراً لمشاركتك! رأيك مهم جداً لينا.';
-
-  @override
   String get catRestaurants => '🍽️ مطاعم وكافيهات';
 
   @override
@@ -607,22 +595,28 @@ class AppLocalizationsAr extends AppLocalizations {
       'اضغط تحديث لعرض الإحصائيات (تأكد من تشغيل SQL في Supabase)';
 
   @override
+  String get viewsHeroSubtitle => 'متابعة حية لنشاط وزيارات السكان على التطبيق';
+
+  @override
   String get viewsTotalLabel => 'إجمالي الفتح';
+
+  @override
+  String get viewsTotalSubtitle => 'إجمالي مرات فتح التطبيق منذ الإطلاق';
 
   @override
   String get viewsUniqueLabel => 'زوار فريدون';
 
   @override
-  String get viewsTodayLabel => 'اليوم';
+  String get viewsUniqueSubtitle => 'أجهزة مختلفة فتحت التطبيق';
 
   @override
-  String get viewsWeekLabel => '7 أيام';
+  String get viewsTodayLabel => 'زيارات اليوم';
 
   @override
-  String get viewsUpcomingOpensLabel => 'فتحوا تبويب \"قريباً\"';
+  String get viewsTodaySubtitle => 'مرات الفتح خلال اليوم الحالي';
 
   @override
-  String get viewsUpcomingVotesLabel => 'مهتمون بخدمات المنطقة 👍';
+  String get viewsAvgPerVisitorLabel => 'متوسط الفتح لكل زائر';
 
   @override
   String get navFeedback => 'آراء';
@@ -836,7 +830,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get drawerAdminSection => 'الإدارة';
 
   @override
-  String get drawerAdminLogin => 'دخول المدير';
+  String get drawerAdminLogin => 'دخول المسؤول';
 
   @override
   String get contactManagerBtn => 'تواصل مع المسؤول';
@@ -1024,7 +1018,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get pushEnabledBadge => 'مُفعّلة';
 
   @override
-  String get pushEnableAction => 'تفعيل';
+  String get pushEnableAction => 'غير مفعّلة';
 
   @override
   String get pushEnabledToast => '🔔 تم تفعيل الإشعارات على جهازك بنجاح';
@@ -1059,10 +1053,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get retryBtn => 'إعادة المحاولة';
 
   @override
-  String get installAppNavLabel => 'تثبيت التطبيق';
+  String get installAppNavLabel => 'طريقة تثبيت التطبيق';
 
   @override
-  String get installAppTitle => 'تثبيت MABNA CARE كتطبيق';
+  String get installAppTitle => 'طريقة تثبيت MABNA CARE كتطبيق';
 
   @override
   String get installAppSubtitle =>

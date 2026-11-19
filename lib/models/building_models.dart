@@ -261,17 +261,11 @@ class PageViewStats {
   final int totalViews;
   final int uniqueVisitors;
   final int todayViews;
-  final int weekViews;
-  final int upcomingOpens;
-  final int upcomingVotes;
 
   const PageViewStats({
     this.totalViews = 0,
     this.uniqueVisitors = 0,
     this.todayViews = 0,
-    this.weekViews = 0,
-    this.upcomingOpens = 0,
-    this.upcomingVotes = 0,
   });
 
   factory PageViewStats.fromJson(Map<String, dynamic> json) {
@@ -279,9 +273,6 @@ class PageViewStats {
       totalViews: (json['total_views'] as num?)?.toInt() ?? 0,
       uniqueVisitors: (json['unique_visitors'] as num?)?.toInt() ?? 0,
       todayViews: (json['today_views'] as num?)?.toInt() ?? 0,
-      weekViews: (json['week_views'] as num?)?.toInt() ?? 0,
-      upcomingOpens: (json['upcoming_opens'] as num?)?.toInt() ?? 0,
-      upcomingVotes: (json['upcoming_votes'] as num?)?.toInt() ?? 0,
     );
   }
 }

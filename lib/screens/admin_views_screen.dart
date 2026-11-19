@@ -50,6 +50,10 @@ class _AdminViewsScreenState extends State<AdminViewsScreen> {
           );
         }
 
+        final avgOpens = (st != null && st.uniqueVisitors > 0)
+            ? (st.totalViews / st.uniqueVisitors).toStringAsFixed(1)
+            : '0.0';
+
         return BusyOverlay(
           busy: state.busy,
           isDark: isDark,
@@ -86,7 +90,7 @@ class _AdminViewsScreenState extends State<AdminViewsScreen> {
               child: Align(
                 alignment: Alignment.topCenter,
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 680),
+                  constraints: const BoxConstraints(maxWidth: 640),
                   child: ListView(
                     padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
                     children: [
@@ -102,66 +106,180 @@ class _AdminViewsScreenState extends State<AdminViewsScreen> {
                           ),
                         )
                       else ...[
-                        AppCard(
-                          padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Row(
-                                children: [
-                                  _StatBox(
-                                    label: s.viewsTotalLabel,
-                                    value: '${st.totalViews}',
-                                    color: AppColors.primaryText(isDark),
-                                    isDark: isDark,
-                                  ),
-                                  const SizedBox(width: AppSpacing.sm),
-                                  _StatBox(
-                                    label: s.viewsUniqueLabel,
-                                    value: '${st.uniqueVisitors}',
-                                    color: AppColors.emeraldText(isDark),
-                                    isDark: isDark,
-                                  ),
-                                ],
+                        // 1. Hero Featured Card: Total Opens
+                        Container(
+                          padding: const EdgeInsetsDirectional.all(AppSpacing.xl),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: AlignmentDirectional.topStart,
+                              end: AlignmentDirectional.bottomEnd,
+                              colors: isDark
+                                  ? const [Color(0xFF172554), Color(0xFF0F172A)]
+                                  : const [Color(0xFF2563EB), Color(0xFF1D4ED8)],
+                            ),
+                            borderRadius: BorderRadius.circular(AppRadius.xl),
+                            border: Border.all(
+                              color: AppColors.primary.withValues(alpha: 0.35),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primary.withValues(
+                                  alpha: isDark ? 0.22 : 0.25,
+                                ),
+                                blurRadius: 24,
+                                offset: const Offset(0, 10),
                               ),
-                              const SizedBox(height: AppSpacing.sm),
-                              Row(
-                                children: [
-                                  _StatBox(
-                                    label: s.viewsTodayLabel,
-                                    value: '${st.todayViews}',
-                                    color: AppColors.primaryText(isDark),
-                                    isDark: isDark,
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      s.viewsTotalLabel,
+                                      style: AppTypography.label.copyWith(
+                                        color: Colors.white.withValues(alpha: 0.85),
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      '${st.totalViews}',
+                                      style: AppTypography.headline.copyWith(
+                                        fontSize: 38,
+                                        fontWeight: FontWeight.w900,
+                                        color: Colors.white,
+                                        height: 1.05,
+                                        fontFeatures: const [
+                                          FontFeature.tabularFigures(),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      s.viewsTotalSubtitle,
+                                      style: AppTypography.caption.copyWith(
+                                        color: Colors.white.withValues(alpha: 0.72),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                width: 58,
+                                height: 58,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.14),
+                                  borderRadius: BorderRadius.circular(18),
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.22),
                                   ),
-                                  const SizedBox(width: AppSpacing.sm),
-                                  _StatBox(
-                                    label: s.viewsWeekLabel,
-                                    value: '${st.weekViews}',
-                                    color: AppColors.primaryText(isDark),
-                                    isDark: isDark,
-                                  ),
-                                ],
+                                ),
+                                child: const Icon(
+                                  Icons.insights_rounded,
+                                  color: Colors.white,
+                                  size: 28,
+                                ),
                               ),
                             ],
                           ),
                         ),
+
                         const SizedBox(height: AppSpacing.md),
+
+                        // 2. Two-Column Metric Cards: Unique Visitors & Today's Visits
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _RichStatCard(
+                                icon: Icons.people_alt_rounded,
+                                accentColor: AppColors.emerald,
+                                valueColor: AppColors.emeraldText(isDark),
+                                value: '${st.uniqueVisitors}',
+                                label: s.viewsUniqueLabel,
+                                subtitle: s.viewsUniqueSubtitle,
+                                isDark: isDark,
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.md),
+                            Expanded(
+                              child: _RichStatCard(
+                                icon: Icons.today_rounded,
+                                accentColor: AppColors.amber,
+                                valueColor: AppColors.amber,
+                                value: '${st.todayViews}',
+                                label: s.viewsTodayLabel,
+                                subtitle: s.viewsTodaySubtitle,
+                                isDark: isDark,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: AppSpacing.md),
+
+                        // 3. Average Opens per Visitor Summary Card
                         AppCard(
                           padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
                           child: Row(
                             children: [
-                              _StatBox(
-                                label: s.viewsUpcomingOpensLabel,
-                                value: '${st.upcomingOpens}',
-                                color: AppColors.amber,
-                                isDark: isDark,
+                              Container(
+                                width: 42,
+                                height: 42,
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary.withValues(alpha: 0.14),
+                                  borderRadius: BorderRadius.circular(AppRadius.md),
+                                ),
+                                child: Icon(
+                                  Icons.repeat_rounded,
+                                  size: 20,
+                                  color: AppColors.primaryText(isDark),
+                                ),
+                              ),
+                              const SizedBox(width: AppSpacing.md),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      s.viewsAvgPerVisitorLabel,
+                                      style: AppTypography.label.copyWith(
+                                        color: AppColors.textPrimary(isDark),
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      s.viewsHeroSubtitle,
+                                      style: AppTypography.caption.copyWith(
+                                        color: AppColors.textSecondary(isDark),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                               const SizedBox(width: AppSpacing.sm),
-                              _StatBox(
-                                label: s.viewsUpcomingVotesLabel,
-                                value: '${st.upcomingVotes}',
-                                color: AppColors.emeraldText(isDark),
-                                isDark: isDark,
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary.withValues(alpha: 0.14),
+                                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                                ),
+                                child: Text(
+                                  '${avgOpens}x',
+                                  style: AppTypography.title.copyWith(
+                                    color: AppColors.primaryText(isDark),
+                                    fontWeight: FontWeight.w900,
+                                    fontFeatures: const [
+                                      FontFeature.tabularFigures(),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -179,56 +297,71 @@ class _AdminViewsScreenState extends State<AdminViewsScreen> {
   }
 }
 
-class _StatBox extends StatelessWidget {
-  final String label;
+class _RichStatCard extends StatelessWidget {
+  final IconData icon;
+  final Color accentColor;
+  final Color valueColor;
   final String value;
-  final Color color;
+  final String label;
+  final String subtitle;
   final bool isDark;
 
-  const _StatBox({
-    required this.label,
+  const _RichStatCard({
+    required this.icon,
+    required this.accentColor,
+    required this.valueColor,
     required this.value,
-    required this.color,
+    required this.label,
+    required this.subtitle,
     required this.isDark,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.sm,
-          vertical: AppSpacing.md,
-        ),
-        decoration: BoxDecoration(
-          color: AppColors.surface(isDark),
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(color: AppColors.border(isDark)),
-        ),
-        child: Column(
-          children: [
-            Text(
-              value,
-              style: AppTypography.headline.copyWith(
-                fontSize: 22,
-                fontWeight: FontWeight.w900,
-                color: color,
-                fontFeatures: const [FontFeature.tabularFigures()],
-              ),
+    return AppCard(
+      padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: accentColor.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(12),
             ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: AppTypography.caption.copyWith(
-                color: AppColors.textSecondary(isDark),
-                fontWeight: FontWeight.w700,
-              ),
+            child: Icon(icon, size: 20, color: accentColor),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            value,
+            style: AppTypography.headline.copyWith(
+              fontSize: 28,
+              fontWeight: FontWeight.w900,
+              color: valueColor,
+              height: 1.05,
+              fontFeatures: const [FontFeature.tabularFigures()],
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            style: AppTypography.label.copyWith(
+              color: AppColors.textPrimary(isDark),
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            subtitle,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.caption.copyWith(
+              color: AppColors.textSecondary(isDark),
+              height: 1.35,
+            ),
+          ),
+        ],
       ),
     );
   }

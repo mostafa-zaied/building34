@@ -26,7 +26,6 @@ class BuildingState {
   final String announcement;
   final List<EmergencyTransaction> emergencyTransactions;
   final PageViewStats? pageViewStats;
-  final bool hasVotedUpcomingDirectory;
   final bool requireAptPassOnOpen;
   final List<BuildingContact> buildingContacts;
   final Map<int, bool> apartmentHasPasscode;
@@ -54,7 +53,6 @@ class BuildingState {
     this.announcement = '',
     this.emergencyTransactions = const [],
     this.pageViewStats,
-    this.hasVotedUpcomingDirectory = false,
     this.requireAptPassOnOpen = true,
     this.buildingContacts = const [],
     this.apartmentHasPasscode = const {},
@@ -92,7 +90,6 @@ class BuildingState {
     String? announcement,
     List<EmergencyTransaction>? emergencyTransactions,
     PageViewStats? Function()? pageViewStats,
-    bool? hasVotedUpcomingDirectory,
     bool? requireAptPassOnOpen,
     List<BuildingContact>? buildingContacts,
     Map<int, bool>? apartmentHasPasscode,
@@ -120,8 +117,6 @@ class BuildingState {
       announcement: announcement ?? this.announcement,
       emergencyTransactions: emergencyTransactions ?? this.emergencyTransactions,
       pageViewStats: pageViewStats != null ? pageViewStats() : this.pageViewStats,
-      hasVotedUpcomingDirectory:
-          hasVotedUpcomingDirectory ?? this.hasVotedUpcomingDirectory,
       requireAptPassOnOpen: requireAptPassOnOpen ?? this.requireAptPassOnOpen,
       buildingContacts: buildingContacts ?? this.buildingContacts,
       apartmentHasPasscode: apartmentHasPasscode ?? this.apartmentHasPasscode,

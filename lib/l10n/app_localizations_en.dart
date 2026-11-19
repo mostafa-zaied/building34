@@ -502,20 +502,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Soon you will be able to add and browse trusted local restaurants, pharmacies, and technicians around the building in one tap.';
 
   @override
-  String get upcomingInterestedBtn => 'I am interested 👍';
-
-  @override
-  String get upcomingVotedBtn => 'Interest recorded';
-
-  @override
-  String get upcomingHintBefore =>
-      'Let us know if this service would be helpful to you.';
-
-  @override
-  String get upcomingHintAfter =>
-      'Thanks for sharing! Your feedback means a lot to us.';
-
-  @override
   String get catRestaurants => '🍽️ Restaurants & Cafes';
 
   @override
@@ -612,22 +598,29 @@ class AppLocalizationsEn extends AppLocalizations {
       'Tap refresh to load stats (ensure Supabase SQL is applied)';
 
   @override
-  String get viewsTotalLabel => 'Total';
+  String get viewsHeroSubtitle =>
+      'Live overview of resident visits and app activity';
 
   @override
-  String get viewsUniqueLabel => 'Unique';
+  String get viewsTotalLabel => 'Total Opens';
 
   @override
-  String get viewsTodayLabel => 'Today';
+  String get viewsTotalSubtitle => 'Total app launches since release';
 
   @override
-  String get viewsWeekLabel => '7 Days';
+  String get viewsUniqueLabel => 'Unique Visitors';
 
   @override
-  String get viewsUpcomingOpensLabel => 'Opened Soon';
+  String get viewsUniqueSubtitle => 'Distinct devices that opened the app';
 
   @override
-  String get viewsUpcomingVotesLabel => 'Interested 👍';
+  String get viewsTodayLabel => 'Today\'s Visits';
+
+  @override
+  String get viewsTodaySubtitle => 'Launches recorded today';
+
+  @override
+  String get viewsAvgPerVisitorLabel => 'Average Opens per Visitor';
 
   @override
   String get navFeedback => 'Opinions';
@@ -1035,7 +1028,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pushEnabledBadge => 'Enabled';
 
   @override
-  String get pushEnableAction => 'Enable';
+  String get pushEnableAction => 'Off';
 
   @override
   String get pushEnabledToast => '🔔 Push notifications enabled on this device';
@@ -1070,10 +1063,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retryBtn => 'Retry';
 
   @override
-  String get installAppNavLabel => 'Install App';
+  String get installAppNavLabel => 'How to Install App';
 
   @override
-  String get installAppTitle => 'Install MABNA CARE as an App';
+  String get installAppTitle => 'How to Install MABNA CARE';
 
   @override
   String get installAppSubtitle =>

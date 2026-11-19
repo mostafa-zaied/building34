@@ -43,7 +43,6 @@ class BuildingService {
   static final List<EmergencyTransaction> _demoEmergencyTx = [];
   static final List<FeedbackPost> _demoFeedbackPosts = [];
   static final List<({String visitorId, DateTime createdAt})> _demoPageViews = [];
-  static final List<({String visitorId, String eventType})> _demoUpcomingEvents = [];
   static final List<BuildingContact> _demoContacts = [
     BuildingContact(
       id: '1',
@@ -822,19 +821,12 @@ class BuildingService {
     if (!_useSupabase) {
       final now = DateTime.now();
       final todayStart = DateTime(now.year, now.month, now.day);
-      final weekStart = now.subtract(const Duration(days: 7));
       final unique = _demoPageViews.map((e) => e.visitorId).toSet().length;
       final today = _demoPageViews.where((e) => !e.createdAt.isBefore(todayStart)).length;
-      final week = _demoPageViews.where((e) => !e.createdAt.isBefore(weekStart)).length;
-      final upOpens = _demoUpcomingEvents.where((e) => e.eventType == 'open').length;
-      final upVotes = _demoUpcomingEvents.where((e) => e.eventType == 'vote').length;
       return PageViewStats(
         totalViews: _demoPageViews.length,
         uniqueVisitors: unique,
         todayViews: today,
-        weekViews: week,
-        upcomingOpens: upOpens,
-        upcomingVotes: upVotes,
       );
     }
 
@@ -848,30 +840,6 @@ class BuildingService {
       return null;
     } catch (_) {
       return null;
-    }
-  }
-
-  Future<void> recordUpcomingDirectoryEvent(String visitorId, String eventType) async {
-    final clean = visitorId.trim();
-    if (clean.isEmpty) return;
-    if (eventType != 'open' && eventType != 'vote') return;
-
-    if (!_useSupabase) {
-      if (eventType == 'vote' &&
-          _demoUpcomingEvents.any((e) => e.visitorId == clean && e.eventType == 'vote')) {
-        return;
-      }
-      _demoUpcomingEvents.add((visitorId: clean, eventType: eventType));
-      return;
-    }
-
-    try {
-      await Supabase.instance.client.rpc('record_upcoming_directory_event', params: {
-        'p_visitor_id': clean,
-        'p_event_type': eventType,
-      });
-    } catch (_) {
-      // Ignore silently if SQL update not yet applied
     }
   }
 

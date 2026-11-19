@@ -986,30 +986,6 @@ abstract class AppLocalizations {
   /// **'Soon you will be able to add and browse trusted local restaurants, pharmacies, and technicians around the building in one tap.'**
   String get upcomingDirSubtitle;
 
-  /// No description provided for @upcomingInterestedBtn.
-  ///
-  /// In en, this message translates to:
-  /// **'I am interested 👍'**
-  String get upcomingInterestedBtn;
-
-  /// No description provided for @upcomingVotedBtn.
-  ///
-  /// In en, this message translates to:
-  /// **'Interest recorded'**
-  String get upcomingVotedBtn;
-
-  /// No description provided for @upcomingHintBefore.
-  ///
-  /// In en, this message translates to:
-  /// **'Let us know if this service would be helpful to you.'**
-  String get upcomingHintBefore;
-
-  /// No description provided for @upcomingHintAfter.
-  ///
-  /// In en, this message translates to:
-  /// **'Thanks for sharing! Your feedback means a lot to us.'**
-  String get upcomingHintAfter;
-
   /// No description provided for @catRestaurants.
   ///
   /// In en, this message translates to:
@@ -1178,41 +1154,53 @@ abstract class AppLocalizations {
   /// **'Tap refresh to load stats (ensure Supabase SQL is applied)'**
   String get viewsStatsLoadingHint;
 
+  /// No description provided for @viewsHeroSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Live overview of resident visits and app activity'**
+  String get viewsHeroSubtitle;
+
   /// No description provided for @viewsTotalLabel.
   ///
   /// In en, this message translates to:
-  /// **'Total'**
+  /// **'Total Opens'**
   String get viewsTotalLabel;
+
+  /// No description provided for @viewsTotalSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Total app launches since release'**
+  String get viewsTotalSubtitle;
 
   /// No description provided for @viewsUniqueLabel.
   ///
   /// In en, this message translates to:
-  /// **'Unique'**
+  /// **'Unique Visitors'**
   String get viewsUniqueLabel;
+
+  /// No description provided for @viewsUniqueSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Distinct devices that opened the app'**
+  String get viewsUniqueSubtitle;
 
   /// No description provided for @viewsTodayLabel.
   ///
   /// In en, this message translates to:
-  /// **'Today'**
+  /// **'Today\'s Visits'**
   String get viewsTodayLabel;
 
-  /// No description provided for @viewsWeekLabel.
+  /// No description provided for @viewsTodaySubtitle.
   ///
   /// In en, this message translates to:
-  /// **'7 Days'**
-  String get viewsWeekLabel;
+  /// **'Launches recorded today'**
+  String get viewsTodaySubtitle;
 
-  /// No description provided for @viewsUpcomingOpensLabel.
+  /// No description provided for @viewsAvgPerVisitorLabel.
   ///
   /// In en, this message translates to:
-  /// **'Opened Soon'**
-  String get viewsUpcomingOpensLabel;
-
-  /// No description provided for @viewsUpcomingVotesLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Interested 👍'**
-  String get viewsUpcomingVotesLabel;
+  /// **'Average Opens per Visitor'**
+  String get viewsAvgPerVisitorLabel;
 
   /// No description provided for @navFeedback.
   ///
@@ -1936,7 +1924,7 @@ abstract class AppLocalizations {
   /// No description provided for @pushEnableAction.
   ///
   /// In en, this message translates to:
-  /// **'Enable'**
+  /// **'Off'**
   String get pushEnableAction;
 
   /// No description provided for @pushEnabledToast.
@@ -2002,13 +1990,13 @@ abstract class AppLocalizations {
   /// No description provided for @installAppNavLabel.
   ///
   /// In en, this message translates to:
-  /// **'Install App'**
+  /// **'How to Install App'**
   String get installAppNavLabel;
 
   /// No description provided for @installAppTitle.
   ///
   /// In en, this message translates to:
-  /// **'Install MABNA CARE as an App'**
+  /// **'How to Install MABNA CARE'**
   String get installAppTitle;
 
   /// No description provided for @installAppSubtitle.

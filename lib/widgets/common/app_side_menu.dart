@@ -301,21 +301,21 @@ class AppSideMenu extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: isGranted
                                 ? AppColors.emerald.withValues(alpha: 0.16)
-                                : AppColors.primary.withValues(alpha: 0.14),
+                                : AppColors.surface(isDark),
                             borderRadius: BorderRadius.circular(AppRadius.sm),
                             border: Border.all(
                               color: isGranted
                                   ? AppColors.emerald.withValues(alpha: 0.4)
-                                  : AppColors.primary.withValues(alpha: 0.35),
+                                  : AppColors.border(isDark),
                             ),
                           ),
                           child: Text(
                             isGranted ? s.pushEnabledBadge : s.pushEnableAction,
                             style: AppTypography.caption.copyWith(
-                              fontWeight: FontWeight.w800,
+                              fontWeight: FontWeight.w700,
                               color: isGranted
                                   ? AppColors.emeraldText(isDark)
-                                  : AppColors.primaryText(isDark),
+                                  : AppColors.textSecondary(isDark),
                             ),
                           ),
                         ),

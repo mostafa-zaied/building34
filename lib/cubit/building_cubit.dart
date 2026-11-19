@@ -11,7 +11,6 @@ import 'building_state.dart';
 class BuildingCubit extends Cubit<BuildingState> {
   final BuildingService _service;
   bool _viewRecordedThisSession = false;
-  bool _upcomingOpenRecorded = false;
   String _visitorId = '';
 
   BuildingCubit(this._service) : super(const BuildingState());
@@ -53,14 +52,12 @@ class BuildingCubit extends Cubit<BuildingState> {
       bool isAdminAuthed = state.isAdminAuthenticated;
       String adminPass = state.adminPass;
       String visitorId = _visitorId;
-      bool hasVotedUpcoming = state.hasVotedUpcomingDirectory;
       try {
         final prefs = await SharedPreferences.getInstance().timeout(
           const Duration(milliseconds: 250),
         );
         savedAptNum = prefs.getInt('my_apt_num');
         savedAptPass = savedAptNum != null ? prefs.getString('my_apt_pass') : null;
-        hasVotedUpcoming = prefs.getBool('has_voted_upcoming_dir') ?? hasVotedUpcoming;
         visitorId = prefs.getString('visitor_id') ?? '';
         if (visitorId.isEmpty) {
           final rnd = Random().nextInt(999999);
@@ -107,7 +104,6 @@ class BuildingCubit extends Cubit<BuildingState> {
         announcement: data.announcement,
         emergencyTransactions: data.emergencyTransactions,
         pageViewStats: () => viewStats,
-        hasVotedUpcomingDirectory: hasVotedUpcoming,
         requireAptPassOnOpen: data.requireAptPassOnOpen,
         buildingContacts: data.buildingContacts,
         apartmentHasPasscode: data.apartmentHasPasscode,
@@ -169,26 +165,6 @@ class BuildingCubit extends Cubit<BuildingState> {
 
   void selectNav(int index) {
     emit(state.copyWith(selectedNavIndex: index));
-    if (index == 4 && !_upcomingOpenRecorded) {
-      _upcomingOpenRecorded = true;
-      final vid = _visitorId.isNotEmpty
-          ? _visitorId
-          : 'v_${DateTime.now().microsecondsSinceEpoch}';
-      unawaited(_service.recordUpcomingDirectoryEvent(vid, 'open'));
-    }
-  }
-
-  Future<void> voteUpcomingDirectory() async {
-    if (state.hasVotedUpcomingDirectory) return;
-    emit(state.copyWith(hasVotedUpcomingDirectory: true));
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('has_voted_upcoming_dir', true);
-    } catch (_) {}
-    final vid = _visitorId.isNotEmpty
-        ? _visitorId
-        : 'v_${DateTime.now().microsecondsSinceEpoch}';
-    await _service.recordUpcomingDirectoryEvent(vid, 'vote');
   }
 
   Future<bool> submitFeedbackPost({
