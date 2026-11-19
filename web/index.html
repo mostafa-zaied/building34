@@ -83,14 +83,17 @@
           _onMessageBound = true;
           const messaging = firebase.messaging();
           messaging.onMessage((payload) => {
+            console.log('MABNA FCM message received:', payload);
             const title = payload?.notification?.title || 'MABNA CARE';
             const body = payload?.notification?.body || '';
             const icon = new URL('icons/Icon-192.png', document.baseURI).href;
             if (Notification.permission === 'granted') {
-              if (reg && reg.showNotification) {
-                reg.showNotification(title, { body, icon, badge: icon });
-              } else {
+              try {
                 new Notification(title, { body, icon });
+              } catch (_) {
+                if (reg && reg.showNotification) {
+                  reg.showNotification(title, { body, icon, badge: icon });
+                }
               }
             }
           });
