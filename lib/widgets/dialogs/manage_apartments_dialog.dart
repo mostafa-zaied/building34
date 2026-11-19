@@ -352,12 +352,26 @@ class _ManageApartmentsDialogState extends State<_ManageApartmentsDialog> {
                                     ),
                                     decoration: InputDecoration(
                                       labelText: s.passcodeLabel,
+                                      hintText: s.passNotSetYet,
                                       filled: true,
                                       fillColor: AppColors.card(isDark),
                                       prefixIcon: Icon(
                                         Icons.lock_outline_rounded,
                                         size: 17,
                                         color: AppColors.textSecondary(isDark),
+                                      ),
+                                      suffixIcon: IconButton(
+                                        tooltip: s.resetPassBtn,
+                                        icon: Icon(
+                                          Icons.lock_reset_rounded,
+                                          size: 17,
+                                          color: AppColors.dangerText(isDark),
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            _passCtrls[a.aptNum]?.clear();
+                                          });
+                                        },
                                       ),
                                       contentPadding: const EdgeInsetsDirectional.symmetric(
                                         horizontal: AppSpacing.md,

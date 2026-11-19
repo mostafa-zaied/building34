@@ -773,4 +773,41 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errSelectAtLeastOneApt =>
       'Please select at least one apartment to add the charge.';
+
+  @override
+  String get setupAptPassSubtitle =>
+      'Set your apartment passcode for the first time';
+
+  @override
+  String get setupAptPassHint =>
+      'Choose a passcode for your apartment (at least 4 characters). It will be saved on your device; contact the admin if forgotten.';
+
+  @override
+  String get newPasscodeLabel => 'New Passcode';
+
+  @override
+  String get confirmPasscodeLabel => 'Confirm Passcode';
+
+  @override
+  String get saveAndUnlockBtn => 'Save & Unlock';
+
+  @override
+  String get errPassTooShort => 'Passcode must be at least 4 characters.';
+
+  @override
+  String get errPassMismatch => 'Passcodes do not match.';
+
+  @override
+  String get errPassAlreadySet =>
+      'A passcode is already set for this apartment.';
+
+  @override
+  String get forgotPassHint =>
+      'Forgot passcode? Contact the building admin to reset it.';
+
+  @override
+  String get resetPassBtn => 'Reset';
+
+  @override
+  String get passNotSetYet => 'Not set yet';
 }

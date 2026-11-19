@@ -573,3 +573,72 @@ BEGIN
   RETURN jsonb_build_object('ok', true);
 END;
 $$;
+
+
+-- 12. Resident First-Time Self-Service Apartment Passcode Setup & Admin Reset
+CREATE OR REPLACE FUNCTION public.get_apartments_passcode_status()
+RETURNS TABLE(apt_num INT, has_passcode BOOLEAN)
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT a.apt_num, (a.passcode IS NOT NULL AND length(trim(a.passcode)) > 0) AS has_passcode
+  FROM public.apartments a;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.set_initial_apartment_passcode(
+  p_apt_num INT,
+  p_passcode TEXT
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_clean TEXT;
+  v_existing TEXT;
+BEGIN
+  v_clean := trim(COALESCE(p_passcode, ''));
+  IF length(v_clean) < 4 THEN
+    RETURN jsonb_build_object('ok', false, 'error', 'err_pass_too_short');
+  END IF;
+
+  SELECT passcode INTO v_existing FROM public.apartments WHERE apt_num = p_apt_num;
+  IF v_existing IS NOT NULL AND length(trim(v_existing)) > 0 THEN
+    RETURN jsonb_build_object('ok', false, 'error', 'err_pass_already_set');
+  END IF;
+
+  INSERT INTO public.apartments (apt_num, passcode)
+  VALUES (p_apt_num, v_clean)
+  ON CONFLICT (apt_num) DO UPDATE
+  SET passcode = v_clean;
+
+  RETURN jsonb_build_object('ok', true);
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.admin_reset_apartment_passcode(
+  p_admin_pass TEXT,
+  p_apt_num INT
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_pass TEXT;
+BEGIN
+  SELECT admin_password INTO v_pass FROM public.building_settings WHERE id = 1;
+  IF v_pass IS NULL OR p_admin_pass <> v_pass THEN
+    RETURN jsonb_build_object('ok', false, 'error', 'err_wrong_admin_pass');
+  END IF;
+
+  UPDATE public.apartments
+  SET passcode = ''
+  WHERE apt_num = p_apt_num;
+
+  RETURN jsonb_build_object('ok', true);
+END;
+$$;

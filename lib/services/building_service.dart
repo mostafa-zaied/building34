@@ -11,6 +11,7 @@ class BuildingDataState {
   final List<EmergencyTransaction> emergencyTransactions;
   final bool requireAptPassOnOpen;
   final List<BuildingContact> buildingContacts;
+  final Map<int, bool> apartmentHasPasscode;
 
   BuildingDataState({
     required this.baseEmergencyFund,
@@ -20,6 +21,7 @@ class BuildingDataState {
     this.emergencyTransactions = const [],
     this.requireAptPassOnOpen = true,
     this.buildingContacts = const [],
+    this.apartmentHasPasscode = const {},
   });
 }
 
@@ -126,6 +128,10 @@ class BuildingService {
         emergencyTransactions: List<EmergencyTransaction>.from(_demoEmergencyTx),
         requireAptPassOnOpen: _demoRequireAptPassOnOpen,
         buildingContacts: List<BuildingContact>.from(_demoContacts),
+        apartmentHasPasscode: {
+          for (final entry in _demoApartments.entries)
+            entry.key: entry.value.passcode.trim().isNotEmpty,
+        },
       );
     }
 
@@ -230,6 +236,17 @@ class BuildingService {
           .toList();
     } catch (_) {}
 
+    final aptHasPassMap = <int, bool>{};
+    try {
+      final passRows = await client.rpc('get_apartments_passcode_status');
+      if (passRows is List) {
+        for (final r in passRows) {
+          final num = r['apt_num'] as int;
+          aptHasPassMap[num] = r['has_passcode'] == true;
+        }
+      }
+    } catch (_) {}
+
     return BuildingDataState(
       baseEmergencyFund: baseEmerg,
       months: monthsMap.values.toList(),
@@ -238,6 +255,7 @@ class BuildingService {
       emergencyTransactions: emergencyTx,
       requireAptPassOnOpen: requireAptPassOnOpen,
       buildingContacts: contactsList,
+      apartmentHasPasscode: aptHasPassMap,
     );
   }
 
@@ -1028,6 +1046,68 @@ class BuildingService {
       return (res is Map ? res['error']?.toString() : null) ?? 'err_delete_failed';
     } catch (_) {
       return 'err_delete_failed';
+    }
+  }
+
+  Future<String?> setInitialApartmentPasscode(int aptNum, String passcode) async {
+    final clean = passcode.trim();
+    if (clean.length < 4) return 'err_pass_too_short';
+
+    if (!_useSupabase) {
+      final existing = _demoApartments[aptNum]?.passcode.trim() ?? '';
+      if (existing.isNotEmpty) return 'err_pass_already_set';
+      final prev = _demoApartments[aptNum];
+      _demoApartments[aptNum] = ApartmentInfo(
+        aptNum: aptNum,
+        displayName: prev?.displayName ?? '',
+        passcode: clean,
+      );
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'set_initial_apartment_passcode',
+        params: {
+          'p_apt_num': aptNum,
+          'p_passcode': clean,
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
+    } catch (_) {
+      return 'err_submit_failed';
+    }
+  }
+
+  Future<String?> resetApartmentPasscodeAsAdmin({
+    required String adminPass,
+    required int aptNum,
+  }) async {
+    if (!_useSupabase) {
+      final prev = _demoApartments[aptNum];
+      if (prev != null) {
+        _demoApartments[aptNum] = ApartmentInfo(
+          aptNum: aptNum,
+          displayName: prev.displayName,
+          passcode: '',
+        );
+      }
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'admin_reset_apartment_passcode',
+        params: {
+          'p_admin_pass': adminPass,
+          'p_apt_num': aptNum,
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
+    } catch (_) {
+      return 'err_submit_failed';
     }
   }
 }

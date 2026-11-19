@@ -767,4 +767,39 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get errSelectAtLeastOneApt =>
       'من فضلك اختر شقة على الأقل لإضافة الرسوم.';
+
+  @override
+  String get setupAptPassSubtitle => 'تعيين كلمة سر شقتك لأول مرة';
+
+  @override
+  String get setupAptPassHint =>
+      'اختر كلمة سر خاصة بشقتك (4 أحرف أو أرقام على الأقل). ستُحفظ على جهازك، وإذا نسيتها تواصل مع مدير العمارة.';
+
+  @override
+  String get newPasscodeLabel => 'كلمة السر الجديدة';
+
+  @override
+  String get confirmPasscodeLabel => 'تأكيد كلمة السر';
+
+  @override
+  String get saveAndUnlockBtn => 'حفظ وفتح الشقة';
+
+  @override
+  String get errPassTooShort => 'كلمة السر يجب أن تكون 4 أحرف/أرقام على الأقل.';
+
+  @override
+  String get errPassMismatch => 'كلمتا السر غير متطابقتين.';
+
+  @override
+  String get errPassAlreadySet => 'تم تعيين كلمة سر لهذه الشقة بالفعل.';
+
+  @override
+  String get forgotPassHint =>
+      'نسيت كلمة السر؟ تواصل مع مدير العمارة لإعادة تعيينها.';
+
+  @override
+  String get resetPassBtn => 'إعادة تعيين';
+
+  @override
+  String get passNotSetYet => 'لم يُعيّنها الساكن بعد';
 }

@@ -14,6 +14,8 @@ class ApartmentCard extends StatefulWidget {
   final bool isPaid;
   final bool hasReceipt;
   final String? extraBadgeText;
+  final IconData? lockIcon;
+  final Color? lockIconColor;
   final VoidCallback onTap;
 
   const ApartmentCard({
@@ -26,6 +28,8 @@ class ApartmentCard extends StatefulWidget {
     required this.isPaid,
     required this.hasReceipt,
     this.extraBadgeText,
+    this.lockIcon,
+    this.lockIconColor,
     required this.onTap,
   });
 
@@ -101,6 +105,14 @@ class _ApartmentCardState extends State<ApartmentCard> {
                       ),
                     ),
                     const SizedBox(width: AppSpacing.xs),
+                    if (widget.lockIcon != null) ...[
+                      Icon(
+                        widget.lockIcon,
+                        size: 14,
+                        color: widget.lockIconColor ?? AppColors.textSecondary(isDark),
+                      ),
+                      const SizedBox(width: 4),
+                    ],
                     if (widget.isPaid)
                       Container(
                         width: 22,

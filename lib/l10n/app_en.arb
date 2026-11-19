@@ -407,5 +407,16 @@
   "confirmDeleteAllExtraBody": "Do you want to delete all extra charges for this month from all apartments?",
   "selectAllBtn": "Select All",
   "deselectAllBtn": "Deselect All",
-  "errSelectAtLeastOneApt": "Please select at least one apartment to add the charge."
+  "errSelectAtLeastOneApt": "Please select at least one apartment to add the charge.",
+  "setupAptPassSubtitle": "Set your apartment passcode for the first time",
+  "setupAptPassHint": "Choose a passcode for your apartment (at least 4 characters). It will be saved on your device; contact the admin if forgotten.",
+  "newPasscodeLabel": "New Passcode",
+  "confirmPasscodeLabel": "Confirm Passcode",
+  "saveAndUnlockBtn": "Save & Unlock",
+  "errPassTooShort": "Passcode must be at least 4 characters.",
+  "errPassMismatch": "Passcodes do not match.",
+  "errPassAlreadySet": "A passcode is already set for this apartment.",
+  "forgotPassHint": "Forgot passcode? Contact the building admin to reset it.",
+  "resetPassBtn": "Reset",
+  "passNotSetYet": "Not set yet"
 }

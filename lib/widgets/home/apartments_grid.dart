@@ -151,6 +151,24 @@ class ApartmentsGrid extends StatelessWidget {
                   final isPaid = payment != null;
 
                   final extraTotal = month.extraTotalFor(aptNum);
+                  IconData? lockIcon;
+                  Color? lockIconColor;
+                  if (state.requireAptPassOnOpen && !state.isAdminOpen) {
+                    final unlockedHere = state.myAptNum == aptNum &&
+                        state.savedAptPass != null &&
+                        state.savedAptPass!.isNotEmpty;
+                    final hasPass = state.apartmentHasPasscode[aptNum] ?? false;
+                    if (unlockedHere && hasPass) {
+                      lockIcon = Icons.lock_open_rounded;
+                      lockIconColor = AppColors.emeraldText(isDark);
+                    } else if (hasPass) {
+                      lockIcon = Icons.lock_outline_rounded;
+                      lockIconColor = AppColors.textSecondary(isDark);
+                    } else {
+                      lockIcon = Icons.vpn_key_outlined;
+                      lockIconColor = AppColors.amber;
+                    }
+                  }
                   return ApartmentCard(
                     aptNum: aptNum,
                     label: state.aptLabel(aptNum),
@@ -160,6 +178,8 @@ class ApartmentsGrid extends StatelessWidget {
                     isPaid: isPaid,
                     hasReceipt: payment?.receiptUrl != null,
                     extraBadgeText: extraTotal > 0 ? s.extraBadge(extraTotal) : null,
+                    lockIcon: lockIcon,
+                    lockIconColor: lockIconColor,
                     onTap: () => onTapApartment(aptNum),
                   );
                 },

@@ -102,6 +102,7 @@ class BuildingCubit extends Cubit<BuildingState> {
         hasVotedUpcomingDirectory: hasVotedUpcoming,
         requireAptPassOnOpen: data.requireAptPassOnOpen,
         buildingContacts: data.buildingContacts,
+        apartmentHasPasscode: data.apartmentHasPasscode,
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -142,6 +143,10 @@ class BuildingCubit extends Cubit<BuildingState> {
         return s.errDeleteFailed;
       case 'err_cannot_delete_last_month':
         return s.errCannotDeleteLastMonth;
+      case 'err_pass_too_short':
+        return s.errPassTooShort;
+      case 'err_pass_already_set':
+        return s.errPassAlreadySet;
       default:
         return err;
     }
@@ -576,6 +581,45 @@ class BuildingCubit extends Cubit<BuildingState> {
     }
     await _saveAptSession(aptNum, passcode.trim());
     return null;
+  }
+
+  Future<String?> setInitialApartmentPasscode(int aptNum, String passcode) async {
+    final err = await _service.setInitialApartmentPasscode(aptNum, passcode);
+    if (err != null) {
+      return _localizeError(err);
+    }
+    final nextMap = Map<int, bool>.from(state.apartmentHasPasscode);
+    nextMap[aptNum] = true;
+    emit(state.copyWith(apartmentHasPasscode: nextMap));
+    await _saveAptSession(aptNum, passcode.trim());
+    return null;
+  }
+
+  Future<void> resetApartmentPasscode(int aptNum) async {
+    if (!state.isAdminOpen) return;
+    await _withBusy(() async {
+      final err = await _service.resetApartmentPasscodeAsAdmin(
+        adminPass: state.adminPass,
+        aptNum: aptNum,
+      );
+      if (err != null) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return;
+      }
+      final nextMap = Map<int, bool>.from(state.apartmentHasPasscode);
+      nextMap[aptNum] = false;
+      emit(state.copyWith(
+        apartmentHasPasscode: nextMap,
+        feedbackMessage: () => state.s.monthSavedToast,
+        feedbackIsError: false,
+      ));
+      if (state.myAptNum == aptNum) {
+        await _clearSavedAptPass();
+      }
+    });
   }
 
   Future<void> _saveAptSession(int aptNum, String passcode) async {

@@ -230,5 +230,16 @@
   "confirmDeleteAllExtraBody": "هل تريد حذف جميع الرسوم الإضافية المسجلة لهذا الشهر من كل الشقق؟",
   "selectAllBtn": "تحديد الكل",
   "deselectAllBtn": "إلغاء الكل",
-  "errSelectAtLeastOneApt": "من فضلك اختر شقة على الأقل لإضافة الرسوم."
+  "errSelectAtLeastOneApt": "من فضلك اختر شقة على الأقل لإضافة الرسوم.",
+  "setupAptPassSubtitle": "تعيين كلمة سر شقتك لأول مرة",
+  "setupAptPassHint": "اختر كلمة سر خاصة بشقتك (4 أحرف أو أرقام على الأقل). ستُحفظ على جهازك، وإذا نسيتها تواصل مع مدير العمارة.",
+  "newPasscodeLabel": "كلمة السر الجديدة",
+  "confirmPasscodeLabel": "تأكيد كلمة السر",
+  "saveAndUnlockBtn": "حفظ وفتح الشقة",
+  "errPassTooShort": "كلمة السر يجب أن تكون 4 أحرف/أرقام على الأقل.",
+  "errPassMismatch": "كلمتا السر غير متطابقتين.",
+  "errPassAlreadySet": "تم تعيين كلمة سر لهذه الشقة بالفعل.",
+  "forgotPassHint": "نسيت كلمة السر؟ تواصل مع مدير العمارة لإعادة تعيينها.",
+  "resetPassBtn": "إعادة تعيين",
+  "passNotSetYet": "لم يُعيّنها الساكن بعد"
 }

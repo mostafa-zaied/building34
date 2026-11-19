@@ -29,6 +29,7 @@ class BuildingState {
   final bool hasVotedUpcomingDirectory;
   final bool requireAptPassOnOpen;
   final List<BuildingContact> buildingContacts;
+  final Map<int, bool> apartmentHasPasscode;
 
   const BuildingState({
     this.loading = true,
@@ -56,6 +57,7 @@ class BuildingState {
     this.hasVotedUpcomingDirectory = false,
     this.requireAptPassOnOpen = true,
     this.buildingContacts = const [],
+    this.apartmentHasPasscode = const {},
   });
 
   AppLocalizations get s => lookupAppLocalizations(Locale(localeCode));
@@ -93,6 +95,7 @@ class BuildingState {
     bool? hasVotedUpcomingDirectory,
     bool? requireAptPassOnOpen,
     List<BuildingContact>? buildingContacts,
+    Map<int, bool>? apartmentHasPasscode,
   }) {
     return BuildingState(
       loading: loading ?? this.loading,
@@ -121,6 +124,7 @@ class BuildingState {
           hasVotedUpcomingDirectory ?? this.hasVotedUpcomingDirectory,
       requireAptPassOnOpen: requireAptPassOnOpen ?? this.requireAptPassOnOpen,
       buildingContacts: buildingContacts ?? this.buildingContacts,
+      apartmentHasPasscode: apartmentHasPasscode ?? this.apartmentHasPasscode,
     );
   }
 }

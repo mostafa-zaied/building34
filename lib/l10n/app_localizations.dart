@@ -1483,6 +1483,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please select at least one apartment to add the charge.'**
   String get errSelectAtLeastOneApt;
+
+  /// No description provided for @setupAptPassSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set your apartment passcode for the first time'**
+  String get setupAptPassSubtitle;
+
+  /// No description provided for @setupAptPassHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a passcode for your apartment (at least 4 characters). It will be saved on your device; contact the admin if forgotten.'**
+  String get setupAptPassHint;
+
+  /// No description provided for @newPasscodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New Passcode'**
+  String get newPasscodeLabel;
+
+  /// No description provided for @confirmPasscodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Passcode'**
+  String get confirmPasscodeLabel;
+
+  /// No description provided for @saveAndUnlockBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Save & Unlock'**
+  String get saveAndUnlockBtn;
+
+  /// No description provided for @errPassTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcode must be at least 4 characters.'**
+  String get errPassTooShort;
+
+  /// No description provided for @errPassMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcodes do not match.'**
+  String get errPassMismatch;
+
+  /// No description provided for @errPassAlreadySet.
+  ///
+  /// In en, this message translates to:
+  /// **'A passcode is already set for this apartment.'**
+  String get errPassAlreadySet;
+
+  /// No description provided for @forgotPassHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot passcode? Contact the building admin to reset it.'**
+  String get forgotPassHint;
+
+  /// No description provided for @resetPassBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get resetPassBtn;
+
+  /// No description provided for @passNotSetYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set yet'**
+  String get passNotSetYet;
 }
 
 class _AppLocalizationsDelegate
