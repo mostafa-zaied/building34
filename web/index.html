@@ -68,6 +68,18 @@
         if (!firebase.apps.length) {
           firebase.initializeApp(firebaseConfig);
         }
+
+        // Clean up any legacy flutter_service_worker.js so stale builds never stick
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then((regs) => {
+            for (const r of regs) {
+              const url = (r.active && r.active.scriptURL) || (r.waiting && r.waiting.scriptURL) || '';
+              if (url.includes('flutter_service_worker.js')) {
+                r.unregister();
+              }
+            }
+          }).catch(() => {});
+        }
         const VAPID_KEY = "BHJPisbQ33JIcNhSCJDsN_ci9ZvCSfC87hfdcJQTNrC0-h78dRsuyszzVNk1GfcztAE9SqELRc9N5wlgu0L9JHg";
 
         window.mabnaGetPushPermission = function () {
