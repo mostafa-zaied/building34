@@ -11,8 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping Supabase REST API
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
-          curl -s -o /dev/null -w "%{http_code}\n" \
-            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
-            "${{ secrets.SUPABASE_URL }}/rest/v1/months?select=id&limit=1"
+          URL="${SUPABASE_URL:-https://qxsctwnctwqzsdmtsssw.supabase.co}"
+          KEY="${SUPABASE_ANON_KEY:-sb_publishable_MFftSMzqB7Smzs5wjPEK8Q_9pR9VxI4}"
+          HTTP_CODE=$(curl -sf -o /dev/null -w "%{http_code}" \
+            -H "apikey: ${KEY}" \
+            "${URL}/rest/v1/months?select=id&limit=1")
+          echo "Supabase keep-alive HTTP status: ${HTTP_CODE}"

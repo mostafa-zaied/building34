@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../config.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
@@ -193,18 +192,16 @@ Future<void> showApartmentPaymentDialog({
                   AppSecondaryButton(
                     label: s.cancelPaymentAdmin,
                     accentColor: AppColors.danger,
-                    onPressed: cancelling
-                        ? null
-                        : () async {
-                            final ok = await showConfirmDeleteDialog(
-                              context: ctx,
-                              s: s,
-                              isDark: isDark,
-                              message: s.confirmCancelPaymentBody(state.aptLabel(aptNum)),
-                              onConfirm: () => cubit.cancelPayment(aptNum),
-                            );
-                            if (ok && ctx.mounted) Navigator.pop(ctx);
-                          },
+                    onPressed: () async {
+                      final ok = await showConfirmDeleteDialog(
+                        context: ctx,
+                        s: s,
+                        isDark: isDark,
+                        message: s.confirmCancelPaymentBody(state.aptLabel(aptNum)),
+                        onConfirm: () => cubit.cancelPayment(aptNum),
+                      );
+                      if (ok && ctx.mounted) Navigator.pop(ctx);
+                    },
                   ),
                 ],
               ],

@@ -440,13 +440,11 @@ class _NavItemData {
   final IconData icon;
   final IconData selectedIcon;
   final String label;
-  final String? badge;
 
   const _NavItemData({
     required this.icon,
     required this.selectedIcon,
     required this.label,
-    this.badge,
   });
 }
 
@@ -523,58 +521,32 @@ class _FloatingBottomNav extends StatelessWidget {
                             )
                           : null,
                     ),
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                selected ? item.selectedIcon : item.icon,
-                                size: 20,
-                                color: selected
-                                    ? AppColors.primaryText(isDark)
-                                    : AppColors.textSecondary(isDark),
-                              ),
-                              const SizedBox(height: 3),
-                              Text(
-                                item.label,
-                                style: AppTypography.caption.copyWith(
-                                  fontSize: 11,
-                                  fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-                                  color: selected
-                                      ? AppColors.primaryText(isDark)
-                                      : AppColors.textSecondary(isDark),
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            selected ? item.selectedIcon : item.icon,
+                            size: 20,
+                            color: selected
+                                ? AppColors.primaryText(isDark)
+                                : AppColors.textSecondary(isDark),
                           ),
-                        ),
-                        if (item.badge != null)
-                          PositionedDirectional(
-                            top: 2,
-                            end: 2,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-                              decoration: BoxDecoration(
-                                color: AppColors.amber,
-                                borderRadius: BorderRadius.circular(AppRadius.pill),
-                              ),
-                              child: Text(
-                                item.badge!,
-                                style: const TextStyle(
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                  height: 1.1,
-                                ),
-                              ),
+                          const SizedBox(height: 3),
+                          Text(
+                            item.label,
+                            style: AppTypography.caption.copyWith(
+                              fontSize: 11,
+                              fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                              color: selected
+                                  ? AppColors.primaryText(isDark)
+                                  : AppColors.textSecondary(isDark),
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
