@@ -14,16 +14,17 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  const title = payload?.notification?.title || 'MABNA CARE';
-  const body = payload?.notification?.body || '';
-  const icon = payload?.notification?.icon || 'icons/Icon-192.png';
-  const badge = payload?.notification?.badge || 'icons/notification-badge.png';
+  const title = payload?.data?.title || payload?.notification?.title || 'MABNA CARE';
+  const body = payload?.data?.body || payload?.notification?.body || '';
+  const icon = payload?.data?.icon || payload?.notification?.icon || 'https://mabna-care.web.app/icons/Icon-192.png';
+  const badge = payload?.data?.badge || payload?.notification?.badge || 'https://mabna-care.web.app/icons/notification-badge.png';
+  const url = payload?.data?.url || 'https://mabna-care.web.app/';
 
   self.registration.showNotification(title, {
     body,
     icon,
     badge,
-    data: { url: 'https://mabna-care.web.app/' },
+    data: { url },
   });
 });
 
