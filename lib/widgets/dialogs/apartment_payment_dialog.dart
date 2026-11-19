@@ -13,6 +13,7 @@ import '../../models/building_models.dart';
 import '../common/app_button.dart';
 import '../common/busy_overlay.dart';
 import 'confirm_delete_dialog.dart';
+import 'digital_receipt_screen.dart';
 
 Future<void> showApartmentPaymentDialog({
   required BuildContext context,
@@ -187,8 +188,23 @@ Future<void> showApartmentPaymentDialog({
                     ],
                   ),
                 ),
+                const SizedBox(height: AppSpacing.lg),
+                AppPrimaryButton(
+                  label: s.viewDigitalReceiptBtn,
+                  icon: Icons.receipt_long_rounded,
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    showDigitalReceiptScreen(
+                      context: context,
+                      state: cubit.state,
+                      month: month,
+                      aptNum: aptNum,
+                      payment: existing,
+                    );
+                  },
+                ),
                 if (state.isAdminOpen) ...[
-                  const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.sm),
                   AppSecondaryButton(
                     label: s.cancelPaymentAdmin,
                     accentColor: AppColors.danger,
@@ -626,6 +642,26 @@ Future<void> showApartmentPaymentDialog({
                                   return;
                                 }
                                 if (ctx.mounted) Navigator.pop(ctx);
+                                if (context.mounted) {
+                                  final latestState = cubit.state;
+                                  final updatedMonth =
+                                      latestState.currentMonth ?? month;
+                                  final newPayment =
+                                      updatedMonth.payments[aptNum] ??
+                                          PaymentRecord(
+                                            aptNum: aptNum,
+                                            fileName: pickedName ?? 'receipt.jpg',
+                                            paidAt: DateTime.now(),
+                                          );
+                                  showDigitalReceiptScreen(
+                                    context: context,
+                                    state: latestState,
+                                    month: updatedMonth,
+                                    aptNum: aptNum,
+                                    payment: newPayment,
+                                    celebrate: true,
+                                  );
+                                }
                               },
                       ),
                     ),

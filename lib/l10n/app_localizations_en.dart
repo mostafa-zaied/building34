@@ -853,4 +853,114 @@ class AppLocalizationsEn extends AppLocalizations {
   String drawerMyAptLabel(String apt) {
     return 'Your Apt: $apt';
   }
+
+  @override
+  String get digitalReceiptTitle => 'Digital Payment Receipt';
+
+  @override
+  String get digitalReceiptBrand => 'MABNA CARE • Verified Receipt';
+
+  @override
+  String get digitalReceiptStatus => 'Payment Confirmed';
+
+  @override
+  String get receiptAptLabel => 'Apartment';
+
+  @override
+  String get receiptMonthLabel => 'Billing Month';
+
+  @override
+  String get receiptPaidAtLabel => 'Paid At';
+
+  @override
+  String get receiptTotalPaidLabel => 'Total Paid';
+
+  @override
+  String get receiptStampTitle => 'Electronically Verified';
+
+  @override
+  String get receiptSaveImageBtn => 'Save Image';
+
+  @override
+  String get receiptShareWhatsAppBtn => 'Share WhatsApp';
+
+  @override
+  String get receiptSavedToast => 'Receipt image saved successfully';
+
+  @override
+  String get receiptSaveNotSupported =>
+      'Take a screenshot to save this receipt';
+
+  @override
+  String get viewDigitalReceiptBtn => 'View MABNA CARE Digital Receipt';
+
+  @override
+  String receiptWhatsAppText(String apt, String month, String amount) {
+    return '✅ Building Payment Receipt — MABNA CARE\n• Apartment: $apt\n• Month: $month\n• Total Paid: $amount';
+  }
+
+  @override
+  String get navAnalytics => 'Analytics';
+
+  @override
+  String get analyticsTitle => 'Transparency & Analytics';
+
+  @override
+  String get analyticsAvgShare => 'Avg / Apt';
+
+  @override
+  String get analyticsCollectionRate => 'Collected';
+
+  @override
+  String get analyticsEmergencyBalance => 'Emergency';
+
+  @override
+  String get analyticsChartTitle => 'Monthly Expenses Comparison';
+
+  @override
+  String get analyticsChartHint => 'Tap any month to inspect its breakdown';
+
+  @override
+  String analyticsBreakdownTitle(String month) {
+    return 'Expenses Breakdown — $month';
+  }
+
+  @override
+  String analyticsCollectionCardTitle(String month) {
+    return 'Collection Status — $month';
+  }
+
+  @override
+  String get analyticsCollectedLabel => 'Collected';
+
+  @override
+  String get analyticsRemainingLabel => 'Remaining';
+
+  @override
+  String analyticsInsightLower(String month, String pct, String diff) {
+    return '$month expenses are $pct% lower than the previous month (saved $diff EGP)';
+  }
+
+  @override
+  String analyticsInsightHigher(String month, String pct, String diff) {
+    return '$month expenses are $pct% higher than the previous month (+$diff EGP)';
+  }
+
+  @override
+  String analyticsInsightSame(String month) {
+    return '$month expenses match the previous month exactly';
+  }
+
+  @override
+  String analyticsInsightSingle(
+    String month,
+    String share,
+    int paid,
+    int total,
+  ) {
+    return '$month share: $share EGP • $paid of $total paid';
+  }
+
+  @override
+  String get analyticsNoData => 'Not enough monthly data to analyze yet.';
 }

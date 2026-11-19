@@ -10,6 +10,7 @@ import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
 import '../widgets/common/app_side_menu.dart';
 import '../widgets/common/busy_overlay.dart';
+import 'analytics_screen.dart';
 import 'contacts_screen.dart';
 import 'emergency_screen.dart';
 import 'feedback_screen.dart';
@@ -223,6 +224,52 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                             ),
                           ),
                         ],
+                        trailing: Expanded(
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    tooltip: s.navAnalytics,
+                                    icon: Icon(
+                                      Icons.bar_chart_rounded,
+                                      color: AppColors.primaryText(isDark),
+                                    ),
+                                    onPressed: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const AnalyticsScreen(),
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    tooltip: s.drawerThemeLabel,
+                                    icon: Icon(
+                                      isDark
+                                          ? Icons.light_mode_rounded
+                                          : Icons.dark_mode_rounded,
+                                      size: 20,
+                                      color: isDark ? AppColors.amber : AppColors.primary,
+                                    ),
+                                    onPressed: cubit.toggleTheme,
+                                  ),
+                                  IconButton(
+                                    tooltip: s.languageTooltip,
+                                    icon: Text(
+                                      state.localeCode == 'en' ? '🇺🇸' : '🇪🇬',
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                    onPressed: () => cubit.setLocale(
+                                      state.localeCode == 'ar' ? 'en' : 'ar',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                       VerticalDivider(
                         width: 1,
@@ -280,6 +327,23 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                   ),
                 ),
                 centerTitle: true,
+                actions: [
+                  IconButton(
+                    tooltip: s.navAnalytics,
+                    icon: Icon(
+                      Icons.bar_chart_rounded,
+                      color: AppColors.primaryText(isDark),
+                    ),
+                    onPressed: () {
+                      if (_isDrawerOpen) _closeDrawer();
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const AnalyticsScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
               body: Container(
                 decoration: bgDecoration,

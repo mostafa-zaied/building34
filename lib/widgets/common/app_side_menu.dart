@@ -7,6 +7,7 @@ import '../../core/theme/app_typography.dart';
 import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
 import '../../screens/admin_settings_screen.dart';
+import '../../screens/analytics_screen.dart';
 import '../dialogs/admin_login_dialog.dart';
 import '../dialogs/manage_apartments_dialog.dart';
 
@@ -171,6 +172,20 @@ class AppSideMenu extends StatelessWidget {
                 children: [
                   // 1. Extra Sections
                   _sectionHeader(s.drawerExtraSections, isDark),
+                  _drawerTile(
+                    icon: Icons.bar_chart_rounded,
+                    label: s.navAnalytics,
+                    isDark: isDark,
+                    accentColor: AppColors.primaryText(isDark),
+                    onTap: () {
+                      _close(context);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const AnalyticsScreen(),
+                        ),
+                      );
+                    },
+                  ),
                   _drawerTile(
                     icon: Icons.contact_phone_outlined,
                     label: s.navContactsFull,

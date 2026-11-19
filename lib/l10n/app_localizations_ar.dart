@@ -845,4 +845,114 @@ class AppLocalizationsAr extends AppLocalizations {
   String drawerMyAptLabel(String apt) {
     return 'شقتك: $apt';
   }
+
+  @override
+  String get digitalReceiptTitle => 'إيصال الدفع الإلكتروني';
+
+  @override
+  String get digitalReceiptBrand => 'MABNA CARE • إيصال سداد معتمد';
+
+  @override
+  String get digitalReceiptStatus => 'تم السداد بنجاح';
+
+  @override
+  String get receiptAptLabel => 'الشقة';
+
+  @override
+  String get receiptMonthLabel => 'عن شهر';
+
+  @override
+  String get receiptPaidAtLabel => 'تاريخ السداد';
+
+  @override
+  String get receiptTotalPaidLabel => 'الإجمالي المدفوع';
+
+  @override
+  String get receiptStampTitle => 'معتمد إلكترونياً';
+
+  @override
+  String get receiptSaveImageBtn => 'حفظ كصورة';
+
+  @override
+  String get receiptShareWhatsAppBtn => 'مشاركة واتساب';
+
+  @override
+  String get receiptSavedToast => 'تم حفظ صورة الإيصال بنجاح';
+
+  @override
+  String get receiptSaveNotSupported =>
+      'يمكنك أخذ لقطة شاشة (Screenshot) لحفظ الإيصال';
+
+  @override
+  String get viewDigitalReceiptBtn => 'عرض إيصال MABNA CARE الإلكتروني';
+
+  @override
+  String receiptWhatsAppText(String apt, String month, String amount) {
+    return '✅ إيصال سداد مصاريف العمارة — MABNA CARE\n• الشقة: $apt\n• عن شهر: $month\n• الإجمالي المدفوع: $amount';
+  }
+
+  @override
+  String get navAnalytics => 'لوحة التحليلات';
+
+  @override
+  String get analyticsTitle => 'لوحة الشفافية والتحليلات';
+
+  @override
+  String get analyticsAvgShare => 'متوسط الشقة';
+
+  @override
+  String get analyticsCollectionRate => 'نسبة التحصيل';
+
+  @override
+  String get analyticsEmergencyBalance => 'رصيد الطوارئ';
+
+  @override
+  String get analyticsChartTitle => 'مقارنة مصاريف الشهور';
+
+  @override
+  String get analyticsChartHint => 'اضغط على أي شهر لعرض توزيع مصاريفه';
+
+  @override
+  String analyticsBreakdownTitle(String month) {
+    return 'توزيع مصاريف شهر $month';
+  }
+
+  @override
+  String analyticsCollectionCardTitle(String month) {
+    return 'حالة تحصيل شهر $month';
+  }
+
+  @override
+  String get analyticsCollectedLabel => 'تم تحصيله';
+
+  @override
+  String get analyticsRemainingLabel => 'المتبقي';
+
+  @override
+  String analyticsInsightLower(String month, String pct, String diff) {
+    return 'مصاريف $month أقل بنسبة $pct% عن الشهر السابق (وفر $diff ج)';
+  }
+
+  @override
+  String analyticsInsightHigher(String month, String pct, String diff) {
+    return 'مصاريف $month أعلى بنسبة $pct% عن الشهر السابق (+$diff ج)';
+  }
+
+  @override
+  String analyticsInsightSame(String month) {
+    return 'مصاريف $month مطابقة تماماً للشهر السابق';
+  }
+
+  @override
+  String analyticsInsightSingle(
+    String month,
+    String share,
+    int paid,
+    int total,
+  ) {
+    return 'نصيب الشقة في $month: $share ج • دفع $paid من $total';
+  }
+
+  @override
+  String get analyticsNoData => 'لا توجد بيانات شهور كافية للتحليل بعد.';
 }

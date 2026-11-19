@@ -96,116 +96,58 @@ class TopBar extends StatelessWidget {
                   onSecretTap: onToggleAdmin,
                 ),
               ),
-              const SizedBox(width: AppSpacing.xs),
-
-              // Compact utility capsule
-              Container(
-                padding: const EdgeInsetsDirectional.all(3),
-                decoration: BoxDecoration(
-                  color: AppColors.surface(isDark),
-                  borderRadius: BorderRadius.circular(AppRadius.pill),
-                  border: Border.all(color: AppColors.border(isDark)),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Tooltip(
-                      message: s.languageTooltip,
-                      child: InkWell(
-                        onTap: () => cubit.setLocale(state.localeCode == 'ar' ? 'en' : 'ar'),
+              if (state.isAdminAuthenticated) ...[
+                const SizedBox(width: AppSpacing.xs),
+                // Compact admin edit capsule
+                Container(
+                  padding: const EdgeInsetsDirectional.all(3),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface(isDark),
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
+                    border: Border.all(color: AppColors.border(isDark)),
+                  ),
+                  child: InkWell(
+                    onTap: onToggleAdmin,
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsetsDirectional.symmetric(
+                        horizontal: 11,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: state.isAdminOpen
+                            ? AppColors.primary.withValues(alpha: 0.20)
+                            : Colors.transparent,
                         borderRadius: BorderRadius.circular(AppRadius.pill),
-                        child: Padding(
-                          padding: const EdgeInsetsDirectional.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            state.isAdminOpen ? Icons.check_rounded : Icons.tune_rounded,
+                            size: 14,
+                            color: state.isAdminOpen
+                                ? AppColors.primaryText(isDark)
+                                : AppColors.textSecondary(isDark),
                           ),
-                          child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 200),
-                            child: Text(
-                              state.localeCode == 'en' ? '🇺🇸' : '🇪🇬',
-                              key: ValueKey(state.localeCode),
-                              style: const TextStyle(fontSize: 15),
+                          const SizedBox(width: 4),
+                          Text(
+                            _cleanLabel(state.isAdminOpen ? s.closeBtn : s.editBtn),
+                            style: AppTypography.caption.copyWith(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w700,
+                              color: state.isAdminOpen
+                                  ? AppColors.primaryText(isDark)
+                                  : AppColors.textPrimary(isDark),
                             ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 2),
-                    Container(
-                      width: 1,
-                      height: 15,
-                      color: AppColors.border(isDark),
-                    ),
-                    const SizedBox(width: 2),
-                    InkWell(
-                      onTap: cubit.toggleTheme,
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                      child: Padding(
-                        padding: const EdgeInsetsDirectional.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 220),
-                          child: Icon(
-                            isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-                            key: ValueKey(isDark),
-                            size: 16,
-                            color: isDark ? AppColors.amber : AppColors.primary,
-                          ),
-                        ),
-                      ),
-                    ),
-                    if (state.isAdminAuthenticated) ...[
-                      Container(
-                        width: 1,
-                        height: 15,
-                        color: AppColors.border(isDark),
-                      ),
-                      InkWell(
-                        onTap: onToggleAdmin,
-                        borderRadius: BorderRadius.circular(AppRadius.pill),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsetsDirectional.symmetric(
-                            horizontal: 9,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: state.isAdminOpen
-                                ? AppColors.primary.withValues(alpha: 0.20)
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(AppRadius.pill),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                state.isAdminOpen ? Icons.check_rounded : Icons.tune_rounded,
-                                size: 14,
-                                color: state.isAdminOpen
-                                    ? AppColors.primaryText(isDark)
-                                    : AppColors.textSecondary(isDark),
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                _cleanLabel(state.isAdminOpen ? s.closeBtn : s.editBtn),
-                                style: AppTypography.caption.copyWith(
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w700,
-                                  color: state.isAdminOpen
-                                      ? AppColors.primaryText(isDark)
-                                      : AppColors.textPrimary(isDark),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
 

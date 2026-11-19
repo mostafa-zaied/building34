@@ -1627,6 +1627,191 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your Apt: {apt}'**
   String drawerMyAptLabel(String apt);
+
+  /// No description provided for @digitalReceiptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Digital Payment Receipt'**
+  String get digitalReceiptTitle;
+
+  /// No description provided for @digitalReceiptBrand.
+  ///
+  /// In en, this message translates to:
+  /// **'MABNA CARE • Verified Receipt'**
+  String get digitalReceiptBrand;
+
+  /// No description provided for @digitalReceiptStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Confirmed'**
+  String get digitalReceiptStatus;
+
+  /// No description provided for @receiptAptLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Apartment'**
+  String get receiptAptLabel;
+
+  /// No description provided for @receiptMonthLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Billing Month'**
+  String get receiptMonthLabel;
+
+  /// No description provided for @receiptPaidAtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid At'**
+  String get receiptPaidAtLabel;
+
+  /// No description provided for @receiptTotalPaidLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Paid'**
+  String get receiptTotalPaidLabel;
+
+  /// No description provided for @receiptStampTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Electronically Verified'**
+  String get receiptStampTitle;
+
+  /// No description provided for @receiptSaveImageBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Image'**
+  String get receiptSaveImageBtn;
+
+  /// No description provided for @receiptShareWhatsAppBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Share WhatsApp'**
+  String get receiptShareWhatsAppBtn;
+
+  /// No description provided for @receiptSavedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt image saved successfully'**
+  String get receiptSavedToast;
+
+  /// No description provided for @receiptSaveNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a screenshot to save this receipt'**
+  String get receiptSaveNotSupported;
+
+  /// No description provided for @viewDigitalReceiptBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'View MABNA CARE Digital Receipt'**
+  String get viewDigitalReceiptBtn;
+
+  /// No description provided for @receiptWhatsAppText.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Building Payment Receipt — MABNA CARE\n• Apartment: {apt}\n• Month: {month}\n• Total Paid: {amount}'**
+  String receiptWhatsAppText(String apt, String month, String amount);
+
+  /// No description provided for @navAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Analytics'**
+  String get navAnalytics;
+
+  /// No description provided for @analyticsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Transparency & Analytics'**
+  String get analyticsTitle;
+
+  /// No description provided for @analyticsAvgShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg / Apt'**
+  String get analyticsAvgShare;
+
+  /// No description provided for @analyticsCollectionRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Collected'**
+  String get analyticsCollectionRate;
+
+  /// No description provided for @analyticsEmergencyBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency'**
+  String get analyticsEmergencyBalance;
+
+  /// No description provided for @analyticsChartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Expenses Comparison'**
+  String get analyticsChartTitle;
+
+  /// No description provided for @analyticsChartHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap any month to inspect its breakdown'**
+  String get analyticsChartHint;
+
+  /// No description provided for @analyticsBreakdownTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses Breakdown — {month}'**
+  String analyticsBreakdownTitle(String month);
+
+  /// No description provided for @analyticsCollectionCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Collection Status — {month}'**
+  String analyticsCollectionCardTitle(String month);
+
+  /// No description provided for @analyticsCollectedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Collected'**
+  String get analyticsCollectedLabel;
+
+  /// No description provided for @analyticsRemainingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining'**
+  String get analyticsRemainingLabel;
+
+  /// No description provided for @analyticsInsightLower.
+  ///
+  /// In en, this message translates to:
+  /// **'{month} expenses are {pct}% lower than the previous month (saved {diff} EGP)'**
+  String analyticsInsightLower(String month, String pct, String diff);
+
+  /// No description provided for @analyticsInsightHigher.
+  ///
+  /// In en, this message translates to:
+  /// **'{month} expenses are {pct}% higher than the previous month (+{diff} EGP)'**
+  String analyticsInsightHigher(String month, String pct, String diff);
+
+  /// No description provided for @analyticsInsightSame.
+  ///
+  /// In en, this message translates to:
+  /// **'{month} expenses match the previous month exactly'**
+  String analyticsInsightSame(String month);
+
+  /// No description provided for @analyticsInsightSingle.
+  ///
+  /// In en, this message translates to:
+  /// **'{month} share: {share} EGP • {paid} of {total} paid'**
+  String analyticsInsightSingle(
+    String month,
+    String share,
+    int paid,
+    int total,
+  );
+
+  /// No description provided for @analyticsNoData.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough monthly data to analyze yet.'**
+  String get analyticsNoData;
 }
 
 class _AppLocalizationsDelegate
