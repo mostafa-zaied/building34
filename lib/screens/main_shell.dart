@@ -16,8 +16,44 @@ import 'feedback_screen.dart';
 import 'home_screen.dart';
 import 'upcoming_directory_screen.dart';
 
-class MainShell extends StatelessWidget {
+class MainShell extends StatefulWidget {
   const MainShell({super.key});
+
+  @override
+  State<MainShell> createState() => _MainShellState();
+}
+
+class _MainShellState extends State<MainShell> with SingleTickerProviderStateMixin {
+  late final AnimationController _drawerCtrl;
+  late final Animation<double> _drawerAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _drawerCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 340),
+    );
+    _drawerAnim = CurvedAnimation(
+      parent: _drawerCtrl,
+      curve: Curves.easeOutCubic,
+      reverseCurve: Curves.easeInCubic,
+    );
+  }
+
+  @override
+  void dispose() {
+    _drawerCtrl.dispose();
+    super.dispose();
+  }
+
+  bool get _isDrawerOpen =>
+      _drawerCtrl.status == AnimationStatus.completed ||
+      _drawerCtrl.status == AnimationStatus.forward;
+
+  void _openDrawer() => _drawerCtrl.forward();
+  void _closeDrawer() => _drawerCtrl.reverse();
+  void _toggleDrawer() => _isDrawerOpen ? _closeDrawer() : _openDrawer();
 
   @override
   Widget build(BuildContext context) {
@@ -213,10 +249,13 @@ class MainShell extends StatelessWidget {
               _ => -1,
             };
 
-            return Scaffold(
+            final isRtl = Directionality.of(context) == TextDirection.rtl;
+            final menuWidth = (constraints.maxWidth * 0.72).clamp(250.0, 305.0);
+            final slideDistance = (constraints.maxWidth * 0.66).clamp(235.0, 290.0);
+
+            final frontScaffold = Scaffold(
               extendBody: true,
               backgroundColor: isDark ? const Color(0xFF0A1124) : const Color(0xFFEEF2FF),
-              drawer: AppSideMenu(cubit: cubit, state: state),
               appBar: AppBar(
                 backgroundColor: isDark
                     ? const Color(0xFF0A1124)
@@ -224,27 +263,21 @@ class MainShell extends StatelessWidget {
                 elevation: 0,
                 scrolledUnderElevation: 0,
                 toolbarHeight: 50,
-                leading: Builder(
-                  builder: (ctx) => IconButton(
-                    icon: Icon(
-                      Icons.menu_rounded,
-                      color: AppColors.textPrimary(isDark),
-                    ),
-                    onPressed: () => Scaffold.of(ctx).openDrawer(),
+                leading: IconButton(
+                  icon: AnimatedIcon(
+                    icon: AnimatedIcons.menu_close,
+                    progress: _drawerAnim,
+                    color: AppColors.textPrimary(isDark),
                   ),
+                  onPressed: _toggleDrawer,
                 ),
-                title: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      s.appTitle,
-                      style: AppTypography.headline.copyWith(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary(isDark),
-                      ),
-                    ),
-                  ],
+                title: Text(
+                  s.appTitle,
+                  style: AppTypography.headline.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary(isDark),
+                  ),
                 ),
                 centerTitle: true,
               ),
@@ -281,6 +314,118 @@ class MainShell extends StatelessWidget {
                   ),
                 ],
               ),
+            );
+
+            return AnimatedBuilder(
+              animation: _drawerAnim,
+              builder: (context, child) {
+                final t = _drawerAnim.value;
+                final isOpen = t > 0.01;
+                final dirSign = isRtl ? -1.0 : 1.0;
+
+                // 3D Perspective Tilt transform for the main screen
+                final slideX = dirSign * slideDistance * t;
+                final scale = 1.0 - (0.16 * t);
+                final tiltY = -dirSign * 0.26 * t;
+                final radius = 28.0 * t;
+
+                final matrix = Matrix4.identity()
+                  ..setEntry(3, 2, 0.0012)
+                  ..translateByDouble(slideX, 0.0, 0.0, 1.0)
+                  ..scaleByDouble(scale, scale, 1.0, 1.0)
+                  ..rotateY(tiltY);
+
+                return PopScope(
+                  canPop: !isOpen,
+                  onPopInvokedWithResult: (didPop, _) {
+                    if (!didPop && isOpen) _closeDrawer();
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: AlignmentDirectional.topStart,
+                        end: AlignmentDirectional.bottomEnd,
+                        colors: isDark
+                            ? const [Color(0xFF0E1B36), Color(0xFF060B18)]
+                            : const [Color(0xFFE3ECFA), Color(0xFFF3F6FC)],
+                      ),
+                    ),
+                    child: Stack(
+                      children: [
+                        // Layer 1: Side Menu Canvas (behind the tilted screen)
+                        IgnorePointer(
+                          ignoring: !isOpen,
+                          child: Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: SizedBox(
+                              width: menuWidth,
+                              child: Opacity(
+                                opacity: t.clamp(0.0, 1.0),
+                                child: Transform.translate(
+                                  offset: Offset(-dirSign * 22.0 * (1.0 - t), 0),
+                                  child: AppSideMenu(
+                                    cubit: cubit,
+                                    state: state,
+                                    onClose: _closeDrawer,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        // Layer 2: Main App Screen with 3D Perspective Tilt
+                        Transform(
+                          alignment: Alignment.center,
+                          transform: matrix,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(radius),
+                              boxShadow: isOpen
+                                  ? [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(
+                                          alpha: (isDark ? 0.55 : 0.22) * t,
+                                        ),
+                                        blurRadius: 42 * t,
+                                        spreadRadius: 4 * t,
+                                        offset: Offset(-dirSign * 14 * t, 14 * t),
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(radius),
+                              child: Stack(
+                                children: [
+                                  child!,
+                                  if (isOpen)
+                                    Positioned.fill(
+                                      child: GestureDetector(
+                                        behavior: HitTestBehavior.opaque,
+                                        onTap: _closeDrawer,
+                                        onHorizontalDragEnd: (details) {
+                                          final vx = details.primaryVelocity ?? 0;
+                                          if ((isRtl && vx > 150) || (!isRtl && vx < -150)) {
+                                            _closeDrawer();
+                                          }
+                                        },
+                                        child: Container(
+                                          color: Colors.black.withValues(alpha: 0.08 * t),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              child: frontScaffold,
             );
             },
           ),

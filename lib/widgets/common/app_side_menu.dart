@@ -13,11 +13,13 @@ import '../dialogs/manage_apartments_dialog.dart';
 class AppSideMenu extends StatelessWidget {
   final BuildingCubit cubit;
   final BuildingState state;
+  final VoidCallback? onClose;
 
   const AppSideMenu({
     super.key,
     required this.cubit,
     required this.state,
+    this.onClose,
   });
 
   static const String _managerWhatsApp = '201021950445';
@@ -27,32 +29,32 @@ class AppSideMenu extends StatelessWidget {
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
+  void _close(BuildContext context) {
+    if (onClose != null) {
+      onClose!();
+    } else {
+      Navigator.maybePop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = state.s;
     final isDark = state.isDarkMode;
 
-    return Drawer(
-      backgroundColor: AppColors.card(isDark),
+    return Material(
+      color: Colors.transparent,
       child: SafeArea(
-        top: false,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Drawer Header
-            Container(
-              padding: EdgeInsetsDirectional.fromSTEB(
-                AppSpacing.lg,
-                MediaQuery.paddingOf(context).top + AppSpacing.lg,
+            // Menu Header
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(
                 AppSpacing.lg,
                 AppSpacing.lg,
-              ),
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [AppColors.primary, AppColors.primaryLight],
-                  begin: AlignmentDirectional.topStart,
-                  end: AlignmentDirectional.bottomEnd,
-                ),
+                AppSpacing.md,
+                AppSpacing.md,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -60,11 +62,22 @@ class AppSideMenu extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        width: 40,
-                        height: 40,
+                        width: 42,
+                        height: 42,
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
+                          gradient: const LinearGradient(
+                            colors: [AppColors.primary, AppColors.emerald],
+                            begin: AlignmentDirectional.topStart,
+                            end: AlignmentDirectional.bottomEnd,
+                          ),
                           borderRadius: BorderRadius.circular(AppRadius.md),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.35),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
                         child: const Icon(
                           Icons.apartment_rounded,
@@ -80,18 +93,27 @@ class AppSideMenu extends StatelessWidget {
                             Text(
                               s.appTitle,
                               style: AppTypography.title.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w800,
+                                color: AppColors.textPrimary(isDark),
+                                fontWeight: FontWeight.w900,
                                 fontSize: 16,
                               ),
                             ),
                             Text(
                               s.splashTagline,
                               style: AppTypography.caption.copyWith(
-                                color: Colors.white.withValues(alpha: 0.85),
+                                color: AppColors.textSecondary(isDark),
                               ),
                             ),
                           ],
+                        ),
+                      ),
+                      IconButton(
+                        tooltip: s.close,
+                        onPressed: () => _close(context),
+                        icon: Icon(
+                          Icons.close_rounded,
+                          size: 20,
+                          color: AppColors.textSecondary(isDark),
                         ),
                       ),
                     ],
@@ -104,15 +126,18 @@ class AppSideMenu extends StatelessWidget {
                         vertical: AppSpacing.sm,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.16),
+                        color: AppColors.primary.withValues(alpha: isDark ? 0.16 : 0.10),
                         borderRadius: BorderRadius.circular(AppRadius.md),
+                        border: Border.all(
+                          color: AppColors.primary.withValues(alpha: isDark ? 0.30 : 0.20),
+                        ),
                       ),
                       child: Row(
                         children: [
-                          const Icon(
-                            Icons.home_outlined,
+                          Icon(
+                            Icons.home_rounded,
                             size: 16,
-                            color: Colors.white,
+                            color: AppColors.primaryText(isDark),
                           ),
                           const SizedBox(width: AppSpacing.xs),
                           Expanded(
@@ -121,7 +146,7 @@ class AppSideMenu extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: AppTypography.caption.copyWith(
-                                color: Colors.white,
+                                color: AppColors.textPrimary(isDark),
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -134,7 +159,12 @@ class AppSideMenu extends StatelessWidget {
               ),
             ),
 
-            // Drawer Body
+            Padding(
+              padding: const EdgeInsetsDirectional.symmetric(horizontal: AppSpacing.lg),
+              child: Divider(height: 1, color: AppColors.border(isDark)),
+            ),
+
+            // Menu Body
             Expanded(
               child: ListView(
                 padding: const EdgeInsetsDirectional.all(AppSpacing.md),
@@ -147,7 +177,7 @@ class AppSideMenu extends StatelessWidget {
                     isDark: isDark,
                     selected: state.selectedNavIndex == 2,
                     onTap: () {
-                      Navigator.pop(context);
+                      _close(context);
                       cubit.selectNav(2);
                     },
                   ),
@@ -175,7 +205,7 @@ class AppSideMenu extends StatelessWidget {
                       ),
                     ),
                     onTap: () {
-                      Navigator.pop(context);
+                      _close(context);
                       cubit.selectNav(4);
                     },
                   ),
@@ -250,10 +280,8 @@ class AppSideMenu extends StatelessWidget {
                       isDark: isDark,
                       accentColor: AppColors.primaryText(isDark),
                       onTap: () async {
-                        final rootNav = Navigator.of(context);
-                        final navContext = rootNav.context;
-                        rootNav.pop();
-                        final pass = await showAdminLoginDialog(navContext, s);
+                        _close(context);
+                        final pass = await showAdminLoginDialog(context, s);
                         if (pass != null && pass.trim().isNotEmpty) {
                           await cubit.openAdmin(pass.trim());
                         }
@@ -266,9 +294,8 @@ class AppSideMenu extends StatelessWidget {
                       isDark: isDark,
                       accentColor: AppColors.primaryText(isDark),
                       onTap: () {
-                        final nav = Navigator.of(context);
-                        nav.pop();
-                        nav.push(
+                        _close(context);
+                        Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (settingsCtx) => AdminSettingsScreen(
                               onOpenManageApts: () => showManageApartmentsDialog(
@@ -287,7 +314,7 @@ class AppSideMenu extends StatelessWidget {
                       isDark: isDark,
                       accentColor: AppColors.dangerText(isDark),
                       onTap: () async {
-                        Navigator.pop(context);
+                        _close(context);
                         await cubit.logoutAdmin();
                       },
                     ),
@@ -297,42 +324,54 @@ class AppSideMenu extends StatelessWidget {
             ),
 
             // Footer: Contact Manager
-            Container(
-              padding: const EdgeInsetsDirectional.symmetric(
-                horizontal: AppSpacing.md,
-                vertical: AppSpacing.sm,
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                AppSpacing.md,
+                AppSpacing.xs,
+                AppSpacing.md,
+                AppSpacing.md,
               ),
-              decoration: BoxDecoration(
-                color: AppColors.surface(isDark),
-                border: Border(
-                  top: BorderSide(color: AppColors.border(isDark)),
+              child: Container(
+                padding: const EdgeInsetsDirectional.symmetric(
+                  horizontal: AppSpacing.sm,
+                  vertical: AppSpacing.xs,
                 ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton.icon(
-                    onPressed: _contactManager,
-                    icon: Icon(
-                      Icons.chat_rounded,
-                      size: 16,
-                      color: AppColors.emeraldText(isDark),
-                    ),
-                    label: Text(
-                      s.contactManagerBtn,
-                      style: AppTypography.label.copyWith(
+                decoration: BoxDecoration(
+                  color: AppColors.emerald.withValues(alpha: isDark ? 0.14 : 0.09),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                  border: Border.all(
+                    color: AppColors.emerald.withValues(alpha: isDark ? 0.28 : 0.22),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton.icon(
+                      onPressed: _contactManager,
+                      icon: Icon(
+                        Icons.chat_rounded,
+                        size: 16,
                         color: AppColors.emeraldText(isDark),
-                        fontWeight: FontWeight.w700,
+                      ),
+                      label: Text(
+                        s.contactManagerBtn,
+                        style: AppTypography.label.copyWith(
+                          color: AppColors.emeraldText(isDark),
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
-                  ),
-                  Text(
-                    'v1.0',
-                    style: AppTypography.caption.copyWith(
-                      color: AppColors.textSecondary(isDark),
+                    Padding(
+                      padding: const EdgeInsetsDirectional.only(end: AppSpacing.sm),
+                      child: Text(
+                        'v1.0',
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.textSecondary(isDark),
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
