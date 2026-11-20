@@ -2250,6 +2250,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Strong ✓'**
   String get passStrengthStrong;
+
+  /// No description provided for @monthlyReportBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Statement (Image)'**
+  String get monthlyReportBtn;
+
+  /// No description provided for @monthlyReportScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Statement'**
+  String get monthlyReportScreenTitle;
+
+  /// No description provided for @reportDocSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Building Financial Statement'**
+  String get reportDocSubtitle;
+
+  /// No description provided for @reportIssuedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Issued: {date}'**
+  String reportIssuedLabel(String date);
+
+  /// No description provided for @reportSectionExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Expenses Breakdown'**
+  String get reportSectionExpenses;
+
+  /// No description provided for @reportSectionApts.
+  ///
+  /// In en, this message translates to:
+  /// **'Apartments Payment Status'**
+  String get reportSectionApts;
+
+  /// No description provided for @reportColApt.
+  ///
+  /// In en, this message translates to:
+  /// **'Apartment'**
+  String get reportColApt;
+
+  /// No description provided for @reportColDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Due'**
+  String get reportColDue;
+
+  /// No description provided for @reportColStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get reportColStatus;
+
+  /// No description provided for @reportTotalRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get reportTotalRow;
+
+  /// No description provided for @reportTotalExpensesKpi.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Expenses'**
+  String get reportTotalExpensesKpi;
+
+  /// No description provided for @reportEmergencyBalanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Emergency Fund Balance'**
+  String get reportEmergencyBalanceTitle;
+
+  /// No description provided for @reportSavePngBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Statement Image for WhatsApp'**
+  String get reportSavePngBtn;
+
+  /// No description provided for @reportSavedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Statement image saved successfully'**
+  String get reportSavedToast;
+
+  /// No description provided for @reportChipExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses'**
+  String get reportChipExpenses;
+
+  /// No description provided for @reportChipApts.
+  ///
+  /// In en, this message translates to:
+  /// **'Apartments'**
+  String get reportChipApts;
+
+  /// No description provided for @reportChipEmergency.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency'**
+  String get reportChipEmergency;
+
+  /// No description provided for @reportAptsCountUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} apts'**
+  String reportAptsCountUnit(int count);
 }
 
 class _AppLocalizationsDelegate

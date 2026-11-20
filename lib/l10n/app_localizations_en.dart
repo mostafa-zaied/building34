@@ -1226,4 +1226,62 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passStrengthStrong => 'Strong ✓';
+
+  @override
+  String get monthlyReportBtn => 'Statement (Image)';
+
+  @override
+  String get monthlyReportScreenTitle => 'Monthly Statement';
+
+  @override
+  String get reportDocSubtitle => 'Monthly Building Financial Statement';
+
+  @override
+  String reportIssuedLabel(String date) {
+    return 'Issued: $date';
+  }
+
+  @override
+  String get reportSectionExpenses => 'Monthly Expenses Breakdown';
+
+  @override
+  String get reportSectionApts => 'Apartments Payment Status';
+
+  @override
+  String get reportColApt => 'Apartment';
+
+  @override
+  String get reportColDue => 'Due';
+
+  @override
+  String get reportColStatus => 'Status';
+
+  @override
+  String get reportTotalRow => 'Total';
+
+  @override
+  String get reportTotalExpensesKpi => 'Total Expenses';
+
+  @override
+  String get reportEmergencyBalanceTitle => 'Current Emergency Fund Balance';
+
+  @override
+  String get reportSavePngBtn => 'Save Statement Image for WhatsApp';
+
+  @override
+  String get reportSavedToast => '✅ Statement image saved successfully';
+
+  @override
+  String get reportChipExpenses => 'Expenses';
+
+  @override
+  String get reportChipApts => 'Apartments';
+
+  @override
+  String get reportChipEmergency => 'Emergency';
+
+  @override
+  String reportAptsCountUnit(int count) {
+    return '$count apts';
+  }
 }

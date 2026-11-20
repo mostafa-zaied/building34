@@ -12,6 +12,7 @@ import '../widgets/common/app_card.dart';
 import '../widgets/common/busy_overlay.dart';
 import '../widgets/dialogs/extra_charges_dialog.dart';
 import '../widgets/home/admin_edit_panel.dart';
+import 'monthly_report_screen.dart';
 
 class AdminSettingsScreen extends StatelessWidget {
   final VoidCallback onOpenManageApts;
@@ -249,15 +250,34 @@ class AdminSettingsScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: AppSpacing.sm),
-                        AdminActionTile(
-                          label: s.pinNoticeBtn,
-                          icon: Icons.campaign_outlined,
-                          isDark: isDark,
-                          onTap: () => _showAnnouncementDialog(
-                            context,
-                            cubit,
-                            state,
-                          ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AdminActionTile(
+                                label: s.pinNoticeBtn,
+                                icon: Icons.campaign_outlined,
+                                isDark: isDark,
+                                onTap: () => _showAnnouncementDialog(
+                                  context,
+                                  cubit,
+                                  state,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: AdminActionTile(
+                                label: s.monthlyReportBtn,
+                                icon: Icons.summarize_outlined,
+                                isDark: isDark,
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const MonthlyReportScreen(),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: AppSpacing.sm),
                         Row(

@@ -1212,4 +1212,62 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get passStrengthStrong => 'قوية ✓';
+
+  @override
+  String get monthlyReportBtn => 'كشف الحساب (صورة)';
+
+  @override
+  String get monthlyReportScreenTitle => 'كشف الحساب الشهري';
+
+  @override
+  String get reportDocSubtitle => 'كشف الحساب المالي الشهري للعمارة';
+
+  @override
+  String reportIssuedLabel(String date) {
+    return 'تاريخ الإصدار: $date';
+  }
+
+  @override
+  String get reportSectionExpenses => 'تفصيل مصاريف الشهر';
+
+  @override
+  String get reportSectionApts => 'كشف سداد الشقق';
+
+  @override
+  String get reportColApt => 'الشقة';
+
+  @override
+  String get reportColDue => 'المطلوب';
+
+  @override
+  String get reportColStatus => 'الحالة';
+
+  @override
+  String get reportTotalRow => 'الإجمالي';
+
+  @override
+  String get reportTotalExpensesKpi => 'إجمالي المصاريف';
+
+  @override
+  String get reportEmergencyBalanceTitle => 'رصيد صندوق الطوارئ الحالي';
+
+  @override
+  String get reportSavePngBtn => 'حفظ كشف الحساب كصورة للواتساب';
+
+  @override
+  String get reportSavedToast => '✅ تم حفظ صورة كشف الحساب بنجاح';
+
+  @override
+  String get reportChipExpenses => 'المصاريف';
+
+  @override
+  String get reportChipApts => 'الشقق';
+
+  @override
+  String get reportChipEmergency => 'الطوارئ';
+
+  @override
+  String reportAptsCountUnit(int count) {
+    return '$count شقة';
+  }
 }
