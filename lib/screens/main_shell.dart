@@ -12,7 +12,6 @@ import '../widgets/common/app_side_menu.dart';
 import '../widgets/common/busy_overlay.dart';
 import '../widgets/common/desktop_sidebar.dart';
 import '../widgets/common/network_banner.dart';
-import 'analytics_screen.dart';
 import 'contacts_screen.dart';
 import 'emergency_screen.dart';
 import 'feedback_screen.dart';
@@ -197,21 +196,6 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                 centerTitle: true,
                 actions: constraints.maxWidth >= 140
                     ? [
-                        IconButton(
-                          tooltip: s.navAnalytics,
-                          icon: Icon(
-                            Icons.bar_chart_rounded,
-                            color: AppColors.primaryText(isDark),
-                          ),
-                          onPressed: () {
-                            if (_isDrawerOpen) _closeDrawer();
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => const AnalyticsScreen(),
-                              ),
-                            );
-                          },
-                        ),
                         IconButton(
                           tooltip: s.notifHistoryTitle,
                           onPressed: () {

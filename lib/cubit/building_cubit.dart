@@ -71,14 +71,20 @@ class BuildingCubit extends Cubit<BuildingState> {
         }
         final savedAdminPass = prefs.getString('admin_pass');
         if (savedAdminPass != null && savedAdminPass.isNotEmpty) {
-          final err = await _service.verifyAdminPass(savedAdminPass);
-          if (err == null) {
-            isAdminAuthed = true;
-            adminPass = savedAdminPass;
-          } else {
-            await prefs.remove('admin_pass');
-            isAdminAuthed = false;
-          }
+          isAdminAuthed = true;
+          adminPass = savedAdminPass;
+          try {
+            final err = await _service
+                .verifyAdminPass(savedAdminPass)
+                .timeout(const Duration(seconds: 6), onTimeout: () => null);
+            if (err == 'err_wrong_admin_pass' ||
+                err == 'كلمة سر المدير غير صحيحة' ||
+                err == 'كلمة سر المسؤول غير صحيحة') {
+              await prefs.remove('admin_pass');
+              isAdminAuthed = false;
+              adminPass = '';
+            }
+          } catch (_) {}
         }
       } catch (_) {}
 
@@ -256,19 +262,24 @@ class BuildingCubit extends Cubit<BuildingState> {
         ));
         return;
       }
-      try {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('admin_pass', clean);
-      } catch (_) {}
-      final viewStats = await _service.fetchPageViewStatsAsAdmin(clean);
-      final notifs = await _service.fetchAppNotifications(adminPass: clean);
       emit(state.copyWith(
         adminPass: clean,
         isAdminAuthenticated: true,
         isAdminOpen: true,
-        pageViewStats: () => viewStats,
-        notifications: notifs,
+        selectedNavIndex: 0,
       ));
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('admin_pass', clean);
+      } catch (_) {}
+      unawaited(() async {
+        final viewStats = await _service.fetchPageViewStatsAsAdmin(clean);
+        final notifs = await _service.fetchAppNotifications(adminPass: clean);
+        emit(state.copyWith(
+          pageViewStats: () => viewStats,
+          notifications: notifs,
+        ));
+      }());
       unawaited(syncPushTokenIfGranted());
     });
   }
