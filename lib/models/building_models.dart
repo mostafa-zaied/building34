@@ -76,6 +76,34 @@ class ApartmentExtraCharge {
   }
 }
 
+class CustomExpenseItem {
+  final String id;
+  String name;
+  double amount;
+
+  CustomExpenseItem({
+    required this.id,
+    required this.name,
+    required this.amount,
+  });
+
+  factory CustomExpenseItem.fromJson(Map<String, dynamic> json) {
+    return CustomExpenseItem(
+      id: (json['id']?.toString() ?? '').trim().isNotEmpty
+          ? json['id'].toString()
+          : 'ce_${DateTime.now().microsecondsSinceEpoch}',
+      name: (json['name'] as String?)?.trim() ?? '',
+      amount: (json['amount'] as num?)?.toDouble() ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'amount': amount,
+      };
+}
+
 class MonthBill {
   final int id;
   final int monthNum;
@@ -92,6 +120,7 @@ class MonthBill {
   Uint8List? elecLocalBytes;
   final Map<int, PaymentRecord> payments;
   final List<ApartmentExtraCharge> extraCharges;
+  final List<CustomExpenseItem> customExpenses;
 
   MonthBill({
     required this.id,
@@ -109,10 +138,15 @@ class MonthBill {
     this.elecLocalBytes,
     Map<int, PaymentRecord>? payments,
     List<ApartmentExtraCharge>? extraCharges,
+    List<CustomExpenseItem>? customExpenses,
   })  : payments = payments ?? {},
-        extraCharges = extraCharges ?? [];
+        extraCharges = extraCharges ?? [],
+        customExpenses = customExpenses ?? [];
 
-  double get totalExpenses => water + elec + elev + clean;
+  double get customExpensesTotal =>
+      customExpenses.fold<double>(0, (sum, item) => sum + item.amount);
+
+  double get totalExpenses => water + elec + elev + clean + customExpensesTotal;
 
   int get sharePerApt {
     if (totalExpenses <= 0 || aptsCount <= 0) return 0;
@@ -150,6 +184,18 @@ class MonthBill {
   int get totalRemaining => (totalExpected - totalCollected).clamp(0, totalExpected);
 
   factory MonthBill.fromJson(Map<String, dynamic> json) {
+    final rawCustom = json['custom_expenses'];
+    final customList = <CustomExpenseItem>[];
+    if (rawCustom is List) {
+      for (final item in rawCustom) {
+        if (item is Map) {
+          final parsed = CustomExpenseItem.fromJson(Map<String, dynamic>.from(item));
+          if (parsed.name.isNotEmpty) {
+            customList.add(parsed);
+          }
+        }
+      }
+    }
     return MonthBill(
       id: json['id'] as int,
       monthNum: json['month_num'] as int,
@@ -162,6 +208,7 @@ class MonthBill {
       aptsCount: json['apts_count'] as int? ?? 13,
       waterReceiptUrl: (json['water_receipt_url'] as String?)?.trim(),
       elecReceiptUrl: (json['elec_receipt_url'] as String?)?.trim(),
+      customExpenses: customList,
     );
   }
 }

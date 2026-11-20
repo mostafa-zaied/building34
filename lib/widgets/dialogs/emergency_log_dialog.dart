@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -176,6 +177,9 @@ class _EmergencyLogDialogState extends State<_EmergencyLogDialog> {
                           TextField(
                             controller: _amountCtrl,
                             keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                            ],
                             style: AppTypography.statAmount.copyWith(
                               fontSize: 16,
                               color: AppColors.textPrimary(isDark),

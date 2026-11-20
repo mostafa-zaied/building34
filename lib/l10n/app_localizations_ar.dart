@@ -868,9 +868,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get receiptSaveImageBtn => 'حفظ كصورة';
 
   @override
-  String get receiptShareWhatsAppBtn => 'مشاركة واتساب';
-
-  @override
   String get receiptSavedToast => 'تم حفظ صورة الإيصال بنجاح';
 
   @override
@@ -879,11 +876,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get viewDigitalReceiptBtn => 'عرض إيصال MABNA CARE الإلكتروني';
-
-  @override
-  String receiptWhatsAppText(String apt, String month, String amount) {
-    return '✅ إيصال سداد مصاريف العمارة — MABNA CARE\n• الشقة: $apt\n• عن شهر: $month\n• الإجمالي المدفوع: $amount';
-  }
 
   @override
   String get navAnalytics => 'التحليلات';
@@ -1134,4 +1126,39 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get confirmDeleteNotifBody => 'هل تريد حذف هذا الإشعار من السجل؟';
+
+  @override
+  String get addCustomExpenseBtn => 'إضافة بند مصاريف';
+
+  @override
+  String get addCustomExpenseTitle => 'إضافة بند مصاريف جديد';
+
+  @override
+  String get customExpenseNameLabel => 'اسم البند';
+
+  @override
+  String get customExpenseNameHint => 'مثال: بواب، صيانة موتور، غاز...';
+
+  @override
+  String get customExpenseAmountLabel => 'المبلغ (ج)';
+
+  @override
+  String get customExpenseAddedToast => 'تم إضافة البند وحسابه ضمن المصاريف';
+
+  @override
+  String get customExpenseRemovedToast => 'تم حذف البند وتحديث الحسابات';
+
+  @override
+  String get addBtn => 'إضافة';
+
+  @override
+  String get deleteOwnReceiptBtn => 'حذف الإيصال وإعادة الرفع';
+
+  @override
+  String get confirmDeleteOwnReceiptBody =>
+      'هل تريد حذف صورة الإيصال وإعادة الشقة لحالة غير مدفوع لرفع صورة جديدة؟';
+
+  @override
+  String get paymentReceiptDeletedToast =>
+      'تم حذف الإيصال، يمكنك الآن رفع صورة جديدة';
 }

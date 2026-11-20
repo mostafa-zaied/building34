@@ -7,7 +7,6 @@ import '../core/theme/app_typography.dart';
 import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
 import '../widgets/common/app_card.dart';
-import '../widgets/common/busy_overlay.dart';
 
 class AdminViewsScreen extends StatefulWidget {
   const AdminViewsScreen({super.key});
@@ -37,14 +36,9 @@ class _AdminViewsScreenState extends State<AdminViewsScreen> {
         final st = state.pageViewStats;
 
         if (!state.isAdminAuthenticated) {
-          return Scaffold(
-            backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
-            appBar: AppBar(
-              backgroundColor: AppColors.surface(isDark),
-              elevation: 0,
-              title: Text(s.adminViewsTitle),
-            ),
-            body: Center(
+          return Center(
+            child: Padding(
+              padding: const EdgeInsetsDirectional.all(AppSpacing.xl),
               child: Text(s.adminOnlyPageMsg, style: AppTypography.body),
             ),
           );
@@ -54,47 +48,61 @@ class _AdminViewsScreenState extends State<AdminViewsScreen> {
             ? (st.totalViews / st.uniqueVisitors).toStringAsFixed(1)
             : '0.0';
 
-        return BusyOverlay(
-          busy: state.busy,
-          isDark: isDark,
-          child: Scaffold(
-            backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
-            appBar: AppBar(
-              backgroundColor: AppColors.surface(isDark),
-              elevation: 0,
-              scrolledUnderElevation: 0,
-              title: Text(
-                s.adminViewsTitle,
-                style: AppTypography.headline.copyWith(
-                  fontSize: 16,
-                  color: AppColors.textPrimary(isDark),
-                ),
-              ),
-              centerTitle: true,
-              actions: [
-                IconButton(
-                  tooltip: s.refreshTooltip,
-                  onPressed: () => cubit.refreshPageViewStats(),
-                  icon: Icon(
-                    Icons.refresh_rounded,
-                    color: AppColors.primaryText(isDark),
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final isWideNav = constraints.maxWidth >= 720;
+            return Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 640),
+                child: ListView(
+                  padding: EdgeInsetsDirectional.fromSTEB(
+                    AppSpacing.lg,
+                    AppSpacing.md,
+                    AppSpacing.lg,
+                    isWideNav ? AppSpacing.xxl : 104,
                   ),
-                ),
-              ],
-              bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(1),
-                child: Divider(height: 1, color: AppColors.border(isDark)),
-              ),
-            ),
-            body: SafeArea(
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 640),
-                  child: ListView(
-                    padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
-                    children: [
-                      if (st == null)
+                  children: [
+                    // Header with Title & Refresh
+                    Padding(
+                      padding: const EdgeInsetsDirectional.only(bottom: AppSpacing.md),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 38,
+                            height: 38,
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.14),
+                              borderRadius: BorderRadius.circular(AppRadius.md),
+                            ),
+                            child: Icon(
+                              Icons.visibility_outlined,
+                              size: 20,
+                              color: AppColors.primaryText(isDark),
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          Expanded(
+                            child: Text(
+                              s.adminViewsTitle,
+                              style: AppTypography.headline.copyWith(
+                                fontSize: 17,
+                                color: AppColors.textPrimary(isDark),
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            tooltip: s.refreshTooltip,
+                            onPressed: () => cubit.refreshPageViewStats(),
+                            icon: Icon(
+                              Icons.refresh_rounded,
+                              color: AppColors.primaryText(isDark),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (st == null)
                         AppCard(
                           padding: const EdgeInsetsDirectional.all(AppSpacing.xl),
                           child: Text(
@@ -288,10 +296,9 @@ class _AdminViewsScreenState extends State<AdminViewsScreen> {
                     ],
                   ),
                 ),
-              ),
-            ),
-          ),
-        );
+              );
+            },
+          );
       },
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
@@ -60,6 +61,9 @@ class AdminInputField extends StatelessWidget {
                 child: TextField(
                   controller: controller,
                   keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                  ],
                   textAlign: TextAlign.end,
                   onChanged: (_) => onChanged(),
                   style: AppTypography.body.copyWith(fontWeight: FontWeight.w700),

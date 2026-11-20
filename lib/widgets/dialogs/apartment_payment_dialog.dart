@@ -219,6 +219,25 @@ Future<void> showApartmentPaymentDialog({
                       if (ok && ctx.mounted) Navigator.pop(ctx);
                     },
                   ),
+                ] else ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  AppSecondaryButton(
+                    label: s.deleteOwnReceiptBtn,
+                    icon: Icons.delete_outline_rounded,
+                    accentColor: AppColors.danger,
+                    onPressed: () async {
+                      final ok = await showConfirmDeleteDialog(
+                        context: ctx,
+                        s: s,
+                        isDark: isDark,
+                        message: s.confirmDeleteOwnReceiptBody,
+                        onConfirm: () async {
+                          await cubit.cancelOwnPayment(aptNum);
+                        },
+                      );
+                      if (ok && ctx.mounted) Navigator.pop(ctx);
+                    },
+                  ),
                 ],
               ],
             ),

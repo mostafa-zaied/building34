@@ -12,6 +12,8 @@ import '../widgets/common/app_side_menu.dart';
 import '../widgets/common/busy_overlay.dart';
 import '../widgets/common/desktop_sidebar.dart';
 import '../widgets/common/network_banner.dart';
+import 'admin_views_screen.dart';
+import 'analytics_screen.dart';
 import 'contacts_screen.dart';
 import 'emergency_screen.dart';
 import 'feedback_screen.dart';
@@ -85,6 +87,8 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
           ContactsScreen(),
           FeedbackScreen(),
           UpcomingDirectoryScreen(),
+          AnalyticsScreen(),
+          AdminViewsScreen(),
         ];
 
         final bgDecoration = BoxDecoration(

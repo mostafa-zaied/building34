@@ -3,7 +3,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
@@ -107,19 +106,6 @@ class _DigitalReceiptScreenState extends State<DigitalReceiptScreen> {
     } finally {
       if (mounted) setState(() => _savingImg = false);
     }
-  }
-
-  Future<void> _shareWhatsApp() async {
-    final s = widget.state.s;
-    final aptLabel = widget.state.aptLabel(widget.aptNum);
-    final totalDue = widget.month.dueFor(widget.aptNum);
-    final text = s.receiptWhatsAppText(
-      aptLabel,
-      _formatMonthName(),
-      s.currency(totalDue),
-    );
-    final uri = Uri.parse('https://wa.me/?text=${Uri.encodeComponent(text)}');
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
   @override
@@ -414,67 +400,34 @@ class _DigitalReceiptScreenState extends State<DigitalReceiptScreen> {
 
                   const SizedBox(height: AppSpacing.lg),
 
-                  // Action Buttons Row
-                  Row(
-                    children: [
-                      Expanded(
-                        child: FilledButton.icon(
-                          onPressed: _savingImg ? null : _saveAsPng,
-                          style: FilledButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(AppRadius.md),
-                            ),
-                          ),
-                          icon: _savingImg
-                              ? const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : const Icon(Icons.download_rounded, size: 18),
-                          label: Text(
-                            s.receiptSaveImageBtn,
-                            style: AppTypography.label.copyWith(
+                  // Save Receipt Action Button
+                  FilledButton.icon(
+                    onPressed: _savingImg ? null : _saveAsPng,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                      ),
+                    ),
+                    icon: _savingImg
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
                               color: Colors.white,
-                              fontWeight: FontWeight.w800,
                             ),
-                          ),
-                        ),
+                          )
+                        : const Icon(Icons.download_rounded, size: 18),
+                    label: Text(
+                      s.receiptSaveImageBtn,
+                      style: AppTypography.label.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
                       ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: _shareWhatsApp,
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: AppColors.emerald.withValues(
-                              alpha: isDark ? 0.14 : 0.10,
-                            ),
-                            foregroundColor: AppColors.emeraldText(isDark),
-                            side: BorderSide(
-                              color: AppColors.emerald.withValues(alpha: 0.4),
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(AppRadius.md),
-                            ),
-                          ),
-                          icon: const Icon(Icons.chat_rounded, size: 18),
-                          label: Text(
-                            s.receiptShareWhatsAppBtn,
-                            style: AppTypography.label.copyWith(
-                              color: AppColors.emeraldText(isDark),
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),

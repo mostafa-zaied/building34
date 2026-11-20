@@ -9,8 +9,6 @@ import '../../core/utils/push_notifications.dart';
 import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
 import '../../screens/admin_settings_screen.dart';
-import '../../screens/admin_views_screen.dart';
-import '../../screens/analytics_screen.dart';
 import '../../screens/install_app_screen.dart';
 import '../dialogs/admin_login_dialog.dart';
 import '../dialogs/manage_apartments_dialog.dart';
@@ -180,14 +178,11 @@ class AppSideMenu extends StatelessWidget {
                     icon: Icons.bar_chart_rounded,
                     label: s.navAnalytics,
                     isDark: isDark,
+                    selected: state.selectedNavIndex == 5,
                     accentColor: AppColors.primaryText(isDark),
                     onTap: () {
                       _close(context);
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const AnalyticsScreen(),
-                        ),
-                      );
+                      cubit.selectNav(5);
                     },
                   ),
                   _drawerTile(
@@ -391,14 +386,12 @@ class AppSideMenu extends StatelessWidget {
                       icon: Icons.visibility_outlined,
                       label: s.adminViewsTitle,
                       isDark: isDark,
+                      selected: state.selectedNavIndex == 6,
                       accentColor: AppColors.primaryText(isDark),
                       onTap: () {
                         _close(context);
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const AdminViewsScreen(),
-                          ),
-                        );
+                        cubit.selectNav(6);
+                        cubit.refreshPageViewStats(showBusy: false);
                       },
                     ),
                     _drawerTile(

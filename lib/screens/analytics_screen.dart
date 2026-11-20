@@ -56,22 +56,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             : sortedAll;
 
         if (chartMonths.isEmpty) {
-          return Scaffold(
-            backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
-            appBar: AppBar(
-              backgroundColor: AppColors.surface(isDark),
-              elevation: 0,
-              scrolledUnderElevation: 0,
-              title: Text(
-                s.analyticsTitle,
-                style: AppTypography.headline.copyWith(
-                  fontSize: 16,
-                  color: AppColors.textPrimary(isDark),
-                ),
-              ),
-              centerTitle: true,
-            ),
-            body: Center(
+          return Center(
+            child: Padding(
+              padding: const EdgeInsetsDirectional.all(AppSpacing.xl),
               child: Text(
                 s.analyticsNoData,
                 style: AppTypography.body.copyWith(
@@ -149,6 +136,13 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             .map((m) => m.totalExpenses)
             .fold<double>(0, (a, b) => a > b ? a : b);
 
+        const customColors = [
+          Color(0xFF8B5CF6),
+          Color(0xFFEC4899),
+          Color(0xFF14B8A6),
+          Color(0xFFF97316),
+        ];
+
         final utilities = [
           (
             icon: Icons.water_drop_rounded,
@@ -174,35 +168,59 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             amount: selectedMonth.clean,
             color: AppColors.emerald,
           ),
+          for (int i = 0; i < selectedMonth.customExpenses.length; i++)
+            (
+              icon: Icons.receipt_long_rounded,
+              label: selectedMonth.customExpenses[i].name,
+              amount: selectedMonth.customExpenses[i].amount,
+              color: customColors[i % customColors.length],
+            ),
         ];
 
-        return Scaffold(
-          backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
-          appBar: AppBar(
-            backgroundColor: AppColors.surface(isDark),
-            elevation: 0,
-            scrolledUnderElevation: 0,
-            title: Text(
-              s.analyticsTitle,
-              style: AppTypography.headline.copyWith(
-                fontSize: 16,
-                color: AppColors.textPrimary(isDark),
-              ),
-            ),
-            centerTitle: true,
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(1),
-              child: Divider(height: 1, color: AppColors.border(isDark)),
-            ),
-          ),
-          body: SafeArea(
-            child: Align(
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final isWideNav = constraints.maxWidth >= 720;
+            return Align(
               alignment: Alignment.topCenter,
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 680),
                 child: ListView(
-                  padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
+                  padding: EdgeInsetsDirectional.fromSTEB(
+                    AppSpacing.lg,
+                    AppSpacing.md,
+                    AppSpacing.lg,
+                    isWideNav ? AppSpacing.xxl : 104,
+                  ),
                   children: [
+                    // Screen Header
+                    Padding(
+                      padding: const EdgeInsetsDirectional.only(bottom: AppSpacing.md),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 38,
+                            height: 38,
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.14),
+                              borderRadius: BorderRadius.circular(AppRadius.md),
+                            ),
+                            child: Icon(
+                              Icons.bar_chart_rounded,
+                              size: 20,
+                              color: AppColors.primaryText(isDark),
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          Text(
+                            s.analyticsTitle,
+                            style: AppTypography.headline.copyWith(
+                              fontSize: 17,
+                              color: AppColors.textPrimary(isDark),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     // 1. Top KPI Strip
                     Row(
                       children: [
@@ -539,8 +557,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   ],
                 ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );

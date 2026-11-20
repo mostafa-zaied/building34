@@ -1670,12 +1670,6 @@ abstract class AppLocalizations {
   /// **'Save Image'**
   String get receiptSaveImageBtn;
 
-  /// No description provided for @receiptShareWhatsAppBtn.
-  ///
-  /// In en, this message translates to:
-  /// **'Share WhatsApp'**
-  String get receiptShareWhatsAppBtn;
-
   /// No description provided for @receiptSavedToast.
   ///
   /// In en, this message translates to:
@@ -1693,12 +1687,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View MABNA CARE Digital Receipt'**
   String get viewDigitalReceiptBtn;
-
-  /// No description provided for @receiptWhatsAppText.
-  ///
-  /// In en, this message translates to:
-  /// **'✅ Building Payment Receipt — MABNA CARE\n• Apartment: {apt}\n• Month: {month}\n• Total Paid: {amount}'**
-  String receiptWhatsAppText(String apt, String month, String amount);
 
   /// No description provided for @navAnalytics.
   ///
@@ -2136,6 +2124,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Do you want to delete this notification from history?'**
   String get confirmDeleteNotifBody;
+
+  /// No description provided for @addCustomExpenseBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Expense Field'**
+  String get addCustomExpenseBtn;
+
+  /// No description provided for @addCustomExpenseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Expense Field'**
+  String get addCustomExpenseTitle;
+
+  /// No description provided for @customExpenseNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Field Name'**
+  String get customExpenseNameLabel;
+
+  /// No description provided for @customExpenseNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Doorman, Motor Repair, Gas...'**
+  String get customExpenseNameHint;
+
+  /// No description provided for @customExpenseAmountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount (EGP)'**
+  String get customExpenseAmountLabel;
+
+  /// No description provided for @customExpenseAddedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense field added & calculated'**
+  String get customExpenseAddedToast;
+
+  /// No description provided for @customExpenseRemovedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense field removed & recalculated'**
+  String get customExpenseRemovedToast;
+
+  /// No description provided for @addBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get addBtn;
+
+  /// No description provided for @deleteOwnReceiptBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Receipt & Re-upload'**
+  String get deleteOwnReceiptBtn;
+
+  /// No description provided for @confirmDeleteOwnReceiptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this receipt image and reset payment status so you can upload a new one?'**
+  String get confirmDeleteOwnReceiptBody;
+
+  /// No description provided for @paymentReceiptDeletedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt deleted — you can now upload a new one'**
+  String get paymentReceiptDeletedToast;
 }
 
 class _AppLocalizationsDelegate

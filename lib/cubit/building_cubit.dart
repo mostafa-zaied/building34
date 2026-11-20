@@ -341,6 +341,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     emit(state.copyWith(
       isAdminAuthenticated: false,
       isAdminOpen: false,
+      selectedNavIndex: state.selectedNavIndex == 6 ? 0 : state.selectedNavIndex,
       pageViewStats: () => null,
       notifications: notifs,
     ));
@@ -406,6 +407,90 @@ class BuildingCubit extends Cubit<BuildingState> {
       emit(state.copyWith(
         feedbackMessage: () => err != null ? '❌ ${_localizeError(err)}' : state.s.monthSavedToast,
         feedbackIsError: err != null,
+      ));
+    });
+  }
+
+  Future<void> addCustomExpense({
+    required String name,
+    required double amount,
+  }) async {
+    if (!state.isAdminOpen) return;
+    final m = state.currentMonth;
+    final cleanName = name.trim();
+    if (m == null || cleanName.isEmpty) return;
+
+    final item = CustomExpenseItem(
+      id: 'ce_${DateTime.now().microsecondsSinceEpoch}',
+      name: cleanName,
+      amount: amount < 0 ? 0 : amount,
+    );
+    m.customExpenses.add(item);
+    emit(state.copyWith(months: List<MonthBill>.from(state.months)));
+
+    await _withBusy(() async {
+      final err = await _service.updateMonthAsAdmin(
+        adminPass: state.adminPass,
+        month: m,
+        baseEmergency: state.baseEmergency,
+      );
+      if (err != null) {
+        m.customExpenses.removeWhere((e) => e.id == item.id);
+        emit(state.copyWith(
+          months: List<MonthBill>.from(state.months),
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return;
+      }
+      emit(state.copyWith(
+        months: List<MonthBill>.from(state.months),
+        feedbackMessage: () => state.s.customExpenseAddedToast,
+        feedbackIsError: false,
+      ));
+    });
+  }
+
+  void updateCustomExpenseAmount(String id, double amount) {
+    final m = state.currentMonth;
+    if (m == null) return;
+    for (final item in m.customExpenses) {
+      if (item.id == id) {
+        item.amount = amount < 0 ? 0 : amount;
+        break;
+      }
+    }
+    emit(state.copyWith(months: List<MonthBill>.from(state.months)));
+  }
+
+  Future<void> removeCustomExpense(String id) async {
+    if (!state.isAdminOpen) return;
+    final m = state.currentMonth;
+    if (m == null) return;
+    final idx = m.customExpenses.indexWhere((e) => e.id == id);
+    if (idx == -1) return;
+    final removed = m.customExpenses.removeAt(idx);
+    emit(state.copyWith(months: List<MonthBill>.from(state.months)));
+
+    await _withBusy(() async {
+      final err = await _service.updateMonthAsAdmin(
+        adminPass: state.adminPass,
+        month: m,
+        baseEmergency: state.baseEmergency,
+      );
+      if (err != null) {
+        m.customExpenses.insert(idx, removed);
+        emit(state.copyWith(
+          months: List<MonthBill>.from(state.months),
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return;
+      }
+      emit(state.copyWith(
+        months: List<MonthBill>.from(state.months),
+        feedbackMessage: () => state.s.customExpenseRemovedToast,
+        feedbackIsError: false,
       ));
     });
   }
@@ -522,6 +607,27 @@ class BuildingCubit extends Cubit<BuildingState> {
         feedbackIsError: err != null,
       ));
     });
+  }
+
+  Future<bool> cancelOwnPayment(int aptNum) async {
+    final m = state.currentMonth;
+    if (m == null) return false;
+    bool ok = false;
+    await _withBusy(() async {
+      final err = await _service.cancelPaymentAsResident(
+        month: m,
+        aptNum: aptNum,
+        passcode: state.savedAptPass ?? '',
+      );
+      ok = err == null;
+      emit(state.copyWith(
+        months: List<MonthBill>.from(state.months),
+        feedbackMessage: () =>
+            err != null ? '❌ ${_localizeError(err)}' : state.s.paymentReceiptDeletedToast,
+        feedbackIsError: err != null,
+      ));
+    });
+    return ok;
   }
 
   Future<({List<ApartmentInfo>? apartments, String? error})> fetchAdminApartments() async {

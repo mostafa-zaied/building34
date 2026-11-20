@@ -1,6 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -43,6 +42,114 @@ class BillSummaryCard extends StatelessWidget {
     required this.onOpenManageApts,
   });
 
+  static const List<Color> _customAccentColors = [
+    Color(0xFF8B5CF6),
+    Color(0xFFEC4899),
+    Color(0xFF14B8A6),
+    Color(0xFFF97316),
+  ];
+
+  Future<void> _showAddCustomExpenseDialog(BuildContext context) async {
+    final s = state.s;
+    final isDark = state.isDarkMode;
+    final nameCtrl = TextEditingController();
+    final amountCtrl = TextEditingController();
+
+    final result = await showDialog<({String name, double amount})>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.card(isDark),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+        ),
+        title: Row(
+          children: [
+            Icon(
+              Icons.add_circle_outline_rounded,
+              color: AppColors.primaryText(isDark),
+              size: 20,
+            ),
+            const SizedBox(width: AppSpacing.xs),
+            Expanded(
+              child: Text(
+                s.addCustomExpenseTitle,
+                style: AppTypography.headline.copyWith(
+                  fontSize: 15,
+                  color: AppColors.textPrimary(isDark),
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: nameCtrl,
+              autofocus: true,
+              decoration: InputDecoration(
+                labelText: s.customExpenseNameLabel,
+                hintText: s.customExpenseNameHint,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            TextField(
+              controller: amountCtrl,
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+              ],
+              decoration: InputDecoration(
+                labelText: s.customExpenseAmountLabel,
+                hintText: '0',
+              ),
+              onSubmitted: (_) {
+                final cleanName = nameCtrl.text.trim();
+                if (cleanName.isNotEmpty) {
+                  Navigator.pop(ctx, (
+                    name: cleanName,
+                    amount: double.tryParse(amountCtrl.text.trim()) ?? 0,
+                  ));
+                }
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(s.cancel),
+          ),
+          FilledButton(
+            onPressed: () {
+              final cleanName = nameCtrl.text.trim();
+              if (cleanName.isEmpty) return;
+              Navigator.pop(ctx, (
+                name: cleanName,
+                amount: double.tryParse(amountCtrl.text.trim()) ?? 0,
+              ));
+            },
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(s.addBtn),
+          ),
+        ],
+      ),
+    );
+
+    Future.delayed(const Duration(milliseconds: 300), () {
+      nameCtrl.dispose();
+      amountCtrl.dispose();
+    });
+
+    if (result != null) {
+      await cubit.addCustomExpense(name: result.name, amount: result.amount);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = state.s;
@@ -55,7 +162,7 @@ class BillSummaryCard extends StatelessWidget {
         // 1. Compact Monthly Expense Categories Grid (Top)
         LayoutBuilder(
           builder: (context, constraints) {
-            final cards = [
+            final cards = <Widget>[
               ExpenseStatCard(
                 label: s.waterLabel,
                 value: s.currency(month.water.toInt()),
@@ -96,40 +203,86 @@ class BillSummaryCard extends StatelessWidget {
                 controller: cleanCtrl,
                 onChanged: onFieldChanged,
               ),
+              for (int i = 0; i < month.customExpenses.length; i++)
+                ExpenseStatCard(
+                  key: ValueKey('custom_${month.id}_${month.customExpenses[i].id}'),
+                  label: month.customExpenses[i].name,
+                  value: s.currency(month.customExpenses[i].amount.toInt()),
+                  color: _customAccentColors[i % _customAccentColors.length],
+                  icon: Icons.receipt_long_outlined,
+                  highlighted: false,
+                  isEditable: state.isAdminOpen,
+                  initialEditText: month.customExpenses[i].amount.toInt().toString(),
+                  onTextChanged: (val) => cubit.updateCustomExpenseAmount(
+                    month.customExpenses[i].id,
+                    double.tryParse(val.trim()) ?? 0,
+                  ),
+                  onDelete: () => cubit.removeCustomExpense(month.customExpenses[i].id),
+                ),
             ];
 
-            if (constraints.maxWidth < 500) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(child: cards[0]),
-                      const SizedBox(width: AppSpacing.xs),
-                      Expanded(child: cards[1]),
+            final perRow = constraints.maxWidth < 500 ? 2 : 4;
+            final rows = <Widget>[];
+            for (int start = 0; start < cards.length; start += perRow) {
+              final end = (start + perRow) > cards.length ? cards.length : (start + perRow);
+              final slice = cards.sublist(start, end);
+              if (rows.isNotEmpty) {
+                rows.add(const SizedBox(height: AppSpacing.xs));
+              }
+              rows.add(
+                Row(
+                  children: [
+                    for (int j = 0; j < slice.length; j++) ...[
+                      if (j > 0) const SizedBox(width: AppSpacing.xs),
+                      Expanded(child: slice[j]),
                     ],
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Row(
-                    children: [
-                      Expanded(child: cards[2]),
-                      const SizedBox(width: AppSpacing.xs),
-                      Expanded(child: cards[3]),
-                    ],
-                  ),
-                ],
+                  ],
+                ),
               );
             }
 
-            return Row(
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Expanded(child: cards[0]),
-                const SizedBox(width: AppSpacing.xs),
-                Expanded(child: cards[1]),
-                const SizedBox(width: AppSpacing.xs),
-                Expanded(child: cards[2]),
-                const SizedBox(width: AppSpacing.xs),
-                Expanded(child: cards[3]),
+                ...rows,
+                if (state.isAdminOpen) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  InkWell(
+                    onTap: () => _showAddCustomExpenseDialog(context),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                        vertical: 9,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: isDark ? 0.10 : 0.06),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        border: Border.all(
+                          color: AppColors.primary.withValues(alpha: 0.35),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.add_circle_outline_rounded,
+                            size: 16,
+                            color: AppColors.primaryText(isDark),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            s.addCustomExpenseBtn,
+                            style: AppTypography.label.copyWith(
+                              color: AppColors.primaryText(isDark),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ],
             );
           },

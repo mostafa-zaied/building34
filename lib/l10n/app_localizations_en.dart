@@ -875,9 +875,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get receiptSaveImageBtn => 'Save Image';
 
   @override
-  String get receiptShareWhatsAppBtn => 'Share WhatsApp';
-
-  @override
   String get receiptSavedToast => 'Receipt image saved successfully';
 
   @override
@@ -886,11 +883,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get viewDigitalReceiptBtn => 'View MABNA CARE Digital Receipt';
-
-  @override
-  String receiptWhatsAppText(String apt, String month, String amount) {
-    return '✅ Building Payment Receipt — MABNA CARE\n• Apartment: $apt\n• Month: $month\n• Total Paid: $amount';
-  }
 
   @override
   String get navAnalytics => 'Analytics';
@@ -1146,4 +1138,40 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get confirmDeleteNotifBody =>
       'Do you want to delete this notification from history?';
+
+  @override
+  String get addCustomExpenseBtn => 'Add Expense Field';
+
+  @override
+  String get addCustomExpenseTitle => 'Add New Expense Field';
+
+  @override
+  String get customExpenseNameLabel => 'Field Name';
+
+  @override
+  String get customExpenseNameHint => 'e.g. Doorman, Motor Repair, Gas...';
+
+  @override
+  String get customExpenseAmountLabel => 'Amount (EGP)';
+
+  @override
+  String get customExpenseAddedToast => 'Expense field added & calculated';
+
+  @override
+  String get customExpenseRemovedToast =>
+      'Expense field removed & recalculated';
+
+  @override
+  String get addBtn => 'Add';
+
+  @override
+  String get deleteOwnReceiptBtn => 'Delete Receipt & Re-upload';
+
+  @override
+  String get confirmDeleteOwnReceiptBody =>
+      'Delete this receipt image and reset payment status so you can upload a new one?';
+
+  @override
+  String get paymentReceiptDeletedToast =>
+      'Receipt deleted — you can now upload a new one';
 }

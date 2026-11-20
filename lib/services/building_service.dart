@@ -166,7 +166,10 @@ class BuildingService {
         .order('year_num', ascending: true)
         .order('month_num', ascending: true);
 
-    final paymentRows = await client.from('payments').select();
+    final paymentRows = await client
+        .from('payments')
+        .select()
+        .eq('is_cancelled', false);
 
     final monthsMap = <int, MonthBill>{};
     for (final row in monthsRows) {
@@ -332,6 +335,7 @@ class BuildingService {
       'p_for_emerg': month.forEmerg,
       'p_apts_count': month.aptsCount,
       'p_base_emerg': baseEmergency,
+      'p_custom_expenses': month.customExpenses.map((e) => e.toJson()).toList(),
     });
 
     if (res is Map && res['ok'] == true) return null;
@@ -356,6 +360,47 @@ class BuildingService {
     });
 
     if (res is Map && res['ok'] == true) {
+      month.payments.remove(aptNum);
+      return null;
+    }
+    return (res is Map ? res['error']?.toString() : null) ?? 'err_cancel_failed';
+  }
+
+  Future<String?> cancelPaymentAsResident({
+    required MonthBill month,
+    required int aptNum,
+    required String passcode,
+  }) async {
+    if (!_useSupabase) {
+      if (_demoRequireAptPassOnOpen) {
+        final expected = _demoApartments[aptNum]?.passcode ?? '${1000 + aptNum}';
+        if (passcode.trim() != expected) {
+          return 'err_wrong_apt_pass_hint:$expected';
+        }
+      }
+      month.payments.remove(aptNum);
+      return null;
+    }
+
+    final client = Supabase.instance.client;
+    final res = await client.rpc('verify_apt_and_cancel_payment', params: {
+      'p_month_id': month.id,
+      'p_apt_num': aptNum,
+      'p_passcode': passcode.trim(),
+    });
+
+    if (res is Map && res['ok'] == true) {
+      final oldUrl = res['receipt_url']?.toString() ?? '';
+      const marker = '/object/public/receipts/';
+      final idx = oldUrl.indexOf(marker);
+      if (idx != -1) {
+        final path = Uri.decodeComponent(oldUrl.substring(idx + marker.length));
+        if (path.isNotEmpty) {
+          try {
+            await client.storage.from('receipts').remove([path]);
+          } catch (_) {}
+        }
+      }
       month.payments.remove(aptNum);
       return null;
     }

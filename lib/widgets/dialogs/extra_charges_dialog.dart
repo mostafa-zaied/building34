@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -201,6 +202,9 @@ class _ExtraChargesScreenState extends State<ExtraChargesScreen> {
                                   keyboardType: const TextInputType.numberWithOptions(
                                     decimal: true,
                                   ),
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                                  ],
                                   style: AppTypography.body.copyWith(
                                     color: AppColors.textPrimary(isDark),
                                   ),
