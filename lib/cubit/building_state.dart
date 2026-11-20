@@ -29,6 +29,8 @@ class BuildingState {
   final bool requireAptPassOnOpen;
   final List<BuildingContact> buildingContacts;
   final Map<int, bool> apartmentHasPasscode;
+  final List<AppNotificationItem> notifications;
+  final Set<String> readNotificationIds;
 
   const BuildingState({
     this.loading = true,
@@ -56,9 +58,14 @@ class BuildingState {
     this.requireAptPassOnOpen = true,
     this.buildingContacts = const [],
     this.apartmentHasPasscode = const {},
+    this.notifications = const [],
+    this.readNotificationIds = const {},
   });
 
   AppLocalizations get s => lookupAppLocalizations(Locale(localeCode));
+
+  int get unreadNotificationsCount =>
+      notifications.where((n) => !readNotificationIds.contains(n.id)).length;
 
   MonthBill? get currentMonth =>
       months.isEmpty || selectedMonthIndex >= months.length
@@ -93,6 +100,8 @@ class BuildingState {
     bool? requireAptPassOnOpen,
     List<BuildingContact>? buildingContacts,
     Map<int, bool>? apartmentHasPasscode,
+    List<AppNotificationItem>? notifications,
+    Set<String>? readNotificationIds,
   }) {
     return BuildingState(
       loading: loading ?? this.loading,
@@ -120,6 +129,8 @@ class BuildingState {
       requireAptPassOnOpen: requireAptPassOnOpen ?? this.requireAptPassOnOpen,
       buildingContacts: buildingContacts ?? this.buildingContacts,
       apartmentHasPasscode: apartmentHasPasscode ?? this.apartmentHasPasscode,
+      notifications: notifications ?? this.notifications,
+      readNotificationIds: readNotificationIds ?? this.readNotificationIds,
     );
   }
 }

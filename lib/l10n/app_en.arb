@@ -513,5 +513,19 @@
   "installIosTitle": "How to install on iPhone (Safari)",
   "installIosStep1": "Make sure you open the link in Safari.",
   "installIosStep2": "Tap the Share icon at the bottom of the screen.",
-  "installIosStep3": "Select \"Add to Home Screen\" and then tap \"Add\"."
+  "installIosStep3": "Select \"Add to Home Screen\" and then tap \"Add\".",
+  "notifHistoryTitle": "Notifications",
+  "notifMarkAllReadBtn": "Mark all read ✓",
+  "notifFilterAll": "All ({count})",
+  "@notifFilterAll": { "placeholders": { "count": { "type": "int" } } },
+  "notifFilterUnread": "Unread ({count})",
+  "@notifFilterUnread": { "placeholders": { "count": { "type": "int" } } },
+  "notifEmptyAll": "No notifications sent yet.",
+  "notifEmptyUnread": "No unread notifications 🎉",
+  "notifTypeAnnouncement": "Announcement",
+  "notifTypeNewMonth": "Monthly Bill",
+  "notifTypePayment": "Payment Alert",
+  "notifTypeFeedback": "Resident Feedback",
+  "notifTypeGeneral": "Admin Alert",
+  "confirmDeleteNotifBody": "Do you want to delete this notification from history?"
 }

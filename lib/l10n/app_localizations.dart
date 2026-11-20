@@ -2064,6 +2064,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select \"Add to Home Screen\" and then tap \"Add\".'**
   String get installIosStep3;
+
+  /// No description provided for @notifHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifHistoryTitle;
+
+  /// No description provided for @notifMarkAllReadBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all read ✓'**
+  String get notifMarkAllReadBtn;
+
+  /// No description provided for @notifFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All ({count})'**
+  String notifFilterAll(int count);
+
+  /// No description provided for @notifFilterUnread.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread ({count})'**
+  String notifFilterUnread(int count);
+
+  /// No description provided for @notifEmptyAll.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications sent yet.'**
+  String get notifEmptyAll;
+
+  /// No description provided for @notifEmptyUnread.
+  ///
+  /// In en, this message translates to:
+  /// **'No unread notifications 🎉'**
+  String get notifEmptyUnread;
+
+  /// No description provided for @notifTypeAnnouncement.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcement'**
+  String get notifTypeAnnouncement;
+
+  /// No description provided for @notifTypeNewMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Bill'**
+  String get notifTypeNewMonth;
+
+  /// No description provided for @notifTypePayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Alert'**
+  String get notifTypePayment;
+
+  /// No description provided for @notifTypeFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Resident Feedback'**
+  String get notifTypeFeedback;
+
+  /// No description provided for @notifTypeGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Alert'**
+  String get notifTypeGeneral;
+
+  /// No description provided for @confirmDeleteNotifBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to delete this notification from history?'**
+  String get confirmDeleteNotifBody;
 }
 
 class _AppLocalizationsDelegate

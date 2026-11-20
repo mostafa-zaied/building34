@@ -1094,4 +1094,44 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get installIosStep3 =>
       'اختر \"Add to Home Screen\" (إضافة إلى الشاشة الرئيسية) ثم اضغط \"Add\".';
+
+  @override
+  String get notifHistoryTitle => 'سجل الإشعارات';
+
+  @override
+  String get notifMarkAllReadBtn => 'تحديد الكل كمقروء ✓';
+
+  @override
+  String notifFilterAll(int count) {
+    return 'الكل ($count)';
+  }
+
+  @override
+  String notifFilterUnread(int count) {
+    return 'غير مقروء ($count)';
+  }
+
+  @override
+  String get notifEmptyAll => 'لا توجد إشعارات مرسلة حتى الآن.';
+
+  @override
+  String get notifEmptyUnread => 'لا توجد إشعارات غير مقروءة 🎉';
+
+  @override
+  String get notifTypeAnnouncement => 'إعلان هام';
+
+  @override
+  String get notifTypeNewMonth => 'مصاريف الشهر';
+
+  @override
+  String get notifTypePayment => 'سداد شقة';
+
+  @override
+  String get notifTypeFeedback => 'شكاوى ومقترحات';
+
+  @override
+  String get notifTypeGeneral => 'تنبيه الإدارة';
+
+  @override
+  String get confirmDeleteNotifBody => 'هل تريد حذف هذا الإشعار من السجل؟';
 }

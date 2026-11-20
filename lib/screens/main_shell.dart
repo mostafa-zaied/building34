@@ -17,6 +17,7 @@ import 'contacts_screen.dart';
 import 'emergency_screen.dart';
 import 'feedback_screen.dart';
 import 'home_screen.dart';
+import 'notifications_screen.dart';
 import 'upcoming_directory_screen.dart';
 
 class MainShell extends StatefulWidget {
@@ -210,6 +211,65 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                               ),
                             );
                           },
+                        ),
+                        IconButton(
+                          tooltip: s.notifHistoryTitle,
+                          onPressed: () {
+                            if (_isDrawerOpen) _closeDrawer();
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const NotificationsScreen(),
+                              ),
+                            );
+                          },
+                          icon: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Icon(
+                                state.unreadNotificationsCount > 0
+                                    ? Icons.notifications_active_rounded
+                                    : Icons.notifications_none_rounded,
+                                color: state.unreadNotificationsCount > 0
+                                    ? AppColors.primaryText(isDark)
+                                    : AppColors.textPrimary(isDark),
+                              ),
+                              if (state.unreadNotificationsCount > 0)
+                                PositionedDirectional(
+                                  top: -4,
+                                  end: -4,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 4.5,
+                                      vertical: 1,
+                                    ),
+                                    constraints: const BoxConstraints(
+                                      minWidth: 16,
+                                      minHeight: 16,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.danger,
+                                      borderRadius: BorderRadius.circular(99),
+                                      border: Border.all(
+                                        color: isDark
+                                            ? const Color(0xFF0A1124)
+                                            : const Color(0xFFEEF2FF),
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      '${state.unreadNotificationsCount}',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 9.5,
+                                        fontWeight: FontWeight.w900,
+                                        height: 1.0,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
                       ]
                     : null,

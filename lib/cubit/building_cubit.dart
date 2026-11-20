@@ -52,12 +52,17 @@ class BuildingCubit extends Cubit<BuildingState> {
       bool isAdminAuthed = state.isAdminAuthenticated;
       String adminPass = state.adminPass;
       String visitorId = _visitorId;
+      Set<String> readNotifIds = state.readNotificationIds;
       try {
         final prefs = await SharedPreferences.getInstance().timeout(
           const Duration(milliseconds: 250),
         );
         savedAptNum = prefs.getInt('my_apt_num');
         savedAptPass = savedAptNum != null ? prefs.getString('my_apt_pass') : null;
+        final savedRead = prefs.getStringList('read_notif_ids');
+        if (savedRead != null) {
+          readNotifIds = savedRead.toSet();
+        }
         visitorId = prefs.getString('visitor_id') ?? '';
         if (visitorId.isEmpty) {
           final rnd = Random().nextInt(999999);
@@ -89,6 +94,9 @@ class BuildingCubit extends Cubit<BuildingState> {
       if (isAdminAuthed) {
         viewStats = await _service.fetchPageViewStatsAsAdmin(adminPass);
       }
+      final notifs = await _service
+          .fetchAppNotifications(adminPass: isAdminAuthed ? adminPass : null)
+          .timeout(const Duration(seconds: 10), onTimeout: () => state.notifications);
 
       emit(state.copyWith(
         loading: false,
@@ -107,6 +115,8 @@ class BuildingCubit extends Cubit<BuildingState> {
         requireAptPassOnOpen: data.requireAptPassOnOpen,
         buildingContacts: data.buildingContacts,
         apartmentHasPasscode: data.apartmentHasPasscode,
+        notifications: notifs,
+        readNotificationIds: readNotifIds,
       ));
       unawaited(syncPushTokenIfGranted());
     } catch (e) {
@@ -251,11 +261,13 @@ class BuildingCubit extends Cubit<BuildingState> {
         await prefs.setString('admin_pass', clean);
       } catch (_) {}
       final viewStats = await _service.fetchPageViewStatsAsAdmin(clean);
+      final notifs = await _service.fetchAppNotifications(adminPass: clean);
       emit(state.copyWith(
         adminPass: clean,
         isAdminAuthenticated: true,
         isAdminOpen: true,
         pageViewStats: () => viewStats,
+        notifications: notifs,
       ));
       unawaited(syncPushTokenIfGranted());
     });
@@ -314,10 +326,12 @@ class BuildingCubit extends Cubit<BuildingState> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('admin_pass');
     } catch (_) {}
+    final notifs = await _service.fetchAppNotifications();
     emit(state.copyWith(
       isAdminAuthenticated: false,
       isAdminOpen: false,
       pageViewStats: () => null,
+      notifications: notifs,
     ));
   }
 
@@ -790,7 +804,62 @@ class BuildingCubit extends Cubit<BuildingState> {
           adminPass: adminPass,
           eventType: eventType,
         )
-        .catchError((_) => (ok: false, hasRecipients: false, notConfigured: false, error: null));
+        .then((_) => refreshNotifications())
+        .catchError((_) {});
+  }
+
+  Future<void> refreshNotifications() async {
+    try {
+      final notifs = await _service.fetchAppNotifications(
+        adminPass: state.isAdminAuthenticated ? state.adminPass : null,
+      );
+      if (!isClosed) {
+        emit(state.copyWith(notifications: notifs));
+      }
+    } catch (_) {}
+  }
+
+  Future<void> markNotificationRead(String id) async {
+    if (state.readNotificationIds.contains(id)) return;
+    final updated = {...state.readNotificationIds, id};
+    emit(state.copyWith(readNotificationIds: updated));
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList('read_notif_ids', updated.toList());
+    } catch (_) {}
+  }
+
+  Future<void> markAllNotificationsRead() async {
+    if (state.notifications.isEmpty) return;
+    final updated = {
+      ...state.readNotificationIds,
+      ...state.notifications.map((n) => n.id),
+    };
+    emit(state.copyWith(readNotificationIds: updated));
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList('read_notif_ids', updated.toList());
+    } catch (_) {}
+  }
+
+  Future<bool> deleteAppNotification(String id) async {
+    if (!state.isAdminAuthenticated) return false;
+    final err = await _service.deleteAppNotificationAsAdmin(
+      adminPass: state.adminPass,
+      id: id,
+    );
+    if (err != null) {
+      emit(state.copyWith(
+        feedbackMessage: () => '❌ ${_localizeError(err)}',
+        feedbackIsError: true,
+      ));
+      return false;
+    }
+    final notifs = await _service.fetchAppNotifications(
+      adminPass: state.adminPass,
+    );
+    emit(state.copyWith(notifications: notifs));
+    return true;
   }
 
   /// Sends a manual broadcast notification from Admin Settings.
@@ -835,7 +904,11 @@ class BuildingCubit extends Cubit<BuildingState> {
         return;
       }
       success = true;
+      final notifs = await _service.fetchAppNotifications(
+        adminPass: state.adminPass,
+      );
       emit(state.copyWith(
+        notifications: notifs,
         feedbackMessage: () => res.hasRecipients
             ? state.s.pushSentSuccessToast
             : state.s.pushNoDevicesToast,

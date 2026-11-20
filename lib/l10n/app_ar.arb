@@ -326,5 +326,17 @@
   "installIosTitle": "طريقة التثبيت على آيفون (Safari)",
   "installIosStep1": "تأكد من فتح الرابط في متصفح Safari.",
   "installIosStep2": "اضغط على أيقونة المشاركة (Share) في أسفل الشاشة.",
-  "installIosStep3": "اختر \"Add to Home Screen\" (إضافة إلى الشاشة الرئيسية) ثم اضغط \"Add\"."
+  "installIosStep3": "اختر \"Add to Home Screen\" (إضافة إلى الشاشة الرئيسية) ثم اضغط \"Add\".",
+  "notifHistoryTitle": "سجل الإشعارات",
+  "notifMarkAllReadBtn": "تحديد الكل كمقروء ✓",
+  "notifFilterAll": "الكل ({count})",
+  "notifFilterUnread": "غير مقروء ({count})",
+  "notifEmptyAll": "لا توجد إشعارات مرسلة حتى الآن.",
+  "notifEmptyUnread": "لا توجد إشعارات غير مقروءة 🎉",
+  "notifTypeAnnouncement": "إعلان هام",
+  "notifTypeNewMonth": "مصاريف الشهر",
+  "notifTypePayment": "سداد شقة",
+  "notifTypeFeedback": "شكاوى ومقترحات",
+  "notifTypeGeneral": "تنبيه الإدارة",
+  "confirmDeleteNotifBody": "هل تريد حذف هذا الإشعار من السجل؟"
 }

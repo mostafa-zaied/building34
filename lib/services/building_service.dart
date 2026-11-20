@@ -43,6 +43,7 @@ class BuildingService {
   static final List<EmergencyTransaction> _demoEmergencyTx = [];
   static final List<FeedbackPost> _demoFeedbackPosts = [];
   static final List<({String visitorId, DateTime createdAt})> _demoPageViews = [];
+  static final List<AppNotificationItem> _demoNotifications = [];
   static final List<BuildingContact> _demoContacts = [
     BuildingContact(
       id: '1',
@@ -1139,6 +1140,17 @@ class BuildingService {
     String? eventType,
   }) async {
     if (!_useSupabase) {
+      _demoNotifications.insert(
+        0,
+        AppNotificationItem(
+          id: DateTime.now().microsecondsSinceEpoch.toString(),
+          title: title.trim(),
+          body: body.trim(),
+          audience: audience,
+          eventType: eventType ?? 'manual_broadcast',
+          createdAt: DateTime.now(),
+        ),
+      );
       return (ok: true, hasRecipients: true, notConfigured: false, error: null);
     }
 
@@ -1172,6 +1184,57 @@ class BuildingService {
       return (ok: false, hasRecipients: false, notConfigured: false, error: 'err_submit_failed');
     } catch (_) {
       return (ok: false, hasRecipients: false, notConfigured: false, error: 'err_submit_failed');
+    }
+  }
+
+  Future<List<AppNotificationItem>> fetchAppNotifications({String? adminPass}) async {
+    if (!_useSupabase) {
+      final isAdmin = adminPass != null && adminPass.isNotEmpty;
+      return _demoNotifications
+          .where((n) => isAdmin || n.audience == 'all')
+          .toList();
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'get_app_notifications',
+        params: {
+          'p_admin_pass': (adminPass != null && adminPass.isNotEmpty) ? adminPass : null,
+        },
+      );
+      if (res is List) {
+        return res
+            .whereType<Map>()
+            .map((e) => AppNotificationItem.fromJson(Map<String, dynamic>.from(e)))
+            .toList();
+      }
+      return const [];
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  Future<String?> deleteAppNotificationAsAdmin({
+    required String adminPass,
+    required String id,
+  }) async {
+    if (!_useSupabase) {
+      _demoNotifications.removeWhere((n) => n.id == id);
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'admin_delete_app_notification',
+        params: {
+          'p_admin_pass': adminPass,
+          'p_id': int.tryParse(id) ?? 0,
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_delete_failed';
+    } catch (_) {
+      return 'err_delete_failed';
     }
   }
 }

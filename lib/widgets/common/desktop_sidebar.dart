@@ -11,6 +11,7 @@ import '../../screens/admin_settings_screen.dart';
 import '../../screens/admin_views_screen.dart';
 import '../../screens/analytics_screen.dart';
 import '../../screens/install_app_screen.dart';
+import '../../screens/notifications_screen.dart';
 import '../dialogs/admin_login_dialog.dart';
 import '../dialogs/manage_apartments_dialog.dart';
 
@@ -184,6 +185,38 @@ class DesktopSidebar extends StatelessWidget {
                   isDark: isDark,
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const AnalyticsScreen()),
+                  ),
+                ),
+                _tile(
+                  icon: state.unreadNotificationsCount > 0
+                      ? Icons.notifications_active_rounded
+                      : Icons.notifications_none_rounded,
+                  label: s.notifHistoryTitle,
+                  isDark: isDark,
+                  trailing: state.unreadNotificationsCount > 0
+                      ? Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 7,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.danger,
+                            borderRadius: BorderRadius.circular(AppRadius.pill),
+                          ),
+                          child: Text(
+                            '${state.unreadNotificationsCount}',
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                            ),
+                          ),
+                        )
+                      : null,
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const NotificationsScreen(),
+                    ),
                   ),
                 ),
                 _tile(

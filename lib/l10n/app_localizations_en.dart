@@ -1105,4 +1105,45 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get installIosStep3 =>
       'Select \"Add to Home Screen\" and then tap \"Add\".';
+
+  @override
+  String get notifHistoryTitle => 'Notifications';
+
+  @override
+  String get notifMarkAllReadBtn => 'Mark all read ✓';
+
+  @override
+  String notifFilterAll(int count) {
+    return 'All ($count)';
+  }
+
+  @override
+  String notifFilterUnread(int count) {
+    return 'Unread ($count)';
+  }
+
+  @override
+  String get notifEmptyAll => 'No notifications sent yet.';
+
+  @override
+  String get notifEmptyUnread => 'No unread notifications 🎉';
+
+  @override
+  String get notifTypeAnnouncement => 'Announcement';
+
+  @override
+  String get notifTypeNewMonth => 'Monthly Bill';
+
+  @override
+  String get notifTypePayment => 'Payment Alert';
+
+  @override
+  String get notifTypeFeedback => 'Resident Feedback';
+
+  @override
+  String get notifTypeGeneral => 'Admin Alert';
+
+  @override
+  String get confirmDeleteNotifBody =>
+      'Do you want to delete this notification from history?';
 }

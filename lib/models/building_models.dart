@@ -277,6 +277,36 @@ class PageViewStats {
   }
 }
 
+class AppNotificationItem {
+  final String id;
+  final String title;
+  final String body;
+  final String audience;
+  final String eventType;
+  final DateTime createdAt;
+
+  const AppNotificationItem({
+    required this.id,
+    required this.title,
+    required this.body,
+    this.audience = 'all',
+    this.eventType = 'manual_broadcast',
+    required this.createdAt,
+  });
+
+  factory AppNotificationItem.fromJson(Map<String, dynamic> json) {
+    return AppNotificationItem(
+      id: json['id'].toString(),
+      title: (json['title'] as String?) ?? '',
+      body: (json['body'] as String?) ?? '',
+      audience: (json['audience'] as String?) ?? 'all',
+      eventType: (json['event_type'] as String?) ?? 'manual_broadcast',
+      createdAt:
+          DateTime.tryParse(json['created_at']?.toString() ?? '') ?? DateTime.now(),
+    );
+  }
+}
+
 String localizedMonthName(int monthNum, bool isAr) {
   const arMonths = [
     'يناير',
