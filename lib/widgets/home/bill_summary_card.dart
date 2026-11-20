@@ -6,6 +6,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_shadows.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/utils/image_compressor.dart';
 import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
 import '../../models/building_models.dart';
@@ -449,10 +450,13 @@ class _UtilityReceiptsBar extends StatelessWidget {
     final picker = ImagePicker();
     final file = await picker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 80,
+      maxWidth: 1400,
+      maxHeight: 1400,
+      imageQuality: 72,
     );
     if (file == null) return;
-    final bytes = await file.readAsBytes();
+    final rawBytes = await file.readAsBytes();
+    final bytes = await compressReceiptImage(rawBytes);
     await cubit.setUtilityReceipt(utility: utility, imageBytes: bytes);
   }
 

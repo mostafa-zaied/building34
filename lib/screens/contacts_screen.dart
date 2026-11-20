@@ -209,20 +209,30 @@ class ContactsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.md),
                   Expanded(
-                    child: contacts.isEmpty
-                        ? Center(
-                            child: AppCard(
-                              padding: const EdgeInsetsDirectional.all(AppSpacing.xxxl),
-                              child: Text(
-                                s.noContactsYet,
-                                style: AppTypography.body.copyWith(
-                                  color: AppColors.textSecondary(isDark),
+                    child: RefreshIndicator(
+                      onRefresh: cubit.refreshData,
+                      color: AppColors.primary,
+                      child: contacts.isEmpty
+                          ? ListView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              children: [
+                                const SizedBox(height: 80),
+                                Center(
+                                  child: AppCard(
+                                    padding: const EdgeInsetsDirectional.all(AppSpacing.xxxl),
+                                    child: Text(
+                                      s.noContactsYet,
+                                      style: AppTypography.body.copyWith(
+                                        color: AppColors.textSecondary(isDark),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          )
-                        : ListView.separated(
-                            padding: const EdgeInsetsDirectional.only(bottom: 90),
+                              ],
+                            )
+                          : ListView.separated(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              padding: const EdgeInsetsDirectional.only(bottom: 90),
                             itemCount: contacts.length,
                             separatorBuilder: (_, _) =>
                                 const SizedBox(height: AppSpacing.sm),
@@ -252,6 +262,7 @@ class ContactsScreen extends StatelessWidget {
                               );
                             },
                           ),
+                    ),
                   ),
                 ],
               ),

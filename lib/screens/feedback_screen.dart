@@ -279,8 +279,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
                     ),
                   ),
                 )
-              : ListView.separated(
-                  itemCount: posts.length,
+              : RefreshIndicator(
+                  onRefresh: cubit.refreshData,
+                  color: AppColors.primary,
+                  child: ListView.separated(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: posts.length,
             separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
             itemBuilder: (context, index) {
               final post = posts[index];
@@ -420,7 +424,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
           ),
         );
       },
-          ),
+                  ),
+                ),
         ),
       ],
     );

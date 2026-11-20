@@ -239,14 +239,18 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
                 alignment: Alignment.topCenter,
                 child: ConstrainedBox(
                   constraints: BoxConstraints(maxWidth: isDesktopDash ? 1120 : 600),
-                  child: SingleChildScrollView(
-                    padding: EdgeInsetsDirectional.fromSTEB(
-                      AppSpacing.lg,
-                      AppSpacing.md,
-                      AppSpacing.lg,
-                      isWideNav ? AppSpacing.xxl : 104,
-                    ),
-                    child: Column(
+                  child: RefreshIndicator(
+                    onRefresh: cubit.refreshData,
+                    color: AppColors.primary,
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: EdgeInsetsDirectional.fromSTEB(
+                        AppSpacing.lg,
+                        AppSpacing.md,
+                        AppSpacing.lg,
+                        isWideNav ? AppSpacing.xxl : 104,
+                      ),
+                      child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         if (!AppConfig.isSupabaseConfigured)
@@ -408,6 +412,7 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
                         const SizedBox(height: AppSpacing.md),
                         CopyrightFooter(isDark: isDark),
                       ],
+                    ),
                     ),
                   ),
                 ),

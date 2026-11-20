@@ -36,6 +36,41 @@ class BuildingService {
     }
   }
 
+  RealtimeChannel? subscribeToLiveUpdates(void Function() onRemoteChange) {
+    if (!_useSupabase) return null;
+    try {
+      final client = Supabase.instance.client;
+      final channel = client.channel('mabna_live_sync');
+      const tables = [
+        'months',
+        'payments',
+        'emergency_transactions',
+        'feedback_posts',
+        'building_contacts',
+        'apartment_extra_charges',
+      ];
+      for (final table in tables) {
+        channel.onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: table,
+          callback: (_) => onRemoteChange(),
+        );
+      }
+      channel.subscribe();
+      return channel;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> unsubscribeLiveUpdates(RealtimeChannel? channel) async {
+    if (!_useSupabase || channel == null) return;
+    try {
+      await Supabase.instance.client.removeChannel(channel);
+    } catch (_) {}
+  }
+
   // Local Demo state (used when Supabase keys are not yet configured or in tests)
   static double _demoBaseEmergency = 2550;
   static String _demoAnnouncement = '';

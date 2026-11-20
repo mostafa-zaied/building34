@@ -180,18 +180,23 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         return LayoutBuilder(
           builder: (context, constraints) {
             final isWideNav = constraints.maxWidth >= 720;
+            final cubit = context.read<BuildingCubit>();
             return Align(
               alignment: Alignment.topCenter,
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 680),
-                child: ListView(
-                  padding: EdgeInsetsDirectional.fromSTEB(
-                    AppSpacing.lg,
-                    AppSpacing.md,
-                    AppSpacing.lg,
-                    isWideNav ? AppSpacing.xxl : 104,
-                  ),
-                  children: [
+                child: RefreshIndicator(
+                  onRefresh: cubit.refreshData,
+                  color: AppColors.primary,
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: EdgeInsetsDirectional.fromSTEB(
+                      AppSpacing.lg,
+                      AppSpacing.md,
+                      AppSpacing.lg,
+                      isWideNav ? AppSpacing.xxl : 104,
+                    ),
+                    children: [
                     // Screen Header
                     Padding(
                       padding: const EdgeInsetsDirectional.only(bottom: AppSpacing.md),
@@ -555,6 +560,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                       ),
                     ),
                   ],
+                ),
                 ),
               ),
             );

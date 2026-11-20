@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../core/utils/push_notifications.dart';
 import '../models/building_models.dart';
 import '../services/building_service.dart';
@@ -12,8 +13,32 @@ class BuildingCubit extends Cubit<BuildingState> {
   final BuildingService _service;
   bool _viewRecordedThisSession = false;
   String _visitorId = '';
+  RealtimeChannel? _liveChannel;
+  Timer? _realtimeDebounce;
+  bool _refreshingSilently = false;
 
   BuildingCubit(this._service) : super(const BuildingState());
+
+  void _ensureLiveSubscription() {
+    if (_liveChannel != null) return;
+    _liveChannel = _service.subscribeToLiveUpdates(() {
+      if (isClosed) return;
+      _realtimeDebounce?.cancel();
+      _realtimeDebounce = Timer(const Duration(milliseconds: 1200), () {
+        if (!isClosed && !state.busy && !state.isAdminOpen) {
+          unawaited(refreshData(fromRealtime: true));
+        }
+      });
+    });
+  }
+
+  @override
+  Future<void> close() async {
+    _realtimeDebounce?.cancel();
+    await _service.unsubscribeLiveUpdates(_liveChannel);
+    _liveChannel = null;
+    return super.close();
+  }
 
   Future<T> _withBusy<T>(Future<T> Function() action) async {
     emit(state.copyWith(busy: true));
@@ -127,6 +152,7 @@ class BuildingCubit extends Cubit<BuildingState> {
         notifications: notifs,
         readNotificationIds: readNotifIds,
       ));
+      _ensureLiveSubscription();
       unawaited(syncPushTokenIfGranted());
     } catch (e) {
       emit(state.copyWith(
@@ -134,6 +160,48 @@ class BuildingCubit extends Cubit<BuildingState> {
         feedbackMessage: () => state.s.errLoadData('$e'),
         feedbackIsError: true,
       ));
+    }
+  }
+
+  /// Smooth silent refresh used by Pull-to-Refresh and Supabase Realtime live sync.
+  Future<void> refreshData({bool fromRealtime = false}) async {
+    if (_refreshingSilently || isClosed) return;
+    if (fromRealtime && (state.loading || state.busy || state.isAdminOpen)) return;
+    _refreshingSilently = true;
+    try {
+      final data = await _service.fetchAll().timeout(const Duration(seconds: 15));
+      final posts = await _service
+          .fetchFeedbackPosts()
+          .timeout(const Duration(seconds: 12), onTimeout: () => state.feedbackPosts);
+      final notifs = await _service
+          .fetchAppNotifications(
+            adminPass: state.isAdminAuthenticated ? state.adminPass : null,
+            aptNum: state.myAptNum,
+          )
+          .timeout(const Duration(seconds: 10), onTimeout: () => state.notifications);
+      if (isClosed) return;
+
+      final targetIdx = data.months.isEmpty
+          ? 0
+          : state.selectedMonthIndex.clamp(0, data.months.length - 1);
+
+      emit(state.copyWith(
+        baseEmergency: data.baseEmergencyFund,
+        months: data.months,
+        apartmentNames: data.apartmentNames,
+        selectedMonthIndex: targetIdx,
+        feedbackPosts: posts,
+        announcement: data.announcement,
+        emergencyTransactions: data.emergencyTransactions,
+        requireAptPassOnOpen: data.requireAptPassOnOpen,
+        buildingContacts: data.buildingContacts,
+        apartmentHasPasscode: data.apartmentHasPasscode,
+        notifications: notifs,
+      ));
+    } catch (_) {
+      // Keep existing UI state smoothly on transient background refresh error
+    } finally {
+      _refreshingSilently = false;
     }
   }
 

@@ -103,14 +103,18 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                 alignment: Alignment.topCenter,
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 680),
-                  child: SingleChildScrollView(
-                    padding: EdgeInsetsDirectional.fromSTEB(
-                      AppSpacing.lg,
-                      AppSpacing.lg,
-                      AppSpacing.lg,
-                      isWideNav ? AppSpacing.xxl : 104,
-                    ),
-                    child: Column(
+                  child: RefreshIndicator(
+                    onRefresh: cubit.refreshData,
+                    color: AppColors.emerald,
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: EdgeInsetsDirectional.fromSTEB(
+                        AppSpacing.lg,
+                        AppSpacing.lg,
+                        AppSpacing.lg,
+                        isWideNav ? AppSpacing.xxl : 104,
+                      ),
+                      child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         // 1. Hero Emergency Balance Card
@@ -461,6 +465,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                             },
                           ),
                       ],
+                    ),
                     ),
                   ),
                 ),

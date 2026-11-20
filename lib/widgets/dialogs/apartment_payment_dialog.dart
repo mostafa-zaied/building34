@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/utils/image_compressor.dart';
 import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
 import '../../models/building_models.dart';
@@ -518,13 +519,18 @@ Future<void> showApartmentPaymentDialog({
                   onTap: () async {
                     final XFile? file = await picker.pickImage(
                       source: ImageSource.gallery,
-                      imageQuality: 80,
+                      maxWidth: 1400,
+                      maxHeight: 1400,
+                      imageQuality: 72,
                     );
                     if (file != null) {
-                      final bytes = await file.readAsBytes();
+                      final rawBytes = await file.readAsBytes();
+                      final bytes = await compressReceiptImage(rawBytes);
                       setModalState(() {
                         pickedBytes = bytes;
-                        pickedName = file.name;
+                        pickedName = file.name.endsWith('.png')
+                            ? file.name.replaceAll('.png', '.jpg')
+                            : file.name;
                         errMsg = null;
                       });
                     }
