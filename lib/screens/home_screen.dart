@@ -36,6 +36,7 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
   final _cleanCtrl = TextEditingController();
   final _forEmergCtrl = TextEditingController();
   final _aptsCtrl = TextEditingController();
+  final _dueDayCtrl = TextEditingController();
   final _baseEmergCtrl = TextEditingController();
 
   int? _syncedMonthId;
@@ -49,6 +50,7 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
     _cleanCtrl.dispose();
     _forEmergCtrl.dispose();
     _aptsCtrl.dispose();
+    _dueDayCtrl.dispose();
     _baseEmergCtrl.dispose();
     super.dispose();
   }
@@ -65,6 +67,7 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
       _cleanCtrl.text = m.clean.toInt().toString();
       _forEmergCtrl.text = m.forEmerg.toInt().toString();
       _aptsCtrl.text = m.aptsCount.toString();
+      _dueDayCtrl.text = m.dueDay.toString();
       _baseEmergCtrl.text = state.baseEmergency.toInt().toString();
     }
   }
@@ -78,6 +81,7 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
       forEmerg: double.tryParse(_forEmergCtrl.text) ?? 0,
       aptsCount: int.tryParse(_aptsCtrl.text) ?? 1,
       baseEmergency: double.tryParse(_baseEmergCtrl.text) ?? 0,
+      dueDay: int.tryParse(_dueDayCtrl.text) ?? 0,
     );
   }
 
@@ -100,10 +104,12 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
       return;
     }
 
-    final pass = await showAdminLoginDialog(context, state.s);
-    if (pass != null && pass.trim().isNotEmpty) {
-      cubit.openAdmin(pass.trim());
-    }
+    await showAdminLoginDialog(
+      context,
+      state.s,
+      startWithBiometric: false,
+      onVerifyPassword: (pass) => cubit.openAdmin(pass, showErrorToast: false),
+    );
   }
 
   @override
@@ -184,6 +190,7 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
           cleanCtrl: _cleanCtrl,
           forEmergCtrl: _forEmergCtrl,
           aptsCtrl: _aptsCtrl,
+          dueDayCtrl: _dueDayCtrl,
           baseEmergCtrl: _baseEmergCtrl,
           onFieldChanged: () => _onAdminFieldChanged(cubit),
           onOpenManageApts: () => showManageApartmentsDialog(
@@ -286,6 +293,80 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
                           month: m,
                           onToggleAdmin: () => _toggleAdminPanel(cubit, state),
                         ),
+                        if (m.hasDueDate && m.unpaidCount > 0) ...[
+                          const SizedBox(height: AppSpacing.md),
+                          Builder(
+                            builder: (_) {
+                              final pastDue = m.isPastDue;
+                              final bannerColor = pastDue ? AppColors.danger : AppColors.primary;
+                              final textColor = pastDue
+                                  ? AppColors.dangerText(isDark)
+                                  : AppColors.primaryText(isDark);
+                              return Container(
+                                padding: const EdgeInsetsDirectional.symmetric(
+                                  horizontal: AppSpacing.md,
+                                  vertical: AppSpacing.sm + 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: bannerColor.withValues(alpha: isDark ? 0.14 : 0.09),
+                                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                                  border: Border.all(
+                                    color: bannerColor.withValues(alpha: pastDue ? 0.5 : 0.35),
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      pastDue
+                                          ? Icons.warning_amber_rounded
+                                          : Icons.event_available_rounded,
+                                      size: 18,
+                                      color: textColor,
+                                    ),
+                                    const SizedBox(width: AppSpacing.sm),
+                                    Expanded(
+                                      child: Text(
+                                        pastDue
+                                            ? s.dueDatePassedBanner(m.monthNum, m.dueDay)
+                                            : s.dueDateBanner(m.monthNum, m.dueDay),
+                                        style: AppTypography.label.copyWith(
+                                          color: isDark
+                                              ? AppColors.darkTextPrimary
+                                              : AppColors.lightTextPrimary,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ),
+                                    if (pastDue) ...[
+                                      const SizedBox(width: AppSpacing.xs),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 3,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.danger.withValues(alpha: 0.2),
+                                          borderRadius: BorderRadius.circular(AppRadius.pill),
+                                          border: Border.all(
+                                            color: AppColors.danger.withValues(alpha: 0.45),
+                                          ),
+                                        ),
+                                        child: Text(
+                                          s.overdueCountPill(m.unpaidCount),
+                                          style: AppTypography.caption.copyWith(
+                                            fontSize: 10.5,
+                                            fontWeight: FontWeight.w800,
+                                            color: AppColors.dangerText(isDark),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                         if (state.announcement.trim().isNotEmpty) ...[
                           const SizedBox(height: AppSpacing.md),
                           Container(

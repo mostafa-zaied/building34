@@ -101,7 +101,10 @@ class BuildingCubit extends Cubit<BuildingState> {
         viewStats = await _service.fetchPageViewStatsAsAdmin(adminPass);
       }
       final notifs = await _service
-          .fetchAppNotifications(adminPass: isAdminAuthed ? adminPass : null)
+          .fetchAppNotifications(
+            adminPass: isAdminAuthed ? adminPass : null,
+            aptNum: savedAptNum,
+          )
           .timeout(const Duration(seconds: 10), onTimeout: () => state.notifications);
 
       emit(state.copyWith(
@@ -250,18 +253,20 @@ class BuildingCubit extends Cubit<BuildingState> {
     });
   }
 
-  Future<void> openAdmin(String pass) async {
+  Future<bool> openAdmin(String pass, {bool showErrorToast = true}) async {
+    bool ok = false;
     await _withBusy(() async {
       final clean = pass.trim();
       final err = await _service.verifyAdminPass(clean);
       if (err != null) {
         emit(state.copyWith(
-          feedbackMessage: () => '❌ ${_localizeError(err)}',
-          feedbackIsError: true,
+          feedbackMessage: showErrorToast ? () => '❌ ${_localizeError(err)}' : null,
+          feedbackIsError: showErrorToast ? true : state.feedbackIsError,
           isAdminOpen: false,
         ));
         return;
       }
+      ok = true;
       emit(state.copyWith(
         adminPass: clean,
         isAdminAuthenticated: true,
@@ -274,7 +279,10 @@ class BuildingCubit extends Cubit<BuildingState> {
       } catch (_) {}
       unawaited(() async {
         final viewStats = await _service.fetchPageViewStatsAsAdmin(clean);
-        final notifs = await _service.fetchAppNotifications(adminPass: clean);
+        final notifs = await _service.fetchAppNotifications(
+          adminPass: clean,
+          aptNum: state.myAptNum,
+        );
         emit(state.copyWith(
           pageViewStats: () => viewStats,
           notifications: notifs,
@@ -282,6 +290,7 @@ class BuildingCubit extends Cubit<BuildingState> {
       }());
       unawaited(syncPushTokenIfGranted());
     });
+    return ok;
   }
 
   void toggleAdminEditMode() {
@@ -337,11 +346,11 @@ class BuildingCubit extends Cubit<BuildingState> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('admin_pass');
     } catch (_) {}
-    final notifs = await _service.fetchAppNotifications();
+    final notifs = await _service.fetchAppNotifications(aptNum: state.myAptNum);
     emit(state.copyWith(
       isAdminAuthenticated: false,
       isAdminOpen: false,
-      selectedNavIndex: state.selectedNavIndex == 6 ? 0 : state.selectedNavIndex,
+      selectedNavIndex: state.selectedNavIndex == 5 ? 0 : state.selectedNavIndex,
       pageViewStats: () => null,
       notifications: notifs,
     ));
@@ -379,6 +388,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     required double forEmerg,
     required int aptsCount,
     required double baseEmergency,
+    int? dueDay,
   }) {
     final m = state.currentMonth;
     if (m == null) return;
@@ -388,6 +398,9 @@ class BuildingCubit extends Cubit<BuildingState> {
     m.clean = clean;
     m.forEmerg = forEmerg;
     m.aptsCount = aptsCount.clamp(1, 50);
+    if (dueDay != null) {
+      m.dueDay = dueDay.clamp(0, 31);
+    }
 
     emit(state.copyWith(
       baseEmergency: baseEmergency,
@@ -929,6 +942,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     try {
       final notifs = await _service.fetchAppNotifications(
         adminPass: state.isAdminAuthenticated ? state.adminPass : null,
+        aptNum: state.myAptNum,
       );
       if (!isClosed) {
         emit(state.copyWith(notifications: notifs));
@@ -979,12 +993,18 @@ class BuildingCubit extends Cubit<BuildingState> {
     return true;
   }
 
+  Future<Set<int>> fetchPushRegisteredApts() async {
+    if (!state.isAdminAuthenticated) return const {};
+    return _service.fetchPushRegisteredApts(state.adminPass);
+  }
+
   /// Sends a manual broadcast notification from Admin Settings.
-  /// Defaults to `adminsOnly: true` so the admin can safely test on their own device first.
+  /// Supports `audience`: `'admins'` (default test), `'all'`, or `'apartments'` with `targetAptNums`.
   Future<bool> sendManualPushNotification({
     required String title,
     required String body,
-    bool adminsOnly = true,
+    String audience = 'admins',
+    List<int>? targetAptNums,
   }) async {
     if (!state.isAdminAuthenticated) return false;
     final cleanTitle = title.trim();
@@ -1002,9 +1022,12 @@ class BuildingCubit extends Cubit<BuildingState> {
       final res = await _service.sendPushNotification(
         title: cleanTitle,
         body: cleanBody,
-        audience: adminsOnly ? 'admins' : 'all',
+        audience: audience,
+        targetAptNums: targetAptNums,
         adminPass: state.adminPass,
-        eventType: adminsOnly ? 'admin_test' : 'manual_broadcast',
+        eventType: audience == 'admins'
+            ? 'admin_test'
+            : (audience == 'apartments' ? 'payment_reminder' : 'manual_broadcast'),
       );
       if (res.notConfigured) {
         emit(state.copyWith(
@@ -1023,6 +1046,7 @@ class BuildingCubit extends Cubit<BuildingState> {
       success = true;
       final notifs = await _service.fetchAppNotifications(
         adminPass: state.adminPass,
+        aptNum: state.myAptNum,
       );
       emit(state.copyWith(
         notifications: notifs,

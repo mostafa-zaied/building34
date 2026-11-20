@@ -492,46 +492,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get upcomingBadge => '🚀 Coming Soon — Upcoming';
-
-  @override
-  String get upcomingDirTitle => 'Neighborhood Services Directory';
-
-  @override
-  String get upcomingDirSubtitle =>
-      'Soon you will be able to add and browse trusted local restaurants, pharmacies, and technicians around the building in one tap.';
-
-  @override
-  String get catRestaurants => '🍽️ Restaurants & Cafes';
-
-  @override
-  String get catPharmacies => '💊 Pharmacies';
-
-  @override
-  String get catSupermarket => '🛒 Supermarkets';
-
-  @override
-  String get catProduce => '🥬 Fruits & Vegetables';
-
-  @override
-  String get catBakery => '🥖 Bakery & Sweets';
-
-  @override
-  String get catMaintenance => '🔧 Maintenance & Techs';
-
-  @override
-  String get catLaundry => '🧺 Laundry';
-
-  @override
-  String get catCars => '🚗 Car Services';
-
-  @override
-  String get catStationery => '📚 Stationery & Print';
-
-  @override
-  String get catOther => '📌 Other Services';
-
-  @override
   String get settingsBtn => 'Settings';
 
   @override
@@ -627,15 +587,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get navFeedbackFull => 'Complaints & Suggestions';
-
-  @override
-  String get navServices => 'Services';
-
-  @override
-  String get navServicesFull => 'Services';
-
-  @override
-  String get soonBadge => 'Soon';
 
   @override
   String tabViewAllPosts(int count) {
@@ -1174,4 +1125,118 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get paymentReceiptDeletedToast =>
       'Receipt deleted — you can now upload a new one';
+
+  @override
+  String dueDateBanner(int month, int day) {
+    return 'Payment deadline for month $month is day $day';
+  }
+
+  @override
+  String dueDatePassedBanner(int month, int day) {
+    return 'Payment deadline for month $month (day $day) has passed';
+  }
+
+  @override
+  String get overdueBadge => 'Overdue';
+
+  @override
+  String overdueCountPill(int count) {
+    return '$count overdue';
+  }
+
+  @override
+  String get dueDayField => 'Due Day';
+
+  @override
+  String get pushAudienceSpecificApt => 'Specific Apt';
+
+  @override
+  String get pushAudienceUnpaid => 'Unpaid Only';
+
+  @override
+  String get pushSelectAptsHint =>
+      'Select apartment(s) (🔔 = notifications enabled):';
+
+  @override
+  String pushUnpaidSummary(int count, int month) {
+    return 'Will send to $count unpaid apartment(s) for month $month';
+  }
+
+  @override
+  String get pushAllPaidHint => 'All apartments have paid for this month 🎉';
+
+  @override
+  String get pushErrSelectApt => 'Please select at least one apartment';
+
+  @override
+  String pushSendSelectedBtn(int count) {
+    return 'Send to Selected ($count)';
+  }
+
+  @override
+  String pushSendUnpaidBtn(int count) {
+    return 'Remind Unpaid ($count)';
+  }
+
+  @override
+  String pushDefaultUnpaidTitle(int month) {
+    return 'Payment Reminder — Month $month';
+  }
+
+  @override
+  String pushDefaultUnpaidBody(int month) {
+    return 'Kindly settle your building expenses for month $month and upload the receipt in the app.';
+  }
+
+  @override
+  String get adminPrankBioTitle => '🔐 Biometric Security Check';
+
+  @override
+  String get adminPrankBioSub =>
+      'Place your finger on the scanner to verify the Building Admin fingerprint';
+
+  @override
+  String get adminPrankBioPrompt => 'Tap the fingerprint to verify...';
+
+  @override
+  String get adminPrankBioScanning =>
+      'Matching fingerprint with building HQ... ⏳';
+
+  @override
+  String get adminPrankBioSkip => 'Admin Password Login';
+
+  @override
+  String get adminPrankCaughtTitle => 'Caught You, Neighbor! 😂';
+
+  @override
+  String get adminPrankCaughtBody =>
+      'Coup attempt logged! Adding a 10 EGP curiosity fee to your apartment next month! 😜';
+
+  @override
+  String get adminPrankCaughtBackBtn => 'Okay I surrender 😂 Back Home';
+
+  @override
+  String get adminPrankCaughtRealBtn =>
+      'I really am the Admin (Enter Password)';
+
+  @override
+  String get adminPrankRoast1 => 'Nope! 🤨 Just trying your luck today?';
+
+  @override
+  String get adminPrankRoast2 =>
+      'Wrong a second time! 😂 Looks like you memorized the Login button, not the password.';
+
+  @override
+  String adminPrankRoast3(String attempt) {
+    return '🚨 Caught again! Definitely not $attempt 😜';
+  }
+
+  @override
+  String get adminPrankRoast4 =>
+      'Give the keyboard a break 😂 You are definitely not the admin!';
+
+  @override
+  String adminPrankCooldown(int seconds) {
+    return 'Cool down for ${seconds}s before trying again 😅';
+  }
 }

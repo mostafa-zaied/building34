@@ -468,15 +468,61 @@ class _PushNotificationCard extends StatefulWidget {
 class _PushNotificationCardState extends State<_PushNotificationCard> {
   final _titleCtrl = TextEditingController();
   final _bodyCtrl = TextEditingController();
-  bool _adminsOnly = true;
+  // 'admins' | 'all' | 'apartments' | 'unpaid'
+  String _mode = 'admins';
+  final Set<int> _selectedApts = {};
+  Set<int> _registeredApts = const {};
   bool _sending = false;
   String? _localErr;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRegisteredApts();
+  }
+
+  Future<void> _loadRegisteredApts() async {
+    final apts = await widget.cubit.fetchPushRegisteredApts();
+    if (mounted) {
+      setState(() => _registeredApts = apts);
+    }
+  }
 
   @override
   void dispose() {
     _titleCtrl.dispose();
     _bodyCtrl.dispose();
     super.dispose();
+  }
+
+  List<int> _unpaidApts() {
+    final m = widget.state.currentMonth;
+    if (m == null) return const [];
+    final list = <int>[];
+    for (int i = 1; i <= m.aptsCount; i++) {
+      if (!m.payments.containsKey(i)) list.add(i);
+    }
+    return list;
+  }
+
+  void _selectMode(String mode) {
+    if (_sending) return;
+    setState(() {
+      _mode = mode;
+      _localErr = null;
+      if (mode == 'unpaid') {
+        final m = widget.state.currentMonth;
+        if (m != null) {
+          final s = widget.state.s;
+          if (_titleCtrl.text.trim().isEmpty) {
+            _titleCtrl.text = s.pushDefaultUnpaidTitle(m.monthNum);
+          }
+          if (_bodyCtrl.text.trim().isEmpty) {
+            _bodyCtrl.text = s.pushDefaultUnpaidBody(m.monthNum);
+          }
+        }
+      }
+    });
   }
 
   Future<void> _send() async {
@@ -487,6 +533,25 @@ class _PushNotificationCardState extends State<_PushNotificationCard> {
       setState(() => _localErr = s.errPushFieldsRequired);
       return;
     }
+
+    String audience = _mode;
+    List<int>? targets;
+    if (_mode == 'apartments') {
+      if (_selectedApts.isEmpty) {
+        setState(() => _localErr = s.pushErrSelectApt);
+        return;
+      }
+      targets = _selectedApts.toList()..sort();
+    } else if (_mode == 'unpaid') {
+      final unpaid = _unpaidApts();
+      if (unpaid.isEmpty) {
+        setState(() => _localErr = s.pushAllPaidHint);
+        return;
+      }
+      audience = 'apartments';
+      targets = unpaid;
+    }
+
     setState(() {
       _sending = true;
       _localErr = null;
@@ -494,7 +559,8 @@ class _PushNotificationCardState extends State<_PushNotificationCard> {
     final ok = await widget.cubit.sendManualPushNotification(
       title: title,
       body: body,
-      adminsOnly: _adminsOnly,
+      audience: audience,
+      targetAptNums: targets,
     );
     if (!mounted) return;
     setState(() {
@@ -506,10 +572,58 @@ class _PushNotificationCardState extends State<_PushNotificationCard> {
     });
   }
 
+  Widget _modePill({
+    required String value,
+    required String label,
+    required Color activeColor,
+    required Color activeTextColor,
+    required bool isDark,
+  }) {
+    final selected = _mode == value;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => _selectMode(value),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 6),
+          decoration: BoxDecoration(
+            color: selected ? activeColor.withValues(alpha: 0.18) : Colors.transparent,
+            borderRadius: BorderRadius.circular(AppRadius.sm),
+          ),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.caption.copyWith(
+              fontWeight: FontWeight.w800,
+              color: selected ? activeTextColor : AppColors.textSecondary(isDark),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = widget.state.s;
     final isDark = widget.state.isDarkMode;
+    final month = widget.state.currentMonth;
+    final aptsCount = month?.aptsCount ?? 13;
+    final unpaidApts = _unpaidApts();
+
+    final sendLabel = switch (_mode) {
+      'admins' => s.pushSendAdminTestBtn,
+      'apartments' => s.pushSendSelectedBtn(_selectedApts.length),
+      'unpaid' => s.pushSendUnpaidBtn(unpaidApts.length),
+      _ => s.pushSendAllBtn,
+    };
+    final sendIcon = switch (_mode) {
+      'admins' => Icons.shield_outlined,
+      'unpaid' => Icons.warning_amber_rounded,
+      _ => Icons.send_rounded,
+    };
 
     return AppCard(
       padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
@@ -557,7 +671,7 @@ class _PushNotificationCardState extends State<_PushNotificationCard> {
             ],
           ),
           const SizedBox(height: AppSpacing.md),
-          // Audience toggle: Admin Only (Test) by default vs All Residents
+          // 4-Mode Audience Selector (2x2 clean pill grid)
           Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
@@ -565,62 +679,153 @@ class _PushNotificationCardState extends State<_PushNotificationCard> {
               borderRadius: BorderRadius.circular(AppRadius.md),
               border: Border.all(color: AppColors.border(isDark)),
             ),
-            child: Row(
+            child: Column(
               children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: _sending ? null : () => setState(() => _adminsOnly = true),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 180),
-                      padding: const EdgeInsets.symmetric(vertical: 9),
-                      decoration: BoxDecoration(
-                        color: _adminsOnly
-                            ? AppColors.primary.withValues(alpha: 0.18)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(AppRadius.sm),
-                      ),
-                      child: Text(
-                        s.pushAudienceAdminOnly,
-                        textAlign: TextAlign.center,
-                        style: AppTypography.caption.copyWith(
-                          fontWeight: FontWeight.w800,
-                          color: _adminsOnly
-                              ? AppColors.primaryText(isDark)
-                              : AppColors.textSecondary(isDark),
-                        ),
-                      ),
+                Row(
+                  children: [
+                    _modePill(
+                      value: 'admins',
+                      label: s.pushAudienceAdminOnly,
+                      activeColor: AppColors.primary,
+                      activeTextColor: AppColors.primaryText(isDark),
+                      isDark: isDark,
                     ),
-                  ),
+                    const SizedBox(width: 4),
+                    _modePill(
+                      value: 'all',
+                      label: s.pushAudienceAll,
+                      activeColor: AppColors.emerald,
+                      activeTextColor: AppColors.emeraldText(isDark),
+                      isDark: isDark,
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: _sending ? null : () => setState(() => _adminsOnly = false),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 180),
-                      padding: const EdgeInsets.symmetric(vertical: 9),
-                      decoration: BoxDecoration(
-                        color: !_adminsOnly
-                            ? AppColors.emerald.withValues(alpha: 0.18)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(AppRadius.sm),
-                      ),
-                      child: Text(
-                        s.pushAudienceAll,
-                        textAlign: TextAlign.center,
-                        style: AppTypography.caption.copyWith(
-                          fontWeight: FontWeight.w800,
-                          color: !_adminsOnly
-                              ? AppColors.emeraldText(isDark)
-                              : AppColors.textSecondary(isDark),
-                        ),
-                      ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    _modePill(
+                      value: 'apartments',
+                      label: s.pushAudienceSpecificApt,
+                      activeColor: const Color(0xFF8B5CF6),
+                      activeTextColor: isDark
+                          ? const Color(0xFFC4B5FD)
+                          : const Color(0xFF6D28D9),
+                      isDark: isDark,
                     ),
-                  ),
+                    const SizedBox(width: 4),
+                    _modePill(
+                      value: 'unpaid',
+                      label: s.pushAudienceUnpaid,
+                      activeColor: AppColors.danger,
+                      activeTextColor: AppColors.dangerText(isDark),
+                      isDark: isDark,
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
+
+          // Specific Apartment Multi-Select Chips
+          if (_mode == 'apartments') ...[
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              s.pushSelectAptsHint,
+              style: AppTypography.caption.copyWith(
+                color: AppColors.textSecondary(isDark),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: List.generate(aptsCount, (idx) {
+                final aptNum = idx + 1;
+                final isSelected = _selectedApts.contains(aptNum);
+                final hasPush = _registeredApts.contains(aptNum);
+                return FilterChip(
+                  selected: isSelected,
+                  showCheckmark: false,
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        widget.state.aptLabel(aptNum),
+                        style: AppTypography.caption.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: isSelected
+                              ? Colors.white
+                              : AppColors.textPrimary(isDark),
+                        ),
+                      ),
+                      if (hasPush) ...[
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.notifications_active_rounded,
+                          size: 13,
+                          color: isSelected
+                              ? Colors.white
+                              : AppColors.emeraldText(isDark),
+                        ),
+                      ],
+                    ],
+                  ),
+                  selectedColor: const Color(0xFF7C3AED),
+                  backgroundColor: AppColors.surface(isDark),
+                  side: BorderSide(
+                    color: isSelected
+                        ? const Color(0xFF7C3AED)
+                        : AppColors.border(isDark),
+                  ),
+                  onSelected: _sending
+                      ? null
+                      : (v) {
+                          setState(() {
+                            if (v) {
+                              _selectedApts.add(aptNum);
+                            } else {
+                              _selectedApts.remove(aptNum);
+                            }
+                            _localErr = null;
+                          });
+                        },
+                );
+              }),
+            ),
+          ],
+
+          // Unpaid Apartments Summary Banner
+          if (_mode == 'unpaid' && month != null) ...[
+            const SizedBox(height: AppSpacing.md),
+            Container(
+              padding: const EdgeInsetsDirectional.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.sm,
+              ),
+              decoration: BoxDecoration(
+                color: (unpaidApts.isEmpty ? AppColors.emerald : AppColors.danger)
+                    .withValues(alpha: isDark ? 0.14 : 0.08),
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                border: Border.all(
+                  color: (unpaidApts.isEmpty ? AppColors.emerald : AppColors.danger)
+                      .withValues(alpha: 0.4),
+                ),
+              ),
+              child: Text(
+                unpaidApts.isEmpty
+                    ? s.pushAllPaidHint
+                    : s.pushUnpaidSummary(unpaidApts.length, month.monthNum),
+                style: AppTypography.caption.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: unpaidApts.isEmpty
+                      ? AppColors.emeraldText(isDark)
+                      : AppColors.dangerText(isDark),
+                ),
+              ),
+            ),
+          ],
+
           const SizedBox(height: AppSpacing.md),
           TextField(
             controller: _titleCtrl,
@@ -677,8 +882,8 @@ class _PushNotificationCardState extends State<_PushNotificationCard> {
           SizedBox(
             width: double.infinity,
             child: AppPrimaryButton(
-              label: _adminsOnly ? s.pushSendAdminTestBtn : s.pushSendAllBtn,
-              icon: _adminsOnly ? Icons.shield_outlined : Icons.send_rounded,
+              label: sendLabel,
+              icon: sendIcon,
               loading: _sending,
               onPressed: _sending ? null : _send,
             ),

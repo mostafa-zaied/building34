@@ -12,6 +12,7 @@ class AdminEditPanel extends StatelessWidget {
   final BuildingCubit cubit;
   final BuildingState state;
   final TextEditingController aptsCtrl;
+  final TextEditingController dueDayCtrl;
   final VoidCallback onFieldChanged;
   final VoidCallback onOpenManageApts;
 
@@ -20,6 +21,7 @@ class AdminEditPanel extends StatelessWidget {
     required this.cubit,
     required this.state,
     required this.aptsCtrl,
+    required this.dueDayCtrl,
     required this.onFieldChanged,
     required this.onOpenManageApts,
   });
@@ -29,31 +31,44 @@ class AdminEditPanel extends StatelessWidget {
     final s = state.s;
     final isDark = state.isDarkMode;
 
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(
-          flex: 5,
-          child: AdminInputField(
-            label: s.aptsCountField,
-            controller: aptsCtrl,
-            color: AppColors.primary,
-            icon: Icons.home_work_outlined,
-            onFocusKey: 'apts',
-            onHighlight: cubit.setHighlight,
-            onChanged: onFieldChanged,
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: AdminInputField(
+                label: s.aptsCountField,
+                controller: aptsCtrl,
+                color: AppColors.primary,
+                icon: Icons.home_work_outlined,
+                onFocusKey: 'apts',
+                onHighlight: cubit.setHighlight,
+                onChanged: onFieldChanged,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: AdminInputField(
+                label: s.dueDayField,
+                controller: dueDayCtrl,
+                color: AppColors.amber,
+                icon: Icons.event_available_rounded,
+                onFocusKey: 'dueDay',
+                onHighlight: cubit.setHighlight,
+                onChanged: onFieldChanged,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: AppSpacing.sm),
-        Expanded(
-          flex: 5,
-          child: AppPrimaryButton(
-            label: s.saveChangesBtn,
-            icon: Icons.check_circle_outline_rounded,
-            backgroundColor: AppColors.primaryActionBg(isDark),
-            foregroundColor: AppColors.onPrimaryAction(isDark),
-            loading: state.busy,
-            onPressed: state.busy ? null : cubit.saveAdminChanges,
-          ),
+        const SizedBox(height: AppSpacing.sm),
+        AppPrimaryButton(
+          label: s.saveChangesBtn,
+          icon: Icons.check_circle_outline_rounded,
+          backgroundColor: AppColors.primaryActionBg(isDark),
+          foregroundColor: AppColors.onPrimaryAction(isDark),
+          loading: state.busy,
+          onPressed: state.busy ? null : cubit.saveAdminChanges,
         ),
       ],
     );

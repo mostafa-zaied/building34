@@ -178,11 +178,11 @@ class AppSideMenu extends StatelessWidget {
                     icon: Icons.bar_chart_rounded,
                     label: s.navAnalytics,
                     isDark: isDark,
-                    selected: state.selectedNavIndex == 5,
+                    selected: state.selectedNavIndex == 4,
                     accentColor: AppColors.primaryText(isDark),
                     onTap: () {
                       _close(context);
-                      cubit.selectNav(5);
+                      cubit.selectNav(4);
                     },
                   ),
                   _drawerTile(
@@ -193,34 +193,6 @@ class AppSideMenu extends StatelessWidget {
                     onTap: () {
                       _close(context);
                       cubit.selectNav(2);
-                    },
-                  ),
-                  _drawerTile(
-                    icon: Icons.explore_outlined,
-                    label: s.navServicesFull,
-                    isDark: isDark,
-                    selected: state.selectedNavIndex == 4,
-                    trailing: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 7,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.amber,
-                        borderRadius: BorderRadius.circular(AppRadius.pill),
-                      ),
-                      child: Text(
-                        s.soonBadge,
-                        style: const TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    onTap: () {
-                      _close(context);
-                      cubit.selectNav(4);
                     },
                   ),
 
@@ -355,10 +327,13 @@ class AppSideMenu extends StatelessWidget {
                           await cubit.openAdmin('admin123');
                           return;
                         }
-                        final pass = await showAdminLoginDialog(context, s);
-                        if (pass != null && pass.trim().isNotEmpty) {
-                          await cubit.openAdmin(pass.trim());
-                        }
+                        await showAdminLoginDialog(
+                          context,
+                          s,
+                          startWithBiometric: true,
+                          onVerifyPassword: (pass) =>
+                              cubit.openAdmin(pass, showErrorToast: false),
+                        );
                       },
                     )
                   else ...[
@@ -386,11 +361,11 @@ class AppSideMenu extends StatelessWidget {
                       icon: Icons.visibility_outlined,
                       label: s.adminViewsTitle,
                       isDark: isDark,
-                      selected: state.selectedNavIndex == 6,
+                      selected: state.selectedNavIndex == 5,
                       accentColor: AppColors.primaryText(isDark),
                       onTap: () {
                         _close(context);
-                        cubit.selectNav(6);
+                        cubit.selectNav(5);
                         cubit.refreshPageViewStats(showBusy: false);
                       },
                     ),

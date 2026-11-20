@@ -490,46 +490,6 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get upcomingBadge => '🚀 قريباً — Upcoming';
-
-  @override
-  String get upcomingDirTitle => 'دليل خدمات المنطقة بمشاركة السكان';
-
-  @override
-  String get upcomingDirSubtitle =>
-      'قريباً ستتمكن من إضافة وتصفح أفضل المطاعم، الصيدليات، وفنيي الصيانة المجرّبين حول عمارتنا والتواصل معهم بضغطة واحدة.';
-
-  @override
-  String get catRestaurants => '🍽️ مطاعم وكافيهات';
-
-  @override
-  String get catPharmacies => '💊 صيدليات';
-
-  @override
-  String get catSupermarket => '🛒 سوبر ماركت وبقالة';
-
-  @override
-  String get catProduce => '🥬 خضار وفاكهة';
-
-  @override
-  String get catBakery => '🥖 مخبز وحلواني';
-
-  @override
-  String get catMaintenance => '🔧 صيانة وفنيين';
-
-  @override
-  String get catLaundry => '🧺 مغسلة وكوي';
-
-  @override
-  String get catCars => '🚗 خدمات سيارات';
-
-  @override
-  String get catStationery => '📚 مكتبة وتصوير';
-
-  @override
-  String get catOther => '📌 خدمات أخرى';
-
-  @override
   String get settingsBtn => 'الإعدادات (Settings)';
 
   @override
@@ -623,15 +583,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get navFeedbackFull => 'الشكاوى والمقترحات';
-
-  @override
-  String get navServices => 'خدمات';
-
-  @override
-  String get navServicesFull => 'خدمات المنطقة';
-
-  @override
-  String get soonBadge => 'قريباً';
 
   @override
   String tabViewAllPosts(int count) {
@@ -946,7 +897,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get pushCardTitle => 'إرسال إشعار فوري للسكان';
 
   @override
-  String get pushCardSubtitle => 'أرسل تنبيه مباشر لكل السكان المسجلين من هنا.';
+  String get pushCardSubtitle =>
+      'أرسل تنبيهاً مباشراً لكل السكان المسجلين من هنا.';
 
   @override
   String get pushTitleLabel => 'عنوان الإشعار';
@@ -1063,7 +1015,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get installAndroidStep1 =>
-      'اضغط على الثلاث نقاط (⋮) أعلى يسار أو يمين متصفح Chrome.';
+      'اضغط على النقاط الثلاث (⋮) أعلى يسار أو يمين متصفح Chrome.';
 
   @override
   String get installAndroidStep2 =>
@@ -1161,4 +1113,117 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get paymentReceiptDeletedToast =>
       'تم حذف الإيصال، يمكنك الآن رفع صورة جديدة';
+
+  @override
+  String dueDateBanner(int month, int day) {
+    return 'آخر موعد لسداد مصاريف شهر $month هو يوم $day';
+  }
+
+  @override
+  String dueDatePassedBanner(int month, int day) {
+    return 'انتهى موعد سداد مصاريف شهر $month (يوم $day) — يرجى سرعة السداد';
+  }
+
+  @override
+  String get overdueBadge => 'متأخر عن السداد';
+
+  @override
+  String overdueCountPill(int count) {
+    return '$count متأخر';
+  }
+
+  @override
+  String get dueDayField => 'آخر موعد (يوم)';
+
+  @override
+  String get pushAudienceSpecificApt => 'لشقة محددة';
+
+  @override
+  String get pushAudienceUnpaid => 'للمتأخرين فقط';
+
+  @override
+  String get pushSelectAptsHint =>
+      'اختر الشقة أو الشقق (🔔 تعني أن الإشعارات مفعّلة لديها):';
+
+  @override
+  String pushUnpaidSummary(int count, int month) {
+    return 'سيتم الإرسال لـ $count شقة لم تسدد مصاريف شهر $month';
+  }
+
+  @override
+  String get pushAllPaidHint => 'جميع الشقق سددت مصاريف الشهر الحالي 🎉';
+
+  @override
+  String get pushErrSelectApt => 'اختر شقة واحدة على الأقل للإرسال';
+
+  @override
+  String pushSendSelectedBtn(int count) {
+    return 'إرسال للشقق المختارة ($count)';
+  }
+
+  @override
+  String pushSendUnpaidBtn(int count) {
+    return 'إرسال تذكير للمتأخرين ($count)';
+  }
+
+  @override
+  String pushDefaultUnpaidTitle(int month) {
+    return 'تذكير بسداد مصاريف شهر $month';
+  }
+
+  @override
+  String pushDefaultUnpaidBody(int month) {
+    return 'يرجى التكرم بسداد مصاريف العمارة لشهر $month ورفع صورة الإيصال عبر التطبيق.';
+  }
+
+  @override
+  String get adminPrankBioTitle => '🔐 نظام الحماية البيومتري';
+
+  @override
+  String get adminPrankBioSub =>
+      'ضع إصبعك على الماسح للتحقق من بصمة مدير العمارة';
+
+  @override
+  String get adminPrankBioPrompt => 'اضغط على البصمة للتحقق...';
+
+  @override
+  String get adminPrankBioScanning =>
+      'جاري مطابقة البصمة مع ملفات المخابرات... ⏳';
+
+  @override
+  String get adminPrankBioSkip => 'دخول بكلمة السر (للمدير)';
+
+  @override
+  String get adminPrankCaughtTitle => 'قفشناك يا جار! 😂';
+
+  @override
+  String get adminPrankCaughtBody =>
+      'تم تسجيل محاولة انقلاب على الإدارة، وهيتضاف 10 جنيه رسوم فضول على شقتك الشهر الجاي! 😜';
+
+  @override
+  String get adminPrankCaughtBackBtn => 'خلاص توبت 😂 ارجع للرئيسية';
+
+  @override
+  String get adminPrankCaughtRealBtn => 'أنا المدير فعلاً (إدخال كلمة السر)';
+
+  @override
+  String get adminPrankRoast1 => 'غلط يا فندم 🤨 بتجرب حظك ولا إيه؟';
+
+  @override
+  String get adminPrankRoast2 =>
+      'غلط للمرة التانية! 😂 واضح إنك حافظ طريق زرار الدخول مش كلمة السر.';
+
+  @override
+  String adminPrankRoast3(String attempt) {
+    return '🚨 قفشناك تاني! واضح إنك مصمم تهكّر العمارة — الباسورد مش $attempt أكيد 😜';
+  }
+
+  @override
+  String get adminPrankRoast4 =>
+      'خلاص يا نجم ارحم الكيبورد 😂 واضح إنك مش المدير فعلاً!';
+
+  @override
+  String adminPrankCooldown(int seconds) {
+    return 'استنى $seconds ثواني تهدى وترجع لوعيك 😅';
+  }
 }

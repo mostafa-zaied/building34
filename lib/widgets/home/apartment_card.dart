@@ -11,7 +11,9 @@ class ApartmentCard extends StatefulWidget {
   final String amountText;
   final String paidLabel;
   final String pendingLabel;
+  final String? overdueLabel;
   final bool isPaid;
+  final bool isOverdue;
   final bool hasReceipt;
   final String? extraBadgeText;
   final IconData? lockIcon;
@@ -25,7 +27,9 @@ class ApartmentCard extends StatefulWidget {
     required this.amountText,
     required this.paidLabel,
     required this.pendingLabel,
+    this.overdueLabel,
     required this.isPaid,
+    this.isOverdue = false,
     required this.hasReceipt,
     this.extraBadgeText,
     this.lockIcon,
@@ -43,15 +47,22 @@ class _ApartmentCardState extends State<ApartmentCard> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final accentColor = widget.isPaid ? AppColors.emerald : AppColors.primary;
+    final overdue = !widget.isPaid && widget.isOverdue;
+    final accentColor = widget.isPaid
+        ? AppColors.emerald
+        : (overdue ? AppColors.danger : AppColors.primary);
 
     final borderColor = widget.isPaid
         ? AppColors.emerald.withValues(alpha: _hovering ? 0.75 : 0.36)
-        : (_hovering ? AppColors.primary.withValues(alpha: 0.7) : AppColors.border(isDark));
+        : (overdue
+            ? AppColors.danger.withValues(alpha: _hovering ? 0.85 : 0.50)
+            : (_hovering ? AppColors.primary.withValues(alpha: 0.7) : AppColors.border(isDark)));
 
     final bgColor = widget.isPaid
         ? AppColors.emerald.withValues(alpha: isDark ? 0.09 : 0.06)
-        : (_hovering ? AppColors.cardElevated(isDark) : AppColors.surface(isDark));
+        : (overdue
+            ? AppColors.danger.withValues(alpha: isDark ? 0.11 : 0.06)
+            : (_hovering ? AppColors.cardElevated(isDark) : AppColors.surface(isDark)));
 
     return MouseRegion(
       onEnter: (_) => setState(() => _hovering = true),
@@ -74,7 +85,7 @@ class _ApartmentCardState extends State<ApartmentCard> {
               borderRadius: BorderRadius.circular(AppRadius.lg),
               border: Border.all(
                 color: borderColor,
-                width: _hovering || widget.isPaid ? 1.3 : 1.0,
+                width: _hovering || widget.isPaid || overdue ? 1.3 : 1.0,
               ),
               boxShadow: _hovering
                   ? AppShadows.accentGlow(accentColor, active: true, isDark: isDark)
@@ -127,6 +138,23 @@ class _ApartmentCardState extends State<ApartmentCard> {
                           color: AppColors.emeraldText(isDark),
                         ),
                       )
+                    else if (overdue)
+                      Tooltip(
+                        message: widget.overdueLabel ?? widget.pendingLabel,
+                        child: Container(
+                          width: 22,
+                          height: 22,
+                          decoration: BoxDecoration(
+                            color: AppColors.danger.withValues(alpha: 0.18),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.priority_high_rounded,
+                            size: 13,
+                            color: AppColors.dangerText(isDark),
+                          ),
+                        ),
+                      )
                     else
                       Tooltip(
                         message: widget.pendingLabel,
@@ -169,6 +197,32 @@ class _ApartmentCardState extends State<ApartmentCard> {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    if (overdue && widget.overdueLabel != null && widget.extraBadgeText == null)
+                      Flexible(
+                        child: Container(
+                          padding: const EdgeInsetsDirectional.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.danger.withValues(alpha: isDark ? 0.18 : 0.12),
+                            borderRadius: BorderRadius.circular(AppRadius.pill),
+                            border: Border.all(
+                              color: AppColors.danger.withValues(alpha: 0.4),
+                            ),
+                          ),
+                          child: Text(
+                            widget.overdueLabel!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.caption.copyWith(
+                              fontSize: 9.5,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.dangerText(isDark),
+                            ),
+                          ),
+                        ),
+                      ),
                     if (widget.extraBadgeText != null && !widget.isPaid)
                       Container(
                         padding: const EdgeInsetsDirectional.symmetric(

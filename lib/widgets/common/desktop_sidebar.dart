@@ -182,8 +182,8 @@ class DesktopSidebar extends StatelessWidget {
                   icon: Icons.bar_chart_rounded,
                   label: s.navAnalytics,
                   isDark: isDark,
-                  selected: state.selectedNavIndex == 5,
-                  onTap: () => cubit.selectNav(5),
+                  selected: state.selectedNavIndex == 4,
+                  onTap: () => cubit.selectNav(4),
                 ),
                 _tile(
                   icon: state.unreadNotificationsCount > 0
@@ -234,30 +234,6 @@ class DesktopSidebar extends StatelessWidget {
                   isDark: isDark,
                   selected: state.selectedNavIndex == 3,
                   onTap: () => cubit.selectNav(3),
-                ),
-                _tile(
-                  icon: state.selectedNavIndex == 4
-                      ? Icons.explore_rounded
-                      : Icons.explore_outlined,
-                  label: s.navServicesFull,
-                  isDark: isDark,
-                  selected: state.selectedNavIndex == 4,
-                  trailing: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: AppColors.amber,
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                    ),
-                    child: Text(
-                      s.soonBadge,
-                      style: const TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  onTap: () => cubit.selectNav(4),
                 ),
 
                 const SizedBox(height: AppSpacing.sm),
@@ -346,10 +322,13 @@ class DesktopSidebar extends StatelessWidget {
                         await cubit.openAdmin('admin123');
                         return;
                       }
-                      final pass = await showAdminLoginDialog(context, s);
-                      if (pass != null && pass.trim().isNotEmpty) {
-                        await cubit.openAdmin(pass.trim());
-                      }
+                      await showAdminLoginDialog(
+                        context,
+                        s,
+                        startWithBiometric: true,
+                        onVerifyPassword: (pass) =>
+                            cubit.openAdmin(pass, showErrorToast: false),
+                      );
                     },
                   )
                 else ...[
@@ -374,10 +353,10 @@ class DesktopSidebar extends StatelessWidget {
                     icon: Icons.visibility_outlined,
                     label: s.adminViewsTitle,
                     isDark: isDark,
-                    selected: state.selectedNavIndex == 6,
+                    selected: state.selectedNavIndex == 5,
                     accentColor: AppColors.primaryText(isDark),
                     onTap: () {
-                      cubit.selectNav(6);
+                      cubit.selectNav(5);
                       cubit.refreshPageViewStats(showBusy: false);
                     },
                   ),

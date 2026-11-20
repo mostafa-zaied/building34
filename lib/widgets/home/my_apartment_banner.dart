@@ -96,7 +96,10 @@ class MyApartmentBanner extends StatelessWidget {
     }
 
     final isPaid = month.payments.containsKey(myApt);
-    final accent = isPaid ? AppColors.emerald : AppColors.primary;
+    final isOverdue = !isPaid && month.isPastDue;
+    final accent = isPaid
+        ? AppColors.emerald
+        : (isOverdue ? AppColors.danger : AppColors.primary);
 
     return Container(
       padding: const EdgeInsetsDirectional.all(AppSpacing.md),
@@ -110,12 +113,12 @@ class MyApartmentBanner extends StatelessWidget {
                   AppColors.card(isDark),
                 ]
               : [
-                  AppColors.primary.withValues(alpha: isDark ? 0.16 : 0.08),
+                  accent.withValues(alpha: isDark ? 0.16 : 0.08),
                   AppColors.card(isDark),
                 ],
         ),
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: accent.withValues(alpha: 0.35)),
+        border: Border.all(color: accent.withValues(alpha: isOverdue ? 0.5 : 0.35)),
         boxShadow: AppShadows.card(isDark),
       ),
       child: Row(
@@ -128,9 +131,13 @@ class MyApartmentBanner extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             child: Icon(
-              isPaid ? Icons.verified_rounded : Icons.home_rounded,
+              isPaid
+                  ? Icons.verified_rounded
+                  : (isOverdue ? Icons.warning_amber_rounded : Icons.home_rounded),
               size: 19,
-              color: isPaid ? AppColors.emeraldText(isDark) : AppColors.primaryText(isDark),
+              color: isPaid
+                  ? AppColors.emeraldText(isDark)
+                  : (isOverdue ? AppColors.dangerText(isDark) : AppColors.primaryText(isDark)),
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
@@ -145,11 +152,15 @@ class MyApartmentBanner extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  isPaid ? s.paidBadge : s.currency(month.dueFor(myApt)),
+                  isPaid
+                      ? s.paidBadge
+                      : (isOverdue
+                          ? '${s.currency(month.dueFor(myApt))} • ${s.overdueBadge}'
+                          : s.currency(month.dueFor(myApt))),
                   style: AppTypography.caption.copyWith(
                     color: isPaid
                         ? AppColors.emeraldText(isDark)
-                        : AppColors.amber,
+                        : (isOverdue ? AppColors.dangerText(isDark) : AppColors.amber),
                     fontWeight: FontWeight.w700,
                   ),
                 ),

@@ -336,6 +336,7 @@ class BuildingService {
       'p_apts_count': month.aptsCount,
       'p_base_emerg': baseEmergency,
       'p_custom_expenses': month.customExpenses.map((e) => e.toJson()).toList(),
+      'p_due_day': month.dueDay,
     });
 
     if (res is Map && res['ok'] == true) return null;
@@ -1181,6 +1182,7 @@ class BuildingService {
     required String title,
     required String body,
     String audience = 'all',
+    List<int>? targetAptNums,
     String? adminPass,
     String? eventType,
   }) async {
@@ -1206,6 +1208,8 @@ class BuildingService {
           'title': title.trim(),
           'body': body.trim(),
           'audience': audience,
+          if (targetAptNums != null && targetAptNums.isNotEmpty)
+            'target_apt_nums': targetAptNums,
           if (adminPass != null && adminPass.isNotEmpty) 'admin_pass': adminPass,
           'event_type': ?eventType,
         },
@@ -1232,7 +1236,10 @@ class BuildingService {
     }
   }
 
-  Future<List<AppNotificationItem>> fetchAppNotifications({String? adminPass}) async {
+  Future<List<AppNotificationItem>> fetchAppNotifications({
+    String? adminPass,
+    int? aptNum,
+  }) async {
     if (!_useSupabase) {
       final isAdmin = adminPass != null && adminPass.isNotEmpty;
       return _demoNotifications
@@ -1245,6 +1252,7 @@ class BuildingService {
         'get_app_notifications',
         params: {
           'p_admin_pass': (adminPass != null && adminPass.isNotEmpty) ? adminPass : null,
+          'p_apt_num': aptNum,
         },
       );
       if (res is List) {
@@ -1256,6 +1264,22 @@ class BuildingService {
       return const [];
     } catch (_) {
       return const [];
+    }
+  }
+
+  Future<Set<int>> fetchPushRegisteredApts(String adminPass) async {
+    if (!_useSupabase) return {1, 2, 3};
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'admin_get_push_apt_nums',
+        params: {'p_admin_pass': adminPass},
+      );
+      if (res is List) {
+        return res.whereType<num>().map((e) => e.toInt()).toSet();
+      }
+      return const {};
+    } catch (_) {
+      return const {};
     }
   }
 

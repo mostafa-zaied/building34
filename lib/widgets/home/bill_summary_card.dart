@@ -22,6 +22,7 @@ class BillSummaryCard extends StatelessWidget {
   final TextEditingController cleanCtrl;
   final TextEditingController forEmergCtrl;
   final TextEditingController aptsCtrl;
+  final TextEditingController dueDayCtrl;
   final TextEditingController baseEmergCtrl;
   final VoidCallback onFieldChanged;
   final VoidCallback onOpenManageApts;
@@ -37,6 +38,7 @@ class BillSummaryCard extends StatelessWidget {
     required this.cleanCtrl,
     required this.forEmergCtrl,
     required this.aptsCtrl,
+    required this.dueDayCtrl,
     required this.baseEmergCtrl,
     required this.onFieldChanged,
     required this.onOpenManageApts,
@@ -427,6 +429,7 @@ class BillSummaryCard extends StatelessWidget {
                     cubit: cubit,
                     state: state,
                     aptsCtrl: aptsCtrl,
+                    dueDayCtrl: dueDayCtrl,
                     onFieldChanged: onFieldChanged,
                     onOpenManageApts: onOpenManageApts,
                   ),

@@ -114,6 +114,7 @@ class MonthBill {
   double clean;
   double forEmerg;
   int aptsCount;
+  int dueDay;
   String? waterReceiptUrl;
   Uint8List? waterLocalBytes;
   String? elecReceiptUrl;
@@ -132,6 +133,7 @@ class MonthBill {
     required this.clean,
     required this.forEmerg,
     required this.aptsCount,
+    this.dueDay = 10,
     this.waterReceiptUrl,
     this.waterLocalBytes,
     this.elecReceiptUrl,
@@ -183,6 +185,31 @@ class MonthBill {
 
   int get totalRemaining => (totalExpected - totalCollected).clamp(0, totalExpected);
 
+  bool get hasDueDate => dueDay >= 1 && dueDay <= 31;
+
+  DateTime? get dueDate {
+    if (!hasDueDate) return null;
+    final lastDayOfMonth = DateTime(yearNum, monthNum + 1, 0).day;
+    final clampedDay = dueDay.clamp(1, lastDayOfMonth);
+    return DateTime(yearNum, monthNum, clampedDay);
+  }
+
+  bool get isPastDue {
+    final due = dueDate;
+    if (due == null) return false;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    return today.isAfter(due);
+  }
+
+  int get unpaidCount {
+    int count = 0;
+    for (int i = 1; i <= aptsCount; i++) {
+      if (!payments.containsKey(i)) count++;
+    }
+    return count;
+  }
+
   factory MonthBill.fromJson(Map<String, dynamic> json) {
     final rawCustom = json['custom_expenses'];
     final customList = <CustomExpenseItem>[];
@@ -206,6 +233,7 @@ class MonthBill {
       clean: (json['clean'] as num?)?.toDouble() ?? 240,
       forEmerg: (json['for_emerg'] as num?)?.toDouble() ?? 0,
       aptsCount: json['apts_count'] as int? ?? 13,
+      dueDay: (json['due_day'] as num?)?.toInt() ?? 10,
       waterReceiptUrl: (json['water_receipt_url'] as String?)?.trim(),
       elecReceiptUrl: (json['elec_receipt_url'] as String?)?.trim(),
       customExpenses: customList,

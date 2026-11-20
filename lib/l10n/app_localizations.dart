@@ -968,84 +968,6 @@ abstract class AppLocalizations {
   /// **'+{amount} extra'**
   String extraBadge(int amount);
 
-  /// No description provided for @upcomingBadge.
-  ///
-  /// In en, this message translates to:
-  /// **'🚀 Coming Soon — Upcoming'**
-  String get upcomingBadge;
-
-  /// No description provided for @upcomingDirTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Neighborhood Services Directory'**
-  String get upcomingDirTitle;
-
-  /// No description provided for @upcomingDirSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Soon you will be able to add and browse trusted local restaurants, pharmacies, and technicians around the building in one tap.'**
-  String get upcomingDirSubtitle;
-
-  /// No description provided for @catRestaurants.
-  ///
-  /// In en, this message translates to:
-  /// **'🍽️ Restaurants & Cafes'**
-  String get catRestaurants;
-
-  /// No description provided for @catPharmacies.
-  ///
-  /// In en, this message translates to:
-  /// **'💊 Pharmacies'**
-  String get catPharmacies;
-
-  /// No description provided for @catSupermarket.
-  ///
-  /// In en, this message translates to:
-  /// **'🛒 Supermarkets'**
-  String get catSupermarket;
-
-  /// No description provided for @catProduce.
-  ///
-  /// In en, this message translates to:
-  /// **'🥬 Fruits & Vegetables'**
-  String get catProduce;
-
-  /// No description provided for @catBakery.
-  ///
-  /// In en, this message translates to:
-  /// **'🥖 Bakery & Sweets'**
-  String get catBakery;
-
-  /// No description provided for @catMaintenance.
-  ///
-  /// In en, this message translates to:
-  /// **'🔧 Maintenance & Techs'**
-  String get catMaintenance;
-
-  /// No description provided for @catLaundry.
-  ///
-  /// In en, this message translates to:
-  /// **'🧺 Laundry'**
-  String get catLaundry;
-
-  /// No description provided for @catCars.
-  ///
-  /// In en, this message translates to:
-  /// **'🚗 Car Services'**
-  String get catCars;
-
-  /// No description provided for @catStationery.
-  ///
-  /// In en, this message translates to:
-  /// **'📚 Stationery & Print'**
-  String get catStationery;
-
-  /// No description provided for @catOther.
-  ///
-  /// In en, this message translates to:
-  /// **'📌 Other Services'**
-  String get catOther;
-
   /// No description provided for @settingsBtn.
   ///
   /// In en, this message translates to:
@@ -1213,24 +1135,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Complaints & Suggestions'**
   String get navFeedbackFull;
-
-  /// No description provided for @navServices.
-  ///
-  /// In en, this message translates to:
-  /// **'Services'**
-  String get navServices;
-
-  /// No description provided for @navServicesFull.
-  ///
-  /// In en, this message translates to:
-  /// **'Services'**
-  String get navServicesFull;
-
-  /// No description provided for @soonBadge.
-  ///
-  /// In en, this message translates to:
-  /// **'Soon'**
-  String get soonBadge;
 
   /// No description provided for @tabViewAllPosts.
   ///
@@ -2190,6 +2094,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Receipt deleted — you can now upload a new one'**
   String get paymentReceiptDeletedToast;
+
+  /// No description provided for @dueDateBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment deadline for month {month} is day {day}'**
+  String dueDateBanner(int month, int day);
+
+  /// No description provided for @dueDatePassedBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment deadline for month {month} (day {day}) has passed'**
+  String dueDatePassedBanner(int month, int day);
+
+  /// No description provided for @overdueBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get overdueBadge;
+
+  /// No description provided for @overdueCountPill.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} overdue'**
+  String overdueCountPill(int count);
+
+  /// No description provided for @dueDayField.
+  ///
+  /// In en, this message translates to:
+  /// **'Due Day'**
+  String get dueDayField;
+
+  /// No description provided for @pushAudienceSpecificApt.
+  ///
+  /// In en, this message translates to:
+  /// **'Specific Apt'**
+  String get pushAudienceSpecificApt;
+
+  /// No description provided for @pushAudienceUnpaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpaid Only'**
+  String get pushAudienceUnpaid;
+
+  /// No description provided for @pushSelectAptsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select apartment(s) (🔔 = notifications enabled):'**
+  String get pushSelectAptsHint;
+
+  /// No description provided for @pushUnpaidSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Will send to {count} unpaid apartment(s) for month {month}'**
+  String pushUnpaidSummary(int count, int month);
+
+  /// No description provided for @pushAllPaidHint.
+  ///
+  /// In en, this message translates to:
+  /// **'All apartments have paid for this month 🎉'**
+  String get pushAllPaidHint;
+
+  /// No description provided for @pushErrSelectApt.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select at least one apartment'**
+  String get pushErrSelectApt;
+
+  /// No description provided for @pushSendSelectedBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Send to Selected ({count})'**
+  String pushSendSelectedBtn(int count);
+
+  /// No description provided for @pushSendUnpaidBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind Unpaid ({count})'**
+  String pushSendUnpaidBtn(int count);
+
+  /// No description provided for @pushDefaultUnpaidTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Reminder — Month {month}'**
+  String pushDefaultUnpaidTitle(int month);
+
+  /// No description provided for @pushDefaultUnpaidBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Kindly settle your building expenses for month {month} and upload the receipt in the app.'**
+  String pushDefaultUnpaidBody(int month);
+
+  /// No description provided for @adminPrankBioTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'🔐 Biometric Security Check'**
+  String get adminPrankBioTitle;
+
+  /// No description provided for @adminPrankBioSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Place your finger on the scanner to verify the Building Admin fingerprint'**
+  String get adminPrankBioSub;
+
+  /// No description provided for @adminPrankBioPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the fingerprint to verify...'**
+  String get adminPrankBioPrompt;
+
+  /// No description provided for @adminPrankBioScanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Matching fingerprint with building HQ... ⏳'**
+  String get adminPrankBioScanning;
+
+  /// No description provided for @adminPrankBioSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Password Login'**
+  String get adminPrankBioSkip;
+
+  /// No description provided for @adminPrankCaughtTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Caught You, Neighbor! 😂'**
+  String get adminPrankCaughtTitle;
+
+  /// No description provided for @adminPrankCaughtBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Coup attempt logged! Adding a 10 EGP curiosity fee to your apartment next month! 😜'**
+  String get adminPrankCaughtBody;
+
+  /// No description provided for @adminPrankCaughtBackBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Okay I surrender 😂 Back Home'**
+  String get adminPrankCaughtBackBtn;
+
+  /// No description provided for @adminPrankCaughtRealBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'I really am the Admin (Enter Password)'**
+  String get adminPrankCaughtRealBtn;
+
+  /// No description provided for @adminPrankRoast1.
+  ///
+  /// In en, this message translates to:
+  /// **'Nope! 🤨 Just trying your luck today?'**
+  String get adminPrankRoast1;
+
+  /// No description provided for @adminPrankRoast2.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong a second time! 😂 Looks like you memorized the Login button, not the password.'**
+  String get adminPrankRoast2;
+
+  /// No description provided for @adminPrankRoast3.
+  ///
+  /// In en, this message translates to:
+  /// **'🚨 Caught again! Definitely not {attempt} 😜'**
+  String adminPrankRoast3(String attempt);
+
+  /// No description provided for @adminPrankRoast4.
+  ///
+  /// In en, this message translates to:
+  /// **'Give the keyboard a break 😂 You are definitely not the admin!'**
+  String get adminPrankRoast4;
+
+  /// No description provided for @adminPrankCooldown.
+  ///
+  /// In en, this message translates to:
+  /// **'Cool down for {seconds}s before trying again 😅'**
+  String adminPrankCooldown(int seconds);
 }
 
 class _AppLocalizationsDelegate
