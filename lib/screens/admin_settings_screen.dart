@@ -302,6 +302,11 @@ class AdminSettingsScreen extends StatelessWidget {
 
                   // 4. Manual Push Notification Broadcast Card
                   _PushNotificationCard(cubit: cubit, state: state),
+
+                  const SizedBox(height: AppSpacing.md),
+
+                  // 5. Change Admin Password Card
+                  _ChangeAdminPasswordCard(cubit: cubit, state: state),
                 ],
               ),
             ),
@@ -886,6 +891,331 @@ class _PushNotificationCardState extends State<_PushNotificationCard> {
               icon: sendIcon,
               loading: _sending,
               onPressed: _sending ? null : _send,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChangeAdminPasswordCard extends StatefulWidget {
+  final BuildingCubit cubit;
+  final BuildingState state;
+
+  const _ChangeAdminPasswordCard({
+    required this.cubit,
+    required this.state,
+  });
+
+  @override
+  State<_ChangeAdminPasswordCard> createState() =>
+      _ChangeAdminPasswordCardState();
+}
+
+class _ChangeAdminPasswordCardState extends State<_ChangeAdminPasswordCard> {
+  final _currentCtrl = TextEditingController();
+  final _newCtrl = TextEditingController();
+  final _confirmCtrl = TextEditingController();
+
+  bool _hideCurrent = true;
+  bool _hideNew = true;
+  bool _hideConfirm = true;
+  bool _saving = false;
+  String? _localErr;
+
+  @override
+  void dispose() {
+    _currentCtrl.dispose();
+    _newCtrl.dispose();
+    _confirmCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    final s = widget.state.s;
+    final cur = _currentCtrl.text.trim();
+    final next = _newCtrl.text.trim();
+    final conf = _confirmCtrl.text.trim();
+
+    if (cur.isEmpty || next.isEmpty || conf.isEmpty) {
+      setState(() => _localErr = s.changeAdminPassFieldsRequired);
+      return;
+    }
+    if (next.length < 4) {
+      setState(() => _localErr = s.errPassTooShort);
+      return;
+    }
+    if (next != conf) {
+      setState(() => _localErr = s.errPassMismatch);
+      return;
+    }
+
+    setState(() {
+      _saving = true;
+      _localErr = null;
+    });
+
+    final err = await widget.cubit.changeAdminPassword(
+      currentPass: cur,
+      newPass: next,
+    );
+    if (!mounted) return;
+    if (err != null) {
+      setState(() {
+        _saving = false;
+        _localErr = err;
+      });
+      return;
+    }
+
+    setState(() {
+      _saving = false;
+      _localErr = null;
+      _currentCtrl.clear();
+      _newCtrl.clear();
+      _confirmCtrl.clear();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = widget.state.s;
+    final isDark = widget.state.isDarkMode;
+    final newLen = _newCtrl.text.trim().length;
+
+    double strengthFactor = 0;
+    Color strengthColor = AppColors.border(isDark);
+    String strengthLabel = '';
+    if (newLen > 0 && newLen < 4) {
+      strengthFactor = 0.30;
+      strengthColor = AppColors.danger;
+      strengthLabel = s.passStrengthWeak;
+    } else if (newLen >= 4 && newLen < 7) {
+      strengthFactor = 0.65;
+      strengthColor = AppColors.amber;
+      strengthLabel = s.passStrengthMedium;
+    } else if (newLen >= 7) {
+      strengthFactor = 1.0;
+      strengthColor = AppColors.emerald;
+      strengthLabel = s.passStrengthStrong;
+    }
+
+    return AppCard(
+      padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: AppColors.amber.withValues(alpha: 0.16),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                child: Icon(
+                  Icons.vpn_key_rounded,
+                  size: 20,
+                  color: isDark ? AppColors.amber : AppColors.amberDarkText,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      s.changeAdminPassTitle,
+                      style: AppTypography.title.copyWith(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary(isDark),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      s.changeAdminPassSubtitle,
+                      style: AppTypography.caption.copyWith(
+                        color: AppColors.textSecondary(isDark),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          TextField(
+            controller: _currentCtrl,
+            enabled: !_saving,
+            obscureText: _hideCurrent,
+            onChanged: (_) {
+              if (_localErr != null) setState(() => _localErr = null);
+            },
+            style: AppTypography.body.copyWith(
+              color: AppColors.textPrimary(isDark),
+            ),
+            decoration: InputDecoration(
+              labelText: s.currentAdminPassLabel,
+              filled: true,
+              fillColor: AppColors.surface(isDark),
+              prefixIcon: Icon(
+                Icons.lock_outline_rounded,
+                size: 18,
+                color: AppColors.textSecondary(isDark),
+              ),
+              suffixIcon: IconButton(
+                onPressed: () => setState(() => _hideCurrent = !_hideCurrent),
+                icon: Icon(
+                  _hideCurrent
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                  size: 18,
+                  color: AppColors.textSecondary(isDark),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          TextField(
+            controller: _newCtrl,
+            enabled: !_saving,
+            obscureText: _hideNew,
+            onChanged: (_) => setState(() => _localErr = null),
+            style: AppTypography.body.copyWith(
+              color: AppColors.textPrimary(isDark),
+            ),
+            decoration: InputDecoration(
+              labelText: s.newAdminPassLabel,
+              filled: true,
+              fillColor: AppColors.surface(isDark),
+              prefixIcon: Icon(
+                Icons.key_rounded,
+                size: 18,
+                color: AppColors.textSecondary(isDark),
+              ),
+              suffixIcon: IconButton(
+                onPressed: () => setState(() => _hideNew = !_hideNew),
+                icon: Icon(
+                  _hideNew
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                  size: 18,
+                  color: AppColors.textSecondary(isDark),
+                ),
+              ),
+            ),
+          ),
+          if (newLen > 0) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
+                    child: LinearProgressIndicator(
+                      value: strengthFactor,
+                      minHeight: 5,
+                      backgroundColor: AppColors.surface(isDark),
+                      valueColor: AlwaysStoppedAnimation<Color>(strengthColor),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Text(
+                  strengthLabel,
+                  style: AppTypography.caption.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: strengthColor,
+                  ),
+                ),
+              ],
+            ),
+          ],
+          const SizedBox(height: AppSpacing.sm),
+          TextField(
+            controller: _confirmCtrl,
+            enabled: !_saving,
+            obscureText: _hideConfirm,
+            onSubmitted: (_) => _submit(),
+            onChanged: (_) {
+              if (_localErr != null) setState(() => _localErr = null);
+            },
+            style: AppTypography.body.copyWith(
+              color: AppColors.textPrimary(isDark),
+            ),
+            decoration: InputDecoration(
+              labelText: s.confirmNewAdminPassLabel,
+              filled: true,
+              fillColor: AppColors.surface(isDark),
+              prefixIcon: Icon(
+                Icons.verified_user_outlined,
+                size: 18,
+                color: AppColors.textSecondary(isDark),
+              ),
+              suffixIcon: IconButton(
+                onPressed: () => setState(() => _hideConfirm = !_hideConfirm),
+                icon: Icon(
+                  _hideConfirm
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                  size: 18,
+                  color: AppColors.textSecondary(isDark),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Container(
+            padding: const EdgeInsetsDirectional.all(AppSpacing.md),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: isDark ? 0.12 : 0.07),
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.25),
+              ),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.shield_outlined,
+                  size: 16,
+                  color: AppColors.primaryText(isDark),
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                Expanded(
+                  child: Text(
+                    s.changeAdminPassSecurityNote,
+                    style: AppTypography.caption.copyWith(
+                      color: AppColors.textSecondary(isDark),
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (_localErr != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              _localErr!,
+              style: AppTypography.caption.copyWith(
+                color: AppColors.dangerText(isDark),
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+          const SizedBox(height: AppSpacing.md),
+          SizedBox(
+            width: double.infinity,
+            child: AppPrimaryButton(
+              label: s.changeAdminPassBtn,
+              icon: Icons.lock_reset_rounded,
+              loading: _saving,
+              onPressed: _saving ? null : _submit,
             ),
           ),
         ],

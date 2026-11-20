@@ -1206,37 +1206,77 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminPrankBioSkip => 'Admin Password Login';
 
   @override
-  String get adminPrankCaughtTitle => 'Caught You, Neighbor! 😂';
+  String get adminPrankCaughtTitle => 'Caught You, Neighbor!';
 
   @override
   String get adminPrankCaughtBody =>
-      'Coup attempt logged! Adding a 10 EGP curiosity fee to your apartment next month! 😜';
+      'Coup attempt logged! Adding a 10 EGP curiosity fee to your apartment next month!';
 
   @override
-  String get adminPrankCaughtBackBtn => 'Okay I surrender 😂 Back Home';
+  String get adminPrankCaughtBackBtn => 'Okay I surrender, Back Home';
 
   @override
   String get adminPrankCaughtRealBtn =>
       'I really am the Admin (Enter Password)';
 
   @override
-  String get adminPrankRoast1 => 'Nope! 🤨 Just trying your luck today?';
+  String get adminPrankRoast1 => 'Nope! Just trying your luck today?';
 
   @override
   String get adminPrankRoast2 =>
-      'Wrong a second time! 😂 Looks like you memorized the Login button, not the password.';
+      'Wrong a second time! Looks like you memorized the Login button, not the password.';
 
   @override
   String adminPrankRoast3(String attempt) {
-    return '🚨 Caught again! Definitely not $attempt 😜';
+    return '🚨 Caught again! Definitely not $attempt';
   }
 
   @override
   String get adminPrankRoast4 =>
-      'Give the keyboard a break 😂 You are definitely not the admin!';
+      'Give the keyboard a break, you are definitely not the admin!';
 
   @override
   String adminPrankCooldown(int seconds) {
-    return 'Cool down for ${seconds}s before trying again 😅';
+    return 'Cool down for ${seconds}s before trying again';
   }
+
+  @override
+  String get changeAdminPassTitle => 'Change Admin Password';
+
+  @override
+  String get changeAdminPassSubtitle =>
+      'Update your admin passcode securely right from the app';
+
+  @override
+  String get currentAdminPassLabel => 'Current Password';
+
+  @override
+  String get newAdminPassLabel => 'New Password';
+
+  @override
+  String get confirmNewAdminPassLabel => 'Confirm New Password';
+
+  @override
+  String get changeAdminPassSecurityNote =>
+      'Once saved, the password is updated in the database and any other logged-in admin devices will be signed out automatically.';
+
+  @override
+  String get changeAdminPassBtn => 'Save New Password';
+
+  @override
+  String get changeAdminPassFieldsRequired =>
+      'Please fill in the current, new, and confirmation passwords.';
+
+  @override
+  String get changeAdminPassSuccessToast =>
+      '✅ Admin password updated successfully';
+
+  @override
+  String get passStrengthWeak => 'Weak';
+
+  @override
+  String get passStrengthMedium => 'Medium';
+
+  @override
+  String get passStrengthStrong => 'Strong ✓';
 }

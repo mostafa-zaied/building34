@@ -1194,36 +1194,75 @@ class AppLocalizationsAr extends AppLocalizations {
   String get adminPrankBioSkip => 'دخول بكلمة السر (للمدير)';
 
   @override
-  String get adminPrankCaughtTitle => 'قفشناك يا جار! 😂';
+  String get adminPrankCaughtTitle => 'قفشناك يا جار!';
 
   @override
   String get adminPrankCaughtBody =>
-      'تم تسجيل محاولة انقلاب على الإدارة، وهيتضاف 10 جنيه رسوم فضول على شقتك الشهر الجاي! 😜';
+      'تم تسجيل محاولة انقلاب على الإدارة، وهيتضاف 10 جنيه رسوم فضول على شقتك الشهر الجاي!';
 
   @override
-  String get adminPrankCaughtBackBtn => 'خلاص توبت 😂 ارجع للرئيسية';
+  String get adminPrankCaughtBackBtn => 'خلاص توبت، ارجع للرئيسية';
 
   @override
   String get adminPrankCaughtRealBtn => 'أنا المدير فعلاً (إدخال كلمة السر)';
 
   @override
-  String get adminPrankRoast1 => 'غلط يا فندم 🤨 بتجرب حظك ولا إيه؟';
+  String get adminPrankRoast1 => 'غلط يا فندم، بتجرب حظك ولا إيه؟';
 
   @override
   String get adminPrankRoast2 =>
-      'غلط للمرة التانية! 😂 واضح إنك حافظ طريق زرار الدخول مش كلمة السر.';
+      'غلط للمرة التانية! واضح إنك حافظ طريق زرار الدخول مش كلمة السر.';
 
   @override
   String adminPrankRoast3(String attempt) {
-    return '🚨 قفشناك تاني! واضح إنك مصمم تهكّر العمارة — الباسورد مش $attempt أكيد 😜';
+    return '🚨 قفشناك تاني! واضح إنك مصمم تهكّر العمارة — الباسورد مش $attempt أكيد';
   }
 
   @override
   String get adminPrankRoast4 =>
-      'خلاص يا نجم ارحم الكيبورد 😂 واضح إنك مش المدير فعلاً!';
+      'خلاص يا نجم ارحم الكيبورد، واضح إنك مش المدير فعلاً!';
 
   @override
   String adminPrankCooldown(int seconds) {
-    return 'استنى $seconds ثواني تهدى وترجع لوعيك 😅';
+    return 'استنى $seconds ثواني تهدى وترجع لوعيك';
   }
+
+  @override
+  String get changeAdminPassTitle => 'تغيير كلمة سر المدير';
+
+  @override
+  String get changeAdminPassSubtitle =>
+      'حدّث كلمة السر مباشرة من التطبيق بأمان';
+
+  @override
+  String get currentAdminPassLabel => 'كلمة السر الحالية';
+
+  @override
+  String get newAdminPassLabel => 'كلمة السر الجديدة';
+
+  @override
+  String get confirmNewAdminPassLabel => 'تأكيد كلمة السر الجديدة';
+
+  @override
+  String get changeAdminPassSecurityNote =>
+      'بمجرد الحفظ، يتم تحديث كلمة السر في قاعدة البيانات وتسجيل خروج أي جهاز آخر تلقائياً.';
+
+  @override
+  String get changeAdminPassBtn => 'حفظ كلمة السر الجديدة';
+
+  @override
+  String get changeAdminPassFieldsRequired =>
+      'يرجى إدخال كلمة السر الحالية والجديدة وتأكيدها.';
+
+  @override
+  String get changeAdminPassSuccessToast => '✅ تم تغيير كلمة سر المدير بنجاح';
+
+  @override
+  String get passStrengthWeak => 'ضعيفة';
+
+  @override
+  String get passStrengthMedium => 'متوسطة';
+
+  @override
+  String get passStrengthStrong => 'قوية ✓';
 }

@@ -2218,19 +2218,19 @@ abstract class AppLocalizations {
   /// No description provided for @adminPrankCaughtTitle.
   ///
   /// In en, this message translates to:
-  /// **'Caught You, Neighbor! 😂'**
+  /// **'Caught You, Neighbor!'**
   String get adminPrankCaughtTitle;
 
   /// No description provided for @adminPrankCaughtBody.
   ///
   /// In en, this message translates to:
-  /// **'Coup attempt logged! Adding a 10 EGP curiosity fee to your apartment next month! 😜'**
+  /// **'Coup attempt logged! Adding a 10 EGP curiosity fee to your apartment next month!'**
   String get adminPrankCaughtBody;
 
   /// No description provided for @adminPrankCaughtBackBtn.
   ///
   /// In en, this message translates to:
-  /// **'Okay I surrender 😂 Back Home'**
+  /// **'Okay I surrender, Back Home'**
   String get adminPrankCaughtBackBtn;
 
   /// No description provided for @adminPrankCaughtRealBtn.
@@ -2242,32 +2242,104 @@ abstract class AppLocalizations {
   /// No description provided for @adminPrankRoast1.
   ///
   /// In en, this message translates to:
-  /// **'Nope! 🤨 Just trying your luck today?'**
+  /// **'Nope! Just trying your luck today?'**
   String get adminPrankRoast1;
 
   /// No description provided for @adminPrankRoast2.
   ///
   /// In en, this message translates to:
-  /// **'Wrong a second time! 😂 Looks like you memorized the Login button, not the password.'**
+  /// **'Wrong a second time! Looks like you memorized the Login button, not the password.'**
   String get adminPrankRoast2;
 
   /// No description provided for @adminPrankRoast3.
   ///
   /// In en, this message translates to:
-  /// **'🚨 Caught again! Definitely not {attempt} 😜'**
+  /// **'🚨 Caught again! Definitely not {attempt}'**
   String adminPrankRoast3(String attempt);
 
   /// No description provided for @adminPrankRoast4.
   ///
   /// In en, this message translates to:
-  /// **'Give the keyboard a break 😂 You are definitely not the admin!'**
+  /// **'Give the keyboard a break, you are definitely not the admin!'**
   String get adminPrankRoast4;
 
   /// No description provided for @adminPrankCooldown.
   ///
   /// In en, this message translates to:
-  /// **'Cool down for {seconds}s before trying again 😅'**
+  /// **'Cool down for {seconds}s before trying again'**
   String adminPrankCooldown(int seconds);
+
+  /// No description provided for @changeAdminPassTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Admin Password'**
+  String get changeAdminPassTitle;
+
+  /// No description provided for @changeAdminPassSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update your admin passcode securely right from the app'**
+  String get changeAdminPassSubtitle;
+
+  /// No description provided for @currentAdminPassLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Password'**
+  String get currentAdminPassLabel;
+
+  /// No description provided for @newAdminPassLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get newAdminPassLabel;
+
+  /// No description provided for @confirmNewAdminPassLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm New Password'**
+  String get confirmNewAdminPassLabel;
+
+  /// No description provided for @changeAdminPassSecurityNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Once saved, the password is updated in the database and any other logged-in admin devices will be signed out automatically.'**
+  String get changeAdminPassSecurityNote;
+
+  /// No description provided for @changeAdminPassBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Save New Password'**
+  String get changeAdminPassBtn;
+
+  /// No description provided for @changeAdminPassFieldsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in the current, new, and confirmation passwords.'**
+  String get changeAdminPassFieldsRequired;
+
+  /// No description provided for @changeAdminPassSuccessToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Admin password updated successfully'**
+  String get changeAdminPassSuccessToast;
+
+  /// No description provided for @passStrengthWeak.
+  ///
+  /// In en, this message translates to:
+  /// **'Weak'**
+  String get passStrengthWeak;
+
+  /// No description provided for @passStrengthMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get passStrengthMedium;
+
+  /// No description provided for @passStrengthStrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Strong ✓'**
+  String get passStrengthStrong;
 }
 
 class _AppLocalizationsDelegate

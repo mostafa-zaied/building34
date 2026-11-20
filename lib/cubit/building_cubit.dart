@@ -356,6 +356,38 @@ class BuildingCubit extends Cubit<BuildingState> {
     ));
   }
 
+  Future<String?> changeAdminPassword({
+    required String currentPass,
+    required String newPass,
+  }) async {
+    if (!state.isAdminAuthenticated) return state.s.errWrongAdminPass;
+    final cleanCur = currentPass.trim();
+    final cleanNew = newPass.trim();
+    if (cleanNew.length < 4) return state.s.errPassTooShort;
+
+    String? localizedErr;
+    await _withBusy(() async {
+      final err = await _service.changeAdminPassword(
+        currentPass: cleanCur,
+        newPass: cleanNew,
+      );
+      if (err != null) {
+        localizedErr = _localizeError(err);
+        return;
+      }
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('admin_pass', cleanNew);
+      } catch (_) {}
+      emit(state.copyWith(
+        adminPass: cleanNew,
+        feedbackMessage: () => state.s.changeAdminPassSuccessToast,
+        feedbackIsError: false,
+      ));
+    });
+    return localizedErr;
+  }
+
   void setHighlight(String? key) {
     emit(state.copyWith(highlightedKey: () => key));
   }

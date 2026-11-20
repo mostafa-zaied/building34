@@ -408,10 +408,12 @@ class BuildingService {
     return (res is Map ? res['error']?.toString() : null) ?? 'err_cancel_failed';
   }
 
+  static String _demoAdminPass = '7777';
+
   Future<String?> verifyAdminPass(String adminPass) async {
     final clean = adminPass.trim();
     if (!_useSupabase) {
-      if (clean == 'admin123' || clean == 'zaied123') return null;
+      if (clean == _demoAdminPass || clean == 'admin123') return null;
       return 'err_wrong_admin_pass';
     }
 
@@ -424,6 +426,35 @@ class BuildingService {
       return (res is Map ? res['error']?.toString() : null) ?? 'err_wrong_admin_pass';
     } catch (e) {
       return 'err_wrong_admin_pass';
+    }
+  }
+
+  Future<String?> changeAdminPassword({
+    required String currentPass,
+    required String newPass,
+  }) async {
+    final cleanCur = currentPass.trim();
+    final cleanNew = newPass.trim();
+    if (cleanNew.length < 4) return 'err_pass_too_short';
+
+    if (!_useSupabase) {
+      if (cleanCur != _demoAdminPass && cleanCur != 'admin123') {
+        return 'err_wrong_admin_pass';
+      }
+      _demoAdminPass = cleanNew;
+      return null;
+    }
+
+    try {
+      final client = Supabase.instance.client;
+      final res = await client.rpc('admin_change_password', params: {
+        'p_current_pass': cleanCur,
+        'p_new_pass': cleanNew,
+      });
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_wrong_admin_pass';
+    } catch (_) {
+      return 'err_submit_failed';
     }
   }
 
