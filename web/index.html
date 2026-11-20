@@ -167,6 +167,54 @@
             return '';
           }
         };
+
+        let _autoPromptStarted = false;
+        window.mabnaAutoPromptPushToken = async function () {
+          try {
+            if (typeof Notification === 'undefined' || !('serviceWorker' in navigator)) {
+              return '';
+            }
+            if (Notification.permission === 'granted') {
+              return await window.mabnaRequestPushToken(true);
+            }
+            if (Notification.permission === 'denied' || _autoPromptStarted) {
+              return '';
+            }
+            _autoPromptStarted = true;
+
+            // 1. Try requesting permission immediately on app open
+            try {
+              const immediatePerm = await Notification.requestPermission();
+              if (immediatePerm === 'granted') {
+                return await window.mabnaRequestPushToken(true);
+              }
+              if (immediatePerm === 'denied') {
+                return '';
+              }
+            } catch (_) {}
+
+            // 2. Fallback if browser requires a user gesture: prompt on first tap/click anywhere
+            if (Notification.permission === 'default') {
+              await new Promise((resolve) => {
+                const handler = () => {
+                  window.removeEventListener('click', handler, true);
+                  window.removeEventListener('touchend', handler, true);
+                  resolve();
+                };
+                window.addEventListener('click', handler, true);
+                window.addEventListener('touchend', handler, true);
+              });
+              const gesturePerm = await Notification.requestPermission();
+              if (gesturePerm === 'granted') {
+                return await window.mabnaRequestPushToken(true);
+              }
+            }
+            return '';
+          } catch (e) {
+            console.warn('MABNA Auto Push prompt error:', e);
+            return '';
+          }
+        };
       } catch (e) {
         console.warn('Firebase init skipped:', e);
       }

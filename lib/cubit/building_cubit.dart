@@ -757,16 +757,20 @@ class BuildingCubit extends Cubit<BuildingState> {
     return ok;
   }
 
-  /// Silently syncs the FCM token (including `is_admin` / `apt_num`) if already granted.
+  /// Automatically requests push permission on app open (or syncs if already granted)
+  /// and registers the device token in Supabase.
   Future<void> syncPushTokenIfGranted() async {
     try {
-      final token = await requestPushToken(silentOnly: true);
+      final token = await autoPromptPushTokenOnOpen();
       if (token == null || token.isEmpty) return;
       await _service.registerPushToken(
         token: token,
         aptNum: state.myAptNum,
         isAdmin: state.isAdminAuthenticated,
       );
+      if (!isClosed) {
+        emit(state.copyWith());
+      }
     } catch (_) {}
   }
 

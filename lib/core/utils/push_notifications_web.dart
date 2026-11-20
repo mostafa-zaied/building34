@@ -27,3 +27,17 @@ Future<String?> requestPushToken({bool silentOnly = false}) async {
     return null;
   }
 }
+
+Future<String?> autoPromptPushTokenOnOpen() async {
+  try {
+    final promise = globalContext.callMethod<JSPromise<JSString?>?>(
+      'mabnaAutoPromptPushToken'.toJS,
+    );
+    if (promise == null) return null;
+    final jsStr = await promise.toDart;
+    final token = jsStr?.toDart.trim() ?? '';
+    return token.isNotEmpty ? token : null;
+  } catch (_) {
+    return null;
+  }
+}
