@@ -82,14 +82,6 @@
   "login": "Login",
   "manageAptsTitle": "Manage Apartment Names & Passwords",
   "optionalName": "Name (optional)",
-  "nameHint": "e.g. Apt {num} - John",
-  "@nameHint": {
-    "placeholders": {
-      "num": {
-        "type": "int"
-      }
-    }
-  },
   "passcodeLabel": "Passcode",
   "saveAll": "Save All",
   "saving": "Saving...",
@@ -102,14 +94,6 @@
     }
   },
   "cancelPaymentAdmin": "Cancel Payment (Admin)",
-  "step1Passcode": "1. Apartment Passcode{demoHint}",
-  "@step1Passcode": {
-    "placeholders": {
-      "demoHint": {
-        "type": "String"
-      }
-    }
-  },
   "enterPassHint": "Enter passcode...",
   "step2Image": "Transfer Screenshot (Required)",
   "unlockAptSubtitle": "Enter apartment passcode to open details (saved after first time)",
@@ -131,10 +115,6 @@
   "addApartmentBtn": "+ Add Apartment",
   "navExpenses": "Expenses",
   "navEmergency": "Emergency",
-  "navComplaints": "Complaints",
-  "navImprovements": "Suggestions",
-  "complaintsTitle": "Resident Complaints",
-  "improvementsTitle": "Suggestions",
   "writeComplaintHint": "Write your complaint clearly...",
   "writeImprovementHint": "Share your suggestion to improve the building...",
   "postAnonymously": "Post anonymously (hide apartment name)",
@@ -143,25 +123,6 @@
   "anonymousAuthor": "Anonymous",
   "noPostsYet": "No entries yet",
   "postAddedToast": "Submitted successfully",
-  "tabViewComplaints": "Complaints ({count})",
-  "@tabViewComplaints": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "tabAddComplaint": "New Complaint",
-  "tabViewImprovements": "Suggestions ({count})",
-  "@tabViewImprovements": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "tabAddImprovement": "New Suggestion",
-  "languageTooltip": "Language",
   "deleteTooltip": "Delete",
   "errLoadData": "Failed to load data: {err}",
   "@errLoadData": {
@@ -238,8 +199,6 @@
     }
   },
   "splashTagline": "Your Building, Our Care.",
-  "savedPassBadge": "Your apartment passcode is saved",
-  "changePassBtn": "Change",
   "confirmDeleteTitle": "Confirm Delete",
   "confirmDeleteBtn": "Delete",
   "confirmDeleteAptBody": "Do you want to delete \"{apt}\"?",
@@ -290,7 +249,13 @@
   },
   "extraChargeAddedToast": "Extra charge added",
   "extraBadge": "+{amount} extra",
-  "@extraBadge": { "placeholders": { "amount": { "type": "int" } } },
+  "@extraBadge": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
   "settingsBtn": "Settings",
   "settingsTitle": "Admin Settings",
   "settingsShortTitle": "Settings",
@@ -304,34 +269,58 @@
   "selectedMonthBadge": "Selected: {monthName} ({monthNum}/{yearNum})",
   "@selectedMonthBadge": {
     "placeholders": {
-      "monthName": { "type": "String" },
-      "monthNum": { "type": "int" },
-      "yearNum": { "type": "int" }
+      "monthName": {
+        "type": "String"
+      },
+      "monthNum": {
+        "type": "int"
+      },
+      "yearNum": {
+        "type": "int"
+      }
     }
   },
   "addNextMonthConfirmTitle": "Add Next Month?",
   "addNextMonthConfirmBody": "Month {monthName} ({monthNum}/{yearNum}) will be added. Do you want to continue?",
   "@addNextMonthConfirmBody": {
     "placeholders": {
-      "monthName": { "type": "String" },
-      "monthNum": { "type": "int" },
-      "yearNum": { "type": "int" }
+      "monthName": {
+        "type": "String"
+      },
+      "monthNum": {
+        "type": "int"
+      },
+      "yearNum": {
+        "type": "int"
+      }
     }
   },
   "addNextMonthConfirmBtn": "Add {monthName} ({monthNum}/{yearNum})",
   "@addNextMonthConfirmBtn": {
     "placeholders": {
-      "monthName": { "type": "String" },
-      "monthNum": { "type": "int" },
-      "yearNum": { "type": "int" }
+      "monthName": {
+        "type": "String"
+      },
+      "monthNum": {
+        "type": "int"
+      },
+      "yearNum": {
+        "type": "int"
+      }
     }
   },
   "monthAddedNamedToast": "✅ Added {monthName} ({monthNum}/{yearNum})",
   "@monthAddedNamedToast": {
     "placeholders": {
-      "monthName": { "type": "String" },
-      "monthNum": { "type": "int" },
-      "yearNum": { "type": "int" }
+      "monthName": {
+        "type": "String"
+      },
+      "monthNum": {
+        "type": "int"
+      },
+      "yearNum": {
+        "type": "int"
+      }
     }
   },
   "adminViewsTitle": "Statistics",
@@ -348,7 +337,13 @@
   "navFeedback": "Opinions",
   "navFeedbackFull": "Complaints & Suggestions",
   "tabViewAllPosts": "View Posts ({count})",
-  "@tabViewAllPosts": { "placeholders": { "count": { "type": "int" } } },
+  "@tabViewAllPosts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tabAddPost": "Add Post",
   "filterAll": "All",
   "filterComplaints": "📢 Complaints",
@@ -359,14 +354,18 @@
   "errEmptyFeedbackMsg": "Please enter your complaint or suggestion first",
   "viewBillReceiptBtn": "View Receipt",
   "attachBillAfterPayBtn": "Attach Receipt",
-  "utilityPaidBadge": "Paid",
   "utilityPendingBadge": "Pending",
   "utilityReceiptDialogTitle": "{utility} Receipt",
-  "@utilityReceiptDialogTitle": { "placeholders": { "utility": { "type": "String" } } },
+  "@utilityReceiptDialogTitle": {
+    "placeholders": {
+      "utility": {
+        "type": "String"
+      }
+    }
+  },
   "removeUtilityReceiptBtn": "Remove Receipt",
   "utilityReceiptSavedToast": "Utility receipt saved",
   "utilityReceiptRemovedToast": "Utility receipt removed",
-  "navContacts": "Maintenance",
   "navContactsFull": "Maintenance Contacts",
   "contactsTitle": "Building Maintenance Numbers",
   "contactsSubtitle": "Any resident can add a trusted technician or maintenance number.",
@@ -383,7 +382,13 @@
   "errContactFields": "Please enter name and phone number.",
   "contactAddedToast": "Contact added",
   "confirmDeleteContactBody": "Do you want to delete \"{name}\" from contacts?",
-  "@confirmDeleteContactBody": { "placeholders": { "name": { "type": "String" } } },
+  "@confirmDeleteContactBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "noContactsYet": "No contacts added yet.",
   "deleteAllExtraChargesBtn": "Delete All",
   "confirmDeleteAllExtraBody": "Do you want to delete all extra charges for this month from all apartments?",
@@ -414,7 +419,13 @@
   "drawerAdminLogin": "Admin Login",
   "contactManagerBtn": "Contact Manager",
   "drawerMyAptLabel": "Your Apt: {apt}",
-  "@drawerMyAptLabel": { "placeholders": { "apt": { "type": "String" } } },
+  "@drawerMyAptLabel": {
+    "placeholders": {
+      "apt": {
+        "type": "String"
+      }
+    }
+  },
   "digitalReceiptTitle": "Digital Payment Receipt",
   "digitalReceiptBrand": "MABNA CARE • Verified Receipt",
   "digitalReceiptStatus": "Payment Confirmed",
@@ -435,19 +446,76 @@
   "analyticsChartTitle": "Monthly Expenses Comparison",
   "analyticsChartHint": "Tap any month to inspect its breakdown",
   "analyticsBreakdownTitle": "Expenses Breakdown — {month}",
-  "@analyticsBreakdownTitle": { "placeholders": { "month": { "type": "String" } } },
+  "@analyticsBreakdownTitle": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
   "analyticsCollectionCardTitle": "Collection Status — {month}",
-  "@analyticsCollectionCardTitle": { "placeholders": { "month": { "type": "String" } } },
+  "@analyticsCollectionCardTitle": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
   "analyticsCollectedLabel": "Collected",
   "analyticsRemainingLabel": "Remaining",
   "analyticsInsightLower": "{month} expenses are {pct}% lower than the previous month (saved {diff} EGP)",
-  "@analyticsInsightLower": { "placeholders": { "month": { "type": "String" }, "pct": { "type": "String" }, "diff": { "type": "String" } } },
+  "@analyticsInsightLower": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      },
+      "pct": {
+        "type": "String"
+      },
+      "diff": {
+        "type": "String"
+      }
+    }
+  },
   "analyticsInsightHigher": "{month} expenses are {pct}% higher than the previous month (+{diff} EGP)",
-  "@analyticsInsightHigher": { "placeholders": { "month": { "type": "String" }, "pct": { "type": "String" }, "diff": { "type": "String" } } },
+  "@analyticsInsightHigher": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      },
+      "pct": {
+        "type": "String"
+      },
+      "diff": {
+        "type": "String"
+      }
+    }
+  },
   "analyticsInsightSame": "{month} expenses match the previous month exactly",
-  "@analyticsInsightSame": { "placeholders": { "month": { "type": "String" } } },
+  "@analyticsInsightSame": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
   "analyticsInsightSingle": "{month} share: {share} EGP • {paid} of {total} paid",
-  "@analyticsInsightSingle": { "placeholders": { "month": { "type": "String" }, "share": { "type": "String" }, "paid": { "type": "int" }, "total": { "type": "int" } } },
+  "@analyticsInsightSingle": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      },
+      "share": {
+        "type": "String"
+      },
+      "paid": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "analyticsNoData": "Not enough monthly data to analyze yet.",
   "pushCardTitle": "Send Push Notification",
   "pushCardSubtitle": "Send an instant alert directly to all subscribed residents.",
@@ -464,10 +532,22 @@
   "pushAutoAnnouncementTitle": "📢 Important Building Announcement",
   "pushAutoNewMonthTitle": "🗓️ New Monthly Bill Available",
   "pushAutoNewMonthBody": "Expenses for {month} are now live on MABNA CARE.",
-  "@pushAutoNewMonthBody": { "placeholders": { "month": { "type": "String" } } },
+  "@pushAutoNewMonthBody": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
   "pushAutoPaymentTitle": "🧾 New Payment Uploaded",
   "pushAutoPaymentBody": "{apt} uploaded a monthly payment receipt.",
-  "@pushAutoPaymentBody": { "placeholders": { "apt": { "type": "String" } } },
+  "@pushAutoPaymentBody": {
+    "placeholders": {
+      "apt": {
+        "type": "String"
+      }
+    }
+  },
   "pushAutoFeedbackTitle": "💬 New Resident Feedback",
   "drawerNotificationsLabel": "Notifications",
   "pushEnabledBadge": "Enabled",
@@ -498,9 +578,21 @@
   "notifHistoryTitle": "Notifications",
   "notifMarkAllReadBtn": "Mark all read ✓",
   "notifFilterAll": "All ({count})",
-  "@notifFilterAll": { "placeholders": { "count": { "type": "int" } } },
+  "@notifFilterAll": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "notifFilterUnread": "Unread ({count})",
-  "@notifFilterUnread": { "placeholders": { "count": { "type": "int" } } },
+  "@notifFilterUnread": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "notifEmptyAll": "No notifications sent yet.",
   "notifEmptyUnread": "No unread notifications 🎉",
   "notifTypeAnnouncement": "Announcement",
@@ -521,28 +613,85 @@
   "confirmDeleteOwnReceiptBody": "Delete this receipt image and reset payment status so you can upload a new one?",
   "paymentReceiptDeletedToast": "Receipt deleted — you can now upload a new one",
   "dueDateBanner": "Payment deadline for month {month} is day {day}",
-  "@dueDateBanner": { "placeholders": { "month": { "type": "int" }, "day": { "type": "int" } } },
+  "@dueDateBanner": {
+    "placeholders": {
+      "month": {
+        "type": "int"
+      },
+      "day": {
+        "type": "int"
+      }
+    }
+  },
   "dueDatePassedBanner": "Payment deadline for month {month} (day {day}) has passed",
-  "@dueDatePassedBanner": { "placeholders": { "month": { "type": "int" }, "day": { "type": "int" } } },
+  "@dueDatePassedBanner": {
+    "placeholders": {
+      "month": {
+        "type": "int"
+      },
+      "day": {
+        "type": "int"
+      }
+    }
+  },
   "overdueBadge": "Overdue",
   "overdueCountPill": "{count} overdue",
-  "@overdueCountPill": { "placeholders": { "count": { "type": "int" } } },
+  "@overdueCountPill": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "dueDayField": "Due Day",
   "pushAudienceSpecificApt": "Specific Apt",
   "pushAudienceUnpaid": "Unpaid Only",
   "pushSelectAptsHint": "Select apartment(s) (🔔 = notifications enabled):",
   "pushUnpaidSummary": "Will send to {count} unpaid apartment(s) for month {month}",
-  "@pushUnpaidSummary": { "placeholders": { "count": { "type": "int" }, "month": { "type": "int" } } },
+  "@pushUnpaidSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "month": {
+        "type": "int"
+      }
+    }
+  },
   "pushAllPaidHint": "All apartments have paid for this month 🎉",
   "pushErrSelectApt": "Please select at least one apartment",
   "pushSendSelectedBtn": "Send to Selected ({count})",
-  "@pushSendSelectedBtn": { "placeholders": { "count": { "type": "int" } } },
+  "@pushSendSelectedBtn": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "pushSendUnpaidBtn": "Remind Unpaid ({count})",
-  "@pushSendUnpaidBtn": { "placeholders": { "count": { "type": "int" } } },
+  "@pushSendUnpaidBtn": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "pushDefaultUnpaidTitle": "Payment Reminder — Month {month}",
-  "@pushDefaultUnpaidTitle": { "placeholders": { "month": { "type": "int" } } },
+  "@pushDefaultUnpaidTitle": {
+    "placeholders": {
+      "month": {
+        "type": "int"
+      }
+    }
+  },
   "pushDefaultUnpaidBody": "Kindly settle your building expenses for month {month} and upload the receipt in the app.",
-  "@pushDefaultUnpaidBody": { "placeholders": { "month": { "type": "int" } } },
+  "@pushDefaultUnpaidBody": {
+    "placeholders": {
+      "month": {
+        "type": "int"
+      }
+    }
+  },
   "adminPrankBioTitle": "🔐 Biometric Security Check",
   "adminPrankBioSub": "Place your finger on the scanner to verify the Building Admin fingerprint",
   "adminPrankBioPrompt": "Tap the fingerprint to verify...",
@@ -555,10 +704,22 @@
   "adminPrankRoast1": "Nope! Just trying your luck today?",
   "adminPrankRoast2": "Wrong a second time! Looks like you memorized the Login button, not the password.",
   "adminPrankRoast3": "🚨 Caught again! Definitely not {attempt}",
-  "@adminPrankRoast3": { "placeholders": { "attempt": { "type": "String" } } },
+  "@adminPrankRoast3": {
+    "placeholders": {
+      "attempt": {
+        "type": "String"
+      }
+    }
+  },
   "adminPrankRoast4": "Give the keyboard a break, you are definitely not the admin!",
   "adminPrankCooldown": "Cool down for {seconds}s before trying again",
-  "@adminPrankCooldown": { "placeholders": { "seconds": { "type": "int" } } },
+  "@adminPrankCooldown": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
   "changeAdminPassTitle": "Change Admin Password",
   "changeAdminPassSubtitle": "Update your admin passcode securely right from the app",
   "currentAdminPassLabel": "Current Password",

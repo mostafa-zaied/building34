@@ -115,11 +115,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get optionalName => 'الاسم (اختياري)';
 
   @override
-  String nameHint(int num) {
-    return 'مثلاً: شقة $num - د. كريم';
-  }
-
-  @override
   String get passcodeLabel => 'كلمة السر';
 
   @override
@@ -135,11 +130,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get cancelPaymentAdmin => 'إلغاء الدفع (المسؤول)';
-
-  @override
-  String step1Passcode(String demoHint) {
-    return '1. كلمة سر الشقة$demoHint';
-  }
 
   @override
   String get enterPassHint => 'اكتب كلمة السر...';
@@ -189,18 +179,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get navEmergency => 'صندوق الطوارئ';
 
   @override
-  String get navComplaints => 'شكاوى';
-
-  @override
-  String get navImprovements => 'مقترحات';
-
-  @override
-  String get complaintsTitle => 'شكاوى السكان';
-
-  @override
-  String get improvementsTitle => 'المقترحات';
-
-  @override
   String get writeComplaintHint => 'اكتب الشكوى هنا...';
 
   @override
@@ -223,25 +201,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get postAddedToast => 'تم الإرسال بنجاح';
-
-  @override
-  String tabViewComplaints(int count) {
-    return 'الشكاوى ($count)';
-  }
-
-  @override
-  String get tabAddComplaint => 'إضافة شكوى';
-
-  @override
-  String tabViewImprovements(int count) {
-    return 'المقترحات ($count)';
-  }
-
-  @override
-  String get tabAddImprovement => 'إضافة مقترح';
-
-  @override
-  String get languageTooltip => 'اللغة';
 
   @override
   String get deleteTooltip => 'حذف';
@@ -406,12 +365,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get splashTagline => 'عمارتك.. مسؤوليتنا.';
-
-  @override
-  String get savedPassBadge => 'تم حفظ كلمة سر شقتك تلقائياً';
-
-  @override
-  String get changePassBtn => 'تغيير';
 
   @override
   String get confirmDeleteTitle => 'تأكيد الحذف';
@@ -620,9 +573,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get attachBillAfterPayBtn => 'إرفاق بعد الدفع';
 
   @override
-  String get utilityPaidBadge => 'مدفوعة';
-
-  @override
   String get utilityPendingBadge => 'بانتظار السداد';
 
   @override
@@ -638,9 +588,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get utilityReceiptRemovedToast => 'تم حذف صورة الفاتورة';
-
-  @override
-  String get navContacts => 'أرقام الصيانة';
 
   @override
   String get navContactsFull => 'أرقام الصيانة';

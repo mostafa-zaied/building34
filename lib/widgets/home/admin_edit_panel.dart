@@ -14,7 +14,6 @@ class AdminEditPanel extends StatelessWidget {
   final TextEditingController aptsCtrl;
   final TextEditingController dueDayCtrl;
   final VoidCallback onFieldChanged;
-  final VoidCallback onOpenManageApts;
 
   const AdminEditPanel({
     super.key,
@@ -23,7 +22,6 @@ class AdminEditPanel extends StatelessWidget {
     required this.aptsCtrl,
     required this.dueDayCtrl,
     required this.onFieldChanged,
-    required this.onOpenManageApts,
   });
 
   @override

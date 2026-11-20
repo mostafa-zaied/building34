@@ -115,11 +115,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get optionalName => 'Name (optional)';
 
   @override
-  String nameHint(int num) {
-    return 'e.g. Apt $num - John';
-  }
-
-  @override
   String get passcodeLabel => 'Passcode';
 
   @override
@@ -135,11 +130,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cancelPaymentAdmin => 'Cancel Payment (Admin)';
-
-  @override
-  String step1Passcode(String demoHint) {
-    return '1. Apartment Passcode$demoHint';
-  }
 
   @override
   String get enterPassHint => 'Enter passcode...';
@@ -189,18 +179,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navEmergency => 'Emergency';
 
   @override
-  String get navComplaints => 'Complaints';
-
-  @override
-  String get navImprovements => 'Suggestions';
-
-  @override
-  String get complaintsTitle => 'Resident Complaints';
-
-  @override
-  String get improvementsTitle => 'Suggestions';
-
-  @override
   String get writeComplaintHint => 'Write your complaint clearly...';
 
   @override
@@ -224,25 +202,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get postAddedToast => 'Submitted successfully';
-
-  @override
-  String tabViewComplaints(int count) {
-    return 'Complaints ($count)';
-  }
-
-  @override
-  String get tabAddComplaint => 'New Complaint';
-
-  @override
-  String tabViewImprovements(int count) {
-    return 'Suggestions ($count)';
-  }
-
-  @override
-  String get tabAddImprovement => 'New Suggestion';
-
-  @override
-  String get languageTooltip => 'Language';
 
   @override
   String get deleteTooltip => 'Delete';
@@ -407,12 +366,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get splashTagline => 'Your Building, Our Care.';
-
-  @override
-  String get savedPassBadge => 'Your apartment passcode is saved';
-
-  @override
-  String get changePassBtn => 'Change';
 
   @override
   String get confirmDeleteTitle => 'Confirm Delete';
@@ -625,9 +578,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get attachBillAfterPayBtn => 'Attach Receipt';
 
   @override
-  String get utilityPaidBadge => 'Paid';
-
-  @override
   String get utilityPendingBadge => 'Pending';
 
   @override
@@ -643,9 +593,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get utilityReceiptRemovedToast => 'Utility receipt removed';
-
-  @override
-  String get navContacts => 'Maintenance';
 
   @override
   String get navContactsFull => 'Maintenance Contacts';

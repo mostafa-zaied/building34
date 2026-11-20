@@ -11,7 +11,6 @@ import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
 import '../widgets/dialogs/admin_login_dialog.dart';
 import '../widgets/dialogs/apartment_payment_dialog.dart';
-import '../widgets/dialogs/manage_apartments_dialog.dart';
 import '../widgets/common/app_button.dart';
 import '../widgets/common/copyright_footer.dart';
 import '../widgets/home/apartments_grid.dart';
@@ -34,13 +33,10 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
   final _elecCtrl = TextEditingController();
   final _elevCtrl = TextEditingController();
   final _cleanCtrl = TextEditingController();
-  final _forEmergCtrl = TextEditingController();
   final _aptsCtrl = TextEditingController();
   final _dueDayCtrl = TextEditingController();
-  final _baseEmergCtrl = TextEditingController();
 
   int? _syncedMonthId;
-  double? _syncedBaseEmergency;
 
   @override
   void dispose() {
@@ -48,27 +44,22 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
     _elecCtrl.dispose();
     _elevCtrl.dispose();
     _cleanCtrl.dispose();
-    _forEmergCtrl.dispose();
     _aptsCtrl.dispose();
     _dueDayCtrl.dispose();
-    _baseEmergCtrl.dispose();
     super.dispose();
   }
 
   void _syncControllersIfNeeded(BuildingState state) {
     final m = state.currentMonth;
     if (m == null) return;
-    if (_syncedMonthId != m.id || (!state.isAdminOpen && _syncedBaseEmergency != state.baseEmergency)) {
+    if (_syncedMonthId != m.id) {
       _syncedMonthId = m.id;
-      _syncedBaseEmergency = state.baseEmergency;
       _waterCtrl.text = m.water.toInt().toString();
       _elecCtrl.text = m.elec.toInt().toString();
       _elevCtrl.text = m.elev.toInt().toString();
       _cleanCtrl.text = m.clean.toInt().toString();
-      _forEmergCtrl.text = m.forEmerg.toInt().toString();
       _aptsCtrl.text = m.aptsCount.toString();
       _dueDayCtrl.text = m.dueDay.toString();
-      _baseEmergCtrl.text = state.baseEmergency.toInt().toString();
     }
   }
 
@@ -78,9 +69,7 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
       elec: double.tryParse(_elecCtrl.text) ?? 0,
       elev: double.tryParse(_elevCtrl.text) ?? 0,
       clean: double.tryParse(_cleanCtrl.text) ?? 0,
-      forEmerg: double.tryParse(_forEmergCtrl.text) ?? 0,
       aptsCount: int.tryParse(_aptsCtrl.text) ?? 1,
-      baseEmergency: double.tryParse(_baseEmergCtrl.text) ?? 0,
       dueDay: int.tryParse(_dueDayCtrl.text) ?? 0,
     );
   }
@@ -188,16 +177,9 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
           elecCtrl: _elecCtrl,
           elevCtrl: _elevCtrl,
           cleanCtrl: _cleanCtrl,
-          forEmergCtrl: _forEmergCtrl,
           aptsCtrl: _aptsCtrl,
           dueDayCtrl: _dueDayCtrl,
-          baseEmergCtrl: _baseEmergCtrl,
           onFieldChanged: () => _onAdminFieldChanged(cubit),
-          onOpenManageApts: () => showManageApartmentsDialog(
-            context: context,
-            cubit: cubit,
-            state: state,
-          ),
         );
 
         final apartmentsCard = ApartmentsGrid(

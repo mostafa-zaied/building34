@@ -337,10 +337,6 @@ class BuildingCubit extends Cubit<BuildingState> {
     });
   }
 
-  void closeAdmin() {
-    emit(state.copyWith(isAdminOpen: false));
-  }
-
   Future<void> logoutAdmin() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -417,9 +413,9 @@ class BuildingCubit extends Cubit<BuildingState> {
     required double elec,
     required double elev,
     required double clean,
-    required double forEmerg,
     required int aptsCount,
-    required double baseEmergency,
+    double? forEmerg,
+    double? baseEmergency,
     int? dueDay,
   }) {
     final m = state.currentMonth;
@@ -428,14 +424,16 @@ class BuildingCubit extends Cubit<BuildingState> {
     m.elec = elec;
     m.elev = elev;
     m.clean = clean;
-    m.forEmerg = forEmerg;
+    if (forEmerg != null) {
+      m.forEmerg = forEmerg;
+    }
     m.aptsCount = aptsCount.clamp(1, 50);
     if (dueDay != null) {
       m.dueDay = dueDay.clamp(0, 31);
     }
 
     emit(state.copyWith(
-      baseEmergency: baseEmergency,
+      baseEmergency: baseEmergency ?? state.baseEmergency,
       months: List<MonthBill>.from(state.months),
     ));
   }
@@ -782,33 +780,6 @@ class BuildingCubit extends Cubit<BuildingState> {
     emit(state.copyWith(apartmentHasPasscode: nextMap));
     await _saveAptSession(aptNum, passcode.trim());
     return null;
-  }
-
-  Future<void> resetApartmentPasscode(int aptNum) async {
-    if (!state.isAdminOpen) return;
-    await _withBusy(() async {
-      final err = await _service.resetApartmentPasscodeAsAdmin(
-        adminPass: state.adminPass,
-        aptNum: aptNum,
-      );
-      if (err != null) {
-        emit(state.copyWith(
-          feedbackMessage: () => '❌ ${_localizeError(err)}',
-          feedbackIsError: true,
-        ));
-        return;
-      }
-      final nextMap = Map<int, bool>.from(state.apartmentHasPasscode);
-      nextMap[aptNum] = false;
-      emit(state.copyWith(
-        apartmentHasPasscode: nextMap,
-        feedbackMessage: () => state.s.monthSavedToast,
-        feedbackIsError: false,
-      ));
-      if (state.myAptNum == aptNum) {
-        await _clearSavedAptPass();
-      }
-    });
   }
 
   Future<bool> resetAllApartmentPasscodes() async {

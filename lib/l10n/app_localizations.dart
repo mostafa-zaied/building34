@@ -284,12 +284,6 @@ abstract class AppLocalizations {
   /// **'Name (optional)'**
   String get optionalName;
 
-  /// No description provided for @nameHint.
-  ///
-  /// In en, this message translates to:
-  /// **'e.g. Apt {num} - John'**
-  String nameHint(int num);
-
   /// No description provided for @passcodeLabel.
   ///
   /// In en, this message translates to:
@@ -319,12 +313,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel Payment (Admin)'**
   String get cancelPaymentAdmin;
-
-  /// No description provided for @step1Passcode.
-  ///
-  /// In en, this message translates to:
-  /// **'1. Apartment Passcode{demoHint}'**
-  String step1Passcode(String demoHint);
 
   /// No description provided for @enterPassHint.
   ///
@@ -410,30 +398,6 @@ abstract class AppLocalizations {
   /// **'Emergency'**
   String get navEmergency;
 
-  /// No description provided for @navComplaints.
-  ///
-  /// In en, this message translates to:
-  /// **'Complaints'**
-  String get navComplaints;
-
-  /// No description provided for @navImprovements.
-  ///
-  /// In en, this message translates to:
-  /// **'Suggestions'**
-  String get navImprovements;
-
-  /// No description provided for @complaintsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Resident Complaints'**
-  String get complaintsTitle;
-
-  /// No description provided for @improvementsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Suggestions'**
-  String get improvementsTitle;
-
   /// No description provided for @writeComplaintHint.
   ///
   /// In en, this message translates to:
@@ -481,36 +445,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Submitted successfully'**
   String get postAddedToast;
-
-  /// No description provided for @tabViewComplaints.
-  ///
-  /// In en, this message translates to:
-  /// **'Complaints ({count})'**
-  String tabViewComplaints(int count);
-
-  /// No description provided for @tabAddComplaint.
-  ///
-  /// In en, this message translates to:
-  /// **'New Complaint'**
-  String get tabAddComplaint;
-
-  /// No description provided for @tabViewImprovements.
-  ///
-  /// In en, this message translates to:
-  /// **'Suggestions ({count})'**
-  String tabViewImprovements(int count);
-
-  /// No description provided for @tabAddImprovement.
-  ///
-  /// In en, this message translates to:
-  /// **'New Suggestion'**
-  String get tabAddImprovement;
-
-  /// No description provided for @languageTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Language'**
-  String get languageTooltip;
 
   /// No description provided for @deleteTooltip.
   ///
@@ -823,18 +757,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your Building, Our Care.'**
   String get splashTagline;
-
-  /// No description provided for @savedPassBadge.
-  ///
-  /// In en, this message translates to:
-  /// **'Your apartment passcode is saved'**
-  String get savedPassBadge;
-
-  /// No description provided for @changePassBtn.
-  ///
-  /// In en, this message translates to:
-  /// **'Change'**
-  String get changePassBtn;
 
   /// No description provided for @confirmDeleteTitle.
   ///
@@ -1202,12 +1124,6 @@ abstract class AppLocalizations {
   /// **'Attach Receipt'**
   String get attachBillAfterPayBtn;
 
-  /// No description provided for @utilityPaidBadge.
-  ///
-  /// In en, this message translates to:
-  /// **'Paid'**
-  String get utilityPaidBadge;
-
   /// No description provided for @utilityPendingBadge.
   ///
   /// In en, this message translates to:
@@ -1237,12 +1153,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Utility receipt removed'**
   String get utilityReceiptRemovedToast;
-
-  /// No description provided for @navContacts.
-  ///
-  /// In en, this message translates to:
-  /// **'Maintenance'**
-  String get navContacts;
 
   /// No description provided for @navContactsFull.
   ///

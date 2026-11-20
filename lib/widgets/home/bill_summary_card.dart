@@ -20,12 +20,9 @@ class BillSummaryCard extends StatelessWidget {
   final TextEditingController elecCtrl;
   final TextEditingController elevCtrl;
   final TextEditingController cleanCtrl;
-  final TextEditingController forEmergCtrl;
   final TextEditingController aptsCtrl;
   final TextEditingController dueDayCtrl;
-  final TextEditingController baseEmergCtrl;
   final VoidCallback onFieldChanged;
-  final VoidCallback onOpenManageApts;
 
   const BillSummaryCard({
     super.key,
@@ -36,12 +33,9 @@ class BillSummaryCard extends StatelessWidget {
     required this.elecCtrl,
     required this.elevCtrl,
     required this.cleanCtrl,
-    required this.forEmergCtrl,
     required this.aptsCtrl,
     required this.dueDayCtrl,
-    required this.baseEmergCtrl,
     required this.onFieldChanged,
-    required this.onOpenManageApts,
   });
 
   static const List<Color> _customAccentColors = [
@@ -431,7 +425,6 @@ class BillSummaryCard extends StatelessWidget {
                     aptsCtrl: aptsCtrl,
                     dueDayCtrl: dueDayCtrl,
                     onFieldChanged: onFieldChanged,
-                    onOpenManageApts: onOpenManageApts,
                   ),
                 )
               : const SizedBox.shrink(),

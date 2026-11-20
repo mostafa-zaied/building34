@@ -1126,37 +1126,6 @@ class BuildingService {
     }
   }
 
-  Future<String?> resetApartmentPasscodeAsAdmin({
-    required String adminPass,
-    required int aptNum,
-  }) async {
-    if (!_useSupabase) {
-      final prev = _demoApartments[aptNum];
-      if (prev != null) {
-        _demoApartments[aptNum] = ApartmentInfo(
-          aptNum: aptNum,
-          displayName: prev.displayName,
-          passcode: '',
-        );
-      }
-      return null;
-    }
-
-    try {
-      final res = await Supabase.instance.client.rpc(
-        'admin_reset_apartment_passcode',
-        params: {
-          'p_admin_pass': adminPass,
-          'p_apt_num': aptNum,
-        },
-      );
-      if (res is Map && res['ok'] == true) return null;
-      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
-    } catch (_) {
-      return 'err_submit_failed';
-    }
-  }
-
   Future<String?> resetAllApartmentPasscodesAsAdmin(String adminPass) async {
     if (!_useSupabase) {
       for (final key in _demoApartments.keys.toList()) {
