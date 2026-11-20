@@ -975,9 +975,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get errPushFieldsRequired => 'برجاء كتابة عنوان الإشعار والنص أولاً.';
 
   @override
-  String pushSentSuccessToast(int count) {
-    return 'تم إرسال الإشعار بنجاح إلى $count جهاز';
-  }
+  String get pushSentSuccessToast => 'تم إرسال الإشعار بنجاح';
 
   @override
   String get pushNoDevicesToast => 'لا توجد أجهزة مفعّلة للإشعارات بعد';

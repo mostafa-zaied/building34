@@ -786,7 +786,7 @@ class BuildingCubit extends Cubit<BuildingState> {
           adminPass: adminPass,
           eventType: eventType,
         )
-        .catchError((_) => (ok: false, sent: 0, notConfigured: false, error: null));
+        .catchError((_) => (ok: false, hasRecipients: false, notConfigured: false, error: null));
   }
 
   /// Sends a manual broadcast notification from Admin Settings.
@@ -832,8 +832,8 @@ class BuildingCubit extends Cubit<BuildingState> {
       }
       success = true;
       emit(state.copyWith(
-        feedbackMessage: () => res.sent > 0
-            ? state.s.pushSentSuccessToast(res.sent)
+        feedbackMessage: () => res.hasRecipients
+            ? state.s.pushSentSuccessToast
             : state.s.pushNoDevicesToast,
         feedbackIsError: false,
       ));

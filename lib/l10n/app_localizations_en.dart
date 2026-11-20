@@ -985,9 +985,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please enter both a title and message first.';
 
   @override
-  String pushSentSuccessToast(int count) {
-    return 'Notification sent to $count devices';
-  }
+  String get pushSentSuccessToast => 'Notification sent successfully';
 
   @override
   String get pushNoDevicesToast => 'No devices subscribed to notifications yet';

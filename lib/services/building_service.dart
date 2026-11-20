@@ -1130,8 +1130,8 @@ class BuildingService {
   }
 
   /// Invokes the Supabase `send-push` Edge Function.
-  /// Returns `(ok, sentCount, notConfigured, error)`.
-  Future<({bool ok, int sent, bool notConfigured, String? error})> sendPushNotification({
+  /// Returns `(ok, hasRecipients, notConfigured, error)`.
+  Future<({bool ok, bool hasRecipients, bool notConfigured, String? error})> sendPushNotification({
     required String title,
     required String body,
     String audience = 'all',
@@ -1139,7 +1139,7 @@ class BuildingService {
     String? eventType,
   }) async {
     if (!_useSupabase) {
-      return (ok: true, sent: 1, notConfigured: false, error: null);
+      return (ok: true, hasRecipients: true, notConfigured: false, error: null);
     }
 
     try {
@@ -1156,22 +1156,22 @@ class BuildingService {
       final data = resp.data;
       if (data is Map) {
         if (data['not_configured'] == true) {
-          return (ok: false, sent: 0, notConfigured: true, error: null);
+          return (ok: false, hasRecipients: false, notConfigured: true, error: null);
         }
         if (data['ok'] == true) {
           final sent = (data['sent'] as num?)?.toInt() ?? 0;
-          return (ok: true, sent: sent, notConfigured: false, error: null);
+          return (ok: true, hasRecipients: sent > 0, notConfigured: false, error: null);
         }
         return (
           ok: false,
-          sent: 0,
+          hasRecipients: false,
           notConfigured: false,
           error: data['error']?.toString() ?? 'err_submit_failed',
         );
       }
-      return (ok: false, sent: 0, notConfigured: false, error: 'err_submit_failed');
+      return (ok: false, hasRecipients: false, notConfigured: false, error: 'err_submit_failed');
     } catch (_) {
-      return (ok: false, sent: 0, notConfigured: false, error: 'err_submit_failed');
+      return (ok: false, hasRecipients: false, notConfigured: false, error: 'err_submit_failed');
     }
   }
 }

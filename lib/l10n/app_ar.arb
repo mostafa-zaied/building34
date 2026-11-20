@@ -291,7 +291,7 @@
   "pushBodyHint": "اكتب تفاصيل الإشعار هنا...",
   "pushSendAllBtn": "إرسال لكل السكان 🚀",
   "errPushFieldsRequired": "برجاء كتابة عنوان الإشعار والنص أولاً.",
-  "pushSentSuccessToast": "تم إرسال الإشعار بنجاح إلى {count} جهاز",
+  "pushSentSuccessToast": "تم إرسال الإشعار بنجاح",
   "pushNoDevicesToast": "لا توجد أجهزة مفعّلة للإشعارات بعد",
   "pushNotConfiguredToast": "تم تجهيز الإشعارات — يتبقى فقط إضافة مفتاح Firebase في Supabase",
   "pushSendFailedToast": "تعذر إرسال الإشعار حالياً",

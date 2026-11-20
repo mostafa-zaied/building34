@@ -1852,8 +1852,8 @@ abstract class AppLocalizations {
   /// No description provided for @pushSentSuccessToast.
   ///
   /// In en, this message translates to:
-  /// **'Notification sent to {count} devices'**
-  String pushSentSuccessToast(int count);
+  /// **'Notification sent successfully'**
+  String get pushSentSuccessToast;
 
   /// No description provided for @pushNoDevicesToast.
   ///
