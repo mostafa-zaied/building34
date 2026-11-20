@@ -240,7 +240,7 @@
   "forgotPassHint": "نسيت كلمة السر؟ تواصل مع مدير العمارة لإعادة تعيينها.",
   "resetPassBtn": "إعادة تعيين",
   "passNotSetYet": "لم يُعيّنها الساكن بعد",
-  "resetAllPasswordsBtn": "Reset All Passwords",
+  "resetAllPasswordsBtn": "إعادة تعيين كل كلمات السر",
   "confirmResetAllPasswordsBody": "هل تريد إعادة تعيين كلمة السر لجميع الشقق؟ سيُطلب من كل ساكن تعيين كلمة سر جديدة.",
   "allPasswordsResetToast": "تمت إعادة تعيين كلمات السر لجميع الشقق بنجاح",
   "drawerExtraSections": "أقسام إضافية",

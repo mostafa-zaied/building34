@@ -798,7 +798,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get passNotSetYet => 'لم يُعيّنها الساكن بعد';
 
   @override
-  String get resetAllPasswordsBtn => 'Reset All Passwords';
+  String get resetAllPasswordsBtn => 'إعادة تعيين كل كلمات السر';
 
   @override
   String get confirmResetAllPasswordsBody =>
