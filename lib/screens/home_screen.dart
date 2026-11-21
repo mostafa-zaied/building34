@@ -409,8 +409,10 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
                           state: state,
                           onCopyWhatsApp: () => _copyWhatsApp(cubit),
                         ),
-                        const SizedBox(height: AppSpacing.md),
-                        CopyrightFooter(isDark: isDark),
+                        if (state.isAdminAuthenticated) ...[
+                          const SizedBox(height: AppSpacing.md),
+                          CopyrightFooter(isDark: isDark),
+                        ],
                       ],
                     ),
                     ),

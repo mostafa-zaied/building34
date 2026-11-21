@@ -425,53 +425,55 @@ class DesktopSidebar extends StatelessWidget {
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () => _shareReferral(s.referralShareMessage),
-                          borderRadius: BorderRadius.circular(AppRadius.md),
-                          child: Container(
-                            padding: const EdgeInsetsDirectional.symmetric(
-                              horizontal: AppSpacing.sm,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  AppColors.primary.withValues(alpha: isDark ? 0.22 : 0.12),
-                                  AppColors.emerald.withValues(alpha: isDark ? 0.18 : 0.10),
-                                ],
+                      if (state.isAdminAuthenticated) ...[
+                        Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () => _shareReferral(s.referralShareMessage),
+                            borderRadius: BorderRadius.circular(AppRadius.md),
+                            child: Container(
+                              padding: const EdgeInsetsDirectional.symmetric(
+                                horizontal: AppSpacing.sm,
+                                vertical: 8,
                               ),
-                              borderRadius: BorderRadius.circular(AppRadius.md),
-                              border: Border.all(
-                                color: AppColors.primary.withValues(alpha: 0.35),
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.rocket_launch_outlined,
-                                  size: 15,
-                                  color: AppColors.primaryText(isDark),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    AppColors.primary.withValues(alpha: isDark ? 0.22 : 0.12),
+                                    AppColors.emerald.withValues(alpha: isDark ? 0.18 : 0.10),
+                                  ],
                                 ),
-                                const SizedBox(width: 6),
-                                Expanded(
-                                  child: Text(
-                                    s.getMabnaForBuildingBtn,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: AppTypography.caption.copyWith(
-                                      color: AppColors.textPrimary(isDark),
-                                      fontWeight: FontWeight.w800,
+                                borderRadius: BorderRadius.circular(AppRadius.md),
+                                border: Border.all(
+                                  color: AppColors.primary.withValues(alpha: 0.35),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.rocket_launch_outlined,
+                                    size: 15,
+                                    color: AppColors.primaryText(isDark),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Text(
+                                      s.getMabnaForBuildingBtn,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppTypography.caption.copyWith(
+                                        color: AppColors.textPrimary(isDark),
+                                        fontWeight: FontWeight.w800,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: AppSpacing.xs),
+                        const SizedBox(height: AppSpacing.xs),
+                      ],
                       Container(
                         padding: const EdgeInsetsDirectional.symmetric(
                           horizontal: AppSpacing.sm,
@@ -519,16 +521,17 @@ class DesktopSidebar extends StatelessWidget {
                 : Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Tooltip(
-                        message: s.getMabnaForBuildingBtn,
-                        child: IconButton(
-                          onPressed: () => _shareReferral(s.referralShareMessage),
-                          icon: Icon(
-                            Icons.rocket_launch_outlined,
-                            color: AppColors.primaryText(isDark),
+                      if (state.isAdminAuthenticated)
+                        Tooltip(
+                          message: s.getMabnaForBuildingBtn,
+                          child: IconButton(
+                            onPressed: () => _shareReferral(s.referralShareMessage),
+                            icon: Icon(
+                              Icons.rocket_launch_outlined,
+                              color: AppColors.primaryText(isDark),
+                            ),
                           ),
                         ),
-                      ),
                       Tooltip(
                         message: s.contactManagerBtn,
                         child: IconButton(

@@ -366,19 +366,21 @@ class AppSideMenu extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _footerButton(
-                    icon: Icons.rocket_launch_outlined,
-                    label: s.getMabnaForBuildingBtn,
-                    fg: AppColors.primaryText(isDark),
-                    bg: AppColors.primary
-                        .withValues(alpha: isDark ? 0.16 : 0.10),
-                    border: AppColors.primary.withValues(alpha: 0.35),
-                    onTap: () {
-                      _close(context);
-                      _shareReferral(s.referralShareMessage);
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
+                  if (state.isAdminAuthenticated) ...[
+                    _footerButton(
+                      icon: Icons.rocket_launch_outlined,
+                      label: s.getMabnaForBuildingBtn,
+                      fg: AppColors.primaryText(isDark),
+                      bg: AppColors.primary
+                          .withValues(alpha: isDark ? 0.16 : 0.10),
+                      border: AppColors.primary.withValues(alpha: 0.35),
+                      onTap: () {
+                        _close(context);
+                        _shareReferral(s.referralShareMessage);
+                      },
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                  ],
                   _footerButton(
                     icon: Icons.chat_rounded,
                     label: s.contactManagerBtn,
