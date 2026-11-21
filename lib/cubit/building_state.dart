@@ -71,6 +71,17 @@ class BuildingState {
 
   int get openPollsCount => buildingPolls.where((p) => !p.isClosed).length;
 
+  /// True when the current user is allowed to perform resident write actions
+  /// (add maintenance contacts, submit complaints/suggestions, vote in polls).
+  /// When `requireAptPassOnOpen` is enabled, unverified visitors (e.g. external
+  /// demo links) remain strictly read-only until they unlock their apartment
+  /// with its passcode or sign in as Admin.
+  bool get canResidentMutate {
+    if (isAdminAuthenticated) return true;
+    if (!requireAptPassOnOpen) return true;
+    return myAptNum != null && (savedAptPass ?? '').trim().isNotEmpty;
+  }
+
   MonthBill? get currentMonth =>
       months.isEmpty || selectedMonthIndex >= months.length
           ? null

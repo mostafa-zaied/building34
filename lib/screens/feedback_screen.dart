@@ -571,6 +571,53 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SingleTickerProvid
     required BuildingCubit cubit,
   }) {
     final s = state.s;
+    if (!state.canResidentMutate) {
+      return SingleChildScrollView(
+        child: AppCard(
+          padding: const EdgeInsetsDirectional.all(AppSpacing.xl),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: AppColors.amber.withValues(alpha: 0.14),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.lock_outline_rounded,
+                  size: 26,
+                  color: AppColors.amber,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              Text(
+                s.residentAuthRequiredTitle,
+                textAlign: TextAlign.center,
+                style: AppTypography.headline.copyWith(fontSize: 16),
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                s.residentAuthRequiredBody,
+                textAlign: TextAlign.center,
+                style: AppTypography.body.copyWith(
+                  color: AppColors.textSecondary(isDark),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              AppPrimaryButton(
+                label: s.residentAuthGoHomeBtn,
+                icon: Icons.home_rounded,
+                backgroundColor: AppColors.primaryActionBg(isDark),
+                foregroundColor: AppColors.onPrimaryAction(isDark),
+                onPressed: () => cubit.selectNav(0),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     return SingleChildScrollView(
       child: AppCard(
         child: Column(

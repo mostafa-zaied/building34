@@ -485,6 +485,56 @@ class _PollsScreenState extends State<PollsScreen> {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.sm),
+                  if (!state.canResidentMutate) ...[
+                    Container(
+                      padding: const EdgeInsetsDirectional.symmetric(
+                        horizontal: AppSpacing.md,
+                        vertical: AppSpacing.sm,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.amber.withValues(alpha: isDark ? 0.14 : 0.10),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        border: Border.all(
+                          color: AppColors.amber.withValues(alpha: 0.35),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.lock_outline_rounded,
+                            size: 16,
+                            color: AppColors.amber,
+                          ),
+                          const SizedBox(width: AppSpacing.xs),
+                          Expanded(
+                            child: Text(
+                              s.errResidentAuthRequired,
+                              style: AppTypography.caption.copyWith(
+                                color: AppColors.textPrimary(isDark),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () => cubit.selectNav(0),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            child: Text(
+                              s.residentAuthGoHomeBtn,
+                              style: AppTypography.caption.copyWith(
+                                color: AppColors.primaryText(isDark),
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                  ],
                   Container(
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(

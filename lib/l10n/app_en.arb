@@ -829,5 +829,9 @@
   "footerGetAppCta": "Loving MABNA CARE? Refer it to a friend's building — 1st month free",
   "referralShareMessage": "Check out MABNA CARE — we use it in our building for expenses, receipts, and voting, and it saved us from WhatsApp group chaos!\nTake a look at our building here:\nhttps://mabna-care.web.app/\n\nAnd try it free for your building for 1 month:\nhttps://mabna-care.web.app/landing.html",
   "contactPickFromDeviceTooltip": "Pick from phone contacts",
-  "contactPickerUnsupportedHint": "Picking from device contacts is supported on mobile Chrome (Android) — you can paste the number directly here."
+  "contactPickerUnsupportedHint": "Picking from device contacts is supported on mobile Chrome (Android) — you can paste the number directly here.",
+  "residentAuthRequiredTitle": "Building Residents Only",
+  "residentAuthRequiredBody": "To protect the building, please unlock your apartment with its passcode on the Home screen first to add contacts, submit feedback, or vote.",
+  "residentAuthGoHomeBtn": "Unlock My Apartment",
+  "errResidentAuthRequired": "Please unlock your apartment with its passcode first"
 }

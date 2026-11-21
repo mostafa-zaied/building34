@@ -557,15 +557,17 @@ class _ContactsScreenState extends State<ContactsScreen> {
                             ],
                           ),
                         ),
-                        const SizedBox(width: AppSpacing.sm),
-                        AppPrimaryButton(
-                          label: s.addContactBtn,
-                          icon: Icons.add_rounded,
-                          backgroundColor: AppColors.primaryActionBg(isDark),
-                          foregroundColor: AppColors.onPrimaryAction(isDark),
-                          onPressed: () =>
-                              _showContactFormDialog(context, cubit, state),
-                        ),
+                        if (state.canResidentMutate) ...[
+                          const SizedBox(width: AppSpacing.sm),
+                          AppPrimaryButton(
+                            label: s.addContactBtn,
+                            icon: Icons.add_rounded,
+                            backgroundColor: AppColors.primaryActionBg(isDark),
+                            foregroundColor: AppColors.onPrimaryAction(isDark),
+                            onPressed: () =>
+                                _showContactFormDialog(context, cubit, state),
+                          ),
+                        ],
                       ],
                     ),
                   ),

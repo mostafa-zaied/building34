@@ -2790,6 +2790,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Picking from device contacts is supported on mobile Chrome (Android) — you can paste the number directly here.'**
   String get contactPickerUnsupportedHint;
+
+  /// No description provided for @residentAuthRequiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Building Residents Only'**
+  String get residentAuthRequiredTitle;
+
+  /// No description provided for @residentAuthRequiredBody.
+  ///
+  /// In en, this message translates to:
+  /// **'To protect the building, please unlock your apartment with its passcode on the Home screen first to add contacts, submit feedback, or vote.'**
+  String get residentAuthRequiredBody;
+
+  /// No description provided for @residentAuthGoHomeBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock My Apartment'**
+  String get residentAuthGoHomeBtn;
+
+  /// No description provided for @errResidentAuthRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please unlock your apartment with its passcode first'**
+  String get errResidentAuthRequired;
 }
 
 class _AppLocalizationsDelegate

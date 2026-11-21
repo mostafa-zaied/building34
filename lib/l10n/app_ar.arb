@@ -447,5 +447,9 @@
   "footerGetAppCta": "عاجبك النظام؟ رشّح MABNA CARE لعمارة قريبك أو صاحبك — أول شهر مجاناً",
   "referralShareMessage": "شوف النظام اللي شغالين بيه في عمارتنا لتنظيم المصاريف والإيصالات والتصويتات — بصراحة ريّحنا من خناقات جروب الواتساب!\nده لينك عمارتنا خد نظرة فيه:\nhttps://mabna-care.web.app/\n\nوجرّبوه لعمارتكم مجاناً أول شهر من هنا:\nhttps://mabna-care.web.app/landing.html",
   "contactPickFromDeviceTooltip": "اختيار من جهات الاتصال",
-  "contactPickerUnsupportedHint": "الاختيار المباشر من جهات الاتصال متاح على متصفح Chrome للموبايل (Android) — يمكنك لصق الرقم مباشرة هنا."
+  "contactPickerUnsupportedHint": "الاختيار المباشر من جهات الاتصال متاح على متصفح Chrome للموبايل (Android) — يمكنك لصق الرقم مباشرة هنا.",
+  "residentAuthRequiredTitle": "متاح لسكان العمارة فقط",
+  "residentAuthRequiredBody": "لحماية العمارة، يرجى فتح شقتك بكلمة السر أولاً من الصفحة الرئيسية للتمكن من إضافة أرقام، شكاوى، مقترحات، أو المشاركة في التصويت.",
+  "residentAuthGoHomeBtn": "فتح شقتي من الرئيسية",
+  "errResidentAuthRequired": "يرجى فتح شقتك بكلمة السر أولاً من الصفحة الرئيسية"
 }

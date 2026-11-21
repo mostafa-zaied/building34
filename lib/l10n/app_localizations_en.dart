@@ -1520,4 +1520,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get contactPickerUnsupportedHint =>
       'Picking from device contacts is supported on mobile Chrome (Android) — you can paste the number directly here.';
+
+  @override
+  String get residentAuthRequiredTitle => 'Building Residents Only';
+
+  @override
+  String get residentAuthRequiredBody =>
+      'To protect the building, please unlock your apartment with its passcode on the Home screen first to add contacts, submit feedback, or vote.';
+
+  @override
+  String get residentAuthGoHomeBtn => 'Unlock My Apartment';
+
+  @override
+  String get errResidentAuthRequired =>
+      'Please unlock your apartment with its passcode first';
 }

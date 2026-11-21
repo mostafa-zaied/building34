@@ -1504,4 +1504,18 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get contactPickerUnsupportedHint =>
       'الاختيار المباشر من جهات الاتصال متاح على متصفح Chrome للموبايل (Android) — يمكنك لصق الرقم مباشرة هنا.';
+
+  @override
+  String get residentAuthRequiredTitle => 'متاح لسكان العمارة فقط';
+
+  @override
+  String get residentAuthRequiredBody =>
+      'لحماية العمارة، يرجى فتح شقتك بكلمة السر أولاً من الصفحة الرئيسية للتمكن من إضافة أرقام، شكاوى، مقترحات، أو المشاركة في التصويت.';
+
+  @override
+  String get residentAuthGoHomeBtn => 'فتح شقتي من الرئيسية';
+
+  @override
+  String get errResidentAuthRequired =>
+      'يرجى فتح شقتك بكلمة السر أولاً من الصفحة الرئيسية';
 }

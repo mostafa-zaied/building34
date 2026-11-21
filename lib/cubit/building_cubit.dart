@@ -269,6 +269,13 @@ class BuildingCubit extends Cubit<BuildingState> {
     int? aptNum,
     String? passcode,
   }) async {
+    if (!state.canResidentMutate) {
+      emit(state.copyWith(
+        feedbackMessage: () => '❌ ${state.s.errResidentAuthRequired}',
+        feedbackIsError: true,
+      ));
+      return false;
+    }
     final authorLabel = aptNum != null ? state.aptLabel(aptNum) : null;
     final err = await _service.submitFeedbackPost(
       type: type,
@@ -276,6 +283,9 @@ class BuildingCubit extends Cubit<BuildingState> {
       aptNum: aptNum,
       passcode: passcode,
       authorLabel: authorLabel,
+      authAptNum: state.myAptNum,
+      authPasscode: state.savedAptPass,
+      adminPass: state.isAdminAuthenticated ? state.adminPass : null,
     );
     if (err != null) {
       if (aptNum != null &&
@@ -1421,6 +1431,13 @@ class BuildingCubit extends Cubit<BuildingState> {
     String? addedByLabel,
     Uint8List? cardImageBytes,
   }) async {
+    if (!state.canResidentMutate) {
+      emit(state.copyWith(
+        feedbackMessage: () => '❌ ${state.s.errResidentAuthRequired}',
+        feedbackIsError: true,
+      ));
+      return false;
+    }
     return _withBusy(() async {
       final err = await _service.addBuildingContact(
         name: name,
@@ -1429,6 +1446,8 @@ class BuildingCubit extends Cubit<BuildingState> {
         addedByApt: addedByApt,
         addedByLabel: addedByLabel,
         cardImageBytes: cardImageBytes,
+        passcode: state.savedAptPass,
+        adminPass: state.isAdminAuthenticated ? state.adminPass : null,
       );
       if (err != null) {
         emit(state.copyWith(
@@ -1628,6 +1647,13 @@ class BuildingCubit extends Cubit<BuildingState> {
     required String pollId,
     required String optionId,
   }) async {
+    if (!state.canResidentMutate) {
+      emit(state.copyWith(
+        feedbackMessage: () => '❌ ${state.s.errResidentAuthRequired}',
+        feedbackIsError: true,
+      ));
+      return;
+    }
     final aptNum = state.myAptNum;
     if (aptNum == null) {
       emit(state.copyWith(
@@ -1641,6 +1667,8 @@ class BuildingCubit extends Cubit<BuildingState> {
         pollId: pollId,
         aptNum: aptNum,
         optionId: optionId,
+        passcode: state.savedAptPass,
+        adminPass: state.isAdminAuthenticated ? state.adminPass : null,
       );
       if (err != null) {
         emit(state.copyWith(

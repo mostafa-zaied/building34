@@ -589,6 +589,9 @@ class BuildingService {
     int? aptNum,
     String? passcode,
     String? authorLabel,
+    int? authAptNum,
+    String? authPasscode,
+    String? adminPass,
   }) async {
     final cleanMsg = message.trim();
     if (cleanMsg.isEmpty) return 'err_empty_message';
@@ -615,24 +618,18 @@ class BuildingService {
 
     try {
       final client = Supabase.instance.client;
-      if (aptNum != null) {
-        final res = await client.rpc('submit_feedback_with_passcode', params: {
-          'p_type': type,
-          'p_message': cleanMsg,
-          'p_apt_num': aptNum,
-          'p_passcode': (passcode ?? '').trim(),
-          'p_author_label': authorLabel,
-        });
-        if (res is Map && res['ok'] == true) return null;
-        return (res is Map ? res['error']?.toString() : null) ?? 'err_wrong_apt_pass';
-      }
-
-      await client.from('feedback_posts').insert({
-        'type': type,
-        'message': cleanMsg,
-        'author_label': null,
+      final isAnonymous = aptNum == null;
+      final res = await client.rpc('submit_feedback_authenticated', params: {
+        'p_type': type,
+        'p_message': cleanMsg,
+        'p_is_anonymous': isAnonymous,
+        'p_auth_apt_num': aptNum ?? authAptNum,
+        'p_auth_passcode': (passcode ?? authPasscode ?? '').trim(),
+        'p_admin_pass': adminPass,
+        'p_author_label': authorLabel,
       });
-      return null;
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_wrong_apt_pass';
     } catch (e) {
       return 'err_submit_failed';
     }
@@ -1051,6 +1048,8 @@ class BuildingService {
     int? addedByApt,
     String? addedByLabel,
     Uint8List? cardImageBytes,
+    String? passcode,
+    String? adminPass,
   }) async {
     final cleanName = name.trim();
     final cleanPhone = phone.trim();
@@ -1096,6 +1095,8 @@ class BuildingService {
         'p_added_by_apt': addedByApt,
         'p_added_by_label': addedByLabel?.trim(),
         'p_card_image_url': cardUrl,
+        'p_passcode': passcode,
+        'p_admin_pass': adminPass,
       });
       if (res is Map && res['ok'] == true) return null;
       return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
@@ -1596,6 +1597,8 @@ class BuildingService {
     required String pollId,
     required int aptNum,
     required String optionId,
+    String? passcode,
+    String? adminPass,
   }) async {
     if (!_useSupabase) {
       final idx = _demoPolls.indexWhere((p) => p.id == pollId);
@@ -1643,6 +1646,8 @@ class BuildingService {
           'p_poll_id': int.tryParse(pollId) ?? 0,
           'p_apt_num': aptNum,
           'p_option_id': optionId,
+          'p_passcode': passcode,
+          'p_admin_pass': adminPass,
         },
       );
       if (res is Map && res['ok'] == true) return null;
