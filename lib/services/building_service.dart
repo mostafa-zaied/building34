@@ -1435,4 +1435,220 @@ class BuildingService {
       return 'err_delete_failed';
     }
   }
+
+  static final List<BuildingPoll> _demoPolls = [];
+
+  Future<List<BuildingPoll>> fetchBuildingPolls() async {
+    if (!_useSupabase) {
+      return List<BuildingPoll>.from(_demoPolls);
+    }
+
+    try {
+      final client = Supabase.instance.client;
+      final pollRows = await client
+          .from('building_polls')
+          .select()
+          .order('created_at', ascending: false);
+
+      final voteRows = await client
+          .from('building_poll_votes')
+          .select('poll_id, apt_num, option_id');
+
+      final votesMap = <String, Map<String, List<int>>>{};
+      for (final r in (voteRows as List)) {
+        final pid = r['poll_id'].toString();
+        final optId = (r['option_id'] ?? '').toString();
+        final aptNum = (r['apt_num'] as num?)?.toInt();
+        if (optId.isEmpty || aptNum == null) continue;
+        votesMap.putIfAbsent(pid, () => {});
+        votesMap[pid]!.putIfAbsent(optId, () => []);
+        if (!votesMap[pid]![optId]!.contains(aptNum)) {
+          votesMap[pid]![optId]!.add(aptNum);
+        }
+      }
+
+      for (final perPoll in votesMap.values) {
+        for (final aptList in perPoll.values) {
+          aptList.sort();
+        }
+      }
+
+      return (pollRows as List).map((r) {
+        final map = Map<String, dynamic>.from(r as Map);
+        final pid = map['id'].toString();
+        return BuildingPoll.fromJson(
+          map,
+          votesByOption: votesMap[pid] ?? const {},
+        );
+      }).toList();
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  Future<String?> createBuildingPollAsAdmin({
+    required String adminPass,
+    required String question,
+    required List<PollOption> options,
+    bool allowMultiple = false,
+    bool showVotersPublicly = true,
+  }) async {
+    final cleanQ = question.trim();
+    if (cleanQ.isEmpty || options.length < 2) return 'err_submit_failed';
+
+    if (!_useSupabase) {
+      _demoPolls.insert(
+        0,
+        BuildingPoll(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          question: cleanQ,
+          options: options,
+          allowMultiple: allowMultiple,
+          showVotersPublicly: showVotersPublicly,
+          createdAt: DateTime.now(),
+          votesByOption: {},
+        ),
+      );
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'admin_create_building_poll',
+        params: {
+          'p_admin_pass': adminPass,
+          'p_question': cleanQ,
+          'p_options': options.map((o) => o.toJson()).toList(),
+          'p_allow_multiple': allowMultiple,
+          'p_show_voters_publicly': showVotersPublicly,
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
+    } catch (_) {
+      return 'err_submit_failed';
+    }
+  }
+
+  Future<String?> togglePollClosedAsAdmin({
+    required String adminPass,
+    required String pollId,
+    required bool isClosed,
+  }) async {
+    if (!_useSupabase) {
+      final idx = _demoPolls.indexWhere((p) => p.id == pollId);
+      if (idx < 0) return 'err_submit_failed';
+      final p = _demoPolls[idx];
+      _demoPolls[idx] = BuildingPoll(
+        id: p.id,
+        question: p.question,
+        options: p.options,
+        allowMultiple: p.allowMultiple,
+        showVotersPublicly: p.showVotersPublicly,
+        isClosed: isClosed,
+        createdAt: p.createdAt,
+        votesByOption: p.votesByOption,
+      );
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'admin_toggle_poll_closed',
+        params: {
+          'p_admin_pass': adminPass,
+          'p_poll_id': int.tryParse(pollId) ?? 0,
+          'p_is_closed': isClosed,
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
+    } catch (_) {
+      return 'err_submit_failed';
+    }
+  }
+
+  Future<String?> deleteBuildingPollAsAdmin({
+    required String adminPass,
+    required String pollId,
+  }) async {
+    if (!_useSupabase) {
+      _demoPolls.removeWhere((p) => p.id == pollId);
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'admin_archive_building_poll',
+        params: {
+          'p_admin_pass': adminPass,
+          'p_poll_id': int.tryParse(pollId) ?? 0,
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_delete_failed';
+    } catch (_) {
+      return 'err_delete_failed';
+    }
+  }
+
+  Future<String?> castPollVote({
+    required String pollId,
+    required int aptNum,
+    required String optionId,
+  }) async {
+    if (!_useSupabase) {
+      final idx = _demoPolls.indexWhere((p) => p.id == pollId);
+      if (idx < 0) return 'err_submit_failed';
+      final p = _demoPolls[idx];
+      if (p.isClosed) return 'err_submit_failed';
+      final updated = <String, List<int>>{
+        for (final entry in p.votesByOption.entries)
+          entry.key: List<int>.from(entry.value),
+      };
+      final already = (updated[optionId] ?? const []).contains(aptNum);
+      if (p.allowMultiple) {
+        updated.putIfAbsent(optionId, () => []);
+        if (already) {
+          updated[optionId]!.remove(aptNum);
+        } else {
+          updated[optionId]!.add(aptNum);
+        }
+      } else {
+        for (final list in updated.values) {
+          list.remove(aptNum);
+        }
+        if (!already) {
+          updated.putIfAbsent(optionId, () => []);
+          updated[optionId]!.add(aptNum);
+        }
+      }
+      _demoPolls[idx] = BuildingPoll(
+        id: p.id,
+        question: p.question,
+        options: p.options,
+        allowMultiple: p.allowMultiple,
+        showVotersPublicly: p.showVotersPublicly,
+        isClosed: p.isClosed,
+        createdAt: p.createdAt,
+        votesByOption: updated,
+      );
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'cast_building_poll_vote',
+        params: {
+          'p_poll_id': int.tryParse(pollId) ?? 0,
+          'p_apt_num': aptNum,
+          'p_option_id': optionId,
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
+    } catch (_) {
+      return 'err_submit_failed';
+    }
+  }
 }

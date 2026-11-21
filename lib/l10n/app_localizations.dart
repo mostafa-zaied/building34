@@ -2478,6 +2478,282 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No cards or photos added yet'**
   String get noContactCardsYet;
+
+  /// No description provided for @navPolls.
+  ///
+  /// In en, this message translates to:
+  /// **'Building Polls'**
+  String get navPolls;
+
+  /// No description provided for @pollsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Building Polls & Decisions'**
+  String get pollsTitle;
+
+  /// No description provided for @pollsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'One vote per apartment — flexible choices & live results'**
+  String get pollsSubtitle;
+
+  /// No description provided for @pollsTabOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get pollsTabOpen;
+
+  /// No description provided for @pollsTabClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed & Results'**
+  String get pollsTabClosed;
+
+  /// No description provided for @newPollBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'New Poll'**
+  String get newPollBtn;
+
+  /// No description provided for @createPollTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create New Poll'**
+  String get createPollTitle;
+
+  /// No description provided for @pollQuestionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Poll Question'**
+  String get pollQuestionLabel;
+
+  /// No description provided for @pollQuestionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Best time for water tank cleaning?'**
+  String get pollQuestionHint;
+
+  /// No description provided for @pollPresetsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Presets (Optional)'**
+  String get pollPresetsLabel;
+
+  /// No description provided for @pollPresetYesNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes / No'**
+  String get pollPresetYesNo;
+
+  /// No description provided for @pollPresetAgree3.
+  ///
+  /// In en, this message translates to:
+  /// **'Agree / Disagree / Neutral'**
+  String get pollPresetAgree3;
+
+  /// No description provided for @pollPresetDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Friday / Saturday / Thursday'**
+  String get pollPresetDays;
+
+  /// No description provided for @pollPresetBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency Fund / Split / Postpone'**
+  String get pollPresetBudget;
+
+  /// No description provided for @pollOptionsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer Options'**
+  String get pollOptionsLabel;
+
+  /// No description provided for @pollOptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Option #{num}'**
+  String pollOptionHint(int num);
+
+  /// No description provided for @pollAddOptionBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Another Option'**
+  String get pollAddOptionBtn;
+
+  /// No description provided for @pollAllowMultipleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow selecting multiple options'**
+  String get pollAllowMultipleLabel;
+
+  /// No description provided for @pollShowVotersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Show voting apartments publicly'**
+  String get pollShowVotersLabel;
+
+  /// No description provided for @pollNotifyResidentsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Send push notification to all residents'**
+  String get pollNotifyResidentsLabel;
+
+  /// No description provided for @pollPublishBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish Poll'**
+  String get pollPublishBtn;
+
+  /// No description provided for @pollOpenBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get pollOpenBadge;
+
+  /// No description provided for @pollClosedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get pollClosedBadge;
+
+  /// No description provided for @pollMultiBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Multi-Select'**
+  String get pollMultiBadge;
+
+  /// No description provided for @pollSingleBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Single Choice'**
+  String get pollSingleBadge;
+
+  /// No description provided for @pollSecretBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous'**
+  String get pollSecretBadge;
+
+  /// No description provided for @pollOptionsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} options'**
+  String pollOptionsCount(int count);
+
+  /// No description provided for @pollVotesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} votes'**
+  String pollVotesCount(int count);
+
+  /// No description provided for @pollParticipation.
+  ///
+  /// In en, this message translates to:
+  /// **'{voted} / {total} apts voted'**
+  String pollParticipation(int voted, int total);
+
+  /// No description provided for @pollShowVotersBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Voters'**
+  String get pollShowVotersBtn;
+
+  /// No description provided for @pollHideVotersBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Voters'**
+  String get pollHideVotersBtn;
+
+  /// No description provided for @pollCloseBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get pollCloseBtn;
+
+  /// No description provided for @pollReopenBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen'**
+  String get pollReopenBtn;
+
+  /// No description provided for @pollNoOpenYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No open polls right now'**
+  String get pollNoOpenYet;
+
+  /// No description provided for @pollNoClosedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No closed polls yet'**
+  String get pollNoClosedYet;
+
+  /// No description provided for @pollCreatedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Poll published successfully'**
+  String get pollCreatedToast;
+
+  /// No description provided for @pollVotedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Your vote has been recorded'**
+  String get pollVotedToast;
+
+  /// No description provided for @pollClosedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Poll closed and results finalized'**
+  String get pollClosedToast;
+
+  /// No description provided for @pollReopenedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Poll reopened'**
+  String get pollReopenedToast;
+
+  /// No description provided for @pollDeletedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Poll deleted'**
+  String get pollDeletedToast;
+
+  /// No description provided for @errPollQuestionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a poll question'**
+  String get errPollQuestionRequired;
+
+  /// No description provided for @errPollMinTwoOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Please add at least 2 options'**
+  String get errPollMinTwoOptions;
+
+  /// No description provided for @errPollLoginAptFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in with your apartment first to vote'**
+  String get errPollLoginAptFirst;
+
+  /// No description provided for @confirmDeletePollBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this poll?'**
+  String get confirmDeletePollBody;
+
+  /// No description provided for @pushAutoNewPollTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Building Poll'**
+  String get pushAutoNewPollTitle;
+
+  /// No description provided for @pushAutoNewPollBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Cast your vote now: {question}'**
+  String pushAutoNewPollBody(String question);
 }
 
 class _AppLocalizationsDelegate

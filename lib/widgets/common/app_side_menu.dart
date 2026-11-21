@@ -175,6 +175,37 @@ class AppSideMenu extends StatelessWidget {
                   // 1. Extra Sections
                   _sectionHeader(s.drawerExtraSections, isDark),
                   _drawerTile(
+                    icon: Icons.how_to_vote_outlined,
+                    label: s.navPolls,
+                    isDark: isDark,
+                    selected: state.selectedNavIndex == 6,
+                    accentColor: AppColors.emeraldText(isDark),
+                    trailing: state.openPollsCount > 0
+                        ? Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 7,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.emerald,
+                              borderRadius: BorderRadius.circular(AppRadius.pill),
+                            ),
+                            child: Text(
+                              '${state.openPollsCount}',
+                              style: const TextStyle(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                              ),
+                            ),
+                          )
+                        : null,
+                    onTap: () {
+                      _close(context);
+                      cubit.selectNav(6);
+                    },
+                  ),
+                  _drawerTile(
                     icon: Icons.bar_chart_rounded,
                     label: s.navAnalytics,
                     isDark: isDark,

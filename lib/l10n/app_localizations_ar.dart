@@ -1334,4 +1334,153 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noContactCardsYet => 'لا توجد كروت أو صور مضافة بعد';
+
+  @override
+  String get navPolls => 'تصويتات العمارة';
+
+  @override
+  String get pollsTitle => 'تصويتات وقرارات العمارة';
+
+  @override
+  String get pollsSubtitle => 'صوت واحد لكل شقة — خيارات مرنة ونتائج فورية';
+
+  @override
+  String get pollsTabOpen => 'المفتوحة';
+
+  @override
+  String get pollsTabClosed => 'المغلقة والنتائج';
+
+  @override
+  String get newPollBtn => 'تصويت جديد';
+
+  @override
+  String get createPollTitle => 'إنشاء تصويت جديد';
+
+  @override
+  String get pollQuestionLabel => 'سؤال التصويت';
+
+  @override
+  String get pollQuestionHint => 'مثال: ما هو الميعاد الأنسب لغسيل الخزان؟';
+
+  @override
+  String get pollPresetsLabel => 'قوالب سريعة (اختياري)';
+
+  @override
+  String get pollPresetYesNo => 'نعم / لا';
+
+  @override
+  String get pollPresetAgree3 => 'موافق / غير موافق / محايد';
+
+  @override
+  String get pollPresetDays => 'الجمعة / السبت / الخميس';
+
+  @override
+  String get pollPresetBudget => 'من الطوارئ / تقسيم / تأجيل';
+
+  @override
+  String get pollOptionsLabel => 'خيارات الإجابة';
+
+  @override
+  String pollOptionHint(int num) {
+    return 'الخيار رقم $num';
+  }
+
+  @override
+  String get pollAddOptionBtn => 'إضافة خيار جديد';
+
+  @override
+  String get pollAllowMultipleLabel => 'السماح باختيار أكثر من إجابة';
+
+  @override
+  String get pollShowVotersLabel => 'إظهار الشقق المصوّتة للجميع';
+
+  @override
+  String get pollNotifyResidentsLabel => 'إرسال إشعار لكل السكان عند النشر';
+
+  @override
+  String get pollPublishBtn => 'نشر التصويت';
+
+  @override
+  String get pollOpenBadge => 'مفتوح للتصويت';
+
+  @override
+  String get pollClosedBadge => 'مغلق';
+
+  @override
+  String get pollMultiBadge => 'اختيار متعدد';
+
+  @override
+  String get pollSingleBadge => 'اختيار واحد';
+
+  @override
+  String get pollSecretBadge => 'تصويت سري';
+
+  @override
+  String pollOptionsCount(int count) {
+    return '$count خيارات';
+  }
+
+  @override
+  String pollVotesCount(int count) {
+    return '$count صوت';
+  }
+
+  @override
+  String pollParticipation(int voted, int total) {
+    return 'شارك $voted / $total شقة';
+  }
+
+  @override
+  String get pollShowVotersBtn => 'عرض مين صوّت';
+
+  @override
+  String get pollHideVotersBtn => 'إخفاء الشقق';
+
+  @override
+  String get pollCloseBtn => 'إغلاق';
+
+  @override
+  String get pollReopenBtn => 'إعادة فتح';
+
+  @override
+  String get pollNoOpenYet => 'لا توجد تصويتات مفتوحة حالياً';
+
+  @override
+  String get pollNoClosedYet => 'لا توجد تصويتات مغلقة بعد';
+
+  @override
+  String get pollCreatedToast => '✅ تم نشر التصويت بنجاح';
+
+  @override
+  String get pollVotedToast => '✅ تم تسجيل صوتك بنجاح';
+
+  @override
+  String get pollClosedToast => 'تم إغلاق التصويت واعتماد النتيجة';
+
+  @override
+  String get pollReopenedToast => 'تم إعادة فتح التصويت';
+
+  @override
+  String get pollDeletedToast => 'تم حذف التصويت';
+
+  @override
+  String get errPollQuestionRequired => 'يرجى كتابة سؤال التصويت';
+
+  @override
+  String get errPollMinTwoOptions => 'يرجى كتابة خيارين على الأقل';
+
+  @override
+  String get errPollLoginAptFirst => 'يرجى تسجيل شقتك أولاً للتصويت';
+
+  @override
+  String get confirmDeletePollBody =>
+      'هل أنت متأكد من حذف هذا التصويت نهائياً؟';
+
+  @override
+  String get pushAutoNewPollTitle => 'تصويت جديد للعمارة';
+
+  @override
+  String pushAutoNewPollBody(String question) {
+    return 'شارك برأيك الآن: $question';
+  }
 }

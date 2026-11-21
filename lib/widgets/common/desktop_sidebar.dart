@@ -218,6 +218,35 @@ class DesktopSidebar extends StatelessWidget {
                   ),
                 ),
                 _tile(
+                  icon: state.selectedNavIndex == 6
+                      ? Icons.how_to_vote_rounded
+                      : Icons.how_to_vote_outlined,
+                  label: s.navPolls,
+                  isDark: isDark,
+                  selected: state.selectedNavIndex == 6,
+                  trailing: state.openPollsCount > 0
+                      ? Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 7,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.emerald,
+                            borderRadius: BorderRadius.circular(AppRadius.pill),
+                          ),
+                          child: Text(
+                            '${state.openPollsCount}',
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                            ),
+                          ),
+                        )
+                      : null,
+                  onTap: () => cubit.selectNav(6),
+                ),
+                _tile(
                   icon: state.selectedNavIndex == 2
                       ? Icons.contact_phone_rounded
                       : Icons.contact_phone_outlined,

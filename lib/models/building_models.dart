@@ -459,6 +459,110 @@ class AppNotificationItem {
   }
 }
 
+class PollOption {
+  final String id;
+  final String text;
+
+  const PollOption({
+    required this.id,
+    required this.text,
+  });
+
+  factory PollOption.fromJson(Map<String, dynamic> json) {
+    return PollOption(
+      id: (json['id'] ?? '').toString(),
+      text: (json['text'] ?? '').toString(),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'text': text,
+      };
+}
+
+class BuildingPoll {
+  final String id;
+  final String question;
+  final List<PollOption> options;
+  final bool allowMultiple;
+  final bool showVotersPublicly;
+  final bool isClosed;
+  final DateTime createdAt;
+  /// Map of optionId -> list of aptNums who voted for that option
+  final Map<String, List<int>> votesByOption;
+
+  const BuildingPoll({
+    required this.id,
+    required this.question,
+    required this.options,
+    this.allowMultiple = false,
+    this.showVotersPublicly = true,
+    this.isClosed = false,
+    required this.createdAt,
+    this.votesByOption = const {},
+  });
+
+  List<int> votersFor(String optionId) => votesByOption[optionId] ?? const [];
+
+  bool hasVoted(int? aptNum, String optionId) =>
+      aptNum != null && votersFor(optionId).contains(aptNum);
+
+  Set<int> get uniqueVoters {
+    final set = <int>{};
+    for (final list in votesByOption.values) {
+      set.addAll(list);
+    }
+    return set;
+  }
+
+  int get totalSelections {
+    int sum = 0;
+    for (final list in votesByOption.values) {
+      sum += list.length;
+    }
+    return sum;
+  }
+
+  int get maxOptionVotes {
+    int maxV = 0;
+    for (final o in options) {
+      final len = votersFor(o.id).length;
+      if (len > maxV) maxV = len;
+    }
+    return maxV;
+  }
+
+  factory BuildingPoll.fromJson(
+    Map<String, dynamic> json, {
+    Map<String, List<int>> votesByOption = const {},
+  }) {
+    final rawOpts = json['options'];
+    final parsedOpts = <PollOption>[];
+    if (rawOpts is List) {
+      for (final item in rawOpts) {
+        if (item is Map) {
+          final opt = PollOption.fromJson(Map<String, dynamic>.from(item));
+          if (opt.id.isNotEmpty && opt.text.trim().isNotEmpty) {
+            parsedOpts.add(opt);
+          }
+        }
+      }
+    }
+    return BuildingPoll(
+      id: json['id'].toString(),
+      question: (json['question'] as String?) ?? '',
+      options: parsedOpts,
+      allowMultiple: json['allow_multiple'] == true,
+      showVotersPublicly: json['show_voters_publicly'] != false,
+      isClosed: json['is_closed'] == true,
+      createdAt:
+          DateTime.tryParse(json['created_at']?.toString() ?? '') ?? DateTime.now(),
+      votesByOption: votesByOption,
+    );
+  }
+}
+
 String localizedMonthName(int monthNum, bool isAr) {
   const arMonths = [
     'يناير',

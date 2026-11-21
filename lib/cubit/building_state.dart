@@ -31,6 +31,7 @@ class BuildingState {
   final Map<int, bool> apartmentHasPasscode;
   final List<AppNotificationItem> notifications;
   final Set<String> readNotificationIds;
+  final List<BuildingPoll> buildingPolls;
 
   const BuildingState({
     this.loading = true,
@@ -60,12 +61,15 @@ class BuildingState {
     this.apartmentHasPasscode = const {},
     this.notifications = const [],
     this.readNotificationIds = const {},
+    this.buildingPolls = const [],
   });
 
   AppLocalizations get s => lookupAppLocalizations(Locale(localeCode));
 
   int get unreadNotificationsCount =>
       notifications.where((n) => !readNotificationIds.contains(n.id)).length;
+
+  int get openPollsCount => buildingPolls.where((p) => !p.isClosed).length;
 
   MonthBill? get currentMonth =>
       months.isEmpty || selectedMonthIndex >= months.length
@@ -102,6 +106,7 @@ class BuildingState {
     Map<int, bool>? apartmentHasPasscode,
     List<AppNotificationItem>? notifications,
     Set<String>? readNotificationIds,
+    List<BuildingPoll>? buildingPolls,
   }) {
     return BuildingState(
       loading: loading ?? this.loading,
@@ -131,6 +136,7 @@ class BuildingState {
       apartmentHasPasscode: apartmentHasPasscode ?? this.apartmentHasPasscode,
       notifications: notifications ?? this.notifications,
       readNotificationIds: readNotificationIds ?? this.readNotificationIds,
+      buildingPolls: buildingPolls ?? this.buildingPolls,
     );
   }
 }

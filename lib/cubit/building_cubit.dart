@@ -131,6 +131,9 @@ class BuildingCubit extends Cubit<BuildingState> {
             aptNum: savedAptNum,
           )
           .timeout(const Duration(seconds: 10), onTimeout: () => state.notifications);
+      final polls = await _service
+          .fetchBuildingPolls()
+          .timeout(const Duration(seconds: 10), onTimeout: () => state.buildingPolls);
 
       emit(state.copyWith(
         loading: false,
@@ -151,6 +154,7 @@ class BuildingCubit extends Cubit<BuildingState> {
         apartmentHasPasscode: data.apartmentHasPasscode,
         notifications: notifs,
         readNotificationIds: readNotifIds,
+        buildingPolls: polls,
       ));
       _ensureLiveSubscription();
       unawaited(syncPushTokenIfGranted());
@@ -179,6 +183,9 @@ class BuildingCubit extends Cubit<BuildingState> {
             aptNum: state.myAptNum,
           )
           .timeout(const Duration(seconds: 10), onTimeout: () => state.notifications);
+      final polls = await _service
+          .fetchBuildingPolls()
+          .timeout(const Duration(seconds: 10), onTimeout: () => state.buildingPolls);
       if (isClosed) return;
 
       final targetIdx = data.months.isEmpty
@@ -197,6 +204,7 @@ class BuildingCubit extends Cubit<BuildingState> {
         buildingContacts: data.buildingContacts,
         apartmentHasPasscode: data.apartmentHasPasscode,
         notifications: notifs,
+        buildingPolls: polls,
       ));
     } catch (_) {
       // Keep existing UI state smoothly on transient background refresh error
@@ -1512,6 +1520,141 @@ class BuildingCubit extends Cubit<BuildingState> {
         return;
       }
       await loadData(preserveMonthIndex: state.selectedMonthIndex);
+    });
+  }
+
+  Future<bool> createBuildingPoll({
+    required String question,
+    required List<String> optionTexts,
+    bool allowMultiple = false,
+    bool showVotersPublicly = true,
+    bool notifyResidents = true,
+  }) async {
+    if (!state.isAdminAuthenticated) return false;
+    final cleanQ = question.trim();
+    final cleanTexts =
+        optionTexts.map((t) => t.trim()).where((t) => t.isNotEmpty).toList();
+    if (cleanQ.isEmpty || cleanTexts.length < 2) return false;
+
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final options = [
+      for (int i = 0; i < cleanTexts.length; i++)
+        PollOption(id: 'opt_${now}_$i', text: cleanTexts[i]),
+    ];
+
+    return _withBusy(() async {
+      final err = await _service.createBuildingPollAsAdmin(
+        adminPass: state.adminPass,
+        question: cleanQ,
+        options: options,
+        allowMultiple: allowMultiple,
+        showVotersPublicly: showVotersPublicly,
+      );
+      if (err != null) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return false;
+      }
+      final polls = await _service.fetchBuildingPolls();
+      emit(state.copyWith(
+        buildingPolls: polls,
+        feedbackMessage: () => state.s.pollCreatedToast,
+        feedbackIsError: false,
+      ));
+      if (notifyResidents) {
+        _triggerAutoPush(
+          title: state.s.pushAutoNewPollTitle,
+          body: state.s.pushAutoNewPollBody(cleanQ),
+          audience: 'all',
+          adminPass: state.adminPass,
+          eventType: 'new_poll',
+        );
+      }
+      return true;
+    });
+  }
+
+  Future<void> togglePollClosed(String pollId, bool isClosed) async {
+    if (!state.isAdminAuthenticated) return;
+    await _withBusy(() async {
+      final err = await _service.togglePollClosedAsAdmin(
+        adminPass: state.adminPass,
+        pollId: pollId,
+        isClosed: isClosed,
+      );
+      if (err != null) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return;
+      }
+      final polls = await _service.fetchBuildingPolls();
+      emit(state.copyWith(
+        buildingPolls: polls,
+        feedbackMessage: () =>
+            isClosed ? state.s.pollClosedToast : state.s.pollReopenedToast,
+        feedbackIsError: false,
+      ));
+    });
+  }
+
+  Future<void> deleteBuildingPoll(String pollId) async {
+    if (!state.isAdminAuthenticated) return;
+    await _withBusy(() async {
+      final err = await _service.deleteBuildingPollAsAdmin(
+        adminPass: state.adminPass,
+        pollId: pollId,
+      );
+      if (err != null) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return;
+      }
+      final polls = await _service.fetchBuildingPolls();
+      emit(state.copyWith(
+        buildingPolls: polls,
+        feedbackMessage: () => state.s.pollDeletedToast,
+        feedbackIsError: false,
+      ));
+    });
+  }
+
+  Future<void> castPollVote({
+    required String pollId,
+    required String optionId,
+  }) async {
+    final aptNum = state.myAptNum;
+    if (aptNum == null) {
+      emit(state.copyWith(
+        feedbackMessage: () => '❌ ${state.s.errPollLoginAptFirst}',
+        feedbackIsError: true,
+      ));
+      return;
+    }
+    await _withBusy(() async {
+      final err = await _service.castPollVote(
+        pollId: pollId,
+        aptNum: aptNum,
+        optionId: optionId,
+      );
+      if (err != null) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return;
+      }
+      final polls = await _service.fetchBuildingPolls();
+      emit(state.copyWith(
+        buildingPolls: polls,
+        feedbackMessage: () => state.s.pollVotedToast,
+        feedbackIsError: false,
+      ));
     });
   }
 }

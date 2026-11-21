@@ -1347,4 +1347,156 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noContactCardsYet => 'No cards or photos added yet';
+
+  @override
+  String get navPolls => 'Building Polls';
+
+  @override
+  String get pollsTitle => 'Building Polls & Decisions';
+
+  @override
+  String get pollsSubtitle =>
+      'One vote per apartment — flexible choices & live results';
+
+  @override
+  String get pollsTabOpen => 'Open';
+
+  @override
+  String get pollsTabClosed => 'Closed & Results';
+
+  @override
+  String get newPollBtn => 'New Poll';
+
+  @override
+  String get createPollTitle => 'Create New Poll';
+
+  @override
+  String get pollQuestionLabel => 'Poll Question';
+
+  @override
+  String get pollQuestionHint => 'e.g. Best time for water tank cleaning?';
+
+  @override
+  String get pollPresetsLabel => 'Quick Presets (Optional)';
+
+  @override
+  String get pollPresetYesNo => 'Yes / No';
+
+  @override
+  String get pollPresetAgree3 => 'Agree / Disagree / Neutral';
+
+  @override
+  String get pollPresetDays => 'Friday / Saturday / Thursday';
+
+  @override
+  String get pollPresetBudget => 'Emergency Fund / Split / Postpone';
+
+  @override
+  String get pollOptionsLabel => 'Answer Options';
+
+  @override
+  String pollOptionHint(int num) {
+    return 'Option #$num';
+  }
+
+  @override
+  String get pollAddOptionBtn => 'Add Another Option';
+
+  @override
+  String get pollAllowMultipleLabel => 'Allow selecting multiple options';
+
+  @override
+  String get pollShowVotersLabel => 'Show voting apartments publicly';
+
+  @override
+  String get pollNotifyResidentsLabel =>
+      'Send push notification to all residents';
+
+  @override
+  String get pollPublishBtn => 'Publish Poll';
+
+  @override
+  String get pollOpenBadge => 'Open';
+
+  @override
+  String get pollClosedBadge => 'Closed';
+
+  @override
+  String get pollMultiBadge => 'Multi-Select';
+
+  @override
+  String get pollSingleBadge => 'Single Choice';
+
+  @override
+  String get pollSecretBadge => 'Anonymous';
+
+  @override
+  String pollOptionsCount(int count) {
+    return '$count options';
+  }
+
+  @override
+  String pollVotesCount(int count) {
+    return '$count votes';
+  }
+
+  @override
+  String pollParticipation(int voted, int total) {
+    return '$voted / $total apts voted';
+  }
+
+  @override
+  String get pollShowVotersBtn => 'Show Voters';
+
+  @override
+  String get pollHideVotersBtn => 'Hide Voters';
+
+  @override
+  String get pollCloseBtn => 'Close';
+
+  @override
+  String get pollReopenBtn => 'Reopen';
+
+  @override
+  String get pollNoOpenYet => 'No open polls right now';
+
+  @override
+  String get pollNoClosedYet => 'No closed polls yet';
+
+  @override
+  String get pollCreatedToast => '✅ Poll published successfully';
+
+  @override
+  String get pollVotedToast => '✅ Your vote has been recorded';
+
+  @override
+  String get pollClosedToast => 'Poll closed and results finalized';
+
+  @override
+  String get pollReopenedToast => 'Poll reopened';
+
+  @override
+  String get pollDeletedToast => 'Poll deleted';
+
+  @override
+  String get errPollQuestionRequired => 'Please enter a poll question';
+
+  @override
+  String get errPollMinTwoOptions => 'Please add at least 2 options';
+
+  @override
+  String get errPollLoginAptFirst =>
+      'Please sign in with your apartment first to vote';
+
+  @override
+  String get confirmDeletePollBody =>
+      'Are you sure you want to delete this poll?';
+
+  @override
+  String get pushAutoNewPollTitle => 'New Building Poll';
+
+  @override
+  String pushAutoNewPollBody(String question) {
+    return 'Cast your vote now: $question';
+  }
 }
