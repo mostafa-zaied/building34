@@ -17,6 +17,7 @@ class ExpenseStatCard extends StatefulWidget {
   final String? initialEditText;
   final VoidCallback? onChanged;
   final ValueChanged<String>? onTextChanged;
+  final VoidCallback? onRename;
   final VoidCallback? onDelete;
 
   const ExpenseStatCard({
@@ -31,6 +32,7 @@ class ExpenseStatCard extends StatefulWidget {
     this.initialEditText,
     this.onChanged,
     this.onTextChanged,
+    this.onRename,
     this.onDelete,
   });
 
@@ -117,33 +119,42 @@ class _ExpenseStatCardState extends State<ExpenseStatCard> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (widget.icon != null) ...[
-                        Icon(widget.icon, size: 13, color: accentText),
-                        const SizedBox(width: 4),
-                      ],
-                      Flexible(
-                        child: Text(
-                          widget.label,
-                          style: AppTypography.caption.copyWith(
-                            color: (active || widget.isEditable)
-                                ? accentText
-                                : AppColors.textSecondary(isDark),
-                            fontWeight: FontWeight.w700,
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: (widget.isEditable && widget.onRename != null)
+                        ? widget.onRename
+                        : null,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (widget.icon != null) ...[
+                            Icon(widget.icon, size: 13, color: accentText),
+                            const SizedBox(width: 4),
+                          ],
+                          Flexible(
+                            child: Text(
+                              widget.label,
+                              style: AppTypography.caption.copyWith(
+                                color: (active || widget.isEditable)
+                                    ? accentText
+                                    : AppColors.textSecondary(isDark),
+                                fontWeight: FontWeight.w700,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          textAlign: TextAlign.center,
-                        ),
+                          if (widget.isEditable) ...[
+                            const SizedBox(width: 4),
+                            Icon(Icons.edit_rounded, size: 11, color: accentText),
+                          ],
+                        ],
                       ),
-                      if (widget.isEditable) ...[
-                        const SizedBox(width: 4),
-                        Icon(Icons.edit_rounded, size: 11, color: accentText),
-                      ],
-                    ],
+                    ),
                   ),
                   const SizedBox(height: 3),
                   if (widget.isEditable && _effectiveCtrl != null)

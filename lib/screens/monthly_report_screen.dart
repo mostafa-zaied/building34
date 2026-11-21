@@ -355,10 +355,14 @@ class _StatementPaperA extends StatelessWidget {
     final issuedDate = DateFormat('d/M/yyyy').format(DateTime.now());
 
     final expenseRows = <({String label, int amount})>[
-      (label: s.waterLabel, amount: month.water.round()),
-      (label: s.elecLabel, amount: month.elec.round()),
-      (label: s.elevLabel, amount: month.elev.round()),
-      (label: s.cleanLabel, amount: month.clean.round()),
+      if (!month.isCoreHidden('water'))
+        (label: month.coreLabel('water', s.waterLabel), amount: month.water.round()),
+      if (!month.isCoreHidden('elec'))
+        (label: month.coreLabel('elec', s.elecLabel), amount: month.elec.round()),
+      if (!month.isCoreHidden('elev'))
+        (label: month.coreLabel('elev', s.elevLabel), amount: month.elev.round()),
+      if (!month.isCoreHidden('clean'))
+        (label: month.coreLabel('clean', s.cleanLabel), amount: month.clean.round()),
       for (final ce in month.customExpenses)
         (label: ce.name, amount: ce.amount.round()),
     ];

@@ -147,6 +147,81 @@ class BillSummaryCard extends StatelessWidget {
     }
   }
 
+  Future<void> _showRenameExpenseDialog(
+    BuildContext context, {
+    required String currentName,
+    required Future<void> Function(String newName) onSave,
+  }) async {
+    final s = state.s;
+    final isDark = state.isDarkMode;
+    final nameCtrl = TextEditingController(text: currentName);
+
+    final newName = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.card(isDark),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+        ),
+        title: Row(
+          children: [
+            Icon(
+              Icons.edit_rounded,
+              color: AppColors.primaryText(isDark),
+              size: 20,
+            ),
+            const SizedBox(width: AppSpacing.xs),
+            Expanded(
+              child: Text(
+                s.renameExpenseTitle,
+                style: AppTypography.headline.copyWith(
+                  fontSize: 15,
+                  color: AppColors.textPrimary(isDark),
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: TextField(
+          controller: nameCtrl,
+          autofocus: true,
+          decoration: InputDecoration(
+            labelText: s.customExpenseNameLabel,
+            hintText: s.customExpenseNameHint,
+          ),
+          onSubmitted: (_) {
+            final clean = nameCtrl.text.trim();
+            if (clean.isNotEmpty) Navigator.pop(ctx, clean);
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(s.cancel),
+          ),
+          FilledButton(
+            onPressed: () {
+              final clean = nameCtrl.text.trim();
+              if (clean.isEmpty) return;
+              Navigator.pop(ctx, clean);
+            },
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(s.saveAll),
+          ),
+        ],
+      ),
+    );
+
+    Future.delayed(const Duration(milliseconds: 300), nameCtrl.dispose);
+
+    if (newName != null && newName != currentName) {
+      await onSave(newName);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = state.s;
@@ -159,47 +234,92 @@ class BillSummaryCard extends StatelessWidget {
         // 1. Compact Monthly Expense Categories Grid (Top)
         LayoutBuilder(
           builder: (context, constraints) {
+            final waterLabel = month.coreLabel('water', s.waterLabel);
+            final elecLabel = month.coreLabel('elec', s.elecLabel);
+            final elevLabel = month.coreLabel('elev', s.elevLabel);
+            final cleanLabel = month.coreLabel('clean', s.cleanLabel);
+
             final cards = <Widget>[
-              ExpenseStatCard(
-                label: s.waterLabel,
-                value: s.currency(month.water.toInt()),
-                color: AppColors.water,
-                icon: Icons.water_drop_outlined,
-                highlighted: state.highlightedKey == 'water',
-                isEditable: state.isAdminOpen,
-                controller: waterCtrl,
-                onChanged: onFieldChanged,
-              ),
-              ExpenseStatCard(
-                label: s.elecLabel,
-                value: s.currency(month.elec.toInt()),
-                color: AppColors.electricity,
-                icon: Icons.bolt_outlined,
-                highlighted: state.highlightedKey == 'elec',
-                isEditable: state.isAdminOpen,
-                controller: elecCtrl,
-                onChanged: onFieldChanged,
-              ),
-              ExpenseStatCard(
-                label: s.elevLabel,
-                value: s.currency(month.elev.toInt()),
-                color: AppColors.elevator,
-                icon: Icons.elevator_outlined,
-                highlighted: state.highlightedKey == 'elev',
-                isEditable: state.isAdminOpen,
-                controller: elevCtrl,
-                onChanged: onFieldChanged,
-              ),
-              ExpenseStatCard(
-                label: s.cleanLabel,
-                value: s.currency(month.clean.toInt()),
-                color: AppColors.cleaning,
-                icon: Icons.cleaning_services_outlined,
-                highlighted: state.highlightedKey == 'clean',
-                isEditable: state.isAdminOpen,
-                controller: cleanCtrl,
-                onChanged: onFieldChanged,
-              ),
+              if (!month.isCoreHidden('water'))
+                ExpenseStatCard(
+                  label: waterLabel,
+                  value: s.currency(month.water.toInt()),
+                  color: AppColors.water,
+                  icon: Icons.water_drop_outlined,
+                  highlighted: state.highlightedKey == 'water',
+                  isEditable: state.isAdminOpen,
+                  controller: waterCtrl,
+                  onChanged: onFieldChanged,
+                  onRename: () => _showRenameExpenseDialog(
+                    context,
+                    currentName: waterLabel,
+                    onSave: (name) => cubit.renameCoreExpense('water', name),
+                  ),
+                  onDelete: () {
+                    waterCtrl.text = '0';
+                    cubit.removeCoreExpense('water');
+                  },
+                ),
+              if (!month.isCoreHidden('elec'))
+                ExpenseStatCard(
+                  label: elecLabel,
+                  value: s.currency(month.elec.toInt()),
+                  color: AppColors.electricity,
+                  icon: Icons.bolt_outlined,
+                  highlighted: state.highlightedKey == 'elec',
+                  isEditable: state.isAdminOpen,
+                  controller: elecCtrl,
+                  onChanged: onFieldChanged,
+                  onRename: () => _showRenameExpenseDialog(
+                    context,
+                    currentName: elecLabel,
+                    onSave: (name) => cubit.renameCoreExpense('elec', name),
+                  ),
+                  onDelete: () {
+                    elecCtrl.text = '0';
+                    cubit.removeCoreExpense('elec');
+                  },
+                ),
+              if (!month.isCoreHidden('elev'))
+                ExpenseStatCard(
+                  label: elevLabel,
+                  value: s.currency(month.elev.toInt()),
+                  color: AppColors.elevator,
+                  icon: Icons.elevator_outlined,
+                  highlighted: state.highlightedKey == 'elev',
+                  isEditable: state.isAdminOpen,
+                  controller: elevCtrl,
+                  onChanged: onFieldChanged,
+                  onRename: () => _showRenameExpenseDialog(
+                    context,
+                    currentName: elevLabel,
+                    onSave: (name) => cubit.renameCoreExpense('elev', name),
+                  ),
+                  onDelete: () {
+                    elevCtrl.text = '0';
+                    cubit.removeCoreExpense('elev');
+                  },
+                ),
+              if (!month.isCoreHidden('clean'))
+                ExpenseStatCard(
+                  label: cleanLabel,
+                  value: s.currency(month.clean.toInt()),
+                  color: AppColors.cleaning,
+                  icon: Icons.cleaning_services_outlined,
+                  highlighted: state.highlightedKey == 'clean',
+                  isEditable: state.isAdminOpen,
+                  controller: cleanCtrl,
+                  onChanged: onFieldChanged,
+                  onRename: () => _showRenameExpenseDialog(
+                    context,
+                    currentName: cleanLabel,
+                    onSave: (name) => cubit.renameCoreExpense('clean', name),
+                  ),
+                  onDelete: () {
+                    cleanCtrl.text = '0';
+                    cubit.removeCoreExpense('clean');
+                  },
+                ),
               for (int i = 0; i < month.customExpenses.length; i++)
                 ExpenseStatCard(
                   key: ValueKey('custom_${month.id}_${month.customExpenses[i].id}'),
@@ -213,6 +333,14 @@ class BillSummaryCard extends StatelessWidget {
                   onTextChanged: (val) => cubit.updateCustomExpenseAmount(
                     month.customExpenses[i].id,
                     double.tryParse(val.trim()) ?? 0,
+                  ),
+                  onRename: () => _showRenameExpenseDialog(
+                    context,
+                    currentName: month.customExpenses[i].name,
+                    onSave: (name) => cubit.renameCustomExpense(
+                      month.customExpenses[i].id,
+                      name,
+                    ),
                   ),
                   onDelete: () => cubit.removeCustomExpense(month.customExpenses[i].id),
                 ),
@@ -526,51 +654,59 @@ class _UtilityReceiptsBar extends StatelessWidget {
     final hasElec = (month.elecReceiptUrl != null && month.elecReceiptUrl!.isNotEmpty) ||
         month.elecLocalBytes != null;
 
-    if (!hasWater && !hasElec && !state.isAdminOpen) {
+    final showWater = hasWater || !month.isCoreHidden('water');
+    final showElec = hasElec || !month.isCoreHidden('elec');
+
+    if ((!showWater && !showElec) || (!hasWater && !hasElec && !state.isAdminOpen)) {
       return const SizedBox.shrink();
     }
 
+    final waterLabel = month.coreLabel('water', s.waterLabel);
+    final elecLabel = month.coreLabel('elec', s.elecLabel);
+
     return Row(
       children: [
-        Expanded(
-          child: _pill(
-            context: context,
-            isDark: isDark,
-            icon: Icons.water_drop_outlined,
-            color: AppColors.water,
-            label: s.waterLabel,
-            hasReceipt: hasWater,
-            onTap: hasWater
-                ? () => _viewReceipt(
-                      context,
-                      utilityKey: 'water',
-                      label: s.waterLabel,
-                      url: month.waterReceiptUrl,
-                      localBytes: month.waterLocalBytes,
-                    )
-                : (state.isAdminOpen ? () => _pickAndUpload(context, 'water') : null),
+        if (showWater)
+          Expanded(
+            child: _pill(
+              context: context,
+              isDark: isDark,
+              icon: Icons.water_drop_outlined,
+              color: AppColors.water,
+              label: waterLabel,
+              hasReceipt: hasWater,
+              onTap: hasWater
+                  ? () => _viewReceipt(
+                        context,
+                        utilityKey: 'water',
+                        label: waterLabel,
+                        url: month.waterReceiptUrl,
+                        localBytes: month.waterLocalBytes,
+                      )
+                  : (state.isAdminOpen ? () => _pickAndUpload(context, 'water') : null),
+            ),
           ),
-        ),
-        const SizedBox(width: AppSpacing.xs),
-        Expanded(
-          child: _pill(
-            context: context,
-            isDark: isDark,
-            icon: Icons.bolt_rounded,
-            color: AppColors.electricity,
-            label: s.elecLabel,
-            hasReceipt: hasElec,
-            onTap: hasElec
-                ? () => _viewReceipt(
-                      context,
-                      utilityKey: 'elec',
-                      label: s.elecLabel,
-                      url: month.elecReceiptUrl,
-                      localBytes: month.elecLocalBytes,
-                    )
-                : (state.isAdminOpen ? () => _pickAndUpload(context, 'elec') : null),
+        if (showWater && showElec) const SizedBox(width: AppSpacing.xs),
+        if (showElec)
+          Expanded(
+            child: _pill(
+              context: context,
+              isDark: isDark,
+              icon: Icons.bolt_rounded,
+              color: AppColors.electricity,
+              label: elecLabel,
+              hasReceipt: hasElec,
+              onTap: hasElec
+                  ? () => _viewReceipt(
+                        context,
+                        utilityKey: 'elec',
+                        label: elecLabel,
+                        url: month.elecReceiptUrl,
+                        localBytes: month.elecLocalBytes,
+                      )
+                  : (state.isAdminOpen ? () => _pickAndUpload(context, 'elec') : null),
+            ),
           ),
-        ),
       ],
     );
   }

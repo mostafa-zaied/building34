@@ -606,6 +606,133 @@ class BuildingCubit extends Cubit<BuildingState> {
     });
   }
 
+  Future<void> renameCustomExpense(String id, String newName) async {
+    if (!state.isAdminOpen) return;
+    final m = state.currentMonth;
+    final cleanName = newName.trim();
+    if (m == null || cleanName.isEmpty) return;
+    final idx = m.customExpenses.indexWhere((e) => e.id == id);
+    if (idx == -1) return;
+    final prevName = m.customExpenses[idx].name;
+    m.customExpenses[idx].name = cleanName;
+    emit(state.copyWith(months: List<MonthBill>.from(state.months)));
+
+    await _withBusy(() async {
+      final err = await _service.updateMonthAsAdmin(
+        adminPass: state.adminPass,
+        month: m,
+        baseEmergency: state.baseEmergency,
+      );
+      if (err != null) {
+        m.customExpenses[idx].name = prevName;
+        emit(state.copyWith(
+          months: List<MonthBill>.from(state.months),
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return;
+      }
+      emit(state.copyWith(
+        months: List<MonthBill>.from(state.months),
+        feedbackMessage: () => state.s.expenseRenamedToast,
+        feedbackIsError: false,
+      ));
+    });
+  }
+
+  Future<void> renameCoreExpense(String key, String newName) async {
+    if (!state.isAdminOpen) return;
+    final m = state.currentMonth;
+    final cleanName = newName.trim();
+    if (m == null || cleanName.isEmpty) return;
+    final prevLabel = m.coreLabels[key];
+    m.coreLabels[key] = cleanName;
+    emit(state.copyWith(months: List<MonthBill>.from(state.months)));
+
+    await _withBusy(() async {
+      final err = await _service.updateMonthAsAdmin(
+        adminPass: state.adminPass,
+        month: m,
+        baseEmergency: state.baseEmergency,
+      );
+      if (err != null) {
+        if (prevLabel == null) {
+          m.coreLabels.remove(key);
+        } else {
+          m.coreLabels[key] = prevLabel;
+        }
+        emit(state.copyWith(
+          months: List<MonthBill>.from(state.months),
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return;
+      }
+      emit(state.copyWith(
+        months: List<MonthBill>.from(state.months),
+        feedbackMessage: () => state.s.expenseRenamedToast,
+        feedbackIsError: false,
+      ));
+    });
+  }
+
+  Future<void> removeCoreExpense(String key) async {
+    if (!state.isAdminOpen) return;
+    final m = state.currentMonth;
+    if (m == null) return;
+    final prevAmount = switch (key) {
+      'water' => m.water,
+      'elec' => m.elec,
+      'elev' => m.elev,
+      'clean' => m.clean,
+      _ => 0.0,
+    };
+    switch (key) {
+      case 'water':
+        m.water = 0;
+      case 'elec':
+        m.elec = 0;
+      case 'elev':
+        m.elev = 0;
+      case 'clean':
+        m.clean = 0;
+    }
+    m.hiddenCoreKeys.add(key);
+    emit(state.copyWith(months: List<MonthBill>.from(state.months)));
+
+    await _withBusy(() async {
+      final err = await _service.updateMonthAsAdmin(
+        adminPass: state.adminPass,
+        month: m,
+        baseEmergency: state.baseEmergency,
+      );
+      if (err != null) {
+        m.hiddenCoreKeys.remove(key);
+        switch (key) {
+          case 'water':
+            m.water = prevAmount;
+          case 'elec':
+            m.elec = prevAmount;
+          case 'elev':
+            m.elev = prevAmount;
+          case 'clean':
+            m.clean = prevAmount;
+        }
+        emit(state.copyWith(
+          months: List<MonthBill>.from(state.months),
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return;
+      }
+      emit(state.copyWith(
+        months: List<MonthBill>.from(state.months),
+        feedbackMessage: () => state.s.customExpenseRemovedToast,
+        feedbackIsError: false,
+      ));
+    });
+  }
+
   Future<void> addNextMonth() async {
     if (!state.isAdminOpen) return;
     await _withBusy(() async {
@@ -1282,12 +1409,18 @@ class BuildingCubit extends Cubit<BuildingState> {
     required String name,
     required String roleDesc,
     required String phone,
+    int? addedByApt,
+    String? addedByLabel,
+    Uint8List? cardImageBytes,
   }) async {
     return _withBusy(() async {
       final err = await _service.addBuildingContact(
         name: name,
         roleDesc: roleDesc,
         phone: phone,
+        addedByApt: addedByApt,
+        addedByLabel: addedByLabel,
+        cardImageBytes: cardImageBytes,
       );
       if (err != null) {
         emit(state.copyWith(
@@ -1305,8 +1438,43 @@ class BuildingCubit extends Cubit<BuildingState> {
     });
   }
 
+  Future<bool> updateBuildingContact({
+    required String id,
+    required String name,
+    required String roleDesc,
+    required String phone,
+    Uint8List? newCardImageBytes,
+    bool removeCardImage = false,
+  }) async {
+    if (!state.isAdminAuthenticated) return false;
+    return _withBusy(() async {
+      final err = await _service.updateBuildingContactAsAdmin(
+        adminPass: state.adminPass,
+        id: id,
+        name: name,
+        roleDesc: roleDesc,
+        phone: phone,
+        newCardImageBytes: newCardImageBytes,
+        removeCardImage: removeCardImage,
+      );
+      if (err != null) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return false;
+      }
+      await loadData(preserveMonthIndex: state.selectedMonthIndex);
+      emit(state.copyWith(
+        feedbackMessage: () => state.s.contactUpdatedToast,
+        feedbackIsError: false,
+      ));
+      return true;
+    });
+  }
+
   Future<void> deleteBuildingContact(String id) async {
-    if (!state.isAdminOpen) return;
+    if (!state.isAdminAuthenticated) return;
     await _withBusy(() async {
       final err = await _service.deleteBuildingContactAsAdmin(
         adminPass: state.adminPass,
@@ -1320,6 +1488,10 @@ class BuildingCubit extends Cubit<BuildingState> {
         return;
       }
       await loadData(preserveMonthIndex: state.selectedMonthIndex);
+      emit(state.copyWith(
+        feedbackMessage: () => state.s.contactDeletedToast,
+        feedbackIsError: false,
+      ));
     });
   }
 

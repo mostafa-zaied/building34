@@ -122,6 +122,8 @@ class MonthBill {
   final Map<int, PaymentRecord> payments;
   final List<ApartmentExtraCharge> extraCharges;
   final List<CustomExpenseItem> customExpenses;
+  final Map<String, String> coreLabels;
+  final Set<String> hiddenCoreKeys;
 
   MonthBill({
     required this.id,
@@ -141,14 +143,46 @@ class MonthBill {
     Map<int, PaymentRecord>? payments,
     List<ApartmentExtraCharge>? extraCharges,
     List<CustomExpenseItem>? customExpenses,
+    Map<String, String>? coreLabels,
+    Set<String>? hiddenCoreKeys,
   })  : payments = payments ?? {},
         extraCharges = extraCharges ?? [],
-        customExpenses = customExpenses ?? [];
+        customExpenses = customExpenses ?? [],
+        coreLabels = coreLabels ?? {},
+        hiddenCoreKeys = hiddenCoreKeys ?? {};
+
+  static const String coreMetaId = '__core_meta__';
+
+  bool isCoreHidden(String key) => hiddenCoreKeys.contains(key);
+
+  String coreLabel(String key, String fallback) {
+    final custom = coreLabels[key]?.trim();
+    return (custom != null && custom.isNotEmpty) ? custom : fallback;
+  }
+
+  List<Map<String, dynamic>> toCustomExpensesJson() {
+    final list = customExpenses.map((e) => e.toJson()).toList();
+    if (coreLabels.isNotEmpty || hiddenCoreKeys.isNotEmpty) {
+      list.add({
+        'id': coreMetaId,
+        'name': '',
+        'amount': 0,
+        'labels': Map<String, String>.from(coreLabels),
+        'hidden': hiddenCoreKeys.toList(),
+      });
+    }
+    return list;
+  }
 
   double get customExpensesTotal =>
       customExpenses.fold<double>(0, (sum, item) => sum + item.amount);
 
-  double get totalExpenses => water + elec + elev + clean + customExpensesTotal;
+  double get totalExpenses =>
+      (isCoreHidden('water') ? 0 : water) +
+      (isCoreHidden('elec') ? 0 : elec) +
+      (isCoreHidden('elev') ? 0 : elev) +
+      (isCoreHidden('clean') ? 0 : clean) +
+      customExpensesTotal;
 
   int get sharePerApt {
     if (totalExpenses <= 0 || aptsCount <= 0) return 0;
@@ -213,10 +247,33 @@ class MonthBill {
   factory MonthBill.fromJson(Map<String, dynamic> json) {
     final rawCustom = json['custom_expenses'];
     final customList = <CustomExpenseItem>[];
+    final coreLabels = <String, String>{};
+    final hiddenCoreKeys = <String>{};
     if (rawCustom is List) {
       for (final item in rawCustom) {
         if (item is Map) {
-          final parsed = CustomExpenseItem.fromJson(Map<String, dynamic>.from(item));
+          final map = Map<String, dynamic>.from(item);
+          if (map['id']?.toString() == coreMetaId) {
+            final rawLabels = map['labels'];
+            if (rawLabels is Map) {
+              for (final entry in rawLabels.entries) {
+                final k = entry.key.toString().trim();
+                final v = entry.value?.toString().trim() ?? '';
+                if (k.isNotEmpty && v.isNotEmpty) {
+                  coreLabels[k] = v;
+                }
+              }
+            }
+            final rawHidden = map['hidden'];
+            if (rawHidden is List) {
+              for (final h in rawHidden) {
+                final k = h.toString().trim();
+                if (k.isNotEmpty) hiddenCoreKeys.add(k);
+              }
+            }
+            continue;
+          }
+          final parsed = CustomExpenseItem.fromJson(map);
           if (parsed.name.isNotEmpty) {
             customList.add(parsed);
           }
@@ -237,6 +294,8 @@ class MonthBill {
       waterReceiptUrl: (json['water_receipt_url'] as String?)?.trim(),
       elecReceiptUrl: (json['elec_receipt_url'] as String?)?.trim(),
       customExpenses: customList,
+      coreLabels: coreLabels,
+      hiddenCoreKeys: hiddenCoreKeys,
     );
   }
 }
@@ -246,6 +305,10 @@ class BuildingContact {
   final String name;
   final String roleDesc;
   final String phone;
+  final int? addedByApt;
+  final String? addedByLabel;
+  final String? cardImageUrl;
+  final Uint8List? localCardBytes;
   final DateTime createdAt;
 
   const BuildingContact({
@@ -253,8 +316,18 @@ class BuildingContact {
     required this.name,
     required this.roleDesc,
     required this.phone,
+    this.addedByApt,
+    this.addedByLabel,
+    this.cardImageUrl,
+    this.localCardBytes,
     required this.createdAt,
   });
+
+  bool get hasCardImage =>
+      localCardBytes != null ||
+      (cardImageUrl != null && cardImageUrl!.trim().isNotEmpty);
+
+  bool get hasPhone => phone.trim().isNotEmpty;
 
   bool get supportsWhatsApp =>
       phone.replaceAll(RegExp(r'[^0-9]'), '').length >= 10;
@@ -266,11 +339,15 @@ class BuildingContact {
   }
 
   factory BuildingContact.fromJson(Map<String, dynamic> json) {
+    final rawCard = (json['card_image_url'] as String?)?.trim();
     return BuildingContact(
       id: json['id'].toString(),
       name: (json['name'] as String?) ?? '',
       roleDesc: (json['role_desc'] as String?) ?? '',
       phone: (json['phone'] as String?) ?? '',
+      addedByApt: (json['added_by_apt'] as num?)?.toInt(),
+      addedByLabel: (json['added_by_label'] as String?)?.trim(),
+      cardImageUrl: (rawCard != null && rawCard.isNotEmpty) ? rawCard : null,
       createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ??
           DateTime.now(),
     );

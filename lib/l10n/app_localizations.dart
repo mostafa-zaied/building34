@@ -2358,6 +2358,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} apts'**
   String reportAptsCountUnit(int count);
+
+  /// No description provided for @contactAddedByAptLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Added by: {apt}'**
+  String contactAddedByAptLabel(String apt);
+
+  /// No description provided for @contactAddedByAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get contactAddedByAdmin;
+
+  /// No description provided for @contactSelectYourAptLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Apartment'**
+  String get contactSelectYourAptLabel;
+
+  /// No description provided for @contactSelectYourAptHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your apartment'**
+  String get contactSelectYourAptHint;
+
+  /// No description provided for @errContactSelectApt.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select your apartment first'**
+  String get errContactSelectApt;
+
+  /// No description provided for @contactCardPhotoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Business Card Photo (Optional)'**
+  String get contactCardPhotoLabel;
+
+  /// No description provided for @contactTakePhotoBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Take Photo'**
+  String get contactTakePhotoBtn;
+
+  /// No description provided for @contactPickGalleryBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'From Gallery'**
+  String get contactPickGalleryBtn;
+
+  /// No description provided for @contactPhoneOptionalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional if card photo is attached'**
+  String get contactPhoneOptionalHint;
+
+  /// No description provided for @errContactNameOrCardRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a name and either a phone number or a card photo'**
+  String get errContactNameOrCardRequired;
+
+  /// No description provided for @contactTapToZoomHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to zoom card'**
+  String get contactTapToZoomHint;
+
+  /// No description provided for @contactViewCardBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'View Full Card'**
+  String get contactViewCardBtn;
+
+  /// No description provided for @renameExpenseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename Expense Field'**
+  String get renameExpenseTitle;
+
+  /// No description provided for @expenseRenamedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Expense name updated'**
+  String get expenseRenamedToast;
+
+  /// No description provided for @editContactTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Maintenance Contact'**
+  String get editContactTitle;
+
+  /// No description provided for @contactUpdatedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Maintenance contact updated'**
+  String get contactUpdatedToast;
+
+  /// No description provided for @contactDeletedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintenance contact deleted'**
+  String get contactDeletedToast;
+
+  /// No description provided for @contactsTabNumbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Numbers'**
+  String get contactsTabNumbers;
+
+  /// No description provided for @contactsTabCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Cards & Photos'**
+  String get contactsTabCards;
+
+  /// No description provided for @noContactCardsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No cards or photos added yet'**
+  String get noContactCardsYet;
 }
 
 class _AppLocalizationsDelegate

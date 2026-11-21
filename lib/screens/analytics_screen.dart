@@ -144,30 +144,34 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         ];
 
         final utilities = [
-          (
-            icon: Icons.water_drop_rounded,
-            label: s.waterLabel,
-            amount: selectedMonth.water,
-            color: const Color(0xFF06B6D4),
-          ),
-          (
-            icon: Icons.bolt_rounded,
-            label: s.elecLabel,
-            amount: selectedMonth.elec,
-            color: AppColors.amber,
-          ),
-          (
-            icon: Icons.elevator_rounded,
-            label: s.elevLabel,
-            amount: selectedMonth.elev,
-            color: AppColors.primary,
-          ),
-          (
-            icon: Icons.cleaning_services_rounded,
-            label: s.cleanLabel,
-            amount: selectedMonth.clean,
-            color: AppColors.emerald,
-          ),
+          if (!selectedMonth.isCoreHidden('water'))
+            (
+              icon: Icons.water_drop_rounded,
+              label: selectedMonth.coreLabel('water', s.waterLabel),
+              amount: selectedMonth.water,
+              color: const Color(0xFF06B6D4),
+            ),
+          if (!selectedMonth.isCoreHidden('elec'))
+            (
+              icon: Icons.bolt_rounded,
+              label: selectedMonth.coreLabel('elec', s.elecLabel),
+              amount: selectedMonth.elec,
+              color: AppColors.amber,
+            ),
+          if (!selectedMonth.isCoreHidden('elev'))
+            (
+              icon: Icons.elevator_rounded,
+              label: selectedMonth.coreLabel('elev', s.elevLabel),
+              amount: selectedMonth.elev,
+              color: AppColors.primary,
+            ),
+          if (!selectedMonth.isCoreHidden('clean'))
+            (
+              icon: Icons.cleaning_services_rounded,
+              label: selectedMonth.coreLabel('clean', s.cleanLabel),
+              amount: selectedMonth.clean,
+              color: AppColors.emerald,
+            ),
           for (int i = 0; i < selectedMonth.customExpenses.length; i++)
             (
               icon: Icons.receipt_long_rounded,

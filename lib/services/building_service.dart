@@ -370,7 +370,7 @@ class BuildingService {
       'p_for_emerg': month.forEmerg,
       'p_apts_count': month.aptsCount,
       'p_base_emerg': baseEmergency,
-      'p_custom_expenses': month.customExpenses.map((e) => e.toJson()).toList(),
+      'p_custom_expenses': month.toCustomExpensesJson(),
       'p_due_day': month.dueDay,
     });
 
@@ -1048,10 +1048,15 @@ class BuildingService {
     required String name,
     required String roleDesc,
     required String phone,
+    int? addedByApt,
+    String? addedByLabel,
+    Uint8List? cardImageBytes,
   }) async {
     final cleanName = name.trim();
     final cleanPhone = phone.trim();
-    if (cleanName.isEmpty || cleanPhone.isEmpty) return 'err_submit_failed';
+    if (cleanName.isEmpty || (cleanPhone.isEmpty && cardImageBytes == null)) {
+      return 'err_submit_failed';
+    }
 
     if (!_useSupabase) {
       _demoContacts.insert(
@@ -1061,6 +1066,9 @@ class BuildingService {
           name: cleanName,
           roleDesc: roleDesc.trim(),
           phone: cleanPhone,
+          addedByApt: addedByApt,
+          addedByLabel: addedByLabel?.trim(),
+          localCardBytes: cardImageBytes,
           createdAt: DateTime.now(),
         ),
       );
@@ -1068,12 +1076,98 @@ class BuildingService {
     }
 
     try {
-      await Supabase.instance.client.from('building_contacts').insert({
-        'name': cleanName,
-        'role_desc': roleDesc.trim(),
-        'phone': cleanPhone,
+      final client = Supabase.instance.client;
+      String cardUrl = '';
+      if (cardImageBytes != null) {
+        final ts = DateTime.now().millisecondsSinceEpoch;
+        final storagePath = 'contacts/card_$ts.jpg';
+        await client.storage.from('receipts').uploadBinary(
+              storagePath,
+              cardImageBytes,
+              fileOptions: const FileOptions(upsert: true),
+            );
+        cardUrl = client.storage.from('receipts').getPublicUrl(storagePath);
+      }
+
+      final res = await client.rpc('add_building_contact', params: {
+        'p_name': cleanName,
+        'p_role_desc': roleDesc.trim(),
+        'p_phone': cleanPhone,
+        'p_added_by_apt': addedByApt,
+        'p_added_by_label': addedByLabel?.trim(),
+        'p_card_image_url': cardUrl,
       });
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
+    } catch (_) {
+      return 'err_submit_failed';
+    }
+  }
+
+  Future<String?> updateBuildingContactAsAdmin({
+    required String adminPass,
+    required String id,
+    required String name,
+    required String roleDesc,
+    required String phone,
+    Uint8List? newCardImageBytes,
+    bool removeCardImage = false,
+  }) async {
+    final cleanName = name.trim();
+    final cleanPhone = phone.trim();
+    if (cleanName.isEmpty) {
+      return 'err_submit_failed';
+    }
+
+    if (!_useSupabase) {
+      final idx = _demoContacts.indexWhere((c) => c.id == id);
+      if (idx < 0) return 'err_submit_failed';
+      final prev = _demoContacts[idx];
+      final hasCardAfter = newCardImageBytes != null || (!removeCardImage && prev.hasCardImage);
+      if (cleanPhone.isEmpty && !hasCardAfter) return 'err_submit_failed';
+      _demoContacts[idx] = BuildingContact(
+        id: prev.id,
+        name: cleanName,
+        roleDesc: roleDesc.trim(),
+        phone: cleanPhone,
+        addedByApt: prev.addedByApt,
+        addedByLabel: prev.addedByLabel,
+        cardImageUrl: removeCardImage ? null : prev.cardImageUrl,
+        localCardBytes: removeCardImage ? null : (newCardImageBytes ?? prev.localCardBytes),
+        createdAt: prev.createdAt,
+      );
       return null;
+    }
+
+    try {
+      final client = Supabase.instance.client;
+      String? cardUrlParam;
+      if (newCardImageBytes != null) {
+        final ts = DateTime.now().millisecondsSinceEpoch;
+        final storagePath = 'contacts/card_$ts.jpg';
+        await client.storage.from('receipts').uploadBinary(
+              storagePath,
+              newCardImageBytes,
+              fileOptions: const FileOptions(upsert: true),
+            );
+        cardUrlParam = client.storage.from('receipts').getPublicUrl(storagePath);
+      } else if (removeCardImage) {
+        cardUrlParam = '';
+      }
+
+      final res = await client.rpc(
+        'admin_update_building_contact',
+        params: {
+          'p_admin_pass': adminPass,
+          'p_id': int.tryParse(id) ?? 0,
+          'p_name': cleanName,
+          'p_role_desc': roleDesc.trim(),
+          'p_phone': cleanPhone,
+          'p_card_image_url': cardUrlParam,
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
     } catch (_) {
       return 'err_submit_failed';
     }

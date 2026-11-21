@@ -1270,4 +1270,68 @@ class AppLocalizationsAr extends AppLocalizations {
   String reportAptsCountUnit(int count) {
     return '$count شقة';
   }
+
+  @override
+  String contactAddedByAptLabel(String apt) {
+    return 'أضيف بواسطة: $apt';
+  }
+
+  @override
+  String get contactAddedByAdmin => 'المدير';
+
+  @override
+  String get contactSelectYourAptLabel => 'رقم شقتك';
+
+  @override
+  String get contactSelectYourAptHint => 'اختر شقتك';
+
+  @override
+  String get errContactSelectApt => 'يرجى اختيار رقم شقتك أولاً';
+
+  @override
+  String get contactCardPhotoLabel => 'صورة الكارت (اختياري)';
+
+  @override
+  String get contactTakePhotoBtn => 'تصوير الكارت';
+
+  @override
+  String get contactPickGalleryBtn => 'من المعرض';
+
+  @override
+  String get contactPhoneOptionalHint =>
+      'أو اتركه فارغاً عند إرفاق صورة الكارت';
+
+  @override
+  String get errContactNameOrCardRequired =>
+      'يرجى إدخال الاسم مع رقم الهاتف أو صورة الكارت';
+
+  @override
+  String get contactTapToZoomHint => 'اضغط لتكبير الكارت';
+
+  @override
+  String get contactViewCardBtn => 'عرض الكارت بالحجم الكامل';
+
+  @override
+  String get renameExpenseTitle => 'تعديل اسم البند';
+
+  @override
+  String get expenseRenamedToast => '✅ تم تعديل اسم البند بنجاح';
+
+  @override
+  String get editContactTitle => 'تعديل رقم الصيانة';
+
+  @override
+  String get contactUpdatedToast => '✅ تم تعديل رقم الصيانة بنجاح';
+
+  @override
+  String get contactDeletedToast => 'تم حذف رقم الصيانة';
+
+  @override
+  String get contactsTabNumbers => 'الأرقام';
+
+  @override
+  String get contactsTabCards => 'الكروت والصور';
+
+  @override
+  String get noContactCardsYet => 'لا توجد كروت أو صور مضافة بعد';
 }

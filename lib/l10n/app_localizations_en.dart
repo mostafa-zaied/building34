@@ -1284,4 +1284,67 @@ class AppLocalizationsEn extends AppLocalizations {
   String reportAptsCountUnit(int count) {
     return '$count apts';
   }
+
+  @override
+  String contactAddedByAptLabel(String apt) {
+    return 'Added by: $apt';
+  }
+
+  @override
+  String get contactAddedByAdmin => 'Admin';
+
+  @override
+  String get contactSelectYourAptLabel => 'Your Apartment';
+
+  @override
+  String get contactSelectYourAptHint => 'Select your apartment';
+
+  @override
+  String get errContactSelectApt => 'Please select your apartment first';
+
+  @override
+  String get contactCardPhotoLabel => 'Business Card Photo (Optional)';
+
+  @override
+  String get contactTakePhotoBtn => 'Take Photo';
+
+  @override
+  String get contactPickGalleryBtn => 'From Gallery';
+
+  @override
+  String get contactPhoneOptionalHint => 'Optional if card photo is attached';
+
+  @override
+  String get errContactNameOrCardRequired =>
+      'Please enter a name and either a phone number or a card photo';
+
+  @override
+  String get contactTapToZoomHint => 'Tap to zoom card';
+
+  @override
+  String get contactViewCardBtn => 'View Full Card';
+
+  @override
+  String get renameExpenseTitle => 'Rename Expense Field';
+
+  @override
+  String get expenseRenamedToast => '✅ Expense name updated';
+
+  @override
+  String get editContactTitle => 'Edit Maintenance Contact';
+
+  @override
+  String get contactUpdatedToast => '✅ Maintenance contact updated';
+
+  @override
+  String get contactDeletedToast => 'Maintenance contact deleted';
+
+  @override
+  String get contactsTabNumbers => 'Numbers';
+
+  @override
+  String get contactsTabCards => 'Cards & Photos';
+
+  @override
+  String get noContactCardsYet => 'No cards or photos added yet';
 }
