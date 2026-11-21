@@ -26,6 +26,19 @@ class _ContactsScreenState extends State<ContactsScreen> {
   /// 0 = Phone numbers only, 1 = Cards & photos only
   int _selectedTab = 0;
 
+  static String _normalizeForSort(String value) {
+    return value
+        .trim()
+        .toLowerCase()
+        .replaceAll(RegExp(r'[أإآ]'), 'ا')
+        .replaceAll('ة', 'ه')
+        .replaceAll('ى', 'ي');
+  }
+
+  static int _compareByTitle(BuildingContact a, BuildingContact b) {
+    return _normalizeForSort(a.name).compareTo(_normalizeForSort(b.name));
+  }
+
   Future<void> _launchPhone(String phone) async {
     final uri = Uri(scheme: 'tel', path: phone.trim());
     await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -460,8 +473,10 @@ class _ContactsScreenState extends State<ContactsScreen> {
         final s = state.s;
         final isDark = state.isDarkMode;
         final allContacts = state.buildingContacts;
-        final numberContacts = allContacts.where((c) => c.hasPhone).toList();
-        final cardContacts = allContacts.where((c) => c.hasCardImage).toList();
+        final numberContacts = allContacts.where((c) => c.hasPhone).toList()
+          ..sort(_compareByTitle);
+        final cardContacts = allContacts.where((c) => c.hasCardImage).toList()
+          ..sort(_compareByTitle);
         final visibleContacts =
             _selectedTab == 0 ? numberContacts : cardContacts;
 
