@@ -7,6 +7,7 @@ import '../../core/theme/app_typography.dart';
 import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
 import '../../models/building_models.dart';
+import '../dialogs/apartment_payment_dialog.dart';
 
 class MyApartmentBanner extends StatelessWidget {
   final BuildingCubit cubit;
@@ -27,8 +28,14 @@ class MyApartmentBanner extends StatelessWidget {
     final s = state.s;
     final isDark = state.isDarkMode;
     final myApt = state.myAptNum;
+    final closedSet = state.closedAptNums.toSet();
+    final maxClosed =
+        closedSet.isEmpty ? 0 : closedSet.reduce((a, b) => a > b ? a : b);
+    final totalApts = (month.aptsCount + closedSet.length) > maxClosed
+        ? (month.aptsCount + closedSet.length)
+        : maxClosed;
 
-    if (myApt == null || myApt < 1 || myApt > month.aptsCount) {
+    if (myApt == null || myApt < 1 || myApt > totalApts) {
       return Container(
         padding: const EdgeInsetsDirectional.symmetric(
           horizontal: AppSpacing.md,
@@ -62,11 +69,14 @@ class MyApartmentBanner extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(AppRadius.md),
               ),
-              itemBuilder: (_) => List.generate(month.aptsCount, (i) {
+              itemBuilder: (_) => List.generate(totalApts, (i) {
                 final num = i + 1;
+                final isClosedApt = closedSet.contains(num);
                 return PopupMenuItem(
                   value: num,
-                  child: Text(state.aptLabel(num)),
+                  child: Text(
+                    '${isClosedApt ? '🔒 ' : ''}${state.aptLabel(num)}',
+                  ),
                 );
               }),
               child: Container(
@@ -95,11 +105,19 @@ class MyApartmentBanner extends StatelessWidget {
       );
     }
 
-    final isPaid = month.payments.containsKey(myApt);
-    final isOverdue = !isPaid && month.isPastDue;
+    final isClosedApt = closedSet.contains(myApt);
+    final pendingSpecial = state.specialAptFees
+        .where((f) => f.aptNum == myApt && !f.isPaid)
+        .fold<double>(0, (sum, f) => sum + f.amount)
+        .round();
+    final isPaid = isClosedApt ? pendingSpecial == 0 : month.payments.containsKey(myApt);
+    final isOverdue = !isClosedApt && !isPaid && month.isPastDue;
     final accent = isPaid
         ? AppColors.emerald
-        : (isOverdue ? AppColors.danger : AppColors.primary);
+        : (isOverdue ? AppColors.danger : (isClosedApt ? AppColors.amber : AppColors.primary));
+    final unlockedHere = (state.apartmentHasPasscode[myApt] ?? false) &&
+        state.savedAptPass != null &&
+        state.savedAptPass!.isNotEmpty;
 
     return Container(
       padding: const EdgeInsetsDirectional.all(AppSpacing.md),
@@ -152,11 +170,15 @@ class MyApartmentBanner extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  isPaid
-                      ? s.paidBadge
-                      : (isOverdue
-                          ? '${s.currency(month.dueFor(myApt))} • ${s.overdueBadge}'
-                          : s.currency(month.dueFor(myApt))),
+                  isClosedApt
+                      ? (pendingSpecial > 0
+                          ? s.closedAptDueLabel(s.currency(pendingSpecial))
+                          : s.closedAptClearLabel)
+                      : (isPaid
+                          ? s.paidBadge
+                          : (isOverdue
+                              ? '${s.currency(month.dueFor(myApt))} • ${s.overdueBadge}'
+                              : s.currency(month.dueFor(myApt)))),
                   style: AppTypography.caption.copyWith(
                     color: isPaid
                         ? AppColors.emeraldText(isDark)
@@ -167,7 +189,46 @@ class MyApartmentBanner extends StatelessWidget {
               ],
             ),
           ),
-          if (!isPaid) ...[
+          if (isClosedApt && state.requireAptPassOnOpen && !unlockedHere) ...[
+            const SizedBox(width: AppSpacing.xs),
+            InkWell(
+              onTap: () => showClosedApartmentPasscodeDialog(
+                context: context,
+                cubit: cubit,
+                state: state,
+                aptNum: myApt,
+              ),
+              borderRadius: BorderRadius.circular(AppRadius.pill),
+              child: Container(
+                padding: const EdgeInsetsDirectional.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: 7,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.amber,
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.vpn_key_outlined,
+                      size: 14,
+                      color: Color(0xFF0F172A),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      s.passcodeLabel,
+                      style: AppTypography.caption.copyWith(
+                        color: const Color(0xFF0F172A),
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ] else if (!isClosedApt && !isPaid) ...[
             const SizedBox(width: AppSpacing.xs),
             InkWell(
               onTap: () => onTapPay(myApt),
@@ -201,11 +262,14 @@ class MyApartmentBanner extends StatelessWidget {
               color: AppColors.textSecondary(isDark),
             ),
             itemBuilder: (_) => [
-              ...List.generate(month.aptsCount, (i) {
+              ...List.generate(totalApts, (i) {
                 final num = i + 1;
+                final isClosedItem = closedSet.contains(num);
                 return PopupMenuItem(
                   value: num,
-                  child: Text(state.aptLabel(num)),
+                  child: Text(
+                    '${isClosedItem ? '🔒 ' : ''}${state.aptLabel(num)}',
+                  ),
                 );
               }),
             ],

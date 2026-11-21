@@ -9,6 +9,7 @@ import '../../core/theme/app_typography.dart';
 import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
 import '../../models/building_models.dart';
+import '../dialogs/apartment_payment_dialog.dart';
 import 'apartment_card.dart';
 
 class ApartmentsGrid extends StatefulWidget {
@@ -392,12 +393,14 @@ class _ApartmentsGridState extends State<ApartmentsGrid> {
     final isDark = state.isDarkMode;
     final activeAptNums = _activeAptNums(state, month);
     final activeCount = activeAptNums.length;
+    final allAptNums = [...activeAptNums, ...state.closedAptNums];
     final paidCount =
         activeAptNums.where((n) => month.payments.containsKey(n)).length;
     int passSetCount = 0;
-    for (final aptNum in activeAptNums) {
+    for (final aptNum in allAptNums) {
       if (state.apartmentHasPasscode[aptNum] == true) passSetCount++;
     }
+    final totalPassTarget = allAptNums.length;
     final progress =
         activeCount > 0 ? (paidCount / activeCount).clamp(0.0, 1.0) : 0.0;
     final effectiveTab = state.closedAptNums.isEmpty ? 0 : _selectedTab;
@@ -499,13 +502,13 @@ class _ApartmentsGridState extends State<ApartmentsGrid> {
                         vertical: 5,
                       ),
                       decoration: BoxDecoration(
-                        color: (passSetCount == month.aptsCount
+                        color: (passSetCount == totalPassTarget
                                 ? AppColors.emerald
                                 : AppColors.amber)
                             .withValues(alpha: isDark ? 0.14 : 0.10),
                         borderRadius: BorderRadius.circular(AppRadius.pill),
                         border: Border.all(
-                          color: (passSetCount == month.aptsCount
+                          color: (passSetCount == totalPassTarget
                                   ? AppColors.emerald
                                   : AppColors.amber)
                               .withValues(alpha: 0.32),
@@ -515,11 +518,11 @@ class _ApartmentsGridState extends State<ApartmentsGrid> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            passSetCount == month.aptsCount
+                            passSetCount == totalPassTarget
                                 ? Icons.lock_rounded
                                 : Icons.vpn_key_outlined,
                             size: 13,
-                            color: passSetCount == month.aptsCount
+                            color: passSetCount == totalPassTarget
                                 ? AppColors.emeraldText(isDark)
                                 : AppColors.amber,
                           ),
@@ -527,10 +530,10 @@ class _ApartmentsGridState extends State<ApartmentsGrid> {
                           Text(
                             s.adminPasscodeSetCounter(
                               passSetCount,
-                              month.aptsCount,
+                              totalPassTarget,
                             ),
                             style: AppTypography.caption.copyWith(
-                              color: passSetCount == month.aptsCount
+                              color: passSetCount == totalPassTarget
                                   ? AppColors.emeraldText(isDark)
                                   : AppColors.amber,
                               fontWeight: FontWeight.w800,
@@ -745,46 +748,96 @@ class _ApartmentsGridState extends State<ApartmentsGrid> {
     final hasDue = pendingSum > 0;
     final accent = hasDue ? AppColors.amber : AppColors.emeraldText(isDark);
 
-    return Container(
-      padding: const EdgeInsetsDirectional.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: (hasDue ? AppColors.amber : AppColors.emerald)
-            .withValues(alpha: isDark ? 0.07 : 0.05),
+    IconData? lockIcon;
+    Color? lockIconColor;
+    if (state.requireAptPassOnOpen) {
+      final unlockedHere = state.myAptNum == aptNum &&
+          state.savedAptPass != null &&
+          state.savedAptPass!.isNotEmpty;
+      final hasPass = state.apartmentHasPasscode[aptNum] ?? false;
+      if (unlockedHere && hasPass) {
+        lockIcon = Icons.lock_open_rounded;
+        lockIconColor = AppColors.emeraldText(isDark);
+      } else if (hasPass) {
+        lockIcon = Icons.lock_rounded;
+        lockIconColor = state.isAdminAuthenticated
+            ? AppColors.emeraldText(isDark)
+            : AppColors.textSecondary(isDark);
+      } else {
+        lockIcon = Icons.vpn_key_outlined;
+        lockIconColor = AppColors.amber;
+      }
+    }
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: state.requireAptPassOnOpen
+            ? () => showClosedApartmentPasscodeDialog(
+                  context: context,
+                  cubit: cubit,
+                  state: state,
+                  aptNum: aptNum,
+                )
+            : null,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(
-          color: (hasDue ? AppColors.amber : AppColors.emerald)
-              .withValues(alpha: 0.32),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
+        child: Container(
+          padding: const EdgeInsetsDirectional.all(AppSpacing.md),
+          decoration: BoxDecoration(
+            color: (hasDue ? AppColors.amber : AppColors.emerald)
+                .withValues(alpha: isDark ? 0.07 : 0.05),
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            border: Border.all(
+              color: (hasDue ? AppColors.amber : AppColors.emerald)
+                  .withValues(alpha: 0.32),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      state.aptLabel(aptNum),
-                      style: AppTypography.title.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary(isDark),
-                      ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                state.aptLabel(aptNum),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTypography.title.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.textPrimary(isDark),
+                                ),
+                              ),
+                            ),
+                            if (lockIcon != null) ...[
+                              const SizedBox(width: 6),
+                              Icon(
+                                lockIcon,
+                                size: 15,
+                                color: lockIconColor,
+                              ),
+                            ],
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          hasDue
+                              ? s.closedAptDueLabel(s.currency(pendingSum))
+                              : s.closedAptClearLabel,
+                          style: AppTypography.caption.copyWith(
+                            color: accent,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      hasDue
-                          ? s.closedAptDueLabel(s.currency(pendingSum))
-                          : s.closedAptClearLabel,
-                      style: AppTypography.caption.copyWith(
-                        color: accent,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                  ),
               if (state.isAdminAuthenticated) ...[
                 InkWell(
                   onTap: state.busy
@@ -951,6 +1004,8 @@ class _ApartmentsGridState extends State<ApartmentsGrid> {
             ],
           ],
         ],
+      ),
+        ),
       ),
     );
   }

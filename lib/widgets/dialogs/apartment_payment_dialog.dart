@@ -16,6 +16,38 @@ import '../common/busy_overlay.dart';
 import 'confirm_delete_dialog.dart';
 import 'digital_receipt_screen.dart';
 
+/// Opens the passcode setup or unlock dialog for a closed/non-monthly apartment
+/// so its owner can set a passcode or unlock their apartment without converting
+/// it to an active monthly apartment.
+Future<void> showClosedApartmentPasscodeDialog({
+  required BuildContext context,
+  required BuildingCubit cubit,
+  required BuildingState state,
+  required int aptNum,
+}) async {
+  final hasPass = state.apartmentHasPasscode[aptNum] ?? false;
+  final unlockedHere = hasPass &&
+      state.myAptNum == aptNum &&
+      state.savedAptPass != null &&
+      state.savedAptPass!.isNotEmpty;
+  if (unlockedHere) return;
+  if (hasPass) {
+    await _showUnlockApartmentDialog(
+      context: context,
+      cubit: cubit,
+      state: state,
+      aptNum: aptNum,
+    );
+  } else {
+    await _showSetupApartmentPasscodeDialog(
+      context: context,
+      cubit: cubit,
+      state: state,
+      aptNum: aptNum,
+    );
+  }
+}
+
 Future<void> showApartmentPaymentDialog({
   required BuildContext context,
   required BuildingCubit cubit,
