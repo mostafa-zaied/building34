@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MABNA CARE — نظام إدارة العمارات واتحاد الملاك في مصر</title>
+  <meta name="description" content="ودّع خناقات جروب الواتساب. أدر مصاريف عمارتك، الإيصالات، صندوق الطوارئ، كشف الحساب الشهري، والتصويتات بشفافية تامة. جرّب مجاناً أول شهر." />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #070D1D;
+      --bg-2: #0C152B;
+      --card: #111C34;
+      --card-elev: #172544;
+      --border: rgba(148, 163, 184, 0.16);
+      --primary: #3B82F6;
+      --primary-dark: #2563EB;
+      --primary-soft: rgba(59, 130, 246, 0.14);
+      --emerald: #10B981;
+      --emerald-soft: rgba(16, 185, 129, 0.14);
+      --amber: #F59E0B;
+      --text: #F8FAFC;
+      --muted: #94A3B8;
+      --wa: #25D366;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: radial-gradient(circle at 80% 0%, #152852 0%, var(--bg) 48%);
+      color: var(--text);
+      line-height: 1.65;
+      padding-bottom: 92px;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 18px;
+    }
+
+    /* Navbar */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(14px);
+      background: rgba(7, 13, 29, 0.82);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      gap: 12px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 900;
+      font-size: 17px;
+      letter-spacing: 0.4px;
+    }
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, var(--primary), var(--emerald));
+      display: grid;
+      place-items: center;
+      font-size: 19px;
+      box-shadow: 0 6px 18px rgba(59, 130, 246, 0.35);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.16s ease, box-shadow 0.16s ease;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-wa {
+      background: linear-gradient(135deg, #22C55E, #16A34A);
+      color: #fff;
+      padding: 12px 22px;
+      font-size: 14.5px;
+      box-shadow: 0 10px 24px rgba(34, 197, 94, 0.35);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      padding: 12px 22px;
+      font-size: 14.5px;
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
+    }
+    .btn-outline {
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 11px 18px;
+      font-size: 13.5px;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 48px 0 36px;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.12fr 0.88fr;
+      gap: 32px;
+      align-items: center;
+    }
+    .pill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--emerald-soft);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34D399;
+      padding: 5px 13px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: clamp(26px, 4.2vw, 42px);
+      font-weight: 900;
+      line-height: 1.28;
+      margin-bottom: 14px;
+    }
+    .hero h1 span {
+      background: linear-gradient(90deg, #60A5FA, #34D399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      color: var(--muted);
+      font-size: 15.5px;
+      margin-bottom: 22px;
+      max-width: 540px;
+    }
+    .hero-ctas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+    .trust-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #CBD5E1;
+    }
+    .trust-row span { display: inline-flex; align-items: center; gap: 6px; }
+
+    /* Interactive 2-Minute Mobile Walkthrough Showcase */
+    .phone-frame {
+      background: #0A1224;
+      border: 2px solid rgba(96, 165, 250, 0.3);
+      border-radius: 28px;
+      padding: 14px;
+      box-shadow: 0 26px 60px rgba(0, 0, 0, 0.55);
+      max-width: 390px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .phone-notch {
+      width: 92px;
+      height: 6px;
+      background: rgba(148, 163, 184, 0.25);
+      border-radius: 99px;
+      margin: 0 auto 12px;
+    }
+    .demo-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 11.5px;
+      font-weight: 800;
+    }
+    .demo-badge {
+      color: #34D399;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .demo-play-btn {
+      background: var(--primary-soft);
+      color: #93C5FD;
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      border-radius: 8px;
+      padding: 3px 9px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .demo-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+      margin-bottom: 12px;
+    }
+    .demo-tab {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 9px;
+      padding: 6px 4px;
+      font-size: 10.5px;
+      font-weight: 800;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .demo-tab.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .demo-progress {
+      height: 3px;
+      background: rgba(148, 163, 184, 0.16);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .demo-progress-fill {
+      height: 100%;
+      width: 25%;
+      background: linear-gradient(90deg, var(--primary), var(--emerald));
+      transition: width 0.35s ease;
+    }
+    .phone-screen {
+      background: #0F172A;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+      min-height: 335px;
+    }
+    .mini-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .mini-stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 9px;
+      text-align: center;
+    }
+    .mini-stat small { display: block; font-size: 11px; color: var(--muted); font-weight: 700; }
+    .mini-stat strong { font-size: 16px; font-weight: 900; }
+    .mini-hero {
+      background: linear-gradient(135deg, #172544, #1E1B4B);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .mini-row {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 9px 11px;
+      margin-bottom: 7px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .tag-paid { background: var(--emerald-soft); color: #34D399; padding: 2px 8px; border-radius: 99px; font-size: 10.5px; }
+    .tag-wait { background: rgba(245, 158, 11, 0.16); color: #FCD34D; padding: 2px 8px; border-radius: 99px; font-size: 10.5px; }
+
+    .poll-bar-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      margin-bottom: 7px;
+      position: relative;
+      overflow: hidden;
+    }
+    .poll-bar-bg {
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: 0;
+      background: rgba(59, 130, 246, 0.22);
+    }
+    .poll-bar-txt {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      font-weight: 800;
+    }
+
+    /* Sections */
+    .section { padding: 48px 0; }
+    .section-head {
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto 30px;
+    }
+    .section-head h2 {
+      font-size: clamp(22px, 3.2vw, 31px);
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+    .section-head p { color: var(--muted); font-size: 14.5px; }
+
+    /* Features Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .feature-card:hover {
+      border-color: rgba(59, 130, 246, 0.45);
+      transform: translateY(-3px);
+    }
+    .f-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--primary-soft);
+      display: grid;
+      place-items: center;
+      font-size: 21px;
+      margin-bottom: 12px;
+    }
+    .feature-card h3 { font-size: 15.5px; font-weight: 800; margin-bottom: 6px; }
+    .feature-card p { font-size: 13px; color: var(--muted); }
+
+    /* Calculator & Pricing */
+    .calc-box {
+      background: linear-gradient(135deg, #111C34, #152546);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      border-radius: 20px;
+      padding: 22px;
+      max-width: 680px;
+      margin: 0 auto 28px;
+      text-align: center;
+    }
+    .calc-slider {
+      width: 100%;
+      accent-color: var(--emerald);
+      margin: 12px 0;
+    }
+    .calc-result {
+      font-size: 15px;
+      font-weight: 800;
+      color: #34D399;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .price-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .price-card.featured {
+      border: 2px solid var(--primary);
+      background: linear-gradient(180deg, #152446 0%, #111C34 100%);
+      box-shadow: 0 18px 40px rgba(37, 99, 235, 0.22);
+    }
+    .popular-tag {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, var(--primary), var(--emerald));
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+      padding: 3px 13px;
+      border-radius: 99px;
+      white-space: nowrap;
+    }
+    .price-name { font-size: 16px; font-weight: 800; margin-bottom: 6px; }
+    .price-val { font-size: 30px; font-weight: 900; color: #fff; margin-bottom: 4px; }
+    .price-val span { font-size: 13px; color: var(--muted); font-weight: 700; }
+    .price-list {
+      list-style: none;
+      margin: 16px 0 22px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      font-size: 13px;
+      color: #CBD5E1;
+    }
+
+    /* FAQ */
+    .faq-list {
+      max-width: 740px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    details.faq-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 18px;
+    }
+    details.faq-item summary {
+      font-weight: 800;
+      font-size: 14.5px;
+      cursor: pointer;
+      list-style: none;
+    }
+    details.faq-item p {
+      margin-top: 8px;
+      font-size: 13.5px;
+      color: var(--muted);
+    }
+
+    /* Final CTA */
+    .final-cta {
+      background: linear-gradient(135deg, #102448 0%, #0D3A33 100%);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 24px;
+      padding: 36px 22px;
+      text-align: center;
+      margin-top: 24px;
+    }
+    .final-cta h2 { font-size: clamp(21px, 3.2vw, 30px); font-weight: 900; margin-bottom: 10px; }
+    .final-cta p { color: #CBD5E1; font-size: 14.5px; margin-bottom: 22px; }
+
+    /* Sticky Mobile CTA */
+    .sticky-wa {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 28px);
+      max-width: 480px;
+      z-index: 60;
+      display: flex;
+    }
+    .sticky-wa .btn-wa {
+      width: 100%;
+      padding: 13px 18px;
+      font-size: 14.5px;
+      border-radius: 15px;
+    }
+
+    @media (max-width: 860px) {
+      .hero-grid, .features-grid, .pricing-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <header class="nav">
+    <div class="container nav-inner">
+      <div class="brand">
+        <div class="brand-icon">🏢</div>
+        <span>MABNA CARE</span>
+      </div>
+      <nav class="nav-links">
+        <a href="#demo">شاهد التطبيق</a>
+        <a href="#features">المميزات</a>
+        <a href="#pricing">الباقات</a>
+        <a href="#faq">الأسئلة الشائعة</a>
+      </nav>
+      <a class="btn btn-wa" style="padding:8px 14px; font-size:12.5px;"
+         href="https://wa.me/201021950445?text=%D8%A3%D9%87%D9%84%D8%A7%D9%8B%D8%8C%20%D8%B9%D8%A7%D9%8A%D8%B2%20%D8%A3%D8%AC%D8%B1%D9%91%D8%A8%20MABNA%20CARE%20%D9%84%D8%B9%D9%85%D8%A7%D8%B1%D8%AA%D9%86%D8%A7%20%D9%85%D8%AC%D8%A7%D9%86%D8%A7%D9%8B%20%D8%A3%D9%88%D9%84%20%D8%B4%D9%87%D8%B1"
+         target="_blank" rel="noopener">
+        واتساب مباشر
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero + Interactive Mobile Walkthrough -->
+  <section class="hero" id="demo">
+    <div class="container hero-grid">
+      <div>
+        <div class="pill-tag">✨ خاص لاتحادات الملاك ومديري العمارات في مصر</div>
+        <h1>ودّع خناقات جروب الواتساب.. أدر عمارتك <span>بشفافية كاملة</span> في دقيقتين!</h1>
+        <p>
+          نظام <strong>MABNA CARE</strong> بيجمعلك مصاريف العمارة الشهرية، إيصالات الدفع، صندوق الطوارئ، كشف الحساب الشهري، التصويتات، وأرقام وكروت الصيانة في تطبيق ويب سريع يشتغل على أي موبايل بدون تحميل من المتجر.
+        </p>
+        <div class="hero-ctas">
+          <a class="btn btn-wa"
+             href="https://wa.me/201021950445?text=%D8%A3%D9%87%D9%84%D8%A7%D9%8B%D8%8C%20%D8%B9%D8%A7%D9%8A%D8%B2%20%D8%A3%D8%AC%D8%B1%D9%91%D8%A8%20MABNA%20CARE%20%D9%84%D8%B9%D9%85%D8%A7%D8%B1%D8%AA%D9%86%D8%A7%20%D9%85%D8%AC%D8%A7%D9%86%D8%A7%D9%8B%20%D8%A3%D9%88%D9%84%20%D8%B4%D9%87%D8%B1"
+             target="_blank" rel="noopener">
+            💬 جرّب MABNA CARE لعمارتك مجاناً أول شهر
+          </a>
+          <a class="btn btn-outline" href="#pricing">شوف الباقات والتكلفة للشقة</a>
+        </div>
+        <div class="trust-row">
+          <span>✅ يعمل على Android و iPhone</span>
+          <span>✅ باسورد خاص لكل شقة</span>
+          <span>✅ إشعارات فورية للسكان</span>
+        </div>
+      </div>
+
+      <!-- Interactive 2-Minute Mobile Demo -->
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="demo-bar">
+          <span class="demo-badge">● جولة تفاعلية حية داخل التطبيق</span>
+          <button class="demo-play-btn" id="autoBtn" onclick="toggleAuto()">⏸ إيقاف تلقائي</button>
+        </div>
+        <div class="demo-tabs">
+          <button class="demo-tab active" onclick="showSlide(0)">المصاريف</button>
+          <button class="demo-tab" onclick="showSlide(1)">الإيصالات</button>
+          <button class="demo-tab" onclick="showSlide(2)">كشف الحساب</button>
+          <button class="demo-tab" onclick="showSlide(3)">التصويتات</button>
+        </div>
+        <div class="demo-progress">
+          <div class="demo-progress-fill" id="demoProgress"></div>
+        </div>
+        <div class="phone-screen" id="phoneScreen"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section" id="features">
+    <div class="container">
+      <div class="section-head">
+        <h2>كل اللي مدير العمارة والسكان محتاجينه في مكان واحد</h2>
+        <p>مصمم خصيصاً لطبيعة العمارات في مصر — بسيط لأي ساكن، وقوي ودقيق للمدير.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="f-icon">🧾</div>
+          <h3>مصاريف ديناميك 100%</h3>
+          <p>مياه، كهرباء، أسانسير، منظفات، أو أي بند إضافي — عدّل أسماء البنود أو احذفها، والتطبيق يحسب نصيب كل شقة تلقائياً.</p>
+        </div>
+        <div class="feature-card">
+          <div class="f-icon">📸</div>
+          <h3>إيصالات دفع موثّقة</h3>
+          <p>كل ساكن يرفع صورة تحويل InstaPay أو فودافون كاش بباسورد شقته، والمدير يتابع مين دفع ومين متأخر لحظياً.</p>
+        </div>
+        <div class="feature-card">
+          <div class="f-icon">📊</div>
+          <h3>كشف حساب شهري بضغطة زر</h3>
+          <p>صدّر كشف حساب احترافي كصورة جاهزة للمشاركة على جروب العمارة شاملاً المصاريف، الشقق، ورصيد الطوارئ.</p>
+        </div>
+        <div class="feature-card">
+          <div class="f-icon">🗳️</div>
+          <h3>تصويتات ديناميك للعمارة</h3>
+          <p>خيارات مرنة (مش بس نعم ولا)، صوت واحد لكل شقة، نتائج فورية، وإمكانية إظهار مين صوّت أو التصويت السري.</p>
+        </div>
+        <div class="feature-card">
+          <div class="f-icon">🛠️</div>
+          <h3>دليل أرقام وكروت الصيانة</h3>
+          <p>تاب للأرقام (اتصال وواتساب مباشر) وتاب للكروت المصوّرة مع تكبير الصورة ومعرفة مين أضاف كل رقم للمدير فقط.</p>
+        </div>
+        <div class="feature-card">
+          <div class="f-icon">🔔</div>
+          <h3>صندوق طوارئ وإشعارات فورية</h3>
+          <p>سجل شفاف لكل مصروفات الطوارئ، مع إرسال إشعارات تذكير بالميعاد أو أي قرار جديد على موبايل كل ساكن.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Per-Apt Cost Calculator + Pricing -->
+  <section class="section" id="pricing">
+    <div class="container">
+      <div class="section-head">
+        <h2>أسعار رمزية بتتوزع على العمارة كلها</h2>
+        <p>أقل من تمن كوباية شاي للشقة في الشهر — وبتوفر عليك ساعات من الحسابات والخناقات.</p>
+      </div>
+
+      <div class="calc-box">
+        <div style="font-weight:800; font-size:15px;">احسب التكلفة على كل شقة في عمارتك:</div>
+        <div style="font-size:13px; color:var(--muted); margin-top:4px;">
+          عدد الشقق: <strong id="aptCountVal" style="color:#fff; font-size:16px;">16</strong> شقة
+        </div>
+        <input type="range" min="6" max="40" value="16" class="calc-slider" id="aptSlider" oninput="updateCalc(this.value)" />
+        <div class="calc-result" id="calcResult">تكلفة الشقة الواحدة: 12.5 جنيه فقط في الشهر!</div>
+      </div>
+
+      <div class="pricing-grid">
+        <div class="price-card">
+          <div class="price-name">التجربة المجانية</div>
+          <div class="price-val">0 ج <span>/ أول شهر</span></div>
+          <ul class="price-list">
+            <li>✓ كل مميزات التطبيق مفتوحة بالكامل</li>
+            <li>✓ تجهيز بيانات العمارة والشقق مجاناً</li>
+            <li>✓ تدريب سريع للمدير عبر واتساب</li>
+            <li>✓ بدون أي التزام بعد انتهاء الشهر</li>
+          </ul>
+          <a class="btn btn-outline"
+             href="https://wa.me/201021950445?text=%D8%A3%D9%87%D9%84%D8%A7%D9%8B%D8%8C%20%D8%B9%D8%A7%D9%8A%D8%B2%20%D8%A3%D8%A8%D8%AF%D8%A3%20%D8%A7%D9%84%D8%B4%D9%87%D8%B1%20%D8%A7%D9%84%D9%85%D8%AC%D8%A7%D9%86%D9%8A%20%D9%84%D8%B9%D9%85%D8%A7%D8%B1%D8%AA%D9%86%D8%A7%20%D9%81%D9%8A%20MABNA%20CARE"
+             target="_blank" rel="noopener">ابدأ مجاناً الآن</a>
+        </div>
+
+        <div class="price-card featured">
+          <div class="popular-tag">⭐ الأكثر طلباً للعمارات</div>
+          <div class="price-name">باقة العمارة الكاملة</div>
+          <div class="price-val">200 ج <span>/ شهرياً (أو 1,800 ج سنوياً)</span></div>
+          <ul class="price-list">
+            <li>✓ حتى 30 شقة + رابط خاص لعمارتك</li>
+            <li>✓ مصاريف ديناميك + إيصالات + طوارئ</li>
+            <li>✓ كشف حساب شهري + تحليلات + تصويتات</li>
+            <li>✓ دليل أرقام وكروت الصيانة + إشعارات Push</li>
+            <li>✓ دعم فني سريع عبر واتساب</li>
+          </ul>
+          <a class="btn btn-wa"
+             href="https://wa.me/201021950445?text=%D8%A3%D9%87%D9%84%D8%A7%D9%8B%D8%8C%20%D8%B9%D8%A7%D9%8A%D8%B2%20%D8%A3%D8%AC%D8%B1%D9%91%D8%A8%20MABNA%20CARE%20%D9%84%D8%B9%D9%85%D8%A7%D8%B1%D8%AA%D9%86%D8%A7%20%D9%85%D8%AC%D8%A7%D9%86%D8%A7%D9%8B%20%D8%A3%D9%88%D9%84%20%D8%B4%D9%87%D8%B1"
+             target="_blank" rel="noopener">جرّب مجاناً أول شهر</a>
+        </div>
+
+        <div class="price-card">
+          <div class="price-name">شركات الإدارة والكمبوند</div>
+          <div class="price-val">سعر خاص <span>/ لـ 5 عمارات فأكثر</span></div>
+          <ul class="price-list">
+            <li>✓ لوحة تحكم موحدة لإدارة كل العمارات</li>
+            <li>✓ تقارير مجمعة ومتابعة التحصيل</li>
+            <li>✓ تخصيص اسم وشعار الشركة</li>
+            <li>✓ أولوية في الدعم الفني والمميزات</li>
+          </ul>
+          <a class="btn btn-outline"
+             href="https://wa.me/201021950445?text=%D8%A3%D9%87%D9%84%D8%A7%D9%8B%D8%8C%20%D8%A8%D9%86%D8%AF%D9%8A%D8%B1%20%D8%A3%D9%83%D8%AA%D8%B1%20%D9%85%D9%86%20%D8%B9%D9%85%D8%A7%D8%B1%D8%A9%20%D9%88%D8%B9%D8%A7%D9%8A%D8%B2%20%D8%A3%D8%B9%D8%B1%D9%81%20%D8%B9%D8%B1%D8%B6%20%D8%B4%D8%B1%D9%83%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9"
+             target="_blank" rel="noopener">تواصل معنا للعرض</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" id="faq">
+    <div class="container">
+      <div class="section-head">
+        <h2>أسئلة متكررة</h2>
+      </div>
+      <div class="faq-list">
+        <details class="faq-item" open>
+          <summary>هل السكان محتاجين يحملوا تطبيق من App Store أو Google Play؟</summary>
+          <p>لا خالص! التطبيق بيشتغل فوراً من اللينك على أي موبايل Android أو iPhone، وممكن يتثبت كأيقونة على الشاشة الرئيسية بضغطة واحدة بدون مساحة.</p>
+        </details>
+        <details class="faq-item">
+          <summary>هل أي ساكن يقدر يعدّل في الحسابات أو يدخل مكان جاره؟</summary>
+          <p>لا، كل شقة ليها كلمة سر خاصة بيها، وتعديل المصاريف أو إنشاء التصويتات محمي بكلمة سر المدير فقط.</p>
+        </details>
+        <details class="faq-item">
+          <summary>لو عمارتنا مفيهاش أسانسير أو عندها بنود مصاريف مختلفة؟</summary>
+          <p>كل بنود المصاريف ديناميك بالكامل — المدير يقدر يعدّل أسماء البنود أو يحذف أي بند أو يضيف بنود جديدة (حراسة، جراج، صيانة موتور...) في ثواني.</p>
+        </details>
+      </div>
+
+      <div class="final-cta">
+        <h2>جاهز ترتاح من صداع إدارة العمارة الشهر ده؟</h2>
+        <p>ابعتلنا على واتساب وهنجهزلك عمارتك خلال 10 دقايق — وتجربتها مجانية بالكامل أول شهر.</p>
+        <a class="btn btn-wa"
+           href="https://wa.me/201021950445?text=%D8%A3%D9%87%D9%84%D8%A7%D9%8B%D8%8C%20%D8%B9%D8%A7%D9%8A%D8%B2%20%D8%A3%D8%AC%D8%B1%D9%91%D8%A8%20MABNA%20CARE%20%D9%84%D8%B9%D9%85%D8%A7%D8%B1%D8%AA%D9%86%D8%A7%20%D9%85%D8%AC%D8%A7%D9%86%D8%A7%D9%8B%20%D8%A3%D9%88%D9%84%20%D8%B4%D9%87%D8%B1"
+           target="_blank" rel="noopener">
+          💬 جرّب MABNA CARE لعمارتك مجاناً أول شهر
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sticky Bottom WhatsApp Bar -->
+  <div class="sticky-wa">
+    <a class="btn btn-wa"
+       href="https://wa.me/201021950445?text=%D8%A3%D9%87%D9%84%D8%A7%D9%8B%D8%8C%20%D8%B9%D8%A7%D9%8A%D8%B2%20%D8%A3%D8%AC%D8%B1%D9%91%D8%A8%20MABNA%20CARE%20%D9%84%D8%B9%D9%85%D8%A7%D8%B1%D8%AA%D9%86%D8%A7%20%D9%85%D8%AC%D8%A7%D9%86%D8%A7%D9%8B%20%D8%A3%D9%88%D9%84%20%D8%B4%D9%87%D8%B1"
+       target="_blank" rel="noopener">
+      💬 جرّب MABNA CARE لعمارتك مجاناً أول شهر
+    </a>
+  </div>
+
+  <script>
+    const slides = [
+      // 0: Expenses
+      `
+        <div style="font-size:12px; color:#93C5FD; font-weight:800; margin-bottom:8px;">1️⃣ مصاريف الشهر (بنود ديناميك)</div>
+        <div class="mini-grid">
+          <div class="mini-stat"><small>💧 مياه</small><strong>2,000 ج</strong></div>
+          <div class="mini-stat"><small>⚡ كهرباء</small><strong>100 ج</strong></div>
+          <div class="mini-stat"><small>🛗 أسانسير</small><strong>400 ج</strong></div>
+          <div class="mini-stat"><small>🧹 منظفات</small><strong>240 ج</strong></div>
+        </div>
+        <div class="mini-hero">
+          <div>
+            <div style="font-size:11px; color:#94A3B8;">نصيب الشقة — شهر 11</div>
+            <div style="font-size:22px; font-weight:900; color:#fff;">211 ج.م</div>
+          </div>
+          <div style="background:rgba(59,130,246,0.18); padding:6px 10px; border-radius:9px; font-size:11px; font-weight:800;">
+            إجمالي 2,740 ÷ 13 شقة
+          </div>
+        </div>
+        <div style="font-size:11.5px; color:#94A3B8; text-align:center;">
+          يمكنك تعديل اسم أي بند أو حذفه أو إضافة بند جديد فوراً ✨
+        </div>
+      `,
+      // 1: Receipts
+      `
+        <div style="font-size:12px; color:#34D399; font-weight:800; margin-bottom:8px;">2️⃣ متابعة سداد الشقق والإيصالات</div>
+        <div class="mini-row"><span>شقة 1 — أ. محمد</span><span class="tag-paid">تم الدفع ✓ • إيصال</span></div>
+        <div class="mini-row"><span>شقة 4 — أ. أحمد</span><span class="tag-paid">تم الدفع ✓ • إيصال</span></div>
+        <div class="mini-row"><span>شقة 7 — د. كريم</span><span class="tag-paid">تم الدفع ✓ • إيصال</span></div>
+        <div class="mini-row"><span>شقة 10 — م. مصطفى</span><span class="tag-paid">تم الدفع ✓ • إيصال</span></div>
+        <div class="mini-row"><span>شقة 12 — أ. سارة</span><span class="tag-wait">بانتظار السداد</span></div>
+        <div style="font-size:11.5px; color:#94A3B8; text-align:center; margin-top:8px;">
+          الساكن يرفع صورة تحويل InstaPay وياخد إيصال رقمي موثّق
+        </div>
+      `,
+      // 2: Monthly Statement
+      `
+        <div style="font-size:12px; color:#93C5FD; font-weight:800; margin-bottom:8px;">3️⃣ كشف الحساب الشهري (صورة للواتساب)</div>
+        <div style="background:#fff; color:#0F172A; border-radius:13px; padding:12px; font-size:11.5px;">
+          <div style="background:#1E3A8A; color:#fff; padding:8px 10px; border-radius:9px; display:flex; justify-content:space-between; font-weight:900; margin-bottom:8px;">
+            <span>MABNA CARE</span><span>نوفمبر 2026</span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px; font-weight:800;">
+            <div style="background:#EFF6FF; padding:6px; border-radius:7px;">المصاريف: 2,740 ج</div>
+            <div style="background:#ECFDF5; color:#065F46; padding:6px; border-radius:7px;">المحصّل: 85% ✓</div>
+          </div>
+          <div style="background:#F8FAFC; padding:7px; border-radius:7px; margin-bottom:6px; display:flex; justify-content:space-between;">
+            <span>رصيد صندوق الطوارئ</span><strong>2,550 ج.م</strong>
+          </div>
+          <div style="text-align:center; color:#1D4ED8; font-weight:900; font-size:10.5px;">✓ موثّق إلكترونياً — جاهز للمشاركة</div>
+        </div>
+      `,
+      // 3: Dynamic Polls
+      `
+        <div style="font-size:12px; color:#C4B5FD; font-weight:800; margin-bottom:8px;">4️⃣ تصويتات العمارة (خيارات ديناميك)</div>
+        <div style="font-size:13px; font-weight:800; margin-bottom:10px;">
+          ما هو الميعاد الأنسب لغسيل خزان المياه؟
+        </div>
+        <div class="poll-bar-box"><div class="poll-bar-bg" style="width:62%"></div><div class="poll-bar-txt"><span>✓ الجمعة صباحاً (8 ص)</span><span>62%</span></div></div>
+        <div class="poll-bar-box"><div class="poll-bar-bg" style="width:25%"></div><div class="poll-bar-txt"><span>السبت صباحاً (9 ص)</span><span>25%</span></div></div>
+        <div class="poll-bar-box"><div class="poll-bar-bg" style="width:13%"></div><div class="poll-bar-txt"><span>الخميس مساءً</span><span>13%</span></div></div>
+        <div style="font-size:11.5px; color:#34D399; font-weight:700; margin-top:8px;">
+          👥 شارك 10 / 13 شقة • صوت واحد لكل شقة تلقائياً
+        </div>
+      `
+    ];
+
+    let currentSlide = 0;
+    let autoPlay = true;
+    let timer = null;
+
+    function showSlide(idx) {
+      currentSlide = idx;
+      document.getElementById('phoneScreen').innerHTML = slides[idx];
+      document.querySelectorAll('.demo-tab').forEach((btn, i) => {
+        btn.classList.toggle('active', i === idx);
+      });
+      document.getElementById('demoProgress').style.width = ((idx + 1) * 25) + '%';
+    }
+
+    function startTimer() {
+      clearInterval(timer);
+      timer = setInterval(() => {
+        if (autoPlay) showSlide((currentSlide + 1) % slides.length);
+      }, 4200);
+    }
+
+    function toggleAuto() {
+      autoPlay = !autoPlay;
+      document.getElementById('autoBtn').textContent = autoPlay ? '⏸ إيقاف تلقائي' : '▶ تشغيل الجولة';
+    }
+
+    function updateCalc(apts) {
+      document.getElementById('aptCountVal').textContent = apts;
+      const perApt = (200 / Number(apts)).toFixed(1).replace(/\.0$/, '');
+      document.getElementById('calcResult').textContent = `تكلفة الشقة الواحدة: ${perApt} جنيه فقط في الشهر!`;
+    }
+
+    showSlide(0);
+    startTimer();
+  </script>
+</body>
+</html>
