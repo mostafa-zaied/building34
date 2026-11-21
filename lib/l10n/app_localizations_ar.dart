@@ -593,6 +593,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get navContactsFull => 'أرقام الصيانة';
 
   @override
+  String get navContactsShort => 'الصيانة';
+
+  @override
   String get contactsTitle => 'أرقام الصيانة للعمارة';
 
   @override

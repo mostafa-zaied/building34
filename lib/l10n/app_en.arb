@@ -367,6 +367,7 @@
   "utilityReceiptSavedToast": "Utility receipt saved",
   "utilityReceiptRemovedToast": "Utility receipt removed",
   "navContactsFull": "Maintenance Contacts",
+  "navContactsShort": "Contacts",
   "contactsTitle": "Building Maintenance Numbers",
   "contactsSubtitle": "Any resident can add a trusted technician or maintenance number.",
   "addContactBtn": "Add Number",

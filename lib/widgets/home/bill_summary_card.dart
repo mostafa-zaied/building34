@@ -617,7 +617,7 @@ class _UtilityReceiptsBar extends StatelessWidget {
           ),
         ),
         actions: [
-          if (state.isAdminOpen) ...[
+          if (state.isAdminAuthenticated) ...[
             TextButton(
               onPressed: () async {
                 Navigator.pop(ctx);
@@ -657,7 +657,7 @@ class _UtilityReceiptsBar extends StatelessWidget {
     final showWater = hasWater || !month.isCoreHidden('water');
     final showElec = hasElec || !month.isCoreHidden('elec');
 
-    if ((!showWater && !showElec) || (!hasWater && !hasElec && !state.isAdminOpen)) {
+    if ((!showWater && !showElec) || (!hasWater && !hasElec && !state.isAdminAuthenticated)) {
       return const SizedBox.shrink();
     }
 
@@ -683,7 +683,7 @@ class _UtilityReceiptsBar extends StatelessWidget {
                         url: month.waterReceiptUrl,
                         localBytes: month.waterLocalBytes,
                       )
-                  : (state.isAdminOpen ? () => _pickAndUpload(context, 'water') : null),
+                  : (state.isAdminAuthenticated ? () => _pickAndUpload(context, 'water') : null),
             ),
           ),
         if (showWater && showElec) const SizedBox(width: AppSpacing.xs),
@@ -704,7 +704,7 @@ class _UtilityReceiptsBar extends StatelessWidget {
                         url: month.elecReceiptUrl,
                         localBytes: month.elecLocalBytes,
                       )
-                  : (state.isAdminOpen ? () => _pickAndUpload(context, 'elec') : null),
+                  : (state.isAdminAuthenticated ? () => _pickAndUpload(context, 'elec') : null),
             ),
           ),
       ],
@@ -723,7 +723,7 @@ class _UtilityReceiptsBar extends StatelessWidget {
     final s = state.s;
     final badgeText = hasReceipt
         ? s.viewBillReceiptBtn
-        : (state.isAdminOpen ? s.attachBillAfterPayBtn : s.utilityPendingBadge);
+        : (state.isAdminAuthenticated ? s.attachBillAfterPayBtn : s.utilityPendingBadge);
     final accent = hasReceipt ? AppColors.emeraldText(isDark) : color;
 
     return Material(

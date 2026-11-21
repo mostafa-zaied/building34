@@ -189,17 +189,6 @@ class AppSideMenu extends StatelessWidget {
                         },
                       ),
                       _groupRow(
-                        icon: Icons.contact_phone_outlined,
-                        label: s.navContactsFull,
-                        isDark: isDark,
-                        selected: state.selectedNavIndex == 2,
-                        trailing: _chevron(isDark),
-                        onTap: () {
-                          _close(context);
-                          cubit.selectNav(2);
-                        },
-                      ),
-                      _groupRow(
                         icon: Icons.star_outline_rounded,
                         label: s.navAppRating,
                         isDark: isDark,

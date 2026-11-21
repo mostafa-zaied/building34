@@ -1160,6 +1160,12 @@ abstract class AppLocalizations {
   /// **'Maintenance Contacts'**
   String get navContactsFull;
 
+  /// No description provided for @navContactsShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get navContactsShort;
+
   /// No description provided for @contactsTitle.
   ///
   /// In en, this message translates to:

@@ -1301,7 +1301,7 @@ class BuildingCubit extends Cubit<BuildingState> {
   }
 
   Future<bool> addEmergencyTransaction(double amount, String reason) async {
-    if (!state.isAdminOpen) return false;
+    if (!state.isAdminAuthenticated) return false;
     final err = await _service.addEmergencyTransaction(
       adminPass: state.adminPass,
       amount: amount,
@@ -1319,7 +1319,7 @@ class BuildingCubit extends Cubit<BuildingState> {
   }
 
   Future<void> deleteEmergencyTransaction(String id) async {
-    if (!state.isAdminOpen) return;
+    if (!state.isAdminAuthenticated) return;
     await _withBusy(() async {
       final err = await _service.deleteEmergencyTransaction(
         adminPass: state.adminPass,
@@ -1421,7 +1421,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     required String utility,
     Uint8List? imageBytes,
   }) async {
-    if (!state.isAdminOpen) return;
+    if (!state.isAdminAuthenticated) return;
     final m = state.currentMonth;
     if (m == null) return;
     await _withBusy(() async {

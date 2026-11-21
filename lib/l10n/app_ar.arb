@@ -177,6 +177,7 @@
   "utilityReceiptSavedToast": "تم حفظ صورة الفاتورة بنجاح",
   "utilityReceiptRemovedToast": "تم حذف صورة الفاتورة",
   "navContactsFull": "أرقام الصيانة",
+  "navContactsShort": "الصيانة",
   "contactsTitle": "أرقام الصيانة للعمارة",
   "contactsSubtitle": "يمكن لأي ساكن إضافة رقم فني أو صيانة معتمد للعمارة.",
   "addContactBtn": "إضافة رقم",

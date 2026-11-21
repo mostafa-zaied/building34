@@ -767,7 +767,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                         ],
 
                         // 2. Admin Record Transaction Form (Withdraw / Deposit Tabs)
-                        if (state.isAdminOpen) ...[
+                        if (state.isAdminAuthenticated) ...[
                           Container(
                             padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
                             decoration: BoxDecoration(
@@ -999,7 +999,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                                         ],
                                       ),
                                     ),
-                                    if (state.isAdminOpen)
+                                    if (state.isAdminAuthenticated)
                                       IconButton(
                                         onPressed: () async {
                                           await showConfirmDeleteDialog(

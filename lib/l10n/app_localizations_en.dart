@@ -598,6 +598,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navContactsFull => 'Maintenance Contacts';
 
   @override
+  String get navContactsShort => 'Contacts';
+
+  @override
   String get contactsTitle => 'Building Maintenance Numbers';
 
   @override

@@ -165,7 +165,8 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
             final mobileBottomNavIndex = switch (state.selectedNavIndex) {
               0 => 0,
               1 => 1,
-              3 => 2,
+              2 => 2,
+              3 => 3,
               _ => -1,
             };
 
@@ -276,7 +277,8 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                 onSelect: (idx) {
                   if (idx == 0) cubit.selectNav(0);
                   if (idx == 1) cubit.selectNav(1);
-                  if (idx == 2) cubit.selectNav(3);
+                  if (idx == 2) cubit.selectNav(2);
+                  if (idx == 3) cubit.selectNav(3);
                 },
                 isDark: isDark,
                 items: [
@@ -289,6 +291,11 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                     icon: Icons.shield_outlined,
                     selectedIcon: Icons.shield_rounded,
                     label: s.navEmergency,
+                  ),
+                  _NavItemData(
+                    icon: Icons.contact_phone_outlined,
+                    selectedIcon: Icons.contact_phone_rounded,
+                    label: s.navContactsShort,
                   ),
                   _NavItemData(
                     icon: Icons.forum_outlined,
