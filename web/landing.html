@@ -618,12 +618,12 @@
       </div>
 
       <div class="calc-box">
-        <div style="font-weight:800; font-size:15px;">احسب التكلفة على كل شقة في عمارتك:</div>
+        <div style="font-weight:800; font-size:15px;">احسب التكلفة على كل شقة في عمارتك (5 ج للشقة — بحد أدنى 100 ج/شهر):</div>
         <div style="font-size:13px; color:var(--muted); margin-top:4px;">
-          عدد الشقق: <strong id="aptCountVal" style="color:#fff; font-size:16px;">16</strong> شقة
+          عدد الشقق: <strong id="aptCountVal" style="color:#fff; font-size:16px;">20</strong> شقة
         </div>
-        <input type="range" min="6" max="40" value="16" class="calc-slider" id="aptSlider" oninput="updateCalc(this.value)" />
-        <div class="calc-result" id="calcResult">تكلفة الشقة الواحدة: 12.5 جنيه فقط في الشهر!</div>
+        <input type="range" min="6" max="40" value="20" class="calc-slider" id="aptSlider" oninput="updateCalc(this.value)" />
+        <div class="calc-result" id="calcResult">إجمالي العمارة: 100 ج/شهر • تكلفة الشقة الواحدة: 5 جنيه فقط في الشهر!</div>
       </div>
 
       <div class="pricing-grid">
@@ -644,9 +644,9 @@
         <div class="price-card featured">
           <div class="popular-tag">⭐ الأكثر طلباً للعمارات</div>
           <div class="price-name">باقة العمارة الكاملة</div>
-          <div class="price-val">200 ج <span>/ شهرياً (أو 1,800 ج سنوياً)</span></div>
+          <div class="price-val">100 ج <span>/ شهرياً (5 ج فقط للشقة)</span></div>
           <ul class="price-list">
-            <li>✓ حتى 30 شقة + رابط خاص لعمارتك</li>
+            <li>✓ 5 جنيه شهرياً للشقة (بحد أدنى 100 ج للعمارة)</li>
             <li>✓ مصاريف ديناميك + إيصالات + طوارئ</li>
             <li>✓ كشف حساب شهري + تحليلات + تصويتات</li>
             <li>✓ دليل أرقام وكروت الصيانة + إشعارات Push</li>
@@ -810,9 +810,12 @@
     }
 
     function updateCalc(apts) {
-      document.getElementById('aptCountVal').textContent = apts;
-      const perApt = (200 / Number(apts)).toFixed(1).replace(/\.0$/, '');
-      document.getElementById('calcResult').textContent = `تكلفة الشقة الواحدة: ${perApt} جنيه فقط في الشهر!`;
+      const count = Number(apts);
+      document.getElementById('aptCountVal').textContent = count;
+      const total = Math.max(100, count * 5);
+      const perApt = (total / count).toFixed(1).replace(/\.0$/, '');
+      document.getElementById('calcResult').textContent =
+        `إجمالي العمارة: ${total} ج/شهر • تكلفة الشقة الواحدة: ${perApt} جنيه فقط في الشهر!`;
     }
 
     showSlide(0);
