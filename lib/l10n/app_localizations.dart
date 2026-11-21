@@ -1130,6 +1130,24 @@ abstract class AppLocalizations {
   /// **'Pending'**
   String get utilityPendingBadge;
 
+  /// No description provided for @utilityBillLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{utility} Bill'**
+  String utilityBillLabel(String utility);
+
+  /// No description provided for @waterBillLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Water Bill'**
+  String get waterBillLabel;
+
+  /// No description provided for @elecBillLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Electricity Bill'**
+  String get elecBillLabel;
+
   /// No description provided for @utilityReceiptDialogTitle.
   ///
   /// In en, this message translates to:
@@ -3162,6 +3180,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to delete {apt}\'s rating?'**
   String confirmDeleteRatingBody(String apt);
+
+  /// No description provided for @aptsTabActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Apts'**
+  String get aptsTabActive;
+
+  /// No description provided for @aptsTabClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed Apts'**
+  String get aptsTabClosed;
+
+  /// No description provided for @closedAptsInfoBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed/unoccupied apartments (no monthly bills) — only special building fees appear here, and collected amounts go straight to the Emergency Fund.'**
+  String get closedAptsInfoBanner;
+
+  /// No description provided for @closedAptDueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Due: {amount}'**
+  String closedAptDueLabel(String amount);
+
+  /// No description provided for @closedAptClearLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear — no dues ✓'**
+  String get closedAptClearLabel;
+
+  /// No description provided for @specialFeeBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Special Fee'**
+  String get specialFeeBtn;
+
+  /// No description provided for @specialFeeDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Special / Non-Monthly Fee'**
+  String get specialFeeDialogTitle;
+
+  /// No description provided for @specialFeeNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Fee Title / Reason'**
+  String get specialFeeNameLabel;
+
+  /// No description provided for @specialFeeNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Marble work & elevator painting'**
+  String get specialFeeNameHint;
+
+  /// No description provided for @specialFeeTargetLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Target Apartments'**
+  String get specialFeeTargetLabel;
+
+  /// No description provided for @specialFeeTargetAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All ({count})'**
+  String specialFeeTargetAll(int count);
+
+  /// No description provided for @specialFeeTargetClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed ({count})'**
+  String specialFeeTargetClosed(int count);
+
+  /// No description provided for @specialFeeTargetCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Apts'**
+  String get specialFeeTargetCustom;
+
+  /// No description provided for @specialFeeModePerApt.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed per apt'**
+  String get specialFeeModePerApt;
+
+  /// No description provided for @specialFeeModeSplit.
+  ///
+  /// In en, this message translates to:
+  /// **'Split total'**
+  String get specialFeeModeSplit;
+
+  /// No description provided for @specialFeeAmountPerAptLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount per apartment (EGP)'**
+  String get specialFeeAmountPerAptLabel;
+
+  /// No description provided for @specialFeeAmountTotalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total amount to split (EGP)'**
+  String get specialFeeAmountTotalLabel;
+
+  /// No description provided for @specialFeePreviewLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Adds {perApt} EGP to {count} apts (Total: {total} EGP → Emergency)'**
+  String specialFeePreviewLine(int perApt, int count, int total);
+
+  /// No description provided for @specialFeeApplyBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply Fee'**
+  String get specialFeeApplyBtn;
+
+  /// No description provided for @specialFeeCollectBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Collected ✓'**
+  String get specialFeeCollectBtn;
+
+  /// No description provided for @specialFeePaidTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid ✓'**
+  String get specialFeePaidTag;
+
+  /// No description provided for @specialFeeAddedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Special fee applied successfully'**
+  String get specialFeeAddedToast;
+
+  /// No description provided for @specialFeeCollectedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Collected and added to Emergency Fund automatically'**
+  String get specialFeeCollectedToast;
+
+  /// No description provided for @specialFeeDeletedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Special fee deleted'**
+  String get specialFeeDeletedToast;
+
+  /// No description provided for @aptStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get aptStatusActive;
+
+  /// No description provided for @aptStatusClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get aptStatusClosed;
+
+  /// No description provided for @convertToActiveBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Active'**
+  String get convertToActiveBtn;
+
+  /// No description provided for @convertToClosedBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Closed'**
+  String get convertToClosedBtn;
+
+  /// No description provided for @aptConvertedToActiveToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Apartment switched to Active and monthly count updated'**
+  String get aptConvertedToActiveToast;
+
+  /// No description provided for @aptConvertedToClosedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Apartment switched to Closed and monthly count updated'**
+  String get aptConvertedToClosedToast;
 }
 
 class _AppLocalizationsDelegate

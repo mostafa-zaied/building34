@@ -355,6 +355,16 @@
   "viewBillReceiptBtn": "View Receipt",
   "attachBillAfterPayBtn": "Attach Receipt",
   "utilityPendingBadge": "Pending",
+  "utilityBillLabel": "{utility} Bill",
+  "@utilityBillLabel": {
+    "placeholders": {
+      "utility": {
+        "type": "String"
+      }
+    }
+  },
+  "waterBillLabel": "Water Bill",
+  "elecBillLabel": "Electricity Bill",
   "utilityReceiptDialogTitle": "{utility} Receipt",
   "@utilityReceiptDialogTitle": {
     "placeholders": {
@@ -901,5 +911,39 @@
   "emergencyArrearsUpdatedToast": "✅ Arrear updated successfully",
   "ratingDeletedToast": "Rating deleted",
   "confirmDeleteRatingBody": "Are you sure you want to delete {apt}'s rating?",
-  "@confirmDeleteRatingBody": { "placeholders": { "apt": { "type": "String" } } }
+  "@confirmDeleteRatingBody": { "placeholders": { "apt": { "type": "String" } } },
+  "aptsTabActive": "Active Apts",
+  "aptsTabClosed": "Closed Apts",
+  "closedAptsInfoBanner": "Closed/unoccupied apartments (no monthly bills) — only special building fees appear here, and collected amounts go straight to the Emergency Fund.",
+  "closedAptDueLabel": "Due: {amount}",
+  "@closedAptDueLabel": { "placeholders": { "amount": { "type": "String" } } },
+  "closedAptClearLabel": "Clear — no dues ✓",
+  "specialFeeBtn": "Special Fee",
+  "specialFeeDialogTitle": "Add Special / Non-Monthly Fee",
+  "specialFeeNameLabel": "Fee Title / Reason",
+  "specialFeeNameHint": "e.g. Marble work & elevator painting",
+  "specialFeeTargetLabel": "Target Apartments",
+  "specialFeeTargetAll": "All ({count})",
+  "@specialFeeTargetAll": { "placeholders": { "count": { "type": "int" } } },
+  "specialFeeTargetClosed": "Closed ({count})",
+  "@specialFeeTargetClosed": { "placeholders": { "count": { "type": "int" } } },
+  "specialFeeTargetCustom": "Select Apts",
+  "specialFeeModePerApt": "Fixed per apt",
+  "specialFeeModeSplit": "Split total",
+  "specialFeeAmountPerAptLabel": "Amount per apartment (EGP)",
+  "specialFeeAmountTotalLabel": "Total amount to split (EGP)",
+  "specialFeePreviewLine": "Adds {perApt} EGP to {count} apts (Total: {total} EGP → Emergency)",
+  "@specialFeePreviewLine": { "placeholders": { "perApt": { "type": "int" }, "count": { "type": "int" }, "total": { "type": "int" } } },
+  "specialFeeApplyBtn": "Apply Fee",
+  "specialFeeCollectBtn": "Collected ✓",
+  "specialFeePaidTag": "Paid ✓",
+  "specialFeeAddedToast": "✅ Special fee applied successfully",
+  "specialFeeCollectedToast": "✅ Collected and added to Emergency Fund automatically",
+  "specialFeeDeletedToast": "Special fee deleted",
+  "aptStatusActive": "Active",
+  "aptStatusClosed": "Closed",
+  "convertToActiveBtn": "Set Active",
+  "convertToClosedBtn": "Set Closed",
+  "aptConvertedToActiveToast": "✅ Apartment switched to Active and monthly count updated",
+  "aptConvertedToClosedToast": "✅ Apartment switched to Closed and monthly count updated"
 }

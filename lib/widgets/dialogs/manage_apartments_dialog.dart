@@ -133,14 +133,19 @@ class _ManageApartmentsScreenState extends State<ManageApartmentsScreen> {
   Future<void> _saveAll() async {
     setState(() => _saving = true);
     final m = widget.cubit.state.currentMonth;
-    if (m != null && _apts.length != m.aptsCount) {
+    final closedSet = widget.cubit.state.closedAptNums.toSet();
+    final activeCount = _apts
+        .where((a) => !closedSet.contains(a.aptNum))
+        .length
+        .clamp(1, _apts.isEmpty ? 1 : _apts.length);
+    if (m != null && activeCount != m.aptsCount) {
       widget.cubit.updateCurrentMonthFields(
         water: m.water,
         elec: m.elec,
         elev: m.elev,
         clean: m.clean,
         forEmerg: m.forEmerg,
-        aptsCount: _apts.length,
+        aptsCount: activeCount,
         baseEmergency: widget.cubit.state.baseEmergency,
       );
       await widget.cubit.saveAdminChanges();
@@ -254,6 +259,7 @@ class _ManageApartmentsScreenState extends State<ManageApartmentsScreen> {
                                       const SizedBox(height: AppSpacing.sm),
                                   itemBuilder: (context, idx) {
                                     final a = _apts[idx];
+                                    final isClosed = liveState.closedAptNums.contains(a.aptNum);
                                     return AppCard(
                                       padding: const EdgeInsetsDirectional.all(AppSpacing.md),
                                       child: Column(
@@ -275,6 +281,75 @@ class _ManageApartmentsScreenState extends State<ManageApartmentsScreen> {
                                                   style: AppTypography.caption.copyWith(
                                                     color: AppColors.primaryText(isDark),
                                                     fontWeight: FontWeight.w800,
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(width: AppSpacing.xs),
+                                              Tooltip(
+                                                message: isClosed
+                                                    ? s.convertToActiveBtn
+                                                    : s.convertToClosedBtn,
+                                                child: InkWell(
+                                                  onTap: (_saving || liveState.busy)
+                                                      ? null
+                                                      : () => widget.cubit.setApartmentClosed(
+                                                            a.aptNum,
+                                                            !isClosed,
+                                                          ),
+                                                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                                                  child: Container(
+                                                    padding: const EdgeInsetsDirectional.symmetric(
+                                                      horizontal: 9,
+                                                      vertical: 4,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: (isClosed
+                                                              ? AppColors.amber
+                                                              : AppColors.emerald)
+                                                          .withValues(alpha: isDark ? 0.16 : 0.10),
+                                                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                                                      border: Border.all(
+                                                        color: (isClosed
+                                                                ? AppColors.amber
+                                                                : AppColors.emerald)
+                                                            .withValues(alpha: 0.36),
+                                                      ),
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        Icon(
+                                                          isClosed
+                                                              ? Icons.lock_outline_rounded
+                                                              : Icons.home_outlined,
+                                                          size: 13,
+                                                          color: isClosed
+                                                              ? AppColors.amber
+                                                              : AppColors.emeraldText(isDark),
+                                                        ),
+                                                        const SizedBox(width: 4),
+                                                        Text(
+                                                          isClosed
+                                                              ? s.aptStatusClosed
+                                                              : s.aptStatusActive,
+                                                          style: AppTypography.caption.copyWith(
+                                                            fontSize: 11,
+                                                            fontWeight: FontWeight.w800,
+                                                            color: isClosed
+                                                                ? AppColors.amber
+                                                                : AppColors.emeraldText(isDark),
+                                                          ),
+                                                        ),
+                                                        const SizedBox(width: 3),
+                                                        Icon(
+                                                          Icons.swap_horiz_rounded,
+                                                          size: 13,
+                                                          color: isClosed
+                                                              ? AppColors.amber
+                                                              : AppColors.emeraldText(isDark),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
                                               ),

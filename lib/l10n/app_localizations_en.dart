@@ -581,6 +581,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get utilityPendingBadge => 'Pending';
 
   @override
+  String utilityBillLabel(String utility) {
+    return '$utility Bill';
+  }
+
+  @override
+  String get waterBillLabel => 'Water Bill';
+
+  @override
+  String get elecBillLabel => 'Electricity Bill';
+
+  @override
   String utilityReceiptDialogTitle(String utility) {
     return '$utility Receipt';
   }
@@ -1735,4 +1746,106 @@ class AppLocalizationsEn extends AppLocalizations {
   String confirmDeleteRatingBody(String apt) {
     return 'Are you sure you want to delete $apt\'s rating?';
   }
+
+  @override
+  String get aptsTabActive => 'Active Apts';
+
+  @override
+  String get aptsTabClosed => 'Closed Apts';
+
+  @override
+  String get closedAptsInfoBanner =>
+      'Closed/unoccupied apartments (no monthly bills) — only special building fees appear here, and collected amounts go straight to the Emergency Fund.';
+
+  @override
+  String closedAptDueLabel(String amount) {
+    return 'Due: $amount';
+  }
+
+  @override
+  String get closedAptClearLabel => 'Clear — no dues ✓';
+
+  @override
+  String get specialFeeBtn => 'Special Fee';
+
+  @override
+  String get specialFeeDialogTitle => 'Add Special / Non-Monthly Fee';
+
+  @override
+  String get specialFeeNameLabel => 'Fee Title / Reason';
+
+  @override
+  String get specialFeeNameHint => 'e.g. Marble work & elevator painting';
+
+  @override
+  String get specialFeeTargetLabel => 'Target Apartments';
+
+  @override
+  String specialFeeTargetAll(int count) {
+    return 'All ($count)';
+  }
+
+  @override
+  String specialFeeTargetClosed(int count) {
+    return 'Closed ($count)';
+  }
+
+  @override
+  String get specialFeeTargetCustom => 'Select Apts';
+
+  @override
+  String get specialFeeModePerApt => 'Fixed per apt';
+
+  @override
+  String get specialFeeModeSplit => 'Split total';
+
+  @override
+  String get specialFeeAmountPerAptLabel => 'Amount per apartment (EGP)';
+
+  @override
+  String get specialFeeAmountTotalLabel => 'Total amount to split (EGP)';
+
+  @override
+  String specialFeePreviewLine(int perApt, int count, int total) {
+    return 'Adds $perApt EGP to $count apts (Total: $total EGP → Emergency)';
+  }
+
+  @override
+  String get specialFeeApplyBtn => 'Apply Fee';
+
+  @override
+  String get specialFeeCollectBtn => 'Collected ✓';
+
+  @override
+  String get specialFeePaidTag => 'Paid ✓';
+
+  @override
+  String get specialFeeAddedToast => '✅ Special fee applied successfully';
+
+  @override
+  String get specialFeeCollectedToast =>
+      '✅ Collected and added to Emergency Fund automatically';
+
+  @override
+  String get specialFeeDeletedToast => 'Special fee deleted';
+
+  @override
+  String get aptStatusActive => 'Active';
+
+  @override
+  String get aptStatusClosed => 'Closed';
+
+  @override
+  String get convertToActiveBtn => 'Set Active';
+
+  @override
+  String get convertToClosedBtn => 'Set Closed';
+
+  @override
+  String get aptConvertedToActiveToast =>
+      '✅ Apartment switched to Active and monthly count updated';
+
+  @override
+  String get aptConvertedToClosedToast =>
+      '✅ Apartment switched to Closed and monthly count updated';
 }

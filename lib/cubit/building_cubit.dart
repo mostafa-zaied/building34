@@ -140,6 +140,12 @@ class BuildingCubit extends Cubit<BuildingState> {
       final arrears = await _service
           .fetchEmergencyArrears()
           .timeout(const Duration(seconds: 10), onTimeout: () => state.emergencyArrears);
+      final closedAptNums = await _service
+          .fetchClosedAptNums()
+          .timeout(const Duration(seconds: 10), onTimeout: () => state.closedAptNums);
+      final specialFees = await _service
+          .fetchSpecialAptFees()
+          .timeout(const Duration(seconds: 10), onTimeout: () => state.specialAptFees);
 
       emit(state.copyWith(
         loading: false,
@@ -163,6 +169,8 @@ class BuildingCubit extends Cubit<BuildingState> {
         buildingPolls: polls,
         appRatings: ratings,
         emergencyArrears: arrears,
+        closedAptNums: closedAptNums,
+        specialAptFees: specialFees,
       ));
       _ensureLiveSubscription();
       unawaited(syncPushTokenIfGranted());
@@ -200,6 +208,12 @@ class BuildingCubit extends Cubit<BuildingState> {
       final arrears = await _service
           .fetchEmergencyArrears()
           .timeout(const Duration(seconds: 10), onTimeout: () => state.emergencyArrears);
+      final closedAptNums = await _service
+          .fetchClosedAptNums()
+          .timeout(const Duration(seconds: 10), onTimeout: () => state.closedAptNums);
+      final specialFees = await _service
+          .fetchSpecialAptFees()
+          .timeout(const Duration(seconds: 10), onTimeout: () => state.specialAptFees);
       if (isClosed) return;
 
       final targetIdx = data.months.isEmpty
@@ -221,6 +235,8 @@ class BuildingCubit extends Cubit<BuildingState> {
         buildingPolls: polls,
         appRatings: ratings,
         emergencyArrears: arrears,
+        closedAptNums: closedAptNums,
+        specialAptFees: specialFees,
       ));
     } catch (_) {
       // Keep existing UI state smoothly on transient background refresh error
@@ -907,9 +923,15 @@ class BuildingCubit extends Cubit<BuildingState> {
     if (m == null) {
       return (apartments: null, error: state.s.errNoMonth);
     }
+    final closed = state.closedAptNums;
+    final maxClosed =
+        closed.isEmpty ? 0 : closed.reduce((a, b) => a > b ? a : b);
+    final totalApts = (m.aptsCount + closed.length) > maxClosed
+        ? (m.aptsCount + closed.length)
+        : maxClosed;
     final res = await _service.fetchAdminApartments(
       adminPass: state.adminPass,
-      aptsCount: m.aptsCount,
+      aptsCount: totalApts,
     );
     return (
       apartments: res.apartments,
@@ -946,15 +968,26 @@ class BuildingCubit extends Cubit<BuildingState> {
     final m = state.currentMonth;
     if (m == null) return '';
 
+    final closedSet = state.closedAptNums.toSet();
+    final maxClosed =
+        closedSet.isEmpty ? 0 : closedSet.reduce((a, b) => a > b ? a : b);
+    final totalApts = (m.aptsCount + closedSet.length) > maxClosed
+        ? (m.aptsCount + closedSet.length)
+        : maxClosed;
     final paidList = <int>[];
     final unpaidList = <int>[];
-    for (int i = 1; i <= m.aptsCount; i++) {
+    for (int i = 1; i <= totalApts; i++) {
+      if (closedSet.contains(i)) continue;
       if (m.payments.containsKey(i)) {
         paidList.add(i);
       } else {
         unpaidList.add(i);
       }
     }
+    final pendingSpecialFees =
+        state.specialAptFees.where((f) => !f.isPaid).toList()
+          ..sort((a, b) => a.aptNum.compareTo(b.aptNum));
+
     if (state.localeCode == 'en') {
       final lines = <String>[
         'Building Expenses — Month ${m.monthNum}:',
@@ -968,6 +1001,13 @@ class BuildingCubit extends Cubit<BuildingState> {
         lines.add('➕ Extra charges:');
         for (final e in m.extraCharges) {
           lines.add('• ${state.aptLabel(e.aptNum)}: +${e.amount.toInt()} EGP (${e.reason})');
+        }
+      }
+      if (pendingSpecialFees.isNotEmpty) {
+        lines.add('⚡ Special fees due:');
+        for (final f in pendingSpecialFees) {
+          final closedTag = closedSet.contains(f.aptNum) ? ' [Closed]' : '';
+          lines.add('• ${state.aptLabel(f.aptNum)}$closedTag: ${f.amount.round()} EGP (${f.label})');
         }
       }
       return lines.join('\n');
@@ -985,6 +1025,13 @@ class BuildingCubit extends Cubit<BuildingState> {
       lines.add('➕ رسوم إضافية:');
       for (final e in m.extraCharges) {
         lines.add('• ${state.aptLabel(e.aptNum)}: +${e.amount.toInt()} ج (${e.reason})');
+      }
+    }
+    if (pendingSpecialFees.isNotEmpty) {
+      lines.add('⚡ رسوم خاصة مطلوبة:');
+      for (final f in pendingSpecialFees) {
+        final closedTag = closedSet.contains(f.aptNum) ? ' (شقة مغلقة)' : '';
+        lines.add('• ${state.aptLabel(f.aptNum)}$closedTag: ${f.amount.round()} ج (${f.label})');
       }
     }
     return lines.join('\n');
@@ -1018,7 +1065,7 @@ class BuildingCubit extends Cubit<BuildingState> {
   }
 
   Future<bool> resetAllApartmentPasscodes() async {
-    if (!state.isAdminOpen) return false;
+    if (!state.isAdminAuthenticated) return false;
     return _withBusy(() async {
       final err = await _service.resetAllApartmentPasscodesAsAdmin(
         state.adminPass,
@@ -1081,7 +1128,7 @@ class BuildingCubit extends Cubit<BuildingState> {
   }
 
   Future<void> saveAnnouncement(String text) async {
-    if (!state.isAdminOpen) return;
+    if (!state.isAdminAuthenticated) return;
     await _withBusy(() async {
       final err = await _service.saveAnnouncement(
         adminPass: state.adminPass,
@@ -1341,7 +1388,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     required String status,
     String? adminReply,
   }) async {
-    if (!state.isAdminOpen) return false;
+    if (!state.isAdminAuthenticated) return false;
     return _withBusy(() async {
       final err = await _service.updateFeedbackPostStatus(
         adminPass: state.adminPass,
@@ -1371,7 +1418,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     required double amount,
     required String reason,
   }) async {
-    if (!state.isAdminOpen) return false;
+    if (!state.isAdminAuthenticated) return false;
     final m = state.currentMonth;
     if (m == null) return false;
     final err = await _service.addExtraChargesAsAdmin(
@@ -1397,7 +1444,7 @@ class BuildingCubit extends Cubit<BuildingState> {
   }
 
   Future<void> deleteExtraCharge(String id) async {
-    if (!state.isAdminOpen) return;
+    if (!state.isAdminAuthenticated) return;
     final m = state.currentMonth;
     if (m == null) return;
     await _withBusy(() async {
@@ -1554,7 +1601,7 @@ class BuildingCubit extends Cubit<BuildingState> {
   }
 
   Future<void> deleteAllExtraCharges() async {
-    if (!state.isAdminOpen) return;
+    if (!state.isAdminAuthenticated) return;
     final m = state.currentMonth;
     if (m == null) return;
     await _withBusy(() async {
@@ -1900,6 +1947,127 @@ class BuildingCubit extends Cubit<BuildingState> {
       emit(state.copyWith(
         emergencyArrears: arrears,
         feedbackMessage: () => state.s.emergencyArrearsDeletedToast,
+        feedbackIsError: false,
+      ));
+    });
+  }
+
+  Future<bool> addSpecialAptFees({
+    required List<int> aptNums,
+    required String label,
+    required double amount,
+  }) async {
+    if (!state.isAdminAuthenticated) return false;
+    return _withBusy(() async {
+      final err = await _service.addSpecialAptFeesAsAdmin(
+        adminPass: state.adminPass,
+        aptNums: aptNums,
+        label: label,
+        amount: amount,
+      );
+      if (err != null) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return false;
+      }
+      final fees = await _service.fetchSpecialAptFees();
+      emit(state.copyWith(
+        specialAptFees: fees,
+        feedbackMessage: () => state.s.specialFeeAddedToast,
+        feedbackIsError: false,
+      ));
+      return true;
+    });
+  }
+
+  Future<void> collectSpecialAptFee(String id) async {
+    if (!state.isAdminAuthenticated) return;
+    await _withBusy(() async {
+      final err = await _service.collectSpecialAptFeeAsAdmin(
+        adminPass: state.adminPass,
+        id: id,
+      );
+      if (err != null) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return;
+      }
+      await loadData(preserveMonthIndex: state.selectedMonthIndex);
+      emit(state.copyWith(
+        feedbackMessage: () => state.s.specialFeeCollectedToast,
+        feedbackIsError: false,
+      ));
+    });
+  }
+
+  Future<void> deleteSpecialAptFee(String id) async {
+    if (!state.isAdminAuthenticated) return;
+    await _withBusy(() async {
+      final err = await _service.deleteSpecialAptFeeAsAdmin(
+        adminPass: state.adminPass,
+        id: id,
+      );
+      if (err != null) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return;
+      }
+      final fees = await _service.fetchSpecialAptFees();
+      emit(state.copyWith(
+        specialAptFees: fees,
+        feedbackMessage: () => state.s.specialFeeDeletedToast,
+        feedbackIsError: false,
+      ));
+    });
+  }
+
+  Future<void> setApartmentClosed(int aptNum, bool isClosed) async {
+    if (!state.isAdminAuthenticated) return;
+    await _withBusy(() async {
+      final err = await _service.setApartmentClosedAsAdmin(
+        adminPass: state.adminPass,
+        aptNum: aptNum,
+        isClosed: isClosed,
+      );
+      if (err != null) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return;
+      }
+      final nextClosed = await _service.fetchClosedAptNums();
+      final m = state.currentMonth;
+      if (m != null) {
+        final maxClosed = nextClosed.isEmpty
+            ? 0
+            : nextClosed.reduce((a, b) => a > b ? a : b);
+        final totalApts =
+            [m.aptsCount + state.closedAptNums.length, maxClosed, aptNum]
+                .reduce((a, b) => a > b ? a : b);
+        final nextActiveCount =
+            (totalApts - nextClosed.length).clamp(1, totalApts);
+        if (nextActiveCount != m.aptsCount) {
+          m.aptsCount = nextActiveCount;
+          await _service.updateMonthAsAdmin(
+            adminPass: state.adminPass,
+            month: m,
+            baseEmergency: state.baseEmergency,
+          );
+        }
+      }
+      await loadData(preserveMonthIndex: state.selectedMonthIndex);
+      emit(state.copyWith(
+        closedAptNums: nextClosed,
+        feedbackMessage: () => isClosed
+            ? state.s.aptConvertedToClosedToast
+            : state.s.aptConvertedToActiveToast,
         feedbackIsError: false,
       ));
     });

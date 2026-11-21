@@ -576,6 +576,17 @@ class AppLocalizationsAr extends AppLocalizations {
   String get utilityPendingBadge => 'بانتظار السداد';
 
   @override
+  String utilityBillLabel(String utility) {
+    return 'فاتورة $utility';
+  }
+
+  @override
+  String get waterBillLabel => 'فاتورة المياه';
+
+  @override
+  String get elecBillLabel => 'فاتورة الكهرباء';
+
+  @override
   String utilityReceiptDialogTitle(String utility) {
     return 'صورة $utility';
   }
@@ -1719,4 +1730,106 @@ class AppLocalizationsAr extends AppLocalizations {
   String confirmDeleteRatingBody(String apt) {
     return 'هل أنت متأكد من حذف تقييم $apt؟';
   }
+
+  @override
+  String get aptsTabActive => 'الشقق الساكنة';
+
+  @override
+  String get aptsTabClosed => 'الشقق المغلقة';
+
+  @override
+  String get closedAptsInfoBanner =>
+      'شقق مغلقة (بدون مصاريف شهرية) — يظهر عليها فقط الرسوم الخاصة وأعمال العمارة، وعند السداد يُضاف المبلغ لصندوق الطوارئ تلقائياً.';
+
+  @override
+  String closedAptDueLabel(String amount) {
+    return 'مستحق عليه: $amount';
+  }
+
+  @override
+  String get closedAptClearLabel => 'خالص — لا توجد مستحقات ✓';
+
+  @override
+  String get specialFeeBtn => 'رسم خاص';
+
+  @override
+  String get specialFeeDialogTitle => 'فرض رسم خاص / غير شهري';
+
+  @override
+  String get specialFeeNameLabel => 'اسم الرسم / السبب';
+
+  @override
+  String get specialFeeNameHint => 'مثال: أعمال رخام ودهان الأسانسير';
+
+  @override
+  String get specialFeeTargetLabel => 'الفئة المستهدفة';
+
+  @override
+  String specialFeeTargetAll(int count) {
+    return 'الكل ($count)';
+  }
+
+  @override
+  String specialFeeTargetClosed(int count) {
+    return 'المغلقة ($count)';
+  }
+
+  @override
+  String get specialFeeTargetCustom => 'شقق محددة';
+
+  @override
+  String get specialFeeModePerApt => 'ثابت لكل شقة';
+
+  @override
+  String get specialFeeModeSplit => 'إجمالي يتقسم';
+
+  @override
+  String get specialFeeAmountPerAptLabel => 'المبلغ لكل شقة (ج.م)';
+
+  @override
+  String get specialFeeAmountTotalLabel => 'إجمالي المبلغ (ج.م)';
+
+  @override
+  String specialFeePreviewLine(int perApt, int count, int total) {
+    return 'سيُضاف $perApt ج على $count شقة (الإجمالي: $total ج → الطوارئ)';
+  }
+
+  @override
+  String get specialFeeApplyBtn => 'تطبيق الرسم';
+
+  @override
+  String get specialFeeCollectBtn => 'تم التحصيل ✓';
+
+  @override
+  String get specialFeePaidTag => 'تم السداد ✓';
+
+  @override
+  String get specialFeeAddedToast => '✅ تم فرض الرسم الخاص بنجاح';
+
+  @override
+  String get specialFeeCollectedToast =>
+      '✅ تم التحصيل وإضافة المبلغ لصندوق الطوارئ تلقائياً';
+
+  @override
+  String get specialFeeDeletedToast => 'تم حذف الرسم الخاص';
+
+  @override
+  String get aptStatusActive => 'ساكنة';
+
+  @override
+  String get aptStatusClosed => 'مغلقة';
+
+  @override
+  String get convertToActiveBtn => 'تحويل لساكنة';
+
+  @override
+  String get convertToClosedBtn => 'تحويل لمغلقة';
+
+  @override
+  String get aptConvertedToActiveToast =>
+      '✅ تم تحويل الشقة إلى «ساكنة» وتحديث عدد الشقق النشطة';
+
+  @override
+  String get aptConvertedToClosedToast =>
+      '✅ تم تحويل الشقة إلى «مغلقة» وتحديث عدد الشقق النشطة';
 }

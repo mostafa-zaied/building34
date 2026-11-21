@@ -661,8 +661,8 @@ class _UtilityReceiptsBar extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final waterLabel = month.coreLabel('water', s.waterLabel);
-    final elecLabel = month.coreLabel('elec', s.elecLabel);
+    final waterLabel = month.coreLabel('water', s.waterBillLabel);
+    final elecLabel = month.coreLabel('elec', s.elecBillLabel);
 
     return Row(
       children: [
@@ -726,6 +726,11 @@ class _UtilityReceiptsBar extends StatelessWidget {
         : (state.isAdminAuthenticated ? s.attachBillAfterPayBtn : s.utilityPendingBadge);
     final accent = hasReceipt ? AppColors.emeraldText(isDark) : color;
 
+    final displayLabel =
+        label.contains('فاتورة') || label.toLowerCase().contains('bill')
+            ? label
+            : s.utilityBillLabel(label);
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -751,7 +756,7 @@ class _UtilityReceiptsBar extends StatelessWidget {
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  '$label: $badgeText',
+                  '$displayLabel: $badgeText',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTypography.caption.copyWith(

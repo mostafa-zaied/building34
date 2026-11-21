@@ -1,6 +1,15 @@
 /// إعدادات الربط مع Supabase.
-/// تم ربط المشروع ببيانات Supabase الخاصة بك.
+/// الوضع الافتراضي (Production) يعمل تلقائياً عند الرفع على Firebase Hosting.
+/// للتشغيل على بيئة التجربة (Staging) محلياً:
+/// flutter run -d chrome --dart-define-from-file=env.staging.json
 class AppConfig {
+  static const String appEnv = String.fromEnvironment(
+    'APP_ENV',
+    defaultValue: 'prod',
+  );
+
+  static bool get isStaging => appEnv == 'staging';
+
   static const String supabaseUrl = String.fromEnvironment(
     'SUPABASE_URL',
     defaultValue: 'https://qxsctwnctwqzsdmtsssw.supabase.co',

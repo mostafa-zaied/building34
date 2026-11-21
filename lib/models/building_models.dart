@@ -638,6 +638,42 @@ class EmergencyArrear {
   }
 }
 
+class SpecialAptFee {
+  final String id;
+  final int aptNum;
+  final String label;
+  final double amount;
+  final bool isPaid;
+  final DateTime createdAt;
+  final DateTime? paidAt;
+
+  const SpecialAptFee({
+    required this.id,
+    required this.aptNum,
+    required this.label,
+    required this.amount,
+    this.isPaid = false,
+    required this.createdAt,
+    this.paidAt,
+  });
+
+  factory SpecialAptFee.fromJson(Map<String, dynamic> json) {
+    return SpecialAptFee(
+      id: json['id'].toString(),
+      aptNum: (json['apt_num'] as num?)?.toInt() ?? 0,
+      label: (json['label'] as String?) ?? '',
+      amount: (json['amount'] as num?)?.toDouble() ?? 0,
+      isPaid: json['is_paid'] == true,
+      createdAt:
+          DateTime.tryParse(json['created_at']?.toString() ?? '') ??
+              DateTime.now(),
+      paidAt: json['paid_at'] != null
+          ? DateTime.tryParse(json['paid_at'].toString())
+          : null,
+    );
+  }
+}
+
 String localizedMonthName(int monthNum, bool isAr) {
   const arMonths = [
     'يناير',

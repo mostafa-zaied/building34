@@ -34,6 +34,8 @@ class BuildingState {
   final List<BuildingPoll> buildingPolls;
   final List<AppRating> appRatings;
   final List<EmergencyArrear> emergencyArrears;
+  final List<int> closedAptNums;
+  final List<SpecialAptFee> specialAptFees;
 
   const BuildingState({
     this.loading = true,
@@ -66,6 +68,8 @@ class BuildingState {
     this.buildingPolls = const [],
     this.appRatings = const [],
     this.emergencyArrears = const [],
+    this.closedAptNums = const [14, 15, 16, 17, 18],
+    this.specialAptFees = const [],
   });
 
   AppLocalizations get s => lookupAppLocalizations(Locale(localeCode));
@@ -128,6 +132,8 @@ class BuildingState {
     List<BuildingPoll>? buildingPolls,
     List<AppRating>? appRatings,
     List<EmergencyArrear>? emergencyArrears,
+    List<int>? closedAptNums,
+    List<SpecialAptFee>? specialAptFees,
   }) {
     return BuildingState(
       loading: loading ?? this.loading,
@@ -160,6 +166,8 @@ class BuildingState {
       buildingPolls: buildingPolls ?? this.buildingPolls,
       appRatings: appRatings ?? this.appRatings,
       emergencyArrears: emergencyArrears ?? this.emergencyArrears,
+      closedAptNums: closedAptNums ?? this.closedAptNums,
+      specialAptFees: specialAptFees ?? this.specialAptFees,
     );
   }
 }

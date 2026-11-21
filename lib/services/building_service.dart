@@ -1922,4 +1922,176 @@ class BuildingService {
       return 'err_delete_failed';
     }
   }
+
+  static final Set<int> _demoClosedApts = {14, 15, 16, 17, 18};
+  static final List<SpecialAptFee> _demoSpecialFees = [];
+
+  Future<List<int>> fetchClosedAptNums() async {
+    if (!_useSupabase) return _demoClosedApts.toList()..sort();
+    try {
+      final res = await Supabase.instance.client.rpc('get_closed_apartments');
+      if (res is List) {
+        final nums = res
+            .whereType<Map>()
+            .map((e) => (e['apt_num'] as num?)?.toInt())
+            .whereType<int>()
+            .toList()
+          ..sort();
+        return nums;
+      }
+      return const [];
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  Future<String?> setApartmentClosedAsAdmin({
+    required String adminPass,
+    required int aptNum,
+    required bool isClosed,
+  }) async {
+    if (!_useSupabase) {
+      if (isClosed) {
+        _demoClosedApts.add(aptNum);
+      } else {
+        _demoClosedApts.remove(aptNum);
+      }
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'admin_set_apartment_closed',
+        params: {
+          'p_admin_pass': adminPass,
+          'p_apt_num': aptNum,
+          'p_is_closed': isClosed,
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
+    } catch (_) {
+      return 'err_submit_failed';
+    }
+  }
+
+  Future<List<SpecialAptFee>> fetchSpecialAptFees() async {
+    if (!_useSupabase) {
+      return List<SpecialAptFee>.from(_demoSpecialFees);
+    }
+    try {
+      final rows = await Supabase.instance.client
+          .from('special_apt_fees')
+          .select()
+          .order('is_paid', ascending: true)
+          .order('created_at', ascending: false);
+      return (rows as List)
+          .map((r) => SpecialAptFee.fromJson(Map<String, dynamic>.from(r as Map)))
+          .toList();
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  Future<String?> addSpecialAptFeesAsAdmin({
+    required String adminPass,
+    required List<int> aptNums,
+    required String label,
+    required double amount,
+  }) async {
+    if (label.trim().isEmpty || amount <= 0 || aptNums.isEmpty) {
+      return 'err_submit_failed';
+    }
+    if (!_useSupabase) {
+      for (final apt in aptNums) {
+        _demoSpecialFees.insert(
+          0,
+          SpecialAptFee(
+            id: '${DateTime.now().microsecondsSinceEpoch}_$apt',
+            aptNum: apt,
+            label: label.trim(),
+            amount: amount,
+            createdAt: DateTime.now(),
+          ),
+        );
+      }
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'admin_add_special_apt_fees',
+        params: {
+          'p_admin_pass': adminPass,
+          'p_apt_nums': aptNums,
+          'p_label': label.trim(),
+          'p_amount': amount,
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
+    } catch (_) {
+      return 'err_submit_failed';
+    }
+  }
+
+  Future<String?> collectSpecialAptFeeAsAdmin({
+    required String adminPass,
+    required String id,
+  }) async {
+    if (!_useSupabase) {
+      final idx = _demoSpecialFees.indexWhere((f) => f.id == id);
+      if (idx < 0 || _demoSpecialFees[idx].isPaid) return 'err_submit_failed';
+      final f = _demoSpecialFees[idx];
+      _demoSpecialFees[idx] = SpecialAptFee(
+        id: f.id,
+        aptNum: f.aptNum,
+        label: f.label,
+        amount: f.amount,
+        isPaid: true,
+        createdAt: f.createdAt,
+        paidAt: DateTime.now(),
+      );
+      _demoBaseEmergency += f.amount;
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'admin_collect_special_apt_fee',
+        params: {
+          'p_admin_pass': adminPass,
+          'p_id': int.tryParse(id) ?? 0,
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
+    } catch (_) {
+      return 'err_submit_failed';
+    }
+  }
+
+  Future<String?> deleteSpecialAptFeeAsAdmin({
+    required String adminPass,
+    required String id,
+  }) async {
+    if (!_useSupabase) {
+      _demoSpecialFees.removeWhere((f) => f.id == id);
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'admin_archive_special_apt_fee',
+        params: {
+          'p_admin_pass': adminPass,
+          'p_id': int.tryParse(id) ?? 0,
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_delete_failed';
+    } catch (_) {
+      return 'err_delete_failed';
+    }
+  }
 }
