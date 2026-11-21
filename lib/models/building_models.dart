@@ -1,5 +1,233 @@
 import 'dart:typed_data';
 
+class BuildingInfo {
+  final int id;
+  final String code;
+  final String name;
+  final String city;
+  final int aptsCount;
+  final String instapayPhone;
+  final String instapayUrl;
+  final String managerWhatsapp;
+  final String subscriptionStatus; // 'trial' | 'active' | 'suspended'
+  final DateTime? trialEndsAt;
+  final DateTime? subscriptionEndsAt;
+  final DateTime? createdAt;
+
+  const BuildingInfo({
+    required this.id,
+    required this.code,
+    required this.name,
+    this.city = '',
+    this.aptsCount = 13,
+    this.instapayPhone = '',
+    this.instapayUrl = '',
+    this.managerWhatsapp = '',
+    this.subscriptionStatus = 'active',
+    this.trialEndsAt,
+    this.subscriptionEndsAt,
+    this.createdAt,
+  });
+
+  static const BuildingInfo defaultDemo = BuildingInfo(
+    id: 1,
+    code: 'MABNA-1',
+    name: 'MABNA CARE',
+    city: '',
+    aptsCount: 13,
+    instapayPhone: '01021950445',
+    instapayUrl: 'https://ipn.eg/S/mostafazaied/instapay/6nvhpw',
+    managerWhatsapp: '201021950445',
+    subscriptionStatus: 'active',
+  );
+
+  bool get isDefaultBuilding => id == 1;
+  bool get isTrial => subscriptionStatus == 'trial';
+
+  DateTime? get effectiveEndsAt =>
+      subscriptionStatus == 'trial' ? trialEndsAt : subscriptionEndsAt;
+
+  bool get isExpired {
+    if (isDefaultBuilding) return false;
+    final ends = effectiveEndsAt;
+    if (ends == null) return false;
+    return DateTime.now().isAfter(ends);
+  }
+
+  bool get isSuspended {
+    if (isDefaultBuilding) return false;
+    return subscriptionStatus == 'suspended' || isExpired;
+  }
+
+  int get daysRemaining {
+    final ends = effectiveEndsAt;
+    if (ends == null) return 999;
+    final diff = ends.difference(DateTime.now()).inDays;
+    return diff < 0 ? 0 : diff + 1;
+  }
+
+  String get normalizedWhatsapp {
+    final digits = managerWhatsapp.replaceAll(RegExp(r'[^0-9]'), '');
+    if (digits.isEmpty) return '';
+    if (digits.startsWith('01')) return '2$digits';
+    if (digits.startsWith('0')) return '2$digits';
+    return digits;
+  }
+
+  BuildingInfo copyWith({
+    int? id,
+    String? code,
+    String? name,
+    String? city,
+    int? aptsCount,
+    String? instapayPhone,
+    String? instapayUrl,
+    String? managerWhatsapp,
+    String? subscriptionStatus,
+    DateTime? trialEndsAt,
+    DateTime? subscriptionEndsAt,
+    DateTime? createdAt,
+  }) {
+    return BuildingInfo(
+      id: id ?? this.id,
+      code: code ?? this.code,
+      name: name ?? this.name,
+      city: city ?? this.city,
+      aptsCount: aptsCount ?? this.aptsCount,
+      instapayPhone: instapayPhone ?? this.instapayPhone,
+      instapayUrl: instapayUrl ?? this.instapayUrl,
+      managerWhatsapp: managerWhatsapp ?? this.managerWhatsapp,
+      subscriptionStatus: subscriptionStatus ?? this.subscriptionStatus,
+      trialEndsAt: trialEndsAt ?? this.trialEndsAt,
+      subscriptionEndsAt: subscriptionEndsAt ?? this.subscriptionEndsAt,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  factory BuildingInfo.fromJson(Map<String, dynamic> json) {
+    return BuildingInfo(
+      id: (json['id'] as num?)?.toInt() ?? 1,
+      code: (json['code'] as String?)?.trim() ?? 'MABNA-1',
+      name: (json['name'] as String?)?.trim() ?? 'MABNA CARE',
+      city: (json['city'] as String?)?.trim() ?? '',
+      aptsCount: (json['apts_count'] as num?)?.toInt() ?? 13,
+      instapayPhone: (json['instapay_phone'] as String?)?.trim() ?? '',
+      instapayUrl: (json['instapay_url'] as String?)?.trim() ?? '',
+      managerWhatsapp: (json['manager_whatsapp'] as String?)?.trim() ?? '',
+      subscriptionStatus:
+          (json['subscription_status'] as String?)?.trim() ?? 'active',
+      trialEndsAt: json['trial_ends_at'] != null
+          ? DateTime.tryParse(json['trial_ends_at'].toString())
+          : null,
+      subscriptionEndsAt: json['subscription_ends_at'] != null
+          ? DateTime.tryParse(json['subscription_ends_at'].toString())
+          : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'].toString())
+          : null,
+    );
+  }
+}
+
+class SavedBuildingRef {
+  final int id;
+  final String code;
+  final String name;
+  final String city;
+
+  const SavedBuildingRef({
+    required this.id,
+    required this.code,
+    required this.name,
+    this.city = '',
+  });
+
+  factory SavedBuildingRef.fromBuilding(BuildingInfo b) => SavedBuildingRef(
+        id: b.id,
+        code: b.code,
+        name: b.name,
+        city: b.city,
+      );
+
+  factory SavedBuildingRef.fromJson(Map<String, dynamic> json) {
+    return SavedBuildingRef(
+      id: (json['id'] as num?)?.toInt() ?? 1,
+      code: (json['code'] as String?)?.trim() ?? 'MABNA-1',
+      name: (json['name'] as String?)?.trim() ?? 'MABNA CARE',
+      city: (json['city'] as String?)?.trim() ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'code': code,
+        'name': name,
+        'city': city,
+      };
+}
+
+class SuperAdminBuildingItem {
+  final BuildingInfo building;
+  final int monthsCount;
+  final int paymentsCount;
+  final int viewsCount;
+
+  const SuperAdminBuildingItem({
+    required this.building,
+    this.monthsCount = 0,
+    this.paymentsCount = 0,
+    this.viewsCount = 0,
+  });
+
+  factory SuperAdminBuildingItem.fromJson(Map<String, dynamic> json) {
+    return SuperAdminBuildingItem(
+      building: BuildingInfo.fromJson(
+        Map<String, dynamic>.from((json['building'] as Map?) ?? {}),
+      ),
+      monthsCount: (json['months_count'] as num?)?.toInt() ?? 0,
+      paymentsCount: (json['payments_count'] as num?)?.toInt() ?? 0,
+      viewsCount: (json['views_count'] as num?)?.toInt() ?? 0,
+    );
+  }
+}
+
+class SuperAdminDashboardData {
+  final List<SuperAdminBuildingItem> buildings;
+  final int totalBuildings;
+  final int activeBuildings;
+  final int trialBuildings;
+  final int suspendedBuildings;
+  final int totalApts;
+  final int totalViews;
+
+  const SuperAdminDashboardData({
+    required this.buildings,
+    required this.totalBuildings,
+    required this.activeBuildings,
+    required this.trialBuildings,
+    required this.suspendedBuildings,
+    required this.totalApts,
+    required this.totalViews,
+  });
+
+  factory SuperAdminDashboardData.fromJson(Map<String, dynamic> json) {
+    final rawList = (json['buildings'] as List?) ?? const [];
+    final stats = Map<String, dynamic>.from((json['stats'] as Map?) ?? {});
+    return SuperAdminDashboardData(
+      buildings: rawList
+          .whereType<Map>()
+          .map((e) => SuperAdminBuildingItem.fromJson(Map<String, dynamic>.from(e)))
+          .toList(),
+      totalBuildings: (stats['total_buildings'] as num?)?.toInt() ?? rawList.length,
+      activeBuildings: (stats['active_buildings'] as num?)?.toInt() ?? 0,
+      trialBuildings: (stats['trial_buildings'] as num?)?.toInt() ?? 0,
+      suspendedBuildings: (stats['suspended_buildings'] as num?)?.toInt() ?? 0,
+      totalApts: (stats['total_apts'] as num?)?.toInt() ?? 0,
+      totalViews: (stats['total_views'] as num?)?.toInt() ?? 0,
+    );
+  }
+}
+
 class ApartmentInfo {
   final int aptNum;
   String displayName;

@@ -9,6 +9,7 @@ import '../../core/utils/push_notifications.dart';
 import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
 import '../../screens/admin_settings_screen.dart';
+import '../../screens/buildings_portal_screen.dart';
 import '../../screens/install_app_screen.dart';
 import '../dialogs/admin_login_dialog.dart';
 import '../dialogs/manage_apartments_dialog.dart';
@@ -25,10 +26,9 @@ class AppSideMenu extends StatelessWidget {
     this.onClose,
   });
 
-  static const String _managerWhatsApp = '201021950445';
-
-  Future<void> _contactManager() async {
-    final uri = Uri.parse('https://wa.me/$_managerWhatsApp');
+  Future<void> _contactManager(String waNumber) async {
+    if (waNumber.isEmpty) return;
+    final uri = Uri.parse('https://wa.me/$waNumber');
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
@@ -44,6 +44,12 @@ class AppSideMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = state.s;
     final isDark = state.isDarkMode;
+    final waNumber = state.building.normalizedWhatsapp;
+    final headerSub = !state.building.isDefaultBuilding
+        ? (state.building.city.isNotEmpty
+            ? '${state.building.city} • ${state.building.code}'
+            : s.buildingCodeBadge(state.building.code))
+        : s.splashTagline;
 
     return Material(
       color: Colors.transparent,
@@ -94,7 +100,9 @@ class AppSideMenu extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              s.appTitle,
+                              state.displayBuildingName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: AppTypography.title.copyWith(
                                 color: AppColors.textPrimary(isDark),
                                 fontWeight: FontWeight.w900,
@@ -102,7 +110,9 @@ class AppSideMenu extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              s.splashTagline,
+                              headerSub,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: AppTypography.caption.copyWith(
                                 color: AppColors.textSecondary(isDark),
                               ),
@@ -370,6 +380,20 @@ class AppSideMenu extends StatelessWidget {
                       },
                     ),
                     _drawerTile(
+                      icon: Icons.domain_rounded,
+                      label: s.buildingsPortalNavLabel,
+                      isDark: isDark,
+                      accentColor: AppColors.emeraldText(isDark),
+                      onTap: () {
+                        _close(context);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const BuildingsPortalScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _drawerTile(
                       icon: Icons.logout_rounded,
                       label: s.adminLogoutBtn,
                       isDark: isDark,
@@ -407,21 +431,24 @@ class AppSideMenu extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextButton.icon(
-                      onPressed: _contactManager,
-                      icon: Icon(
-                        Icons.chat_rounded,
-                        size: 16,
-                        color: AppColors.emeraldText(isDark),
-                      ),
-                      label: Text(
-                        s.contactManagerBtn,
-                        style: AppTypography.label.copyWith(
+                    if (waNumber.isNotEmpty)
+                      TextButton.icon(
+                        onPressed: () => _contactManager(waNumber),
+                        icon: Icon(
+                          Icons.chat_rounded,
+                          size: 16,
                           color: AppColors.emeraldText(isDark),
-                          fontWeight: FontWeight.w700,
                         ),
-                      ),
-                    ),
+                        label: Text(
+                          s.contactManagerBtn,
+                          style: AppTypography.label.copyWith(
+                            color: AppColors.emeraldText(isDark),
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      )
+                    else
+                      const SizedBox.shrink(),
                     Padding(
                       padding: const EdgeInsetsDirectional.only(end: AppSpacing.sm),
                       child: Text(

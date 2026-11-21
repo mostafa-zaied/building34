@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_shadows.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/utils/web_url.dart';
 import '../../cubit/building_cubit.dart';
 import '../../cubit/building_state.dart';
 import '../../models/building_models.dart';
@@ -87,7 +89,7 @@ class TopBar extends StatelessWidget {
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: _SecretAdminTitle(
-                  title: s.appTitle,
+                  title: state.displayBuildingName,
                   style: AppTypography.headline.copyWith(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
@@ -210,6 +212,52 @@ class TopBar extends StatelessWidget {
                   ],
                 ),
               ),
+              if (!state.building.isDefaultBuilding) ...[
+                const Spacer(),
+                InkWell(
+                  onTap: () async {
+                    final url = buildBuildingShareUrl(state.building.code);
+                    await Clipboard.setData(ClipboardData(text: url));
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(s.buildingCodeCopiedToast),
+                        backgroundColor: AppColors.emerald,
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.14),
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                      border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.35),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          state.building.code,
+                          style: AppTypography.caption.copyWith(
+                            color: AppColors.primaryText(isDark),
+                            fontWeight: FontWeight.w800,
+                            fontSize: 11,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.copy_rounded,
+                          size: 12,
+                          color: AppColors.primaryText(isDark),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ],

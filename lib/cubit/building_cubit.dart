@@ -1,27 +1,41 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../core/utils/push_notifications.dart';
+import '../core/utils/web_url.dart';
 import '../models/building_models.dart';
 import '../services/building_service.dart';
 import 'building_state.dart';
 
 class BuildingCubit extends Cubit<BuildingState> {
   final BuildingService _service;
+  bool _hasLoadedOnce = false;
   bool _viewRecordedThisSession = false;
   String _visitorId = '';
   RealtimeChannel? _liveChannel;
+  int? _liveBuildingId;
   Timer? _realtimeDebounce;
   bool _refreshingSilently = false;
 
   BuildingCubit(this._service) : super(const BuildingState());
 
-  void _ensureLiveSubscription() {
-    if (_liveChannel != null) return;
-    _liveChannel = _service.subscribeToLiveUpdates(() {
+  BuildingService get service => _service;
+  int get _bId => state.building.id;
+
+  String _bKey(int buildingId, String suffix) => 'b_${buildingId}_$suffix';
+
+  void _ensureLiveSubscription(int buildingId) {
+    if (_liveChannel != null && _liveBuildingId == buildingId) return;
+    if (_liveChannel != null) {
+      unawaited(_service.unsubscribeLiveUpdates(_liveChannel));
+      _liveChannel = null;
+    }
+    _liveBuildingId = buildingId;
+    _liveChannel = _service.subscribeToLiveUpdates(buildingId, () {
       if (isClosed) return;
       _realtimeDebounce?.cancel();
       _realtimeDebounce = Timer(const Duration(milliseconds: 1200), () {
@@ -49,18 +63,97 @@ class BuildingCubit extends Cubit<BuildingState> {
     }
   }
 
-  Future<void> loadData({int? preserveMonthIndex}) async {
-    emit(state.copyWith(loading: true));
+  List<SavedBuildingRef> _readSavedBuildings(SharedPreferences prefs) {
     try {
+      final raw = prefs.getString('saved_buildings_v1');
+      if (raw == null || raw.isEmpty) return const [];
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return const [];
+      return decoded
+          .whereType<Map>()
+          .map((e) => SavedBuildingRef.fromJson(Map<String, dynamic>.from(e)))
+          .toList();
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  Future<List<SavedBuildingRef>> _upsertSavedBuilding(
+    SharedPreferences prefs,
+    BuildingInfo b,
+  ) async {
+    final existing = _readSavedBuildings(prefs);
+    final updated = <SavedBuildingRef>[
+      SavedBuildingRef.fromBuilding(b),
+      ...existing.where((item) => item.id != b.id),
+    ].take(12).toList();
+    try {
+      await prefs.setString(
+        'saved_buildings_v1',
+        jsonEncode(updated.map((e) => e.toJson()).toList()),
+      );
+    } catch (_) {}
+    return updated;
+  }
+
+  Future<void> loadData({
+    int? preserveMonthIndex,
+    String? buildingCode,
+    bool forceDefaultBuilding = false,
+  }) async {
+    emit(state.copyWith(loading: true, buildingNotFound: false));
+    try {
+      final String? targetCode;
+      if (forceDefaultBuilding) {
+        targetCode = null;
+      } else if (buildingCode != null && buildingCode.trim().isNotEmpty) {
+        targetCode = buildingCode.trim().toUpperCase();
+      } else if (!_hasLoadedOnce) {
+        targetCode = getInitialBuildingCodeFromUrl();
+      } else {
+        targetCode = state.building.isDefaultBuilding ? null : state.building.code;
+      }
+      final targetBuildingId = forceDefaultBuilding ? 1 : state.building.id;
+
       late final BuildingDataState data;
       try {
-        data = await _service.fetchAll().timeout(const Duration(seconds: 15));
+        data = await _service
+            .fetchAll(buildingId: targetBuildingId, buildingCode: targetCode)
+            .timeout(const Duration(seconds: 15));
+      } on BuildingNotFoundException {
+        _hasLoadedOnce = true;
+        List<SavedBuildingRef> saved = state.savedBuildings;
+        try {
+          final prefs = await SharedPreferences.getInstance().timeout(
+            const Duration(milliseconds: 500),
+          );
+          saved = _readSavedBuildings(prefs);
+        } catch (_) {}
+        emit(state.copyWith(
+          loading: false,
+          buildingNotFound: true,
+          savedBuildings: saved,
+        ));
+        return;
       } catch (_) {
         // Silent 1-time auto-retry for transient server/DNS blips
         await Future<void>.delayed(const Duration(milliseconds: 1500));
-        data = await _service.fetchAll().timeout(const Duration(seconds: 15));
+        data = await _service
+            .fetchAll(buildingId: targetBuildingId, buildingCode: targetCode)
+            .timeout(const Duration(seconds: 15));
       }
-      final posts = await _service.fetchFeedbackPosts().timeout(const Duration(seconds: 12));
+
+      _hasLoadedOnce = true;
+      final bId = data.building.id;
+      updateBrowserBuildingUrl(
+        data.building.code,
+        isDefaultBuilding: data.building.isDefaultBuilding,
+      );
+
+      final posts = await _service
+          .fetchFeedbackPosts(buildingId: bId)
+          .timeout(const Duration(seconds: 12));
+
       int targetIdx = preserveMonthIndex ?? state.selectedMonthIndex;
       if (preserveMonthIndex == null && state.months.isEmpty) {
         final novIndex = data.months.indexWhere((m) => m.monthNum == 11);
@@ -72,19 +165,28 @@ class BuildingCubit extends Cubit<BuildingState> {
         targetIdx = data.months.isNotEmpty ? data.months.length - 1 : 0;
       }
 
-      int? savedAptNum = state.myAptNum;
-      String? savedAptPass = state.savedAptPass;
-      bool isAdminAuthed = state.isAdminAuthenticated;
-      String adminPass = state.adminPass;
+      int? savedAptNum;
+      String? savedAptPass;
+      bool isAdminAuthed = false;
+      String adminPass = '';
       String visitorId = _visitorId;
-      Set<String> readNotifIds = state.readNotificationIds;
+      Set<String> readNotifIds = const {};
+      List<SavedBuildingRef> savedBuildings = state.savedBuildings;
+
       try {
         final prefs = await SharedPreferences.getInstance().timeout(
-          const Duration(milliseconds: 250),
+          const Duration(milliseconds: 500),
         );
-        savedAptNum = prefs.getInt('my_apt_num');
-        savedAptPass = savedAptNum != null ? prefs.getString('my_apt_pass') : null;
-        final savedRead = prefs.getStringList('read_notif_ids');
+        savedBuildings = await _upsertSavedBuilding(prefs, data.building);
+
+        savedAptNum = prefs.getInt(_bKey(bId, 'my_apt_num')) ??
+            (bId == 1 ? prefs.getInt('my_apt_num') : null);
+        savedAptPass = savedAptNum != null
+            ? (prefs.getString(_bKey(bId, 'my_apt_pass')) ??
+                (bId == 1 ? prefs.getString('my_apt_pass') : null))
+            : null;
+        final savedRead = prefs.getStringList(_bKey(bId, 'read_notif_ids')) ??
+            (bId == 1 ? prefs.getStringList('read_notif_ids') : null);
         if (savedRead != null) {
           readNotifIds = savedRead.toSet();
         }
@@ -94,18 +196,20 @@ class BuildingCubit extends Cubit<BuildingState> {
           visitorId = 'v_${DateTime.now().microsecondsSinceEpoch}_$rnd';
           await prefs.setString('visitor_id', visitorId);
         }
-        final savedAdminPass = prefs.getString('admin_pass');
+        final savedAdminPass = prefs.getString(_bKey(bId, 'admin_pass')) ??
+            (bId == 1 ? prefs.getString('admin_pass') : null);
         if (savedAdminPass != null && savedAdminPass.isNotEmpty) {
           isAdminAuthed = true;
           adminPass = savedAdminPass;
           try {
             final err = await _service
-                .verifyAdminPass(savedAdminPass)
+                .verifyAdminPass(savedAdminPass, buildingId: bId)
                 .timeout(const Duration(seconds: 6), onTimeout: () => null);
             if (err == 'err_wrong_admin_pass' ||
                 err == 'كلمة سر المدير غير صحيحة' ||
                 err == 'كلمة سر المسؤول غير صحيحة') {
-              await prefs.remove('admin_pass');
+              await prefs.remove(_bKey(bId, 'admin_pass'));
+              if (bId == 1) await prefs.remove('admin_pass');
               isAdminAuthed = false;
               adminPass = '';
             }
@@ -118,22 +222,30 @@ class BuildingCubit extends Cubit<BuildingState> {
           : 'v_${DateTime.now().microsecondsSinceEpoch}';
       if (!_viewRecordedThisSession) {
         _viewRecordedThisSession = true;
-        unawaited(_service.recordPageView(_visitorId));
+        unawaited(_service.recordPageView(_visitorId, buildingId: bId));
       }
 
-      PageViewStats? viewStats = state.pageViewStats;
+      PageViewStats? viewStats;
       if (isAdminAuthed) {
-        viewStats = await _service.fetchPageViewStatsAsAdmin(adminPass);
+        viewStats = await _service.fetchPageViewStatsAsAdmin(
+          adminPass,
+          buildingId: bId,
+        );
       }
       final notifs = await _service
           .fetchAppNotifications(
+            buildingId: bId,
             adminPass: isAdminAuthed ? adminPass : null,
             aptNum: savedAptNum,
           )
-          .timeout(const Duration(seconds: 10), onTimeout: () => state.notifications);
+          .timeout(const Duration(seconds: 10), onTimeout: () => const []);
 
       emit(state.copyWith(
         loading: false,
+        building: data.building,
+        supportWhatsapp: data.supportWhatsapp,
+        savedBuildings: savedBuildings,
+        buildingNotFound: false,
         isAdminAuthenticated: isAdminAuthed,
         adminPass: adminPass,
         baseEmergency: data.baseEmergencyFund,
@@ -152,8 +264,14 @@ class BuildingCubit extends Cubit<BuildingState> {
         notifications: notifs,
         readNotificationIds: readNotifIds,
       ));
-      _ensureLiveSubscription();
+      _ensureLiveSubscription(bId);
       unawaited(syncPushTokenIfGranted());
+    } on BuildingNotFoundException {
+      _hasLoadedOnce = true;
+      emit(state.copyWith(
+        loading: false,
+        buildingNotFound: true,
+      ));
     } catch (e) {
       emit(state.copyWith(
         loading: false,
@@ -165,16 +283,20 @@ class BuildingCubit extends Cubit<BuildingState> {
 
   /// Smooth silent refresh used by Pull-to-Refresh and Supabase Realtime live sync.
   Future<void> refreshData({bool fromRealtime = false}) async {
-    if (_refreshingSilently || isClosed) return;
+    if (_refreshingSilently || isClosed || state.buildingNotFound) return;
     if (fromRealtime && (state.loading || state.busy || state.isAdminOpen)) return;
     _refreshingSilently = true;
+    final bId = state.building.id;
     try {
-      final data = await _service.fetchAll().timeout(const Duration(seconds: 15));
+      final data = await _service
+          .fetchAll(buildingId: bId)
+          .timeout(const Duration(seconds: 15));
       final posts = await _service
-          .fetchFeedbackPosts()
+          .fetchFeedbackPosts(buildingId: bId)
           .timeout(const Duration(seconds: 12), onTimeout: () => state.feedbackPosts);
       final notifs = await _service
           .fetchAppNotifications(
+            buildingId: bId,
             adminPass: state.isAdminAuthenticated ? state.adminPass : null,
             aptNum: state.myAptNum,
           )
@@ -186,6 +308,8 @@ class BuildingCubit extends Cubit<BuildingState> {
           : state.selectedMonthIndex.clamp(0, data.months.length - 1);
 
       emit(state.copyWith(
+        building: data.building,
+        supportWhatsapp: data.supportWhatsapp,
         baseEmergency: data.baseEmergencyFund,
         months: data.months,
         apartmentNames: data.apartmentNames,
@@ -203,6 +327,139 @@ class BuildingCubit extends Cubit<BuildingState> {
     } finally {
       _refreshingSilently = false;
     }
+  }
+
+  Future<String?> switchToBuildingByCode(String rawCode) async {
+    final clean = rawCode.trim().toUpperCase();
+    if (clean.isEmpty) return state.s.errEmptyMessage;
+
+    final found = await _service.fetchBuildingByCode(clean);
+    if (found == null) {
+      return _localizeError('err_building_not_found');
+    }
+
+    await _resetBeforeSwitch();
+    await loadData(
+      buildingCode: found.code,
+      forceDefaultBuilding: found.isDefaultBuilding,
+    );
+    return null;
+  }
+
+  Future<void> switchToDefaultBuilding() async {
+    await _resetBeforeSwitch();
+    await loadData(forceDefaultBuilding: true);
+  }
+
+  Future<void> _resetBeforeSwitch() async {
+    _realtimeDebounce?.cancel();
+    await _service.unsubscribeLiveUpdates(_liveChannel);
+    _liveChannel = null;
+    _liveBuildingId = null;
+    _viewRecordedThisSession = false;
+    emit(state.copyWith(
+      isAdminAuthenticated: false,
+      isAdminOpen: false,
+      adminPass: '',
+      months: const [],
+      apartmentNames: const {},
+      selectedMonthIndex: 0,
+      selectedNavIndex: 0,
+      myAptNum: () => null,
+      savedAptPass: () => null,
+      pageViewStats: () => null,
+      notifications: const [],
+      readNotificationIds: const {},
+      buildingNotFound: false,
+    ));
+  }
+
+  Future<({BuildingInfo? building, String? error})> registerNewBuilding({
+    required String name,
+    String city = '',
+    int aptsCount = 12,
+    required String adminPass,
+    String instapayPhone = '',
+    String instapayUrl = '',
+    String managerWhatsapp = '',
+  }) async {
+    late ({BuildingInfo? building, String? error}) res;
+    await _withBusy(() async {
+      res = await _service.registerBuilding(
+        name: name,
+        city: city,
+        aptsCount: aptsCount,
+        adminPass: adminPass,
+        instapayPhone: instapayPhone,
+        instapayUrl: instapayUrl,
+        managerWhatsapp: managerWhatsapp,
+      );
+    });
+    if (res.error != null || res.building == null) {
+      return (
+        building: null,
+        error: _localizeError(res.error ?? 'err_submit_failed'),
+      );
+    }
+
+    final created = res.building!;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_bKey(created.id, 'admin_pass'), adminPass.trim());
+    } catch (_) {}
+
+    await _resetBeforeSwitch();
+    await loadData(buildingCode: created.code);
+    return (building: created, error: null);
+  }
+
+  Future<String?> updateBuildingProfile({
+    required String name,
+    String city = '',
+    String instapayPhone = '',
+    String instapayUrl = '',
+    String managerWhatsapp = '',
+  }) async {
+    if (!state.isAdminAuthenticated) return state.s.errWrongAdminPass;
+    String? localizedErr;
+    await _withBusy(() async {
+      final err = await _service.updateBuildingProfileAsAdmin(
+        buildingId: _bId,
+        adminPass: state.adminPass,
+        name: name,
+        city: city,
+        instapayPhone: instapayPhone,
+        instapayUrl: instapayUrl,
+        managerWhatsapp: managerWhatsapp,
+      );
+      if (err != null) {
+        localizedErr = _localizeError(err);
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ $localizedErr',
+          feedbackIsError: true,
+        ));
+        return;
+      }
+      final updatedBuilding = state.building.copyWith(
+        name: name.trim(),
+        city: city.trim(),
+        instapayPhone: instapayPhone.trim(),
+        instapayUrl: instapayUrl.trim(),
+        managerWhatsapp: managerWhatsapp.trim(),
+      );
+      List<SavedBuildingRef> saved = state.savedBuildings;
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        saved = await _upsertSavedBuilding(prefs, updatedBuilding);
+      } catch (_) {}
+      emit(state.copyWith(
+        building: updatedBuilding,
+        savedBuildings: saved,
+        feedbackMessage: () => state.s.buildingProfileSavedToast,
+        feedbackIsError: false,
+      ));
+    });
+    return localizedErr;
   }
 
   String _localizeError(String err) {
@@ -239,6 +496,10 @@ class BuildingCubit extends Cubit<BuildingState> {
         return s.errPassTooShort;
       case 'err_pass_already_set':
         return s.errPassAlreadySet;
+      case 'err_building_not_found':
+        return s.errBuildingNotFound;
+      case 'err_wrong_super_pass':
+        return s.errWrongSuperPass;
       default:
         return err;
     }
@@ -263,6 +524,7 @@ class BuildingCubit extends Cubit<BuildingState> {
   }) async {
     final authorLabel = aptNum != null ? state.aptLabel(aptNum) : null;
     final err = await _service.submitFeedbackPost(
+      buildingId: _bId,
       type: type,
       message: message,
       aptNum: aptNum,
@@ -284,7 +546,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     if (aptNum != null && passcode != null && passcode.trim().isNotEmpty) {
       await _saveAptSession(aptNum, passcode.trim());
     }
-    final posts = await _service.fetchFeedbackPosts();
+    final posts = await _service.fetchFeedbackPosts(buildingId: _bId);
     emit(state.copyWith(
       feedbackPosts: posts,
       feedbackMessage: () => state.s.postAddedToast,
@@ -306,6 +568,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     if (!state.isAdminOpen) return;
     await _withBusy(() async {
       final err = await _service.deleteFeedbackPost(
+        buildingId: _bId,
         adminPass: state.adminPass,
         id: id,
       );
@@ -316,7 +579,7 @@ class BuildingCubit extends Cubit<BuildingState> {
         ));
         return;
       }
-      final posts = await _service.fetchFeedbackPosts();
+      final posts = await _service.fetchFeedbackPosts(buildingId: _bId);
       emit(state.copyWith(feedbackPosts: posts));
     });
   }
@@ -325,7 +588,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     bool ok = false;
     await _withBusy(() async {
       final clean = pass.trim();
-      final err = await _service.verifyAdminPass(clean);
+      final err = await _service.verifyAdminPass(clean, buildingId: _bId);
       if (err != null) {
         emit(state.copyWith(
           feedbackMessage: showErrorToast ? () => '❌ ${_localizeError(err)}' : null,
@@ -343,11 +606,16 @@ class BuildingCubit extends Cubit<BuildingState> {
       ));
       try {
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('admin_pass', clean);
+        await prefs.setString(_bKey(_bId, 'admin_pass'), clean);
+        if (_bId == 1) await prefs.setString('admin_pass', clean);
       } catch (_) {}
       unawaited(() async {
-        final viewStats = await _service.fetchPageViewStatsAsAdmin(clean);
+        final viewStats = await _service.fetchPageViewStatsAsAdmin(
+          clean,
+          buildingId: _bId,
+        );
         final notifs = await _service.fetchAppNotifications(
+          buildingId: _bId,
           adminPass: clean,
           aptNum: state.myAptNum,
         );
@@ -373,7 +641,10 @@ class BuildingCubit extends Cubit<BuildingState> {
   Future<void> refreshPageViewStats({bool showBusy = true}) async {
     if (!state.isAdminAuthenticated) return;
     Future<void> run() async {
-      final stats = await _service.fetchPageViewStatsAsAdmin(state.adminPass);
+      final stats = await _service.fetchPageViewStatsAsAdmin(
+        state.adminPass,
+        buildingId: _bId,
+      );
       if (stats != null) {
         emit(state.copyWith(pageViewStats: () => stats));
       }
@@ -392,6 +663,7 @@ class BuildingCubit extends Cubit<BuildingState> {
       final prev = state.requireAptPassOnOpen;
       emit(state.copyWith(requireAptPassOnOpen: enabled));
       final err = await _service.setRequireAptPassOnOpenAsAdmin(
+        buildingId: _bId,
         adminPass: state.adminPass,
         enabled: enabled,
       );
@@ -408,9 +680,13 @@ class BuildingCubit extends Cubit<BuildingState> {
   Future<void> logoutAdmin() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('admin_pass');
+      await prefs.remove(_bKey(_bId, 'admin_pass'));
+      if (_bId == 1) await prefs.remove('admin_pass');
     } catch (_) {}
-    final notifs = await _service.fetchAppNotifications(aptNum: state.myAptNum);
+    final notifs = await _service.fetchAppNotifications(
+      buildingId: _bId,
+      aptNum: state.myAptNum,
+    );
     emit(state.copyWith(
       isAdminAuthenticated: false,
       isAdminOpen: false,
@@ -432,6 +708,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     String? localizedErr;
     await _withBusy(() async {
       final err = await _service.changeAdminPassword(
+        buildingId: _bId,
         currentPass: cleanCur,
         newPass: cleanNew,
       );
@@ -441,7 +718,8 @@ class BuildingCubit extends Cubit<BuildingState> {
       }
       try {
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('admin_pass', cleanNew);
+        await prefs.setString(_bKey(_bId, 'admin_pass'), cleanNew);
+        if (_bId == 1) await prefs.setString('admin_pass', cleanNew);
       } catch (_) {}
       emit(state.copyWith(
         adminPass: cleanNew,
@@ -511,6 +789,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     if (m == null) return;
     await _withBusy(() async {
       final err = await _service.updateMonthAsAdmin(
+        buildingId: _bId,
         adminPass: state.adminPass,
         month: m,
         baseEmergency: state.baseEmergency,
@@ -541,6 +820,7 @@ class BuildingCubit extends Cubit<BuildingState> {
 
     await _withBusy(() async {
       final err = await _service.updateMonthAsAdmin(
+        buildingId: _bId,
         adminPass: state.adminPass,
         month: m,
         baseEmergency: state.baseEmergency,
@@ -585,6 +865,7 @@ class BuildingCubit extends Cubit<BuildingState> {
 
     await _withBusy(() async {
       final err = await _service.updateMonthAsAdmin(
+        buildingId: _bId,
         adminPass: state.adminPass,
         month: m,
         baseEmergency: state.baseEmergency,
@@ -609,7 +890,10 @@ class BuildingCubit extends Cubit<BuildingState> {
   Future<void> addNextMonth() async {
     if (!state.isAdminOpen) return;
     await _withBusy(() async {
-      final err = await _service.addNextMonthAsAdmin(state.adminPass);
+      final err = await _service.addNextMonthAsAdmin(
+        state.adminPass,
+        buildingId: _bId,
+      );
       if (err != null) {
         emit(state.copyWith(
           feedbackMessage: () => '❌ ${_localizeError(err)}',
@@ -650,6 +934,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     if (m == null) return;
     await _withBusy(() async {
       final err = await _service.deleteMonthAsAdmin(
+        buildingId: _bId,
         adminPass: state.adminPass,
         monthId: m.id,
       );
@@ -678,6 +963,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     final m = state.currentMonth;
     if (m == null) return state.s.errNoMonth;
     final err = await _service.submitApartmentPayment(
+      buildingId: _bId,
       month: m,
       aptNum: aptNum,
       passcode: passcode,
@@ -687,7 +973,6 @@ class BuildingCubit extends Cubit<BuildingState> {
     if (err == null) {
       await _saveAptSession(aptNum, passcode.trim());
       await loadData(preserveMonthIndex: state.selectedMonthIndex);
-      // Auto-notify admins that an apartment uploaded a payment receipt
       _triggerAutoPush(
         title: state.s.pushAutoPaymentTitle,
         body: state.s.pushAutoPaymentBody(state.aptLabel(aptNum)),
@@ -708,6 +993,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     if (m == null) return;
     await _withBusy(() async {
       final err = await _service.cancelPaymentAsAdmin(
+        buildingId: _bId,
         adminPass: state.adminPass,
         month: m,
         aptNum: aptNum,
@@ -726,6 +1012,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     bool ok = false;
     await _withBusy(() async {
       final err = await _service.cancelPaymentAsResident(
+        buildingId: _bId,
         month: m,
         aptNum: aptNum,
         passcode: state.savedAptPass ?? '',
@@ -747,6 +1034,7 @@ class BuildingCubit extends Cubit<BuildingState> {
       return (apartments: null, error: state.s.errNoMonth);
     }
     final res = await _service.fetchAdminApartments(
+      buildingId: _bId,
       adminPass: state.adminPass,
       aptsCount: m.aptsCount,
     );
@@ -764,6 +1052,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     String? firstErr;
     for (final a in apts) {
       final err = await _service.updateApartmentAsAdmin(
+        buildingId: _bId,
         adminPass: state.adminPass,
         aptNum: a.aptNum,
         displayName: names[a.aptNum] ?? '',
@@ -796,7 +1085,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     }
     if (state.localeCode == 'en') {
       final lines = <String>[
-        'Building Expenses — Month ${m.monthNum}:',
+        '${state.displayBuildingName} — Month ${m.monthNum}:',
         '------------------',
         '✅ Paid (${paidList.length}/${m.aptsCount}): ${paidList.isEmpty ? 'None yet' : paidList.map(state.aptLabel).join(', ')}',
       ];
@@ -812,8 +1101,11 @@ class BuildingCubit extends Cubit<BuildingState> {
       return lines.join('\n');
     }
 
+    final prefix = state.building.isDefaultBuilding
+        ? 'مصاريف العمارة لشهر ${m.monthNum}:'
+        : '${state.displayBuildingName} — مصاريف شهر ${m.monthNum}:';
     final lines = <String>[
-      'مصاريف العمارة لشهر ${m.monthNum}:',
+      prefix,
       '------------------',
       '✅ تم السداد (${paidList.length} من ${m.aptsCount} شقة): ${paidList.isEmpty ? 'لا يوجد بعد' : paidList.map(state.aptLabel).join('، ')}',
     ];
@@ -830,7 +1122,11 @@ class BuildingCubit extends Cubit<BuildingState> {
   }
 
   Future<String?> unlockApartment(int aptNum, String passcode) async {
-    final err = await _service.verifyApartmentPasscode(aptNum, passcode);
+    final err = await _service.verifyApartmentPasscode(
+      aptNum,
+      passcode,
+      buildingId: _bId,
+    );
     if (err != null) {
       return _localizeError(err);
     }
@@ -839,7 +1135,11 @@ class BuildingCubit extends Cubit<BuildingState> {
   }
 
   Future<String?> setInitialApartmentPasscode(int aptNum, String passcode) async {
-    final err = await _service.setInitialApartmentPasscode(aptNum, passcode);
+    final err = await _service.setInitialApartmentPasscode(
+      aptNum,
+      passcode,
+      buildingId: _bId,
+    );
     if (err != null) {
       return _localizeError(err);
     }
@@ -855,6 +1155,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     return _withBusy(() async {
       final err = await _service.resetAllApartmentPasscodesAsAdmin(
         state.adminPass,
+        buildingId: _bId,
       );
       if (err != null) {
         emit(state.copyWith(
@@ -880,8 +1181,12 @@ class BuildingCubit extends Cubit<BuildingState> {
     ));
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setInt('my_apt_num', aptNum);
-      await prefs.setString('my_apt_pass', passcode);
+      await prefs.setInt(_bKey(_bId, 'my_apt_num'), aptNum);
+      await prefs.setString(_bKey(_bId, 'my_apt_pass'), passcode);
+      if (_bId == 1) {
+        await prefs.setInt('my_apt_num', aptNum);
+        await prefs.setString('my_apt_pass', passcode);
+      }
     } catch (_) {}
   }
 
@@ -889,7 +1194,8 @@ class BuildingCubit extends Cubit<BuildingState> {
     emit(state.copyWith(savedAptPass: () => null));
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('my_apt_pass');
+      await prefs.remove(_bKey(_bId, 'my_apt_pass'));
+      if (_bId == 1) await prefs.remove('my_apt_pass');
     } catch (_) {}
   }
 
@@ -902,12 +1208,18 @@ class BuildingCubit extends Cubit<BuildingState> {
     try {
       final prefs = await SharedPreferences.getInstance();
       if (aptNum == null) {
-        await prefs.remove('my_apt_num');
-        await prefs.remove('my_apt_pass');
-      } else {
-        await prefs.setInt('my_apt_num', aptNum);
-        if (changed) {
+        await prefs.remove(_bKey(_bId, 'my_apt_num'));
+        await prefs.remove(_bKey(_bId, 'my_apt_pass'));
+        if (_bId == 1) {
+          await prefs.remove('my_apt_num');
           await prefs.remove('my_apt_pass');
+        }
+      } else {
+        await prefs.setInt(_bKey(_bId, 'my_apt_num'), aptNum);
+        if (_bId == 1) await prefs.setInt('my_apt_num', aptNum);
+        if (changed) {
+          await prefs.remove(_bKey(_bId, 'my_apt_pass'));
+          if (_bId == 1) await prefs.remove('my_apt_pass');
         }
       }
     } catch (_) {}
@@ -917,6 +1229,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     if (!state.isAdminOpen) return;
     await _withBusy(() async {
       final err = await _service.saveAnnouncement(
+        buildingId: _bId,
         adminPass: state.adminPass,
         announcement: text,
       );
@@ -957,6 +1270,7 @@ class BuildingCubit extends Cubit<BuildingState> {
         return;
       }
       final saved = await _service.registerPushToken(
+        buildingId: _bId,
         token: token,
         aptNum: state.myAptNum,
         isAdmin: state.isAdminAuthenticated,
@@ -972,13 +1286,12 @@ class BuildingCubit extends Cubit<BuildingState> {
     return ok;
   }
 
-  /// Automatically requests push permission on app open (or syncs if already granted)
-  /// and registers the device token in Supabase.
   Future<void> syncPushTokenIfGranted() async {
     try {
       final token = await autoPromptPushTokenOnOpen();
       if (token == null || token.isEmpty) return;
       await _service.registerPushToken(
+        buildingId: _bId,
         token: token,
         aptNum: state.myAptNum,
         isAdmin: state.isAdminAuthenticated,
@@ -989,7 +1302,6 @@ class BuildingCubit extends Cubit<BuildingState> {
     } catch (_) {}
   }
 
-  /// Fire-and-forget automatic push notification trigger.
   void _triggerAutoPush({
     required String title,
     required String body,
@@ -999,6 +1311,7 @@ class BuildingCubit extends Cubit<BuildingState> {
   }) {
     _service
         .sendPushNotification(
+          buildingId: _bId,
           title: title,
           body: body,
           audience: audience,
@@ -1012,6 +1325,7 @@ class BuildingCubit extends Cubit<BuildingState> {
   Future<void> refreshNotifications() async {
     try {
       final notifs = await _service.fetchAppNotifications(
+        buildingId: _bId,
         adminPass: state.isAdminAuthenticated ? state.adminPass : null,
         aptNum: state.myAptNum,
       );
@@ -1027,7 +1341,8 @@ class BuildingCubit extends Cubit<BuildingState> {
     emit(state.copyWith(readNotificationIds: updated));
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setStringList('read_notif_ids', updated.toList());
+      await prefs.setStringList(_bKey(_bId, 'read_notif_ids'), updated.toList());
+      if (_bId == 1) await prefs.setStringList('read_notif_ids', updated.toList());
     } catch (_) {}
   }
 
@@ -1040,13 +1355,15 @@ class BuildingCubit extends Cubit<BuildingState> {
     emit(state.copyWith(readNotificationIds: updated));
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setStringList('read_notif_ids', updated.toList());
+      await prefs.setStringList(_bKey(_bId, 'read_notif_ids'), updated.toList());
+      if (_bId == 1) await prefs.setStringList('read_notif_ids', updated.toList());
     } catch (_) {}
   }
 
   Future<bool> deleteAppNotification(String id) async {
     if (!state.isAdminAuthenticated) return false;
     final err = await _service.deleteAppNotificationAsAdmin(
+      buildingId: _bId,
       adminPass: state.adminPass,
       id: id,
     );
@@ -1058,6 +1375,7 @@ class BuildingCubit extends Cubit<BuildingState> {
       return false;
     }
     final notifs = await _service.fetchAppNotifications(
+      buildingId: _bId,
       adminPass: state.adminPass,
     );
     emit(state.copyWith(notifications: notifs));
@@ -1066,11 +1384,12 @@ class BuildingCubit extends Cubit<BuildingState> {
 
   Future<Set<int>> fetchPushRegisteredApts() async {
     if (!state.isAdminAuthenticated) return const {};
-    return _service.fetchPushRegisteredApts(state.adminPass);
+    return _service.fetchPushRegisteredApts(
+      state.adminPass,
+      buildingId: _bId,
+    );
   }
 
-  /// Sends a manual broadcast notification from Admin Settings.
-  /// Supports `audience`: `'admins'` (default test), `'all'`, or `'apartments'` with `targetAptNums`.
   Future<bool> sendManualPushNotification({
     required String title,
     required String body,
@@ -1091,6 +1410,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     var success = false;
     await _withBusy(() async {
       final res = await _service.sendPushNotification(
+        buildingId: _bId,
         title: cleanTitle,
         body: cleanBody,
         audience: audience,
@@ -1116,6 +1436,7 @@ class BuildingCubit extends Cubit<BuildingState> {
       }
       success = true;
       final notifs = await _service.fetchAppNotifications(
+        buildingId: _bId,
         adminPass: state.adminPass,
         aptNum: state.myAptNum,
       );
@@ -1133,6 +1454,7 @@ class BuildingCubit extends Cubit<BuildingState> {
   Future<bool> addEmergencyTransaction(double amount, String reason) async {
     if (!state.isAdminOpen) return false;
     final err = await _service.addEmergencyTransaction(
+      buildingId: _bId,
       adminPass: state.adminPass,
       amount: amount,
       reason: reason,
@@ -1152,6 +1474,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     if (!state.isAdminOpen) return;
     await _withBusy(() async {
       final err = await _service.deleteEmergencyTransaction(
+        buildingId: _bId,
         adminPass: state.adminPass,
         id: id,
       );
@@ -1174,6 +1497,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     if (!state.isAdminOpen) return false;
     return _withBusy(() async {
       final err = await _service.updateFeedbackPostStatus(
+        buildingId: _bId,
         adminPass: state.adminPass,
         id: id,
         status: status,
@@ -1186,7 +1510,7 @@ class BuildingCubit extends Cubit<BuildingState> {
         ));
         return false;
       }
-      final posts = await _service.fetchFeedbackPosts();
+      final posts = await _service.fetchFeedbackPosts(buildingId: _bId);
       emit(state.copyWith(
         feedbackPosts: posts,
         feedbackMessage: () => state.s.monthSavedToast,
@@ -1205,6 +1529,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     final m = state.currentMonth;
     if (m == null) return false;
     final err = await _service.addExtraChargesAsAdmin(
+      buildingId: _bId,
       adminPass: state.adminPass,
       monthId: m.id,
       aptNums: aptNums,
@@ -1232,6 +1557,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     if (m == null) return;
     await _withBusy(() async {
       final err = await _service.deleteExtraChargeAsAdmin(
+        buildingId: _bId,
         adminPass: state.adminPass,
         monthId: m.id,
         id: id,
@@ -1256,6 +1582,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     if (m == null) return;
     await _withBusy(() async {
       final err = await _service.setUtilityReceiptAsAdmin(
+        buildingId: _bId,
         adminPass: state.adminPass,
         month: m,
         utility: utility,
@@ -1285,6 +1612,7 @@ class BuildingCubit extends Cubit<BuildingState> {
   }) async {
     return _withBusy(() async {
       final err = await _service.addBuildingContact(
+        buildingId: _bId,
         name: name,
         roleDesc: roleDesc,
         phone: phone,
@@ -1309,6 +1637,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     if (!state.isAdminOpen) return;
     await _withBusy(() async {
       final err = await _service.deleteBuildingContactAsAdmin(
+        buildingId: _bId,
         adminPass: state.adminPass,
         id: id,
       );
@@ -1329,6 +1658,7 @@ class BuildingCubit extends Cubit<BuildingState> {
     if (m == null) return;
     await _withBusy(() async {
       final err = await _service.deleteAllExtraChargesAsAdmin(
+        buildingId: _bId,
         adminPass: state.adminPass,
         monthId: m.id,
       );

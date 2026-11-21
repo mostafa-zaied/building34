@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_shadows.dart';
@@ -8,12 +9,14 @@ import '../core/theme/app_spacing.dart';
 import '../core/theme/app_typography.dart';
 import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
+import '../widgets/common/app_button.dart';
 import '../widgets/common/app_side_menu.dart';
 import '../widgets/common/busy_overlay.dart';
 import '../widgets/common/desktop_sidebar.dart';
 import '../widgets/common/network_banner.dart';
 import 'admin_views_screen.dart';
 import 'analytics_screen.dart';
+import 'buildings_portal_screen.dart';
 import 'contacts_screen.dart';
 import 'emergency_screen.dart';
 import 'feedback_screen.dart';
@@ -122,7 +125,11 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
             child: BusyOverlay(
             busy: state.busy,
             isDark: isDark,
-            child: LayoutBuilder(
+            child: state.buildingNotFound
+                ? _buildBuildingNotFoundScaffold(context, cubit, state, isDark)
+                : (!state.loading && state.building.isSuspended
+                    ? _buildSuspendedScaffold(context, state, isDark)
+                    : LayoutBuilder(
             builder: (context, constraints) {
               final isWide = constraints.maxWidth >= 720;
               final isExtended = constraints.maxWidth >= 1024;
@@ -188,7 +195,7 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
                   onPressed: _toggleDrawer,
                 ),
                 title: Text(
-                  s.appTitle,
+                  state.displayBuildingName,
                   style: AppTypography.headline.copyWith(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
@@ -410,11 +417,145 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
               child: frontScaffold,
             );
             },
-          ),
+          )),
           ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildBuildingNotFoundScaffold(
+    BuildContext context,
+    BuildingCubit cubit,
+    BuildingState state,
+    bool isDark,
+  ) {
+    final s = state.s;
+    return Scaffold(
+      backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: Padding(
+            padding: const EdgeInsetsDirectional.all(AppSpacing.xl),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Icon(
+                  Icons.search_off_rounded,
+                  size: 56,
+                  color: AppColors.amber,
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Text(
+                  s.buildingNotFoundTitle,
+                  textAlign: TextAlign.center,
+                  style: AppTypography.headline.copyWith(
+                    fontSize: 18,
+                    color: AppColors.textPrimary(isDark),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  s.buildingNotFoundBody,
+                  textAlign: TextAlign.center,
+                  style: AppTypography.body.copyWith(
+                    color: AppColors.textSecondary(isDark),
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                AppPrimaryButton(
+                  label: s.returnDefaultBuildingBtn,
+                  icon: Icons.home_rounded,
+                  onPressed: () => cubit.switchToDefaultBuilding(),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                AppSecondaryButton(
+                  label: s.openBuildingsPortalBtn,
+                  icon: Icons.domain_rounded,
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const BuildingsPortalScreen(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSuspendedScaffold(
+    BuildContext context,
+    BuildingState state,
+    bool isDark,
+  ) {
+    final s = state.s;
+    final b = state.building;
+    return Scaffold(
+      backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 440),
+          child: Padding(
+            padding: const EdgeInsetsDirectional.all(AppSpacing.xl),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Icon(
+                  Icons.pause_circle_outline_rounded,
+                  size: 62,
+                  color: AppColors.dangerText(isDark),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Text(
+                  s.suspendedTitle,
+                  textAlign: TextAlign.center,
+                  style: AppTypography.headline.copyWith(
+                    fontSize: 18,
+                    color: AppColors.textPrimary(isDark),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  s.suspendedBody(state.displayBuildingName, b.code),
+                  textAlign: TextAlign.center,
+                  style: AppTypography.body.copyWith(
+                    color: AppColors.textSecondary(isDark),
+                    height: 1.55,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                AppPrimaryButton(
+                  label: s.contactSupportWhatsappBtn,
+                  icon: Icons.chat_rounded,
+                  onPressed: () async {
+                    final digits = state.supportWhatsapp.replaceAll(RegExp(r'[^0-9]'), '');
+                    final uri = Uri.parse('https://wa.me/$digits');
+                    await launchUrl(uri, mode: LaunchMode.externalApplication);
+                  },
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                AppSecondaryButton(
+                  label: s.switchBuildingBtn,
+                  icon: Icons.domain_rounded,
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const BuildingsPortalScreen(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

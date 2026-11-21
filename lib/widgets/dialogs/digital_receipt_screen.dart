@@ -212,7 +212,9 @@ class _DigitalReceiptScreenState extends State<DigitalReceiptScreen> {
                                 ),
                                 const SizedBox(height: AppSpacing.md),
                                 Text(
-                                  s.digitalReceiptBrand,
+                                  widget.state.building.isDefaultBuilding
+                                      ? s.digitalReceiptBrand
+                                      : '${widget.state.displayBuildingName} • ${s.digitalReceiptBrand}',
                                   textAlign: TextAlign.center,
                                   style: AppTypography.caption.copyWith(
                                     color: Colors.white.withValues(alpha: 0.8),
@@ -375,7 +377,7 @@ class _DigitalReceiptScreenState extends State<DigitalReceiptScreen> {
                                             ),
                                           ),
                                           Text(
-                                            '${s.appTitle} • ${s.splashTagline}',
+                                            '${widget.state.displayBuildingName} • ${s.splashTagline}',
                                             style: AppTypography.caption.copyWith(
                                               color: AppColors.textSecondary(isDark),
                                             ),

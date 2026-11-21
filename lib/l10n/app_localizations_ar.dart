@@ -1270,4 +1270,264 @@ class AppLocalizationsAr extends AppLocalizations {
   String reportAptsCountUnit(int count) {
     return '$count شقة';
   }
+
+  @override
+  String get errBuildingNotFound => 'لم يتم العثور على عمارة بهذا الكود';
+
+  @override
+  String get errWrongSuperPass => 'كلمة سر مالك المنصة غير صحيحة';
+
+  @override
+  String get buildingProfileSavedToast => '✅ تم حفظ بيانات العمارة بنجاح';
+
+  @override
+  String get copyInstapayNumberBtn => 'نسخ رقم إنستاباي';
+
+  @override
+  String get buildingsPortalNavLabel => 'بوابة العمارات (SaaS)';
+
+  @override
+  String buildingCodeBadge(String code) {
+    return 'كود: $code';
+  }
+
+  @override
+  String get buildingCodeCopiedToast => '✅ تم نسخ رابط وكود العمارة';
+
+  @override
+  String get buildingNotFoundTitle => 'العمارة غير موجودة';
+
+  @override
+  String get buildingNotFoundBody =>
+      'تأكد من كود العمارة أو ارجع للعمارة الرئيسية أو سجّل عمارة جديدة.';
+
+  @override
+  String get returnDefaultBuildingBtn => 'العودة للعمارة الرئيسية';
+
+  @override
+  String get openBuildingsPortalBtn => 'فتح بوابة العمارات';
+
+  @override
+  String get suspendedTitle => 'انتهت صلاحية الاشتراك مؤقتاً';
+
+  @override
+  String suspendedBody(String name, String code) {
+    return 'تم إيقاف لوحة عمارة $name (كود: $code) مؤقتاً لانتهاء الفترة التجريبية أو الاشتراك. تواصل مع إدارة MABNA CARE للتفعيل الفوري.';
+  }
+
+  @override
+  String get contactSupportWhatsappBtn => 'تواصل مع دعم MABNA CARE عبر واتساب';
+
+  @override
+  String get switchBuildingBtn => 'تبديل إلى عمارة أخرى';
+
+  @override
+  String get buildingProfileTitle => 'هوية وبيانات العمارة';
+
+  @override
+  String get buildingProfileSubtitle =>
+      'تخصيص اسم العمارة ورقم التحويل والواتساب الخاص بها';
+
+  @override
+  String get buildingNameLabel => 'اسم العمارة';
+
+  @override
+  String get buildingCityLabel => 'المدينة / المنطقة (اختياري)';
+
+  @override
+  String get instapayPhoneLabel => 'رقم تحويل إنستاباي (اختياري)';
+
+  @override
+  String get instapayUrlLabel => 'رابط إنستاباي المباشر (اختياري)';
+
+  @override
+  String get managerWhatsappLabel => 'رقم واتساب المسؤول (اختياري)';
+
+  @override
+  String get saveBuildingProfileBtn => 'حفظ بيانات العمارة';
+
+  @override
+  String get shareLinkLabel => 'رابط العمارة للسكان';
+
+  @override
+  String get copyLinkBtn => 'نسخ الرابط';
+
+  @override
+  String get shareWhatsappBtn => 'مشاركة واتساب';
+
+  @override
+  String buildingShareWhatsappMsg(String name, String url, String code) {
+    return 'أهلاً بكم في تطبيق $name لمتابعة مصاريف العمارة والمدفوعات:\n$url\nكود العمارة: $code';
+  }
+
+  @override
+  String get subStatusActive => 'اشتراك نشط';
+
+  @override
+  String get subStatusTrial => 'تجربة مجانية';
+
+  @override
+  String get subStatusSuspended => 'موقوف';
+
+  @override
+  String subDaysRemainingBadge(int days) {
+    return 'متبقي $days يوم';
+  }
+
+  @override
+  String get subExpiredBadge => 'منتهي';
+
+  @override
+  String get portalTitle => 'بوابة العمارات — MABNA CARE';
+
+  @override
+  String get portalCurrentLabel => 'العمارة المفتوحة حالياً';
+
+  @override
+  String get portalJoinTitle => 'الدخول بكود عمارة أخرى';
+
+  @override
+  String get portalJoinHint => 'مثال: MBN-A4K2';
+
+  @override
+  String get portalJoinBtn => 'دخول';
+
+  @override
+  String get portalRegisterCardTitle =>
+      'سجّل عمارتك الآن — تجربة 30 يوم مجاناً';
+
+  @override
+  String get portalRegisterCardSub =>
+      'أنشئ لوحة مستقلة لعمارتك في 30 ثانية برقم سري خاص ورابط مستقل لكل السكان';
+
+  @override
+  String get portalRegisterBtn => '+ تسجيل عمارة جديدة';
+
+  @override
+  String get portalSavedTitle => 'عمارات تم فتحها مؤخراً';
+
+  @override
+  String get portalSavedEmpty => 'لا توجد عمارات إضافية محفوظة بعد.';
+
+  @override
+  String get portalDefaultBadge => 'العمارة الرئيسية';
+
+  @override
+  String get portalSuperAdminBtn => 'إدارة المنصة • Super Admin';
+
+  @override
+  String get registerWizardTitle => 'تسجيل عمارة جديدة';
+
+  @override
+  String get registerAptsCountLabel => 'عدد الشقق (1 - 50)';
+
+  @override
+  String get registerAdminPassLabel => 'كلمة سر مدير العمارة (4 أحرف فأكثر)';
+
+  @override
+  String get registerConfirmPassLabel => 'تأكيد كلمة سر المدير';
+
+  @override
+  String get registerSubmitBtn => 'إنشاء العمارة مجاناً (30 يوم)';
+
+  @override
+  String get registerNameRequiredErr => 'يرجى إدخال اسم العمارة';
+
+  @override
+  String get registerAptsInvalidErr => 'أدخل عدد شقق صحيح بين 1 و 50';
+
+  @override
+  String get registerWelcomeTitle => '✅ تم إنشاء عمارتك بنجاح!';
+
+  @override
+  String registerWelcomeSub(String name) {
+    return 'تم إنشاء لوحة عمارة $name مع تفعيل فترة التجربة المجانية 30 يوم ودخولك كمدير تلقائياً.';
+  }
+
+  @override
+  String get registerStartManagingBtn => 'ابدأ إدارة عمارتك الآن';
+
+  @override
+  String get superAdminTitle => 'لوحة مالك المنصة — Super Admin';
+
+  @override
+  String get superAdminLoginTitle => 'دخول مالك منصة MABNA CARE';
+
+  @override
+  String get superAdminLoginSub =>
+      'أدخل كلمة سر مالك المنصة للتحكم في جميع العمارات وتفعيل أو إيقاف الاشتراكات';
+
+  @override
+  String get superAdminPassLabel => 'كلمة سر مالك المنصة';
+
+  @override
+  String get superAdminUnlockBtn => 'فتح لوحة المنصة';
+
+  @override
+  String get superAdminStatBuildings => 'العمارات';
+
+  @override
+  String get superAdminStatActive => 'نشط';
+
+  @override
+  String get superAdminStatTrial => 'تجربة';
+
+  @override
+  String get superAdminStatSuspended => 'موقوف';
+
+  @override
+  String get superAdminStatApts => 'إجمالي الشقق';
+
+  @override
+  String get superAdminStatViews => 'زيارات المنصة';
+
+  @override
+  String get superAdminSearchHint => 'ابحث باسم العمارة أو الكود أو المدينة...';
+
+  @override
+  String get superAdminFilterAll => 'الكل';
+
+  @override
+  String get superAdminExtend30Btn => '+30 يوم (تفعيل)';
+
+  @override
+  String get superAdminExtendYearBtn => '+سنة';
+
+  @override
+  String get superAdminSuspendBtn => 'إيقاف';
+
+  @override
+  String get superAdminReactivateBtn => 'إعادة تفعيل';
+
+  @override
+  String get superAdminResetPassBtn => 'باسورد المدير';
+
+  @override
+  String get superAdminOpenBtn => 'فتح';
+
+  @override
+  String superAdminMetricsLine(int apts, int months, int payments, int views) {
+    return '$apts شقة • $months شهر • $payments إيصال • $views زيارة';
+  }
+
+  @override
+  String superAdminResetPassTitle(String name) {
+    return 'تغيير كلمة سر مدير $name';
+  }
+
+  @override
+  String get superAdminNewAdminPassLabel => 'كلمة سر المدير الجديدة';
+
+  @override
+  String get superAdminChangePassTitle => 'تغيير كلمة سر مالك المنصة';
+
+  @override
+  String get superAdminChangePassSuccessToast =>
+      '✅ تم تحديث كلمة سر مالك المنصة';
+
+  @override
+  String get superAdminActionDoneToast => '✅ تم تنفيذ العملية بنجاح';
+
+  @override
+  String get superAdminNoBuildingsMatch => 'لا توجد عمارات مطابقة للبحث';
 }

@@ -1284,4 +1284,268 @@ class AppLocalizationsEn extends AppLocalizations {
   String reportAptsCountUnit(int count) {
     return '$count apts';
   }
+
+  @override
+  String get errBuildingNotFound => 'No building found with this code';
+
+  @override
+  String get errWrongSuperPass => 'Platform owner password is incorrect';
+
+  @override
+  String get buildingProfileSavedToast =>
+      '✅ Building profile updated successfully';
+
+  @override
+  String get copyInstapayNumberBtn => 'Copy InstaPay Number';
+
+  @override
+  String get buildingsPortalNavLabel => 'Buildings Portal (SaaS)';
+
+  @override
+  String buildingCodeBadge(String code) {
+    return 'Code: $code';
+  }
+
+  @override
+  String get buildingCodeCopiedToast => '✅ Building link & code copied';
+
+  @override
+  String get buildingNotFoundTitle => 'Building Not Found';
+
+  @override
+  String get buildingNotFoundBody =>
+      'Check the building code, return to the default building, or register a new one.';
+
+  @override
+  String get returnDefaultBuildingBtn => 'Return to Default Building';
+
+  @override
+  String get openBuildingsPortalBtn => 'Open Buildings Portal';
+
+  @override
+  String get suspendedTitle => 'Subscription Temporarily Paused';
+
+  @override
+  String suspendedBody(String name, String code) {
+    return 'Access for $name (Code: $code) is temporarily paused because the trial or subscription ended. Contact MABNA CARE support for instant activation.';
+  }
+
+  @override
+  String get contactSupportWhatsappBtn =>
+      'Contact MABNA CARE Support (WhatsApp)';
+
+  @override
+  String get switchBuildingBtn => 'Switch Building';
+
+  @override
+  String get buildingProfileTitle => 'Building Identity & Contact';
+
+  @override
+  String get buildingProfileSubtitle =>
+      'Customize building name, InstaPay, and manager WhatsApp';
+
+  @override
+  String get buildingNameLabel => 'Building Name';
+
+  @override
+  String get buildingCityLabel => 'City / District (Optional)';
+
+  @override
+  String get instapayPhoneLabel => 'InstaPay Phone (Optional)';
+
+  @override
+  String get instapayUrlLabel => 'InstaPay Direct Link (Optional)';
+
+  @override
+  String get managerWhatsappLabel => 'Manager WhatsApp (Optional)';
+
+  @override
+  String get saveBuildingProfileBtn => 'Save Building Profile';
+
+  @override
+  String get shareLinkLabel => 'Shareable Resident Link';
+
+  @override
+  String get copyLinkBtn => 'Copy Link';
+
+  @override
+  String get shareWhatsappBtn => 'Share WhatsApp';
+
+  @override
+  String buildingShareWhatsappMsg(String name, String url, String code) {
+    return 'Welcome to $name on MABNA CARE to track monthly expenses & payments:\n$url\nBuilding Code: $code';
+  }
+
+  @override
+  String get subStatusActive => 'Active Plan';
+
+  @override
+  String get subStatusTrial => 'Free Trial';
+
+  @override
+  String get subStatusSuspended => 'Suspended';
+
+  @override
+  String subDaysRemainingBadge(int days) {
+    return '$days days left';
+  }
+
+  @override
+  String get subExpiredBadge => 'Expired';
+
+  @override
+  String get portalTitle => 'Buildings Portal — MABNA CARE';
+
+  @override
+  String get portalCurrentLabel => 'Currently Active Building';
+
+  @override
+  String get portalJoinTitle => 'Join Building by Code';
+
+  @override
+  String get portalJoinHint => 'e.g. MBN-A4K2';
+
+  @override
+  String get portalJoinBtn => 'Enter';
+
+  @override
+  String get portalRegisterCardTitle =>
+      'Register Your Building — 30-Day Free Trial';
+
+  @override
+  String get portalRegisterCardSub =>
+      'Launch an isolated dashboard for your building in 30 seconds with a dedicated code and link';
+
+  @override
+  String get portalRegisterBtn => '+ Register New Building';
+
+  @override
+  String get portalSavedTitle => 'Recently Visited Buildings';
+
+  @override
+  String get portalSavedEmpty => 'No additional saved buildings yet.';
+
+  @override
+  String get portalDefaultBadge => 'Main Building';
+
+  @override
+  String get portalSuperAdminBtn => 'Platform Console • Super Admin';
+
+  @override
+  String get registerWizardTitle => 'Register New Building';
+
+  @override
+  String get registerAptsCountLabel => 'Apartments Count (1 - 50)';
+
+  @override
+  String get registerAdminPassLabel => 'Building Admin Password (min 4 chars)';
+
+  @override
+  String get registerConfirmPassLabel => 'Confirm Admin Password';
+
+  @override
+  String get registerSubmitBtn => 'Create Building Free (30 Days)';
+
+  @override
+  String get registerNameRequiredErr => 'Please enter the building name';
+
+  @override
+  String get registerAptsInvalidErr =>
+      'Enter a valid apartment count between 1 and 50';
+
+  @override
+  String get registerWelcomeTitle => '✅ Building Created Successfully!';
+
+  @override
+  String registerWelcomeSub(String name) {
+    return '$name is live with a 30-day free trial, and you are signed in as Admin automatically.';
+  }
+
+  @override
+  String get registerStartManagingBtn => 'Start Managing Now';
+
+  @override
+  String get superAdminTitle => 'Platform Owner Console — Super Admin';
+
+  @override
+  String get superAdminLoginTitle => 'MABNA CARE Platform Owner Login';
+
+  @override
+  String get superAdminLoginSub =>
+      'Enter the platform owner password to manage all buildings and subscriptions';
+
+  @override
+  String get superAdminPassLabel => 'Super Admin Password';
+
+  @override
+  String get superAdminUnlockBtn => 'Unlock Console';
+
+  @override
+  String get superAdminStatBuildings => 'Buildings';
+
+  @override
+  String get superAdminStatActive => 'Active';
+
+  @override
+  String get superAdminStatTrial => 'Trial';
+
+  @override
+  String get superAdminStatSuspended => 'Suspended';
+
+  @override
+  String get superAdminStatApts => 'Total Apts';
+
+  @override
+  String get superAdminStatViews => 'Platform Views';
+
+  @override
+  String get superAdminSearchHint =>
+      'Search by building name, code, or city...';
+
+  @override
+  String get superAdminFilterAll => 'All';
+
+  @override
+  String get superAdminExtend30Btn => '+30d (Activate)';
+
+  @override
+  String get superAdminExtendYearBtn => '+1 Year';
+
+  @override
+  String get superAdminSuspendBtn => 'Suspend';
+
+  @override
+  String get superAdminReactivateBtn => 'Reactivate';
+
+  @override
+  String get superAdminResetPassBtn => 'Admin Pass';
+
+  @override
+  String get superAdminOpenBtn => 'Open';
+
+  @override
+  String superAdminMetricsLine(int apts, int months, int payments, int views) {
+    return '$apts apts • $months mo • $payments receipts • $views views';
+  }
+
+  @override
+  String superAdminResetPassTitle(String name) {
+    return 'Reset Admin Password — $name';
+  }
+
+  @override
+  String get superAdminNewAdminPassLabel => 'New Building Admin Password';
+
+  @override
+  String get superAdminChangePassTitle => 'Change Super Admin Password';
+
+  @override
+  String get superAdminChangePassSuccessToast =>
+      '✅ Super Admin password updated';
+
+  @override
+  String get superAdminActionDoneToast => '✅ Action completed';
+
+  @override
+  String get superAdminNoBuildingsMatch => 'No matching buildings found';
 }

@@ -1,0 +1,2 @@
+export 'web_url_stub.dart'
+    if (dart.library.js_interop) 'web_url_web.dart';

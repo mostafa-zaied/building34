@@ -3,7 +3,13 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config.dart';
 import '../models/building_models.dart';
 
+class BuildingNotFoundException implements Exception {
+  const BuildingNotFoundException();
+}
+
 class BuildingDataState {
+  final BuildingInfo building;
+  final String supportWhatsapp;
   final double baseEmergencyFund;
   final List<MonthBill> months;
   final Map<int, String> apartmentNames;
@@ -14,6 +20,8 @@ class BuildingDataState {
   final Map<int, bool> apartmentHasPasscode;
 
   BuildingDataState({
+    this.building = BuildingInfo.defaultDemo,
+    this.supportWhatsapp = '201021950445',
     required this.baseEmergencyFund,
     required this.months,
     required this.apartmentNames,
@@ -36,24 +44,32 @@ class BuildingService {
     }
   }
 
-  RealtimeChannel? subscribeToLiveUpdates(void Function() onRemoteChange) {
+  RealtimeChannel? subscribeToLiveUpdates(
+    int buildingId,
+    void Function() onRemoteChange,
+  ) {
     if (!_useSupabase) return null;
     try {
       final client = Supabase.instance.client;
-      final channel = client.channel('mabna_live_sync');
+      final channel = client.channel('mabna_live_sync_$buildingId');
       const tables = [
-        'months',
-        'payments',
+        'building_months',
+        'building_payments',
+        'building_extra_charges',
         'emergency_transactions',
         'feedback_posts',
         'building_contacts',
-        'apartment_extra_charges',
       ];
       for (final table in tables) {
         channel.onPostgresChanges(
           event: PostgresChangeEvent.all,
           schema: 'public',
           table: table,
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'building_id',
+            value: buildingId,
+          ),
           callback: (_) => onRemoteChange(),
         );
       }
@@ -72,6 +88,7 @@ class BuildingService {
   }
 
   // Local Demo state (used when Supabase keys are not yet configured or in tests)
+  static BuildingInfo _demoBuilding = BuildingInfo.defaultDemo;
   static double _demoBaseEmergency = 2550;
   static String _demoAnnouncement = '';
   static bool _demoRequireAptPassOnOpen = true;
@@ -149,9 +166,39 @@ class BuildingService {
     };
   }
 
-  Future<BuildingDataState> fetchAll() async {
+  Future<BuildingInfo?> fetchBuildingByCode(String? code) async {
+    final clean = (code ?? '').trim().toUpperCase();
+    if (!_useSupabase) {
+      if (clean.isEmpty || clean == _demoBuilding.code.toUpperCase()) {
+        return _demoBuilding;
+      }
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'saas_get_building_by_code',
+        params: {'p_code': clean.isEmpty ? null : clean},
+      );
+      if (res is Map && res['ok'] == true && res['building'] is Map) {
+        return BuildingInfo.fromJson(
+          Map<String, dynamic>.from(res['building'] as Map),
+        );
+      }
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<BuildingDataState> fetchAll({
+    int buildingId = 1,
+    String? buildingCode,
+  }) async {
     if (!_useSupabase) {
       return BuildingDataState(
+        building: _demoBuilding,
+        supportWhatsapp: '201021950445',
         baseEmergencyFund: _demoBaseEmergency,
         months: _demoMonths,
         apartmentNames: {
@@ -171,17 +218,43 @@ class BuildingService {
     }
 
     final client = Supabase.instance.client;
-    try {
-      await client.rpc('ensure_current_month');
-    } catch (_) {
-      // Ignore if function not yet deployed
+    final cleanCode = (buildingCode ?? '').trim().toUpperCase();
+    final bResp = cleanCode.isNotEmpty
+        ? await client.rpc(
+            'saas_get_building_by_code',
+            params: {'p_code': cleanCode},
+          )
+        : await client.rpc(
+            'saas_get_building_by_id',
+            params: {'p_building_id': buildingId},
+          );
+
+    if (bResp is! Map || bResp['ok'] != true || bResp['building'] is! Map) {
+      throw const BuildingNotFoundException();
     }
-    final baseEmergResp = await client.rpc('get_base_emergency_fund');
-    final baseEmerg = (baseEmergResp as num?)?.toDouble() ?? 2550;
+
+    final bMap = Map<String, dynamic>.from(bResp['building'] as Map);
+    final building = BuildingInfo.fromJson(bMap);
+    final supportWhatsapp =
+        (bResp['support_whatsapp'] as String?)?.trim() ?? '201021950445';
+    final bId = building.id;
+    final baseEmerg = (bMap['base_emergency_fund'] as num?)?.toDouble() ?? 0;
+    final announcement = (bMap['announcement'] as String?) ?? '';
+    final requireAptPassOnOpen = bMap['require_apt_pass_on_open'] == true;
+
+    try {
+      await client.rpc(
+        'saas_ensure_current_month',
+        params: {'p_building_id': bId},
+      );
+    } catch (_) {}
 
     final aptNamesMap = <int, String>{};
     try {
-      final aptRows = await client.rpc('get_apartment_names');
+      final aptRows = await client.rpc(
+        'saas_get_apartment_names',
+        params: {'p_building_id': bId},
+      );
       if (aptRows is List) {
         for (final r in aptRows) {
           final num = r['apt_num'] as int;
@@ -191,19 +264,20 @@ class BuildingService {
           }
         }
       }
-    } catch (_) {
-      // Fallback gracefully if get_apartment_names RPC hasn't been created yet
-    }
+    } catch (_) {}
 
     final monthsRows = await client
-        .from('months')
+        .from('building_months')
         .select()
+        .eq('building_id', bId)
+        .eq('is_deleted', false)
         .order('year_num', ascending: true)
         .order('month_num', ascending: true);
 
     final paymentRows = await client
-        .from('payments')
+        .from('building_payments')
         .select()
+        .eq('building_id', bId)
         .eq('is_cancelled', false);
 
     final monthsMap = <int, MonthBill>{};
@@ -218,48 +292,29 @@ class BuildingService {
       monthsMap[monthId]?.payments[record.aptNum] = record;
     }
 
-    String announcement = '';
-    try {
-      final annResp = await client.rpc('get_announcement');
-      announcement = (annResp as String?) ?? '';
-    } catch (_) {
-      try {
-        final settingsRows = await client.from('building_settings').select('announcement').limit(1);
-        if (settingsRows.isNotEmpty) {
-          announcement = (settingsRows.first['announcement'] as String?) ?? '';
-        }
-      } catch (_) {}
-    }
-
     var emergencyTx = <EmergencyTransaction>[];
     try {
       final txRows = await client
           .from('emergency_transactions')
           .select()
+          .eq('building_id', bId)
+          .eq('is_deleted', false)
           .order('created_at', ascending: false);
       emergencyTx = (txRows as List)
           .map((r) => EmergencyTransaction.fromJson(Map<String, dynamic>.from(r as Map)))
           .toList();
-    } catch (_) {
-      // Fallback if emergency_transactions table hasn't been created yet
-    }
+    } catch (_) {}
 
     try {
       final extraRows = await client
-          .from('apartment_extra_charges')
+          .from('building_extra_charges')
           .select()
+          .eq('building_id', bId)
+          .eq('is_deleted', false)
           .order('created_at', ascending: false);
       for (final row in (extraRows as List)) {
         final charge = ApartmentExtraCharge.fromJson(Map<String, dynamic>.from(row as Map));
         monthsMap[charge.monthId]?.extraCharges.add(charge);
-      }
-    } catch (_) {}
-
-    bool requireAptPassOnOpen = true;
-    try {
-      final resp = await client.rpc('get_require_apt_pass_on_open');
-      if (resp is bool) {
-        requireAptPassOnOpen = resp;
       }
     } catch (_) {}
 
@@ -268,6 +323,8 @@ class BuildingService {
       final cRows = await client
           .from('building_contacts')
           .select()
+          .eq('building_id', bId)
+          .eq('is_deleted', false)
           .order('created_at', ascending: false);
       contactsList = (cRows as List)
           .map((r) => BuildingContact.fromJson(Map<String, dynamic>.from(r as Map)))
@@ -276,7 +333,10 @@ class BuildingService {
 
     final aptHasPassMap = <int, bool>{};
     try {
-      final passRows = await client.rpc('get_apartments_passcode_status');
+      final passRows = await client.rpc(
+        'saas_get_apartments_passcode_status',
+        params: {'p_building_id': bId},
+      );
       if (passRows is List) {
         for (final r in passRows) {
           final num = r['apt_num'] as int;
@@ -286,6 +346,8 @@ class BuildingService {
     } catch (_) {}
 
     return BuildingDataState(
+      building: building,
+      supportWhatsapp: supportWhatsapp,
       baseEmergencyFund: baseEmerg,
       months: monthsMap.values.toList(),
       apartmentNames: aptNamesMap,
@@ -297,7 +359,113 @@ class BuildingService {
     );
   }
 
+  Future<({BuildingInfo? building, String? error})> registerBuilding({
+    required String name,
+    String city = '',
+    int aptsCount = 12,
+    required String adminPass,
+    String instapayPhone = '',
+    String instapayUrl = '',
+    String managerWhatsapp = '',
+  }) async {
+    final cleanName = name.trim();
+    final cleanPass = adminPass.trim();
+    if (cleanName.isEmpty) return (building: null, error: 'err_empty_message');
+    if (cleanPass.length < 4) return (building: null, error: 'err_pass_too_short');
+
+    if (!_useSupabase) {
+      final created = BuildingInfo(
+        id: 2,
+        code: 'MBN-DEMO',
+        name: cleanName,
+        city: city.trim(),
+        aptsCount: aptsCount.clamp(1, 50),
+        instapayPhone: instapayPhone.trim(),
+        instapayUrl: instapayUrl.trim(),
+        managerWhatsapp: managerWhatsapp.trim(),
+        subscriptionStatus: 'trial',
+        trialEndsAt: DateTime.now().add(const Duration(days: 30)),
+      );
+      _demoBuilding = created;
+      _demoAdminPass = cleanPass;
+      return (building: created, error: null);
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'saas_register_building',
+        params: {
+          'p_name': cleanName,
+          'p_city': city.trim(),
+          'p_apts_count': aptsCount.clamp(1, 50),
+          'p_admin_pass': cleanPass,
+          'p_instapay_phone': instapayPhone.trim(),
+          'p_instapay_url': instapayUrl.trim(),
+          'p_manager_whatsapp': managerWhatsapp.trim(),
+        },
+      );
+      if (res is Map && res['ok'] == true && res['building'] is Map) {
+        return (
+          building: BuildingInfo.fromJson(
+            Map<String, dynamic>.from(res['building'] as Map),
+          ),
+          error: null,
+        );
+      }
+      return (
+        building: null,
+        error: (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed',
+      );
+    } catch (_) {
+      return (building: null, error: 'err_submit_failed');
+    }
+  }
+
+  Future<String?> updateBuildingProfileAsAdmin({
+    int buildingId = 1,
+    required String adminPass,
+    required String name,
+    String city = '',
+    String instapayPhone = '',
+    String instapayUrl = '',
+    String managerWhatsapp = '',
+  }) async {
+    final cleanName = name.trim();
+    if (cleanName.isEmpty) return 'err_empty_message';
+
+    if (!_useSupabase) {
+      _demoBuilding = _demoBuilding.copyWith(
+        name: cleanName,
+        city: city.trim(),
+        instapayPhone: instapayPhone.trim(),
+        instapayUrl: instapayUrl.trim(),
+        managerWhatsapp: managerWhatsapp.trim(),
+      );
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'saas_admin_update_building_profile',
+        params: {
+          'p_building_id': buildingId,
+          'p_admin_pass': adminPass.trim(),
+          'p_name': cleanName,
+          'p_city': city.trim(),
+          'p_instapay_phone': instapayPhone.trim(),
+          'p_instapay_url': instapayUrl.trim(),
+          'p_manager_whatsapp': managerWhatsapp.trim(),
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
+    } catch (_) {
+      return 'err_submit_failed';
+    }
+  }
+
   Future<String?> submitApartmentPayment({
+    int buildingId = 1,
     required MonthBill month,
     required int aptNum,
     required String passcode,
@@ -325,7 +493,8 @@ class BuildingService {
     if (imageBytes != null) {
       final safeName = fileName ?? 'receipt.jpg';
       final ext = safeName.split('.').last.toLowerCase();
-      final storagePath = '${month.yearNum}_${month.monthNum}/apt_${aptNum}_${DateTime.now().millisecondsSinceEpoch}.$ext';
+      final storagePath =
+          'b_$buildingId/${month.yearNum}_${month.monthNum}/apt_${aptNum}_${DateTime.now().millisecondsSinceEpoch}.$ext';
 
       await client.storage.from('receipts').uploadBinary(
             storagePath,
@@ -336,7 +505,8 @@ class BuildingService {
       publicUrl = client.storage.from('receipts').getPublicUrl(storagePath);
     }
 
-    final res = await client.rpc('verify_apt_and_record_payment', params: {
+    final res = await client.rpc('saas_verify_apt_and_record_payment', params: {
+      'p_building_id': buildingId,
       'p_month_id': month.id,
       'p_apt_num': aptNum,
       'p_passcode': passcode.trim(),
@@ -350,6 +520,7 @@ class BuildingService {
   }
 
   Future<String?> updateMonthAsAdmin({
+    int buildingId = 1,
     required String adminPass,
     required MonthBill month,
     required double baseEmergency,
@@ -360,7 +531,8 @@ class BuildingService {
     }
 
     final client = Supabase.instance.client;
-    final res = await client.rpc('admin_update_month', params: {
+    final res = await client.rpc('saas_admin_update_month', params: {
+      'p_building_id': buildingId,
       'p_admin_pass': adminPass,
       'p_month_id': month.id,
       'p_water': month.water,
@@ -379,6 +551,7 @@ class BuildingService {
   }
 
   Future<String?> cancelPaymentAsAdmin({
+    int buildingId = 1,
     required String adminPass,
     required MonthBill month,
     required int aptNum,
@@ -389,7 +562,8 @@ class BuildingService {
     }
 
     final client = Supabase.instance.client;
-    final res = await client.rpc('admin_cancel_payment', params: {
+    final res = await client.rpc('saas_admin_cancel_payment', params: {
+      'p_building_id': buildingId,
       'p_admin_pass': adminPass,
       'p_month_id': month.id,
       'p_apt_num': aptNum,
@@ -403,6 +577,7 @@ class BuildingService {
   }
 
   Future<String?> cancelPaymentAsResident({
+    int buildingId = 1,
     required MonthBill month,
     required int aptNum,
     required String passcode,
@@ -419,7 +594,8 @@ class BuildingService {
     }
 
     final client = Supabase.instance.client;
-    final res = await client.rpc('verify_apt_and_cancel_payment', params: {
+    final res = await client.rpc('saas_verify_apt_and_cancel_payment', params: {
+      'p_building_id': buildingId,
       'p_month_id': month.id,
       'p_apt_num': aptNum,
       'p_passcode': passcode.trim(),
@@ -445,7 +621,10 @@ class BuildingService {
 
   static String _demoAdminPass = '7777';
 
-  Future<String?> verifyAdminPass(String adminPass) async {
+  Future<String?> verifyAdminPass(
+    String adminPass, {
+    int buildingId = 1,
+  }) async {
     final clean = adminPass.trim();
     if (!_useSupabase) {
       if (clean == _demoAdminPass || clean == 'admin123') return null;
@@ -454,17 +633,19 @@ class BuildingService {
 
     try {
       final client = Supabase.instance.client;
-      final res = await client.rpc('admin_get_apartments', params: {
+      final res = await client.rpc('saas_admin_get_apartments', params: {
+        'p_building_id': buildingId,
         'p_admin_pass': clean,
       });
       if (res is Map && res['ok'] == true) return null;
       return (res is Map ? res['error']?.toString() : null) ?? 'err_wrong_admin_pass';
-    } catch (e) {
+    } catch (_) {
       return 'err_wrong_admin_pass';
     }
   }
 
   Future<String?> changeAdminPassword({
+    int buildingId = 1,
     required String currentPass,
     required String newPass,
   }) async {
@@ -482,7 +663,8 @@ class BuildingService {
 
     try {
       final client = Supabase.instance.client;
-      final res = await client.rpc('admin_change_password', params: {
+      final res = await client.rpc('saas_admin_change_password', params: {
+        'p_building_id': buildingId,
         'p_current_pass': cleanCur,
         'p_new_pass': cleanNew,
       });
@@ -494,6 +676,7 @@ class BuildingService {
   }
 
   Future<({List<ApartmentInfo>? apartments, String? error})> fetchAdminApartments({
+    int buildingId = 1,
     required String adminPass,
     required int aptsCount,
   }) async {
@@ -507,7 +690,8 @@ class BuildingService {
 
     try {
       final client = Supabase.instance.client;
-      final res = await client.rpc('admin_get_apartments', params: {
+      final res = await client.rpc('saas_admin_get_apartments', params: {
+        'p_building_id': buildingId,
         'p_admin_pass': adminPass,
       });
 
@@ -529,12 +713,13 @@ class BuildingService {
         apartments: null,
         error: (res is Map ? res['error']?.toString() : null) ?? 'err_wrong_admin_pass',
       );
-    } catch (e) {
+    } catch (_) {
       return (apartments: null, error: 'err_apt_load_failed');
     }
   }
 
   Future<String?> updateApartmentAsAdmin({
+    int buildingId = 1,
     required String adminPass,
     required int aptNum,
     required String displayName,
@@ -551,7 +736,8 @@ class BuildingService {
 
     try {
       final client = Supabase.instance.client;
-      final res = await client.rpc('admin_update_apartment', params: {
+      final res = await client.rpc('saas_admin_update_apartment', params: {
+        'p_building_id': buildingId,
         'p_admin_pass': adminPass,
         'p_apt_num': aptNum,
         'p_display_name': displayName.trim(),
@@ -560,12 +746,12 @@ class BuildingService {
 
       if (res is Map && res['ok'] == true) return null;
       return (res is Map ? res['error']?.toString() : null) ?? 'err_apt_save_failed';
-    } catch (e) {
+    } catch (_) {
       return 'err_apt_save_failed';
     }
   }
 
-  Future<List<FeedbackPost>> fetchFeedbackPosts() async {
+  Future<List<FeedbackPost>> fetchFeedbackPosts({int buildingId = 1}) async {
     if (!_useSupabase) {
       return List<FeedbackPost>.from(_demoFeedbackPosts);
     }
@@ -574,6 +760,8 @@ class BuildingService {
       final rows = await client
           .from('feedback_posts')
           .select()
+          .eq('building_id', buildingId)
+          .eq('is_deleted', false)
           .order('created_at', ascending: false);
       return (rows as List)
           .map((r) => FeedbackPost.fromJson(Map<String, dynamic>.from(r as Map)))
@@ -584,6 +772,7 @@ class BuildingService {
   }
 
   Future<String?> submitFeedbackPost({
+    int buildingId = 1,
     required String type,
     required String message,
     int? aptNum,
@@ -616,7 +805,8 @@ class BuildingService {
     try {
       final client = Supabase.instance.client;
       if (aptNum != null) {
-        final res = await client.rpc('submit_feedback_with_passcode', params: {
+        final res = await client.rpc('saas_submit_feedback_with_passcode', params: {
+          'p_building_id': buildingId,
           'p_type': type,
           'p_message': cleanMsg,
           'p_apt_num': aptNum,
@@ -628,17 +818,19 @@ class BuildingService {
       }
 
       await client.from('feedback_posts').insert({
+        'building_id': buildingId,
         'type': type,
         'message': cleanMsg,
         'author_label': null,
       });
       return null;
-    } catch (e) {
+    } catch (_) {
       return 'err_submit_failed';
     }
   }
 
   Future<String?> deleteFeedbackPost({
+    int buildingId = 1,
     required String adminPass,
     required String id,
   }) async {
@@ -649,18 +841,22 @@ class BuildingService {
 
     try {
       final client = Supabase.instance.client;
-      final res = await client.rpc('admin_delete_feedback', params: {
+      final res = await client.rpc('saas_admin_delete_feedback', params: {
+        'p_building_id': buildingId,
         'p_admin_pass': adminPass,
         'p_id': int.tryParse(id) ?? 0,
       });
       if (res is Map && res['ok'] == true) return null;
       return (res is Map ? res['error']?.toString() : null) ?? 'err_delete_failed';
-    } catch (e) {
+    } catch (_) {
       return 'err_delete_failed';
     }
   }
 
-  Future<String?> addNextMonthAsAdmin(String adminPass) async {
+  Future<String?> addNextMonthAsAdmin(
+    String adminPass, {
+    int buildingId = 1,
+  }) async {
     if (!_useSupabase) {
       final last = _demoMonths.last;
       final nextMonth = last.monthNum == 12 ? 1 : last.monthNum + 1;
@@ -681,17 +877,19 @@ class BuildingService {
 
     try {
       final client = Supabase.instance.client;
-      final res = await client.rpc('admin_add_next_month', params: {
+      final res = await client.rpc('saas_admin_add_next_month', params: {
+        'p_building_id': buildingId,
         'p_admin_pass': adminPass,
       });
       if (res is Map && res['ok'] == true) return null;
       return (res is Map ? res['error']?.toString() : null) ?? 'err_wrong_admin_pass';
-    } catch (e) {
+    } catch (_) {
       return 'err_apt_save_failed';
     }
   }
 
   Future<String?> deleteMonthAsAdmin({
+    int buildingId = 1,
     required String adminPass,
     required int monthId,
   }) async {
@@ -703,18 +901,20 @@ class BuildingService {
 
     try {
       final client = Supabase.instance.client;
-      final res = await client.rpc('admin_delete_month', params: {
+      final res = await client.rpc('saas_admin_delete_month', params: {
+        'p_building_id': buildingId,
         'p_admin_pass': adminPass,
         'p_month_id': monthId,
       });
       if (res is Map && res['ok'] == true) return null;
       return (res is Map ? res['error']?.toString() : null) ?? 'err_delete_failed';
-    } catch (e) {
+    } catch (_) {
       return 'err_delete_failed';
     }
   }
 
   Future<String?> saveAnnouncement({
+    int buildingId = 1,
     required String adminPass,
     required String announcement,
   }) async {
@@ -725,18 +925,20 @@ class BuildingService {
     }
     try {
       final client = Supabase.instance.client;
-      final res = await client.rpc('admin_set_announcement', params: {
+      final res = await client.rpc('saas_admin_set_announcement', params: {
+        'p_building_id': buildingId,
         'p_admin_pass': adminPass,
         'p_announcement': clean,
       });
       if (res is Map && res['ok'] == true) return null;
       return (res is Map ? res['error']?.toString() : null) ?? 'err_apt_save_failed';
-    } catch (e) {
+    } catch (_) {
       return 'err_apt_save_failed';
     }
   }
 
   Future<String?> addEmergencyTransaction({
+    int buildingId = 1,
     required String adminPass,
     required double amount,
     required String reason,
@@ -760,19 +962,21 @@ class BuildingService {
 
     try {
       final client = Supabase.instance.client;
-      final res = await client.rpc('admin_add_emergency_tx', params: {
+      final res = await client.rpc('saas_admin_add_emergency_tx', params: {
+        'p_building_id': buildingId,
         'p_admin_pass': adminPass,
         'p_amount': amount,
         'p_reason': cleanReason,
       });
       if (res is Map && res['ok'] == true) return null;
       return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
-    } catch (e) {
+    } catch (_) {
       return 'err_submit_failed';
     }
   }
 
   Future<String?> deleteEmergencyTransaction({
+    int buildingId = 1,
     required String adminPass,
     required String id,
   }) async {
@@ -787,18 +991,20 @@ class BuildingService {
 
     try {
       final client = Supabase.instance.client;
-      final res = await client.rpc('admin_delete_emergency_tx', params: {
+      final res = await client.rpc('saas_admin_delete_emergency_tx', params: {
+        'p_building_id': buildingId,
         'p_admin_pass': adminPass,
         'p_id': int.tryParse(id) ?? 0,
       });
       if (res is Map && res['ok'] == true) return null;
       return (res is Map ? res['error']?.toString() : null) ?? 'err_delete_failed';
-    } catch (e) {
+    } catch (_) {
       return 'err_delete_failed';
     }
   }
 
   Future<String?> updateFeedbackPostStatus({
+    int buildingId = 1,
     required String adminPass,
     required String id,
     required String status,
@@ -824,7 +1030,8 @@ class BuildingService {
 
     try {
       final client = Supabase.instance.client;
-      final res = await client.rpc('admin_update_feedback_status', params: {
+      final res = await client.rpc('saas_admin_update_feedback_status', params: {
+        'p_building_id': buildingId,
         'p_admin_pass': adminPass,
         'p_id': int.tryParse(id) ?? 0,
         'p_status': status,
@@ -832,12 +1039,13 @@ class BuildingService {
       });
       if (res is Map && res['ok'] == true) return null;
       return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
-    } catch (e) {
+    } catch (_) {
       return 'err_submit_failed';
     }
   }
 
   Future<String?> addExtraChargesAsAdmin({
+    int buildingId = 1,
     required String adminPass,
     required int monthId,
     required List<int> aptNums,
@@ -872,7 +1080,8 @@ class BuildingService {
 
     try {
       final client = Supabase.instance.client;
-      final res = await client.rpc('admin_add_extra_charge', params: {
+      final res = await client.rpc('saas_admin_add_extra_charge', params: {
+        'p_building_id': buildingId,
         'p_admin_pass': adminPass,
         'p_month_id': monthId,
         'p_apt_nums': aptNums,
@@ -887,6 +1096,7 @@ class BuildingService {
   }
 
   Future<String?> deleteExtraChargeAsAdmin({
+    int buildingId = 1,
     required String adminPass,
     required int monthId,
     required String id,
@@ -901,7 +1111,8 @@ class BuildingService {
 
     try {
       final client = Supabase.instance.client;
-      final res = await client.rpc('admin_delete_extra_charge', params: {
+      final res = await client.rpc('saas_admin_delete_extra_charge', params: {
+        'p_building_id': buildingId,
         'p_admin_pass': adminPass,
         'p_id': int.tryParse(id) ?? 0,
       });
@@ -912,7 +1123,10 @@ class BuildingService {
     }
   }
 
-  Future<void> recordPageView(String visitorId) async {
+  Future<void> recordPageView(
+    String visitorId, {
+    int buildingId = 1,
+  }) async {
     final clean = visitorId.trim();
     if (clean.isEmpty) return;
 
@@ -922,15 +1136,17 @@ class BuildingService {
     }
 
     try {
-      await Supabase.instance.client.rpc('record_page_view', params: {
+      await Supabase.instance.client.rpc('saas_record_page_view', params: {
+        'p_building_id': buildingId,
         'p_visitor_id': clean,
       });
-    } catch (_) {
-      // Ignore silently if analytics RPC isn't deployed yet
-    }
+    } catch (_) {}
   }
 
-  Future<PageViewStats?> fetchPageViewStatsAsAdmin(String adminPass) async {
+  Future<PageViewStats?> fetchPageViewStatsAsAdmin(
+    String adminPass, {
+    int buildingId = 1,
+  }) async {
     if (!_useSupabase) {
       final now = DateTime.now();
       final todayStart = DateTime(now.year, now.month, now.day);
@@ -944,7 +1160,8 @@ class BuildingService {
     }
 
     try {
-      final res = await Supabase.instance.client.rpc('admin_get_page_view_stats', params: {
+      final res = await Supabase.instance.client.rpc('saas_admin_get_page_view_stats', params: {
+        'p_building_id': buildingId,
         'p_admin_pass': adminPass,
       });
       if (res is Map && res['ok'] == true) {
@@ -956,7 +1173,11 @@ class BuildingService {
     }
   }
 
-  Future<String?> verifyApartmentPasscode(int aptNum, String passcode) async {
+  Future<String?> verifyApartmentPasscode(
+    int aptNum,
+    String passcode, {
+    int buildingId = 1,
+  }) async {
     final clean = passcode.trim();
     if (!_useSupabase) {
       final expected = _demoApartments[aptNum]?.passcode ?? '${1000 + aptNum}';
@@ -965,7 +1186,8 @@ class BuildingService {
     }
 
     try {
-      final res = await Supabase.instance.client.rpc('verify_apartment_passcode', params: {
+      final res = await Supabase.instance.client.rpc('saas_verify_apartment_passcode', params: {
+        'p_building_id': buildingId,
         'p_apt_num': aptNum,
         'p_passcode': clean,
       });
@@ -977,6 +1199,7 @@ class BuildingService {
   }
 
   Future<String?> setRequireAptPassOnOpenAsAdmin({
+    int buildingId = 1,
     required String adminPass,
     required bool enabled,
   }) async {
@@ -987,8 +1210,9 @@ class BuildingService {
 
     try {
       final res = await Supabase.instance.client.rpc(
-        'admin_set_require_apt_pass_on_open',
+        'saas_admin_set_require_apt_pass_on_open',
         params: {
+          'p_building_id': buildingId,
           'p_admin_pass': adminPass,
           'p_enabled': enabled,
         },
@@ -1001,6 +1225,7 @@ class BuildingService {
   }
 
   Future<String?> setUtilityReceiptAsAdmin({
+    int buildingId = 1,
     required String adminPass,
     required MonthBill month,
     required String utility,
@@ -1022,7 +1247,7 @@ class BuildingService {
       String publicUrl = '';
       if (imageBytes != null) {
         final ts = DateTime.now().millisecondsSinceEpoch;
-        final storagePath = 'utility_${month.id}_${utility}_$ts.jpg';
+        final storagePath = 'b_$buildingId/utility_${month.id}_${utility}_$ts.jpg';
         await client.storage.from('receipts').uploadBinary(
               storagePath,
               imageBytes,
@@ -1031,7 +1256,8 @@ class BuildingService {
         publicUrl = client.storage.from('receipts').getPublicUrl(storagePath);
       }
 
-      final res = await client.rpc('admin_set_utility_receipt', params: {
+      final res = await client.rpc('saas_admin_set_utility_receipt', params: {
+        'p_building_id': buildingId,
         'p_admin_pass': adminPass,
         'p_month_id': month.id,
         'p_utility': utility,
@@ -1045,6 +1271,7 @@ class BuildingService {
   }
 
   Future<String?> addBuildingContact({
+    int buildingId = 1,
     required String name,
     required String roleDesc,
     required String phone,
@@ -1069,6 +1296,7 @@ class BuildingService {
 
     try {
       await Supabase.instance.client.from('building_contacts').insert({
+        'building_id': buildingId,
         'name': cleanName,
         'role_desc': roleDesc.trim(),
         'phone': cleanPhone,
@@ -1080,6 +1308,7 @@ class BuildingService {
   }
 
   Future<String?> deleteBuildingContactAsAdmin({
+    int buildingId = 1,
     required String adminPass,
     required String id,
   }) async {
@@ -1090,8 +1319,9 @@ class BuildingService {
 
     try {
       final res = await Supabase.instance.client.rpc(
-        'admin_delete_building_contact',
+        'saas_admin_delete_building_contact',
         params: {
+          'p_building_id': buildingId,
           'p_admin_pass': adminPass,
           'p_id': int.tryParse(id) ?? 0,
         },
@@ -1104,6 +1334,7 @@ class BuildingService {
   }
 
   Future<String?> deleteAllExtraChargesAsAdmin({
+    int buildingId = 1,
     required String adminPass,
     required int monthId,
   }) async {
@@ -1117,8 +1348,9 @@ class BuildingService {
 
     try {
       final res = await Supabase.instance.client.rpc(
-        'admin_delete_all_extra_charges',
+        'saas_admin_delete_all_extra_charges',
         params: {
+          'p_building_id': buildingId,
           'p_admin_pass': adminPass,
           'p_month_id': monthId,
         },
@@ -1130,7 +1362,11 @@ class BuildingService {
     }
   }
 
-  Future<String?> setInitialApartmentPasscode(int aptNum, String passcode) async {
+  Future<String?> setInitialApartmentPasscode(
+    int aptNum,
+    String passcode, {
+    int buildingId = 1,
+  }) async {
     final clean = passcode.trim();
     if (clean.length < 4) return 'err_pass_too_short';
 
@@ -1148,8 +1384,9 @@ class BuildingService {
 
     try {
       final res = await Supabase.instance.client.rpc(
-        'set_initial_apartment_passcode',
+        'saas_set_initial_apartment_passcode',
         params: {
+          'p_building_id': buildingId,
           'p_apt_num': aptNum,
           'p_passcode': clean,
         },
@@ -1161,7 +1398,10 @@ class BuildingService {
     }
   }
 
-  Future<String?> resetAllApartmentPasscodesAsAdmin(String adminPass) async {
+  Future<String?> resetAllApartmentPasscodesAsAdmin(
+    String adminPass, {
+    int buildingId = 1,
+  }) async {
     if (!_useSupabase) {
       for (final key in _demoApartments.keys.toList()) {
         final prev = _demoApartments[key]!;
@@ -1176,8 +1416,9 @@ class BuildingService {
 
     try {
       final res = await Supabase.instance.client.rpc(
-        'admin_reset_all_apartment_passcodes',
+        'saas_admin_reset_all_apartment_passcodes',
         params: {
+          'p_building_id': buildingId,
           'p_admin_pass': adminPass,
         },
       );
@@ -1188,8 +1429,9 @@ class BuildingService {
     }
   }
 
-  /// Registers or updates an FCM web push token in Supabase `push_tokens`.
+  /// Registers or updates an FCM web push token in Supabase `building_push_tokens`.
   Future<bool> registerPushToken({
+    int buildingId = 1,
     required String token,
     int? aptNum,
     bool isAdmin = false,
@@ -1199,7 +1441,8 @@ class BuildingService {
     if (!_useSupabase) return true;
 
     try {
-      await Supabase.instance.client.rpc('register_push_token', params: {
+      await Supabase.instance.client.rpc('saas_register_push_token', params: {
+        'p_building_id': buildingId,
         'p_token': clean,
         'p_apt_num': aptNum,
         'p_is_admin': isAdmin,
@@ -1211,9 +1454,9 @@ class BuildingService {
     }
   }
 
-  /// Invokes the Supabase `send-push` Edge Function.
-  /// Returns `(ok, hasRecipients, notConfigured, error)`.
+  /// Invokes the Supabase `send-push` Edge Function scoped to `buildingId`.
   Future<({bool ok, bool hasRecipients, bool notConfigured, String? error})> sendPushNotification({
+    int buildingId = 1,
     required String title,
     required String body,
     String audience = 'all',
@@ -1240,6 +1483,7 @@ class BuildingService {
       final resp = await Supabase.instance.client.functions.invoke(
         'send-push',
         body: {
+          'building_id': buildingId,
           'title': title.trim(),
           'body': body.trim(),
           'audience': audience,
@@ -1272,6 +1516,7 @@ class BuildingService {
   }
 
   Future<List<AppNotificationItem>> fetchAppNotifications({
+    int buildingId = 1,
     String? adminPass,
     int? aptNum,
   }) async {
@@ -1284,8 +1529,9 @@ class BuildingService {
 
     try {
       final res = await Supabase.instance.client.rpc(
-        'get_app_notifications',
+        'saas_get_app_notifications',
         params: {
+          'p_building_id': buildingId,
           'p_admin_pass': (adminPass != null && adminPass.isNotEmpty) ? adminPass : null,
           'p_apt_num': aptNum,
         },
@@ -1302,12 +1548,18 @@ class BuildingService {
     }
   }
 
-  Future<Set<int>> fetchPushRegisteredApts(String adminPass) async {
+  Future<Set<int>> fetchPushRegisteredApts(
+    String adminPass, {
+    int buildingId = 1,
+  }) async {
     if (!_useSupabase) return {1, 2, 3};
     try {
       final res = await Supabase.instance.client.rpc(
-        'admin_get_push_apt_nums',
-        params: {'p_admin_pass': adminPass},
+        'saas_admin_get_push_apt_nums',
+        params: {
+          'p_building_id': buildingId,
+          'p_admin_pass': adminPass,
+        },
       );
       if (res is List) {
         return res.whereType<num>().map((e) => e.toInt()).toSet();
@@ -1319,6 +1571,7 @@ class BuildingService {
   }
 
   Future<String?> deleteAppNotificationAsAdmin({
+    int buildingId = 1,
     required String adminPass,
     required String id,
   }) async {
@@ -1329,8 +1582,9 @@ class BuildingService {
 
     try {
       final res = await Supabase.instance.client.rpc(
-        'admin_delete_app_notification',
+        'saas_admin_delete_app_notification',
         params: {
+          'p_building_id': buildingId,
           'p_admin_pass': adminPass,
           'p_id': int.tryParse(id) ?? 0,
         },
@@ -1339,6 +1593,151 @@ class BuildingService {
       return (res is Map ? res['error']?.toString() : null) ?? 'err_delete_failed';
     } catch (_) {
       return 'err_delete_failed';
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Platform Owner Super Admin Operations
+  // ---------------------------------------------------------------------------
+
+  static String _demoSuperPass = 'mabna2026';
+
+  Future<({SuperAdminDashboardData? data, String? error})> superAdminListBuildings(
+    String superPass,
+  ) async {
+    final clean = superPass.trim();
+    if (!_useSupabase) {
+      if (clean != _demoSuperPass) {
+        return (data: null, error: 'err_wrong_super_pass');
+      }
+      return (
+        data: SuperAdminDashboardData(
+          buildings: [
+            SuperAdminBuildingItem(
+              building: _demoBuilding,
+              monthsCount: _demoMonths.length,
+              paymentsCount: 2,
+              viewsCount: _demoPageViews.length,
+            ),
+          ],
+          totalBuildings: 1,
+          activeBuildings: 1,
+          trialBuildings: 0,
+          suspendedBuildings: 0,
+          totalApts: _demoBuilding.aptsCount,
+          totalViews: _demoPageViews.length,
+        ),
+        error: null,
+      );
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'saas_super_list_buildings',
+        params: {'p_super_pass': clean},
+      );
+      if (res is Map && res['ok'] == true) {
+        return (
+          data: SuperAdminDashboardData.fromJson(
+            Map<String, dynamic>.from(res),
+          ),
+          error: null,
+        );
+      }
+      return (
+        data: null,
+        error: (res is Map ? res['error']?.toString() : null) ?? 'err_wrong_super_pass',
+      );
+    } catch (_) {
+      return (data: null, error: 'err_submit_failed');
+    }
+  }
+
+  Future<String?> superAdminUpdateSubscription({
+    required String superPass,
+    required int buildingId,
+    required String status,
+    int? extendDays,
+  }) async {
+    if (!_useSupabase) {
+      if (superPass.trim() != _demoSuperPass) return 'err_wrong_super_pass';
+      if (buildingId == _demoBuilding.id) {
+        _demoBuilding = _demoBuilding.copyWith(subscriptionStatus: status);
+      }
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'saas_super_update_subscription',
+        params: {
+          'p_super_pass': superPass.trim(),
+          'p_building_id': buildingId,
+          'p_status': status,
+          'p_extend_days': extendDays,
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
+    } catch (_) {
+      return 'err_submit_failed';
+    }
+  }
+
+  Future<String?> superAdminResetBuildingAdminPass({
+    required String superPass,
+    required int buildingId,
+    required String newPass,
+  }) async {
+    if (!_useSupabase) {
+      if (superPass.trim() != _demoSuperPass) return 'err_wrong_super_pass';
+      if (newPass.trim().length < 4) return 'err_pass_too_short';
+      _demoAdminPass = newPass.trim();
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'saas_super_reset_building_admin_pass',
+        params: {
+          'p_super_pass': superPass.trim(),
+          'p_building_id': buildingId,
+          'p_new_pass': newPass.trim(),
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
+    } catch (_) {
+      return 'err_submit_failed';
+    }
+  }
+
+  Future<String?> superAdminChangePassword({
+    required String currentPass,
+    required String newPass,
+  }) async {
+    final cleanCur = currentPass.trim();
+    final cleanNew = newPass.trim();
+    if (cleanNew.length < 4) return 'err_pass_too_short';
+
+    if (!_useSupabase) {
+      if (cleanCur != _demoSuperPass) return 'err_wrong_super_pass';
+      _demoSuperPass = cleanNew;
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'saas_super_change_password',
+        params: {
+          'p_current_super_pass': cleanCur,
+          'p_new_super_pass': cleanNew,
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_wrong_super_pass';
+    } catch (_) {
+      return 'err_submit_failed';
     }
   }
 }

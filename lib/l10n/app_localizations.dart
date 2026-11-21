@@ -2358,6 +2358,486 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} apts'**
   String reportAptsCountUnit(int count);
+
+  /// No description provided for @errBuildingNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No building found with this code'**
+  String get errBuildingNotFound;
+
+  /// No description provided for @errWrongSuperPass.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform owner password is incorrect'**
+  String get errWrongSuperPass;
+
+  /// No description provided for @buildingProfileSavedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Building profile updated successfully'**
+  String get buildingProfileSavedToast;
+
+  /// No description provided for @copyInstapayNumberBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy InstaPay Number'**
+  String get copyInstapayNumberBtn;
+
+  /// No description provided for @buildingsPortalNavLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Buildings Portal (SaaS)'**
+  String get buildingsPortalNavLabel;
+
+  /// No description provided for @buildingCodeBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Code: {code}'**
+  String buildingCodeBadge(String code);
+
+  /// No description provided for @buildingCodeCopiedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Building link & code copied'**
+  String get buildingCodeCopiedToast;
+
+  /// No description provided for @buildingNotFoundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Building Not Found'**
+  String get buildingNotFoundTitle;
+
+  /// No description provided for @buildingNotFoundBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the building code, return to the default building, or register a new one.'**
+  String get buildingNotFoundBody;
+
+  /// No description provided for @returnDefaultBuildingBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Return to Default Building'**
+  String get returnDefaultBuildingBtn;
+
+  /// No description provided for @openBuildingsPortalBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Buildings Portal'**
+  String get openBuildingsPortalBtn;
+
+  /// No description provided for @suspendedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription Temporarily Paused'**
+  String get suspendedTitle;
+
+  /// No description provided for @suspendedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Access for {name} (Code: {code}) is temporarily paused because the trial or subscription ended. Contact MABNA CARE support for instant activation.'**
+  String suspendedBody(String name, String code);
+
+  /// No description provided for @contactSupportWhatsappBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact MABNA CARE Support (WhatsApp)'**
+  String get contactSupportWhatsappBtn;
+
+  /// No description provided for @switchBuildingBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch Building'**
+  String get switchBuildingBtn;
+
+  /// No description provided for @buildingProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Building Identity & Contact'**
+  String get buildingProfileTitle;
+
+  /// No description provided for @buildingProfileSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize building name, InstaPay, and manager WhatsApp'**
+  String get buildingProfileSubtitle;
+
+  /// No description provided for @buildingNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Building Name'**
+  String get buildingNameLabel;
+
+  /// No description provided for @buildingCityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'City / District (Optional)'**
+  String get buildingCityLabel;
+
+  /// No description provided for @instapayPhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'InstaPay Phone (Optional)'**
+  String get instapayPhoneLabel;
+
+  /// No description provided for @instapayUrlLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'InstaPay Direct Link (Optional)'**
+  String get instapayUrlLabel;
+
+  /// No description provided for @managerWhatsappLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Manager WhatsApp (Optional)'**
+  String get managerWhatsappLabel;
+
+  /// No description provided for @saveBuildingProfileBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Building Profile'**
+  String get saveBuildingProfileBtn;
+
+  /// No description provided for @shareLinkLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Shareable Resident Link'**
+  String get shareLinkLabel;
+
+  /// No description provided for @copyLinkBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Link'**
+  String get copyLinkBtn;
+
+  /// No description provided for @shareWhatsappBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Share WhatsApp'**
+  String get shareWhatsappBtn;
+
+  /// No description provided for @buildingShareWhatsappMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to {name} on MABNA CARE to track monthly expenses & payments:\n{url}\nBuilding Code: {code}'**
+  String buildingShareWhatsappMsg(String name, String url, String code);
+
+  /// No description provided for @subStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Plan'**
+  String get subStatusActive;
+
+  /// No description provided for @subStatusTrial.
+  ///
+  /// In en, this message translates to:
+  /// **'Free Trial'**
+  String get subStatusTrial;
+
+  /// No description provided for @subStatusSuspended.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspended'**
+  String get subStatusSuspended;
+
+  /// No description provided for @subDaysRemainingBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days left'**
+  String subDaysRemainingBadge(int days);
+
+  /// No description provided for @subExpiredBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get subExpiredBadge;
+
+  /// No description provided for @portalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Buildings Portal — MABNA CARE'**
+  String get portalTitle;
+
+  /// No description provided for @portalCurrentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently Active Building'**
+  String get portalCurrentLabel;
+
+  /// No description provided for @portalJoinTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Building by Code'**
+  String get portalJoinTitle;
+
+  /// No description provided for @portalJoinHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. MBN-A4K2'**
+  String get portalJoinHint;
+
+  /// No description provided for @portalJoinBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter'**
+  String get portalJoinBtn;
+
+  /// No description provided for @portalRegisterCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Register Your Building — 30-Day Free Trial'**
+  String get portalRegisterCardTitle;
+
+  /// No description provided for @portalRegisterCardSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Launch an isolated dashboard for your building in 30 seconds with a dedicated code and link'**
+  String get portalRegisterCardSub;
+
+  /// No description provided for @portalRegisterBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Register New Building'**
+  String get portalRegisterBtn;
+
+  /// No description provided for @portalSavedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Visited Buildings'**
+  String get portalSavedTitle;
+
+  /// No description provided for @portalSavedEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No additional saved buildings yet.'**
+  String get portalSavedEmpty;
+
+  /// No description provided for @portalDefaultBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Main Building'**
+  String get portalDefaultBadge;
+
+  /// No description provided for @portalSuperAdminBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform Console • Super Admin'**
+  String get portalSuperAdminBtn;
+
+  /// No description provided for @registerWizardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Register New Building'**
+  String get registerWizardTitle;
+
+  /// No description provided for @registerAptsCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Apartments Count (1 - 50)'**
+  String get registerAptsCountLabel;
+
+  /// No description provided for @registerAdminPassLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Building Admin Password (min 4 chars)'**
+  String get registerAdminPassLabel;
+
+  /// No description provided for @registerConfirmPassLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Admin Password'**
+  String get registerConfirmPassLabel;
+
+  /// No description provided for @registerSubmitBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Building Free (30 Days)'**
+  String get registerSubmitBtn;
+
+  /// No description provided for @registerNameRequiredErr.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the building name'**
+  String get registerNameRequiredErr;
+
+  /// No description provided for @registerAptsInvalidErr.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid apartment count between 1 and 50'**
+  String get registerAptsInvalidErr;
+
+  /// No description provided for @registerWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Building Created Successfully!'**
+  String get registerWelcomeTitle;
+
+  /// No description provided for @registerWelcomeSub.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is live with a 30-day free trial, and you are signed in as Admin automatically.'**
+  String registerWelcomeSub(String name);
+
+  /// No description provided for @registerStartManagingBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Managing Now'**
+  String get registerStartManagingBtn;
+
+  /// No description provided for @superAdminTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform Owner Console — Super Admin'**
+  String get superAdminTitle;
+
+  /// No description provided for @superAdminLoginTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'MABNA CARE Platform Owner Login'**
+  String get superAdminLoginTitle;
+
+  /// No description provided for @superAdminLoginSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the platform owner password to manage all buildings and subscriptions'**
+  String get superAdminLoginSub;
+
+  /// No description provided for @superAdminPassLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Super Admin Password'**
+  String get superAdminPassLabel;
+
+  /// No description provided for @superAdminUnlockBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock Console'**
+  String get superAdminUnlockBtn;
+
+  /// No description provided for @superAdminStatBuildings.
+  ///
+  /// In en, this message translates to:
+  /// **'Buildings'**
+  String get superAdminStatBuildings;
+
+  /// No description provided for @superAdminStatActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get superAdminStatActive;
+
+  /// No description provided for @superAdminStatTrial.
+  ///
+  /// In en, this message translates to:
+  /// **'Trial'**
+  String get superAdminStatTrial;
+
+  /// No description provided for @superAdminStatSuspended.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspended'**
+  String get superAdminStatSuspended;
+
+  /// No description provided for @superAdminStatApts.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Apts'**
+  String get superAdminStatApts;
+
+  /// No description provided for @superAdminStatViews.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform Views'**
+  String get superAdminStatViews;
+
+  /// No description provided for @superAdminSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by building name, code, or city...'**
+  String get superAdminSearchHint;
+
+  /// No description provided for @superAdminFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get superAdminFilterAll;
+
+  /// No description provided for @superAdminExtend30Btn.
+  ///
+  /// In en, this message translates to:
+  /// **'+30d (Activate)'**
+  String get superAdminExtend30Btn;
+
+  /// No description provided for @superAdminExtendYearBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'+1 Year'**
+  String get superAdminExtendYearBtn;
+
+  /// No description provided for @superAdminSuspendBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspend'**
+  String get superAdminSuspendBtn;
+
+  /// No description provided for @superAdminReactivateBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Reactivate'**
+  String get superAdminReactivateBtn;
+
+  /// No description provided for @superAdminResetPassBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Pass'**
+  String get superAdminResetPassBtn;
+
+  /// No description provided for @superAdminOpenBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get superAdminOpenBtn;
+
+  /// No description provided for @superAdminMetricsLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{apts} apts • {months} mo • {payments} receipts • {views} views'**
+  String superAdminMetricsLine(int apts, int months, int payments, int views);
+
+  /// No description provided for @superAdminResetPassTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Admin Password — {name}'**
+  String superAdminResetPassTitle(String name);
+
+  /// No description provided for @superAdminNewAdminPassLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New Building Admin Password'**
+  String get superAdminNewAdminPassLabel;
+
+  /// No description provided for @superAdminChangePassTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Super Admin Password'**
+  String get superAdminChangePassTitle;
+
+  /// No description provided for @superAdminChangePassSuccessToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Super Admin password updated'**
+  String get superAdminChangePassSuccessToast;
+
+  /// No description provided for @superAdminActionDoneToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Action completed'**
+  String get superAdminActionDoneToast;
+
+  /// No description provided for @superAdminNoBuildingsMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching buildings found'**
+  String get superAdminNoBuildingsMatch;
 }
 
 class _AppLocalizationsDelegate

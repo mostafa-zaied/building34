@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_spacing.dart';
 import '../core/theme/app_typography.dart';
+import '../core/utils/web_url.dart';
 import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
 import '../models/building_models.dart';
@@ -70,6 +73,11 @@ class AdminSettingsScreen extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
                 children: [
+                  // 0. Per-Building Identity, Code & Share Link Card
+                  _BuildingProfileCard(cubit: cubit, state: state),
+
+                  const SizedBox(height: AppSpacing.lg),
+
                   // 1. Security / Passcode Gate Toggle
                   AppCard(
                     padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
@@ -1236,6 +1244,362 @@ class _ChangeAdminPasswordCardState extends State<_ChangeAdminPasswordCard> {
               icon: Icons.lock_reset_rounded,
               loading: _saving,
               onPressed: _saving ? null : _submit,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BuildingProfileCard extends StatefulWidget {
+  final BuildingCubit cubit;
+  final BuildingState state;
+
+  const _BuildingProfileCard({
+    required this.cubit,
+    required this.state,
+  });
+
+  @override
+  State<_BuildingProfileCard> createState() => _BuildingProfileCardState();
+}
+
+class _BuildingProfileCardState extends State<_BuildingProfileCard> {
+  late final TextEditingController _nameCtrl;
+  late final TextEditingController _cityCtrl;
+  late final TextEditingController _instaPhoneCtrl;
+  late final TextEditingController _instaUrlCtrl;
+  late final TextEditingController _waCtrl;
+  int _syncedBuildingId = -1;
+  bool _saving = false;
+  String? _localErr;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameCtrl = TextEditingController();
+    _cityCtrl = TextEditingController();
+    _instaPhoneCtrl = TextEditingController();
+    _instaUrlCtrl = TextEditingController();
+    _waCtrl = TextEditingController();
+    _syncFromState();
+  }
+
+  void _syncFromState() {
+    final b = widget.state.building;
+    if (_syncedBuildingId != b.id) {
+      _syncedBuildingId = b.id;
+      _nameCtrl.text = b.name;
+      _cityCtrl.text = b.city;
+      _instaPhoneCtrl.text = b.instapayPhone;
+      _instaUrlCtrl.text = b.instapayUrl;
+      _waCtrl.text = b.managerWhatsapp;
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _BuildingProfileCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.state.building.id != widget.state.building.id) {
+      _syncFromState();
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _cityCtrl.dispose();
+    _instaPhoneCtrl.dispose();
+    _instaUrlCtrl.dispose();
+    _waCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    final s = widget.state.s;
+    final cleanName = _nameCtrl.text.trim();
+    if (cleanName.isEmpty) {
+      setState(() => _localErr = s.registerNameRequiredErr);
+      return;
+    }
+    setState(() {
+      _saving = true;
+      _localErr = null;
+    });
+    final err = await widget.cubit.updateBuildingProfile(
+      name: cleanName,
+      city: _cityCtrl.text.trim(),
+      instapayPhone: _instaPhoneCtrl.text.trim(),
+      instapayUrl: _instaUrlCtrl.text.trim(),
+      managerWhatsapp: _waCtrl.text.trim(),
+    );
+    if (!mounted) return;
+    setState(() {
+      _saving = false;
+      _localErr = err;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = widget.state.s;
+    final isDark = widget.state.isDarkMode;
+    final b = widget.state.building;
+    final shareUrl = buildBuildingShareUrl(
+      b.code,
+      isDefaultBuilding: b.isDefaultBuilding,
+    );
+
+    final isTrial = b.isTrial;
+    final statusColor = isTrial ? AppColors.amber : AppColors.emerald;
+    final statusText = isTrial
+        ? '${s.subStatusTrial} • ${s.subDaysRemainingBadge(b.daysRemaining)}'
+        : s.subStatusActive;
+
+    return AppCard(
+      padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: AppColors.emerald.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                child: Icon(
+                  Icons.domain_rounded,
+                  size: 20,
+                  color: AppColors.emeraldText(isDark),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      s.buildingProfileTitle,
+                      style: AppTypography.title.copyWith(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary(isDark),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      s.buildingProfileSubtitle,
+                      style: AppTypography.caption.copyWith(
+                        color: AppColors.textSecondary(isDark),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Container(
+            padding: const EdgeInsetsDirectional.all(AppSpacing.md),
+            decoration: BoxDecoration(
+              color: AppColors.surface(isDark),
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              border: Border.all(color: AppColors.border(isDark)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.14),
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                      ),
+                      child: Text(
+                        s.buildingCodeBadge(b.code),
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.primaryText(isDark),
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.14),
+                        borderRadius: BorderRadius.circular(AppRadius.pill),
+                      ),
+                      child: Text(
+                        statusText,
+                        style: AppTypography.caption.copyWith(
+                          color: statusColor,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  s.shareLinkLabel,
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.textSecondary(isDark),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: SelectableText(
+                    shareUrl,
+                    style: AppTypography.caption.copyWith(
+                      color: AppColors.textPrimary(isDark),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () async {
+                          await Clipboard.setData(ClipboardData(text: shareUrl));
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(s.buildingCodeCopiedToast),
+                              backgroundColor: AppColors.emerald,
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.copy_rounded, size: 15),
+                        label: Text(s.copyLinkBtn),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () async {
+                          final msg = s.buildingShareWhatsappMsg(
+                            b.name,
+                            shareUrl,
+                            b.code,
+                          );
+                          final uri = Uri.parse(
+                            'https://wa.me/?text=${Uri.encodeComponent(msg)}',
+                          );
+                          await launchUrl(
+                            uri,
+                            mode: LaunchMode.externalApplication,
+                          );
+                        },
+                        icon: const Icon(Icons.share_rounded, size: 15),
+                        label: Text(s.shareWhatsappBtn),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          TextField(
+            controller: _nameCtrl,
+            enabled: !_saving,
+            onChanged: (_) {
+              if (_localErr != null) setState(() => _localErr = null);
+            },
+            decoration: InputDecoration(
+              labelText: s.buildingNameLabel,
+              filled: true,
+              fillColor: AppColors.surface(isDark),
+              prefixIcon: const Icon(Icons.apartment_rounded, size: 18),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          TextField(
+            controller: _cityCtrl,
+            enabled: !_saving,
+            decoration: InputDecoration(
+              labelText: s.buildingCityLabel,
+              filled: true,
+              fillColor: AppColors.surface(isDark),
+              prefixIcon: const Icon(Icons.location_on_outlined, size: 18),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          TextField(
+            controller: _instaPhoneCtrl,
+            enabled: !_saving,
+            keyboardType: TextInputType.number,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+            ],
+            decoration: InputDecoration(
+              labelText: s.instapayPhoneLabel,
+              filled: true,
+              fillColor: AppColors.surface(isDark),
+              prefixIcon: const Icon(Icons.account_balance_wallet_outlined, size: 18),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          TextField(
+            controller: _instaUrlCtrl,
+            enabled: !_saving,
+            textDirection: TextDirection.ltr,
+            decoration: InputDecoration(
+              labelText: s.instapayUrlLabel,
+              filled: true,
+              fillColor: AppColors.surface(isDark),
+              prefixIcon: const Icon(Icons.link_rounded, size: 18),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          TextField(
+            controller: _waCtrl,
+            enabled: !_saving,
+            keyboardType: TextInputType.number,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+            ],
+            decoration: InputDecoration(
+              labelText: s.managerWhatsappLabel,
+              filled: true,
+              fillColor: AppColors.surface(isDark),
+              prefixIcon: const Icon(Icons.chat_outlined, size: 18),
+            ),
+          ),
+          if (_localErr != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              _localErr!,
+              style: AppTypography.caption.copyWith(
+                color: AppColors.dangerText(isDark),
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+          const SizedBox(height: AppSpacing.md),
+          SizedBox(
+            width: double.infinity,
+            child: AppPrimaryButton(
+              label: s.saveBuildingProfileBtn,
+              icon: Icons.save_rounded,
+              loading: _saving,
+              onPressed: _saving ? null : _save,
             ),
           ),
         ],

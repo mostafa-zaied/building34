@@ -6,6 +6,10 @@ import '../models/building_models.dart';
 class BuildingState {
   final bool loading;
   final bool busy;
+  final BuildingInfo building;
+  final String supportWhatsapp;
+  final List<SavedBuildingRef> savedBuildings;
+  final bool buildingNotFound;
   final bool isAdminAuthenticated;
   final bool isAdminOpen;
   final String adminPass;
@@ -35,6 +39,10 @@ class BuildingState {
   const BuildingState({
     this.loading = true,
     this.busy = false,
+    this.building = BuildingInfo.defaultDemo,
+    this.supportWhatsapp = '201021950445',
+    this.savedBuildings = const [],
+    this.buildingNotFound = false,
     this.isAdminAuthenticated = false,
     this.isAdminOpen = false,
     this.adminPass = 'admin123',
@@ -64,6 +72,15 @@ class BuildingState {
 
   AppLocalizations get s => lookupAppLocalizations(Locale(localeCode));
 
+  String get displayBuildingName {
+    final trimmed = building.name.trim();
+    if (building.isDefaultBuilding &&
+        (trimmed.isEmpty || trimmed.toUpperCase() == 'MABNA CARE')) {
+      return s.appTitle;
+    }
+    return trimmed.isEmpty ? s.appTitle : trimmed;
+  }
+
   int get unreadNotificationsCount =>
       notifications.where((n) => !readNotificationIds.contains(n.id)).length;
 
@@ -77,6 +94,10 @@ class BuildingState {
   BuildingState copyWith({
     bool? loading,
     bool? busy,
+    BuildingInfo? building,
+    String? supportWhatsapp,
+    List<SavedBuildingRef>? savedBuildings,
+    bool? buildingNotFound,
     bool? isAdminAuthenticated,
     bool? isAdminOpen,
     String? adminPass,
@@ -106,6 +127,10 @@ class BuildingState {
     return BuildingState(
       loading: loading ?? this.loading,
       busy: busy ?? this.busy,
+      building: building ?? this.building,
+      supportWhatsapp: supportWhatsapp ?? this.supportWhatsapp,
+      savedBuildings: savedBuildings ?? this.savedBuildings,
+      buildingNotFound: buildingNotFound ?? this.buildingNotFound,
       isAdminAuthenticated: isAdminAuthenticated ?? this.isAdminAuthenticated,
       isAdminOpen: isAdminOpen ?? this.isAdminOpen,
       adminPass: adminPass ?? this.adminPass,

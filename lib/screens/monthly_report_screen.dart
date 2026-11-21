@@ -419,7 +419,7 @@ class _StatementPaperA extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        s.appTitle,
+                        state.displayBuildingName,
                         style: AppTypography.headline.copyWith(
                           color: Colors.white,
                           fontSize: 16,
@@ -429,7 +429,9 @@ class _StatementPaperA extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        s.reportDocSubtitle,
+                        state.building.isDefaultBuilding
+                            ? s.reportDocSubtitle
+                            : '${s.reportDocSubtitle} • ${s.appTitle}',
                         style: AppTypography.caption.copyWith(
                           color: const Color(0xFFDBEAFE),
                           fontSize: 11,
@@ -954,7 +956,7 @@ class _StatementPaperA extends StatelessWidget {
                         ),
                         const SizedBox(width: 5),
                         Text(
-                          '${s.receiptStampTitle} • ${s.appTitle}',
+                          '${s.receiptStampTitle} • ${state.displayBuildingName}',
                           style: const TextStyle(
                             color: Color(0xFF64748B),
                             fontSize: 10.5,

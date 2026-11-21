@@ -246,6 +246,19 @@
         return choice && choice.outcome === 'accepted';
       };
 
+      // Update ?b=CODE query param cleanly without reloading the page
+      window.mabnaSetBuildingUrl = function (code) {
+        try {
+          const url = new URL(window.location.href);
+          if (!code) {
+            url.searchParams.delete('b');
+          } else {
+            url.searchParams.set('b', code);
+          }
+          window.history.replaceState({}, '', url.pathname + url.search + url.hash);
+        } catch (_) {}
+      };
+
       // Client-side Canvas JPEG compressor for fast receipt uploads on mobile web
       window.mabnaCompressImage = function (base64In, maxDim, quality) {
         return new Promise((resolve) => {

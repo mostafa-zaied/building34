@@ -1,6 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -255,7 +254,8 @@ Future<void> showApartmentPaymentDialog({
   String? pickedName;
   String? errMsg;
   bool submitting = false;
-  const instaPayPhone = '01021950445';
+  final instaPayPhone = state.building.instapayPhone.trim();
+  final instaPayUrl = state.building.instapayUrl.trim();
 
   await showDialog<void>(
     context: context,
@@ -414,88 +414,122 @@ Future<void> showApartmentPaymentDialog({
                 const SizedBox(height: AppSpacing.md),
 
                 // InstaPay Transfer Card
-                Container(
-                  padding: const EdgeInsetsDirectional.all(AppSpacing.md),
-                  decoration: BoxDecoration(
-                    color: AppColors.surface(isDark),
-                    borderRadius: BorderRadius.circular(AppRadius.md),
-                    border: Border.all(
-                      color: AppColors.primaryText(isDark).withValues(alpha: 0.25),
+                if (instaPayPhone.isNotEmpty || instaPayUrl.isNotEmpty) ...[
+                  Container(
+                    padding: const EdgeInsetsDirectional.all(AppSpacing.md),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface(isDark),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      border: Border.all(
+                        color: AppColors.primaryText(isDark).withValues(alpha: 0.25),
+                      ),
                     ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.account_balance_wallet_outlined,
-                            size: 16,
-                            color: AppColors.primaryText(isDark),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.account_balance_wallet_outlined,
+                              size: 16,
+                              color: AppColors.primaryText(isDark),
+                            ),
+                            const SizedBox(width: AppSpacing.xs),
+                            Expanded(
+                              child: Text(
+                                s.instapayTitle,
+                                style: AppTypography.label.copyWith(
+                                  color: AppColors.primaryText(isDark),
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                            if (instaPayPhone.isNotEmpty)
+                              Directionality(
+                                textDirection: TextDirection.ltr,
+                                child: SelectableText(
+                                  instaPayPhone,
+                                  style: AppTypography.title.copyWith(
+                                    color: AppColors.textPrimary(isDark),
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          s.instapaySubtitle,
+                          style: AppTypography.caption.copyWith(
+                            color: AppColors.textSecondary(isDark),
                           ),
-                          const SizedBox(width: AppSpacing.xs),
-                          Expanded(
-                            child: Text(
-                              s.instapayTitle,
-                              style: AppTypography.label.copyWith(
-                                color: AppColors.primaryText(isDark),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        if (instaPayUrl.isNotEmpty)
+                          ElevatedButton.icon(
+                            onPressed: () async {
+                              final instaPayUri = Uri.tryParse(instaPayUrl);
+                              if (instaPayUri == null) return;
+                              try {
+                                await launchUrl(
+                                  instaPayUri,
+                                  mode: LaunchMode.externalApplication,
+                                );
+                              } catch (_) {}
+                            },
+                            icon: const Icon(Icons.open_in_new_rounded, size: 15),
+                            label: Text(
+                              s.openInstapayBtn,
+                              style: AppTypography.caption.copyWith(
+                                color: AppColors.onPrimaryAction(isDark),
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
-                          ),
-                          Directionality(
-                            textDirection: TextDirection.ltr,
-                            child: SelectableText(
-                              instaPayPhone,
-                              style: AppTypography.title.copyWith(
-                                color: AppColors.textPrimary(isDark),
-                                fontWeight: FontWeight.w800,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primaryActionBg(isDark),
+                              foregroundColor: AppColors.onPrimaryAction(isDark),
+                              padding: const EdgeInsetsDirectional.symmetric(
+                                vertical: 10,
+                                horizontal: 12,
+                              ),
+                            ),
+                          )
+                        else if (instaPayPhone.isNotEmpty)
+                          ElevatedButton.icon(
+                            onPressed: () async {
+                              await Clipboard.setData(
+                                ClipboardData(text: instaPayPhone),
+                              );
+                              if (!ctx.mounted) return;
+                              ScaffoldMessenger.of(ctx).showSnackBar(
+                                SnackBar(
+                                  content: Text(s.copiedToast),
+                                  backgroundColor: AppColors.emerald,
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.copy_rounded, size: 15),
+                            label: Text(
+                              s.copyInstapayNumberBtn,
+                              style: AppTypography.caption.copyWith(
+                                color: AppColors.onPrimaryAction(isDark),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primaryActionBg(isDark),
+                              foregroundColor: AppColors.onPrimaryAction(isDark),
+                              padding: const EdgeInsetsDirectional.symmetric(
+                                vertical: 10,
+                                horizontal: 12,
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        s.instapaySubtitle,
-                        style: AppTypography.caption.copyWith(
-                          color: AppColors.textSecondary(isDark),
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
-                      ElevatedButton.icon(
-                        onPressed: () async {
-                          final instaPayUri = Uri.parse(
-                            'https://ipn.eg/S/mostafazaied/instapay/6nvhpw',
-                          );
-                          try {
-                            await launchUrl(
-                              instaPayUri,
-                              mode: LaunchMode.externalApplication,
-                            );
-                          } catch (_) {}
-                        },
-                        icon: const Icon(Icons.open_in_new_rounded, size: 15),
-                        label: Text(
-                          s.openInstapayBtn,
-                          style: AppTypography.caption.copyWith(
-                            color: AppColors.onPrimaryAction(isDark),
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryActionBg(isDark),
-                          foregroundColor: AppColors.onPrimaryAction(isDark),
-                          padding: const EdgeInsetsDirectional.symmetric(
-                            vertical: 10,
-                            horizontal: 12,
-                          ),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: AppSpacing.md),
+                  const SizedBox(height: AppSpacing.md),
+                ],
 
                 // Mandatory receipt image
                 Text(
