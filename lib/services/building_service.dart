@@ -1314,6 +1314,8 @@ class BuildingService {
     String audience = 'all',
     List<int>? targetAptNums,
     String? adminPass,
+    int? aptNum,
+    String? aptPasscode,
     String? eventType,
   }) async {
     if (!_useSupabase) {
@@ -1341,6 +1343,9 @@ class BuildingService {
           if (targetAptNums != null && targetAptNums.isNotEmpty)
             'target_apt_nums': targetAptNums,
           if (adminPass != null && adminPass.isNotEmpty) 'admin_pass': adminPass,
+          'apt_num': ?aptNum,
+          if (aptPasscode != null && aptPasscode.isNotEmpty)
+            'apt_passcode': aptPasscode,
           'event_type': ?eventType,
         },
       );
@@ -1654,6 +1659,267 @@ class BuildingService {
       return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
     } catch (_) {
       return 'err_submit_failed';
+    }
+  }
+
+  static final List<AppRating> _demoRatings = [];
+
+  Future<List<AppRating>> fetchAppRatings() async {
+    if (!_useSupabase) {
+      return List<AppRating>.from(_demoRatings);
+    }
+
+    try {
+      final rows = await Supabase.instance.client
+          .from('app_ratings')
+          .select()
+          .order('updated_at', ascending: false);
+      return (rows as List)
+          .map((r) => AppRating.fromJson(Map<String, dynamic>.from(r as Map)))
+          .toList();
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  Future<String?> submitAppRating({
+    required int aptNum,
+    required int stars,
+    required List<String> tags,
+    required String comment,
+    String? passcode,
+    String? adminPass,
+  }) async {
+    if (stars < 1 || stars > 5) return 'err_submit_failed';
+
+    if (!_useSupabase) {
+      _demoRatings.removeWhere((r) => r.aptNum == aptNum);
+      _demoRatings.insert(
+        0,
+        AppRating(
+          id: aptNum.toString(),
+          aptNum: aptNum,
+          stars: stars,
+          tags: List<String>.from(tags),
+          comment: comment.trim(),
+          updatedAt: DateTime.now(),
+        ),
+      );
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'submit_app_rating',
+        params: {
+          'p_apt_num': aptNum,
+          'p_passcode': (passcode ?? '').trim(),
+          'p_stars': stars,
+          'p_tags': tags,
+          'p_comment': comment.trim(),
+          'p_admin_pass': adminPass,
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
+    } catch (_) {
+      return 'err_submit_failed';
+    }
+  }
+
+  Future<String?> deleteAppRatingAsAdmin({
+    required String adminPass,
+    required int aptNum,
+  }) async {
+    if (!_useSupabase) {
+      _demoRatings.removeWhere((r) => r.aptNum == aptNum);
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'admin_archive_app_rating',
+        params: {
+          'p_admin_pass': adminPass,
+          'p_apt_num': aptNum,
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_delete_failed';
+    } catch (_) {
+      return 'err_delete_failed';
+    }
+  }
+
+  static final List<EmergencyArrear> _demoArrears = [];
+
+  Future<List<EmergencyArrear>> fetchEmergencyArrears() async {
+    if (!_useSupabase) {
+      return List<EmergencyArrear>.from(_demoArrears);
+    }
+
+    try {
+      final rows = await Supabase.instance.client
+          .from('emergency_arrears')
+          .select()
+          .order('is_collected', ascending: true)
+          .order('created_at', ascending: false);
+      return (rows as List)
+          .map((r) => EmergencyArrear.fromJson(Map<String, dynamic>.from(r as Map)))
+          .toList();
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  Future<String?> addEmergencyArrearAsAdmin({
+    required String adminPass,
+    required String title,
+    required double amount,
+    required String details,
+  }) async {
+    if (title.trim().isEmpty || amount <= 0) return 'err_submit_failed';
+
+    if (!_useSupabase) {
+      _demoArrears.insert(
+        0,
+        EmergencyArrear(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: title.trim(),
+          amount: amount,
+          details: details.trim(),
+          createdAt: DateTime.now(),
+        ),
+      );
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'admin_add_emergency_arrear',
+        params: {
+          'p_admin_pass': adminPass,
+          'p_title': title.trim(),
+          'p_amount': amount,
+          'p_details': details.trim(),
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
+    } catch (_) {
+      return 'err_submit_failed';
+    }
+  }
+
+  Future<String?> updateEmergencyArrearAsAdmin({
+    required String adminPass,
+    required String id,
+    required String title,
+    required double amount,
+    required String details,
+  }) async {
+    if (title.trim().isEmpty || amount <= 0) return 'err_submit_failed';
+
+    if (!_useSupabase) {
+      final idx = _demoArrears.indexWhere((a) => a.id == id);
+      if (idx < 0 || _demoArrears[idx].isCollected) return 'err_submit_failed';
+      final prev = _demoArrears[idx];
+      _demoArrears[idx] = EmergencyArrear(
+        id: prev.id,
+        title: title.trim(),
+        amount: amount,
+        details: details.trim(),
+        isCollected: prev.isCollected,
+        createdAt: prev.createdAt,
+        collectedAt: prev.collectedAt,
+      );
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'admin_update_emergency_arrear',
+        params: {
+          'p_admin_pass': adminPass,
+          'p_id': int.tryParse(id) ?? 0,
+          'p_title': title.trim(),
+          'p_amount': amount,
+          'p_details': details.trim(),
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
+    } catch (_) {
+      return 'err_submit_failed';
+    }
+  }
+
+  Future<String?> collectEmergencyArrearAsAdmin({
+    required String adminPass,
+    required String id,
+  }) async {
+    if (!_useSupabase) {
+      final idx = _demoArrears.indexWhere((a) => a.id == id);
+      if (idx < 0 || _demoArrears[idx].isCollected) return 'err_submit_failed';
+      final item = _demoArrears[idx];
+      _demoArrears[idx] = EmergencyArrear(
+        id: item.id,
+        title: item.title,
+        amount: item.amount,
+        details: item.details,
+        isCollected: true,
+        createdAt: item.createdAt,
+        collectedAt: DateTime.now(),
+      );
+      _demoBaseEmergency += item.amount;
+      _demoEmergencyTx.insert(
+        0,
+        EmergencyTransaction(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          amount: -item.amount,
+          reason: 'تحصيل متأخرات: ${item.title}',
+          createdAt: DateTime.now(),
+        ),
+      );
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'admin_collect_emergency_arrear',
+        params: {
+          'p_admin_pass': adminPass,
+          'p_id': int.tryParse(id) ?? 0,
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_submit_failed';
+    } catch (_) {
+      return 'err_submit_failed';
+    }
+  }
+
+  Future<String?> deleteEmergencyArrearAsAdmin({
+    required String adminPass,
+    required String id,
+  }) async {
+    if (!_useSupabase) {
+      _demoArrears.removeWhere((a) => a.id == id);
+      return null;
+    }
+
+    try {
+      final res = await Supabase.instance.client.rpc(
+        'admin_archive_emergency_arrear',
+        params: {
+          'p_admin_pass': adminPass,
+          'p_id': int.tryParse(id) ?? 0,
+        },
+      );
+      if (res is Map && res['ok'] == true) return null;
+      return (res is Map ? res['error']?.toString() : null) ?? 'err_delete_failed';
+    } catch (_) {
+      return 'err_delete_failed';
     }
   }
 }

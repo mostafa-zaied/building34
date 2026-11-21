@@ -2832,6 +2832,330 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{apt} has set their apartment passcode'**
   String pushAutoAptPassSetBody(String apt);
+
+  /// No description provided for @navAppRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate the App'**
+  String get navAppRating;
+
+  /// No description provided for @ratingScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate MABNA CARE'**
+  String get ratingScreenTitle;
+
+  /// No description provided for @ratingScreenSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified ratings from registered building residents only'**
+  String get ratingScreenSubtitle;
+
+  /// No description provided for @ratingCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} ratings'**
+  String ratingCountLabel(int count);
+
+  /// No description provided for @ratingParticipationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{rated} / {total} apts rated'**
+  String ratingParticipationLabel(int rated, int total);
+
+  /// No description provided for @ratingFormTitleNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate your experience'**
+  String get ratingFormTitleNew;
+
+  /// No description provided for @ratingFormTitleEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Update your rating'**
+  String get ratingFormTitleEdit;
+
+  /// No description provided for @ratingFormSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You can update your rating anytime — one rating per apartment'**
+  String get ratingFormSubtitle;
+
+  /// No description provided for @ratingPickStarsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to select stars'**
+  String get ratingPickStarsHint;
+
+  /// No description provided for @ratingMood1.
+  ///
+  /// In en, this message translates to:
+  /// **'Poor — needs big improvements'**
+  String get ratingMood1;
+
+  /// No description provided for @ratingMood2.
+  ///
+  /// In en, this message translates to:
+  /// **'Fair — has some issues'**
+  String get ratingMood2;
+
+  /// No description provided for @ratingMood3.
+  ///
+  /// In en, this message translates to:
+  /// **'Good — works well'**
+  String get ratingMood3;
+
+  /// No description provided for @ratingMood4.
+  ///
+  /// In en, this message translates to:
+  /// **'Very Good'**
+  String get ratingMood4;
+
+  /// No description provided for @ratingMood5.
+  ///
+  /// In en, this message translates to:
+  /// **'Awesome! Saved us so much hassle ❤️'**
+  String get ratingMood5;
+
+  /// No description provided for @ratingCommentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Share any thoughts or suggestions to help us improve (optional)...'**
+  String get ratingCommentHint;
+
+  /// No description provided for @ratingSubmitBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Rating'**
+  String get ratingSubmitBtn;
+
+  /// No description provided for @ratingSavedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Your apartment\'s rating has been saved — thank you!'**
+  String get ratingSavedToast;
+
+  /// No description provided for @ratingReviewsAdminTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ratings by Apartment (Admin)'**
+  String get ratingReviewsAdminTitle;
+
+  /// No description provided for @ratingReviewsPublicTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Resident Reviews'**
+  String get ratingReviewsPublicTitle;
+
+  /// No description provided for @ratingVerifiedResident.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified Resident ✓'**
+  String get ratingVerifiedResident;
+
+  /// No description provided for @ratingAdminOnlyBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Apartment details visible to Admin only'**
+  String get ratingAdminOnlyBadge;
+
+  /// No description provided for @ratingNoReviewsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No ratings yet — be the first to rate!'**
+  String get ratingNoReviewsYet;
+
+  /// No description provided for @ratingUnratedAptsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Apartments that haven\'t rated yet ({count}):'**
+  String ratingUnratedAptsTitle(int count);
+
+  /// No description provided for @pushAutoNewRatingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New App Rating'**
+  String get pushAutoNewRatingTitle;
+
+  /// No description provided for @pushAutoNewRatingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{apt} rated the app {stars} stars'**
+  String pushAutoNewRatingBody(String apt, int stars);
+
+  /// No description provided for @emergencyArrearsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Dues & Arrears for Fund'**
+  String get emergencyArrearsTitle;
+
+  /// No description provided for @emergencyArrearsPendingKpi.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Dues'**
+  String get emergencyArrearsPendingKpi;
+
+  /// No description provided for @emergencyArrearsExpectedKpi.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected After Collection'**
+  String get emergencyArrearsExpectedKpi;
+
+  /// No description provided for @emergencyArrearsAddBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Arrear'**
+  String get emergencyArrearsAddBtn;
+
+  /// No description provided for @emergencyArrearsDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Pending Due for Fund'**
+  String get emergencyArrearsDialogTitle;
+
+  /// No description provided for @emergencyArrearsAptLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Apartment / Name'**
+  String get emergencyArrearsAptLabel;
+
+  /// No description provided for @emergencyArrearsAptHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Mr. Khaled\'s Apt (Closed)'**
+  String get emergencyArrearsAptHint;
+
+  /// No description provided for @emergencyArrearsAmountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount Due (EGP)'**
+  String get emergencyArrearsAmountLabel;
+
+  /// No description provided for @emergencyArrearsDetailsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Details & Included Items'**
+  String get emergencyArrearsDetailsLabel;
+
+  /// No description provided for @emergencyArrearsDetailsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Marble work, elevator, electrical switches...'**
+  String get emergencyArrearsDetailsHint;
+
+  /// No description provided for @emergencyArrearsPendingBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Collection'**
+  String get emergencyArrearsPendingBadge;
+
+  /// No description provided for @emergencyArrearsCollectedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Collected & Added to Fund ✓'**
+  String get emergencyArrearsCollectedBadge;
+
+  /// No description provided for @emergencyArrearsAutoNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Once paid, this amount is automatically added to the emergency fund balance'**
+  String get emergencyArrearsAutoNote;
+
+  /// No description provided for @emergencyArrearsCollectBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark Collected → Add to Fund'**
+  String get emergencyArrearsCollectBtn;
+
+  /// No description provided for @emergencyArrearsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending arrears right now'**
+  String get emergencyArrearsEmpty;
+
+  /// No description provided for @emergencyArrearsAddedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Arrear added successfully'**
+  String get emergencyArrearsAddedToast;
+
+  /// No description provided for @emergencyArrearsCollectedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Collected and added to emergency fund automatically'**
+  String get emergencyArrearsCollectedToast;
+
+  /// No description provided for @emergencyArrearsDeletedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrear deleted'**
+  String get emergencyArrearsDeletedToast;
+
+  /// No description provided for @confirmDeleteArrearBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete the arrear for \"{title}\"?'**
+  String confirmDeleteArrearBody(String title);
+
+  /// No description provided for @ratingTabAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Rating'**
+  String get ratingTabAdd;
+
+  /// No description provided for @ratingTabList.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews'**
+  String get ratingTabList;
+
+  /// No description provided for @pushAutoContactAddedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Maintenance Contact Added'**
+  String get pushAutoContactAddedTitle;
+
+  /// No description provided for @pushAutoContactAddedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" was added to the building maintenance directory'**
+  String pushAutoContactAddedBody(String name);
+
+  /// No description provided for @pushAutoPollVotedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Poll Vote'**
+  String get pushAutoPollVotedTitle;
+
+  /// No description provided for @pushAutoPollVotedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{apt} cast a vote in building polls'**
+  String pushAutoPollVotedBody(String apt);
+
+  /// No description provided for @emergencyArrearsEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Arrear'**
+  String get emergencyArrearsEditTitle;
+
+  /// No description provided for @emergencyArrearsUpdatedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Arrear updated successfully'**
+  String get emergencyArrearsUpdatedToast;
+
+  /// No description provided for @ratingDeletedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating deleted'**
+  String get ratingDeletedToast;
+
+  /// No description provided for @confirmDeleteRatingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete {apt}\'s rating?'**
+  String confirmDeleteRatingBody(String apt);
 }
 
 class _AppLocalizationsDelegate

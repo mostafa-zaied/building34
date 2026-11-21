@@ -134,6 +134,12 @@ class BuildingCubit extends Cubit<BuildingState> {
       final polls = await _service
           .fetchBuildingPolls()
           .timeout(const Duration(seconds: 10), onTimeout: () => state.buildingPolls);
+      final ratings = await _service
+          .fetchAppRatings()
+          .timeout(const Duration(seconds: 10), onTimeout: () => state.appRatings);
+      final arrears = await _service
+          .fetchEmergencyArrears()
+          .timeout(const Duration(seconds: 10), onTimeout: () => state.emergencyArrears);
 
       emit(state.copyWith(
         loading: false,
@@ -155,6 +161,8 @@ class BuildingCubit extends Cubit<BuildingState> {
         notifications: notifs,
         readNotificationIds: readNotifIds,
         buildingPolls: polls,
+        appRatings: ratings,
+        emergencyArrears: arrears,
       ));
       _ensureLiveSubscription();
       unawaited(syncPushTokenIfGranted());
@@ -186,6 +194,12 @@ class BuildingCubit extends Cubit<BuildingState> {
       final polls = await _service
           .fetchBuildingPolls()
           .timeout(const Duration(seconds: 10), onTimeout: () => state.buildingPolls);
+      final ratings = await _service
+          .fetchAppRatings()
+          .timeout(const Duration(seconds: 10), onTimeout: () => state.appRatings);
+      final arrears = await _service
+          .fetchEmergencyArrears()
+          .timeout(const Duration(seconds: 10), onTimeout: () => state.emergencyArrears);
       if (isClosed) return;
 
       final targetIdx = data.months.isEmpty
@@ -205,6 +219,8 @@ class BuildingCubit extends Cubit<BuildingState> {
         apartmentHasPasscode: data.apartmentHasPasscode,
         notifications: notifs,
         buildingPolls: polls,
+        appRatings: ratings,
+        emergencyArrears: arrears,
       ));
     } catch (_) {
       // Keep existing UI state smoothly on transient background refresh error
@@ -308,13 +324,13 @@ class BuildingCubit extends Cubit<BuildingState> {
       feedbackMessage: () => state.s.postAddedToast,
       feedbackIsError: false,
     ));
-    // Auto-notify admins (fire-and-forget)
+    // Auto-notify all residents (fire-and-forget)
     final preview = message.trim();
     final senderPrefix = authorLabel != null ? '$authorLabel: ' : '';
     _triggerAutoPush(
       title: state.s.pushAutoFeedbackTitle,
       body: '$senderPrefix$preview',
-      audience: 'admins',
+      audience: 'all',
       eventType: 'feedback_submitted',
     );
     return true;
@@ -832,11 +848,11 @@ class BuildingCubit extends Cubit<BuildingState> {
     if (err == null) {
       await _saveAptSession(aptNum, passcode.trim());
       await loadData(preserveMonthIndex: state.selectedMonthIndex);
-      // Auto-notify admins that an apartment uploaded a payment receipt
+      // Auto-notify all residents that an apartment paid
       _triggerAutoPush(
         title: state.s.pushAutoPaymentTitle,
         body: state.s.pushAutoPaymentBody(state.aptLabel(aptNum)),
-        audience: 'admins',
+        audience: 'all',
         eventType: 'payment_uploaded',
       );
       return null;
@@ -1153,7 +1169,10 @@ class BuildingCubit extends Cubit<BuildingState> {
           title: title,
           body: body,
           audience: audience,
-          adminPass: adminPass,
+          adminPass: adminPass ??
+              (state.isAdminAuthenticated ? state.adminPass : null),
+          aptNum: state.myAptNum,
+          aptPasscode: state.savedAptPass,
           eventType: eventType,
         )
         .then((_) => refreshNotifications())
@@ -1467,6 +1486,12 @@ class BuildingCubit extends Cubit<BuildingState> {
         feedbackMessage: () => state.s.contactAddedToast,
         feedbackIsError: false,
       ));
+      _triggerAutoPush(
+        title: state.s.pushAutoContactAddedTitle,
+        body: state.s.pushAutoContactAddedBody(name.trim()),
+        audience: 'all',
+        eventType: 'contact_added',
+      );
       return true;
     });
   }
@@ -1687,6 +1712,194 @@ class BuildingCubit extends Cubit<BuildingState> {
       emit(state.copyWith(
         buildingPolls: polls,
         feedbackMessage: () => state.s.pollVotedToast,
+        feedbackIsError: false,
+      ));
+      _triggerAutoPush(
+        title: state.s.pushAutoPollVotedTitle,
+        body: state.s.pushAutoPollVotedBody(state.aptLabel(aptNum)),
+        audience: 'all',
+        eventType: 'poll_voted',
+      );
+    });
+  }
+
+  Future<bool> submitAppRating({
+    required int stars,
+    required List<String> tags,
+    required String comment,
+  }) async {
+    if (!state.canResidentMutate) {
+      emit(state.copyWith(
+        feedbackMessage: () => '❌ ${state.s.errResidentAuthRequired}',
+        feedbackIsError: true,
+      ));
+      return false;
+    }
+    final aptNum = state.myAptNum;
+    if (aptNum == null) {
+      emit(state.copyWith(
+        feedbackMessage: () => '❌ ${state.s.errResidentAuthRequired}',
+        feedbackIsError: true,
+      ));
+      return false;
+    }
+    return _withBusy(() async {
+      final err = await _service.submitAppRating(
+        aptNum: aptNum,
+        stars: stars,
+        tags: tags,
+        comment: comment,
+        passcode: state.savedAptPass,
+        adminPass: state.isAdminAuthenticated ? state.adminPass : null,
+      );
+      if (err != null) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return false;
+      }
+      final ratings = await _service.fetchAppRatings();
+      emit(state.copyWith(
+        appRatings: ratings,
+        feedbackMessage: () => state.s.ratingSavedToast,
+        feedbackIsError: false,
+      ));
+      _triggerAutoPush(
+        title: state.s.pushAutoNewRatingTitle,
+        body: state.s.pushAutoNewRatingBody(state.aptLabel(aptNum), stars),
+        audience: 'all',
+        eventType: 'app_rating',
+      );
+      return true;
+    });
+  }
+
+  Future<void> deleteAppRating(int aptNum) async {
+    if (!state.isAdminAuthenticated) return;
+    await _withBusy(() async {
+      final err = await _service.deleteAppRatingAsAdmin(
+        adminPass: state.adminPass,
+        aptNum: aptNum,
+      );
+      if (err != null) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return;
+      }
+      final ratings = await _service.fetchAppRatings();
+      emit(state.copyWith(
+        appRatings: ratings,
+        feedbackMessage: () => state.s.ratingDeletedToast,
+        feedbackIsError: false,
+      ));
+    });
+  }
+
+  Future<bool> addEmergencyArrear({
+    required String title,
+    required double amount,
+    required String details,
+  }) async {
+    if (!state.isAdminAuthenticated) return false;
+    return _withBusy(() async {
+      final err = await _service.addEmergencyArrearAsAdmin(
+        adminPass: state.adminPass,
+        title: title,
+        amount: amount,
+        details: details,
+      );
+      if (err != null) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return false;
+      }
+      final arrears = await _service.fetchEmergencyArrears();
+      emit(state.copyWith(
+        emergencyArrears: arrears,
+        feedbackMessage: () => state.s.emergencyArrearsAddedToast,
+        feedbackIsError: false,
+      ));
+      return true;
+    });
+  }
+
+  Future<bool> updateEmergencyArrear({
+    required String id,
+    required String title,
+    required double amount,
+    required String details,
+  }) async {
+    if (!state.isAdminAuthenticated) return false;
+    return _withBusy(() async {
+      final err = await _service.updateEmergencyArrearAsAdmin(
+        adminPass: state.adminPass,
+        id: id,
+        title: title,
+        amount: amount,
+        details: details,
+      );
+      if (err != null) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return false;
+      }
+      final arrears = await _service.fetchEmergencyArrears();
+      emit(state.copyWith(
+        emergencyArrears: arrears,
+        feedbackMessage: () => state.s.emergencyArrearsUpdatedToast,
+        feedbackIsError: false,
+      ));
+      return true;
+    });
+  }
+
+  Future<void> collectEmergencyArrear(String id) async {
+    if (!state.isAdminAuthenticated) return;
+    await _withBusy(() async {
+      final err = await _service.collectEmergencyArrearAsAdmin(
+        adminPass: state.adminPass,
+        id: id,
+      );
+      if (err != null) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return;
+      }
+      await loadData(preserveMonthIndex: state.selectedMonthIndex);
+      emit(state.copyWith(
+        feedbackMessage: () => state.s.emergencyArrearsCollectedToast,
+        feedbackIsError: false,
+      ));
+    });
+  }
+
+  Future<void> deleteEmergencyArrear(String id) async {
+    if (!state.isAdminAuthenticated) return;
+    await _withBusy(() async {
+      final err = await _service.deleteEmergencyArrearAsAdmin(
+        adminPass: state.adminPass,
+        id: id,
+      );
+      if (err != null) {
+        emit(state.copyWith(
+          feedbackMessage: () => '❌ ${_localizeError(err)}',
+          feedbackIsError: true,
+        ));
+        return;
+      }
+      final arrears = await _service.fetchEmergencyArrears();
+      emit(state.copyWith(
+        emergencyArrears: arrears,
+        feedbackMessage: () => state.s.emergencyArrearsDeletedToast,
         feedbackIsError: false,
       ));
     });

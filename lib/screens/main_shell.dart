@@ -20,6 +20,7 @@ import 'feedback_screen.dart';
 import 'home_screen.dart';
 import 'notifications_screen.dart';
 import 'polls_screen.dart';
+import 'rating_screen.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -89,6 +90,7 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
           AnalyticsScreen(),
           AdminViewsScreen(),
           PollsScreen(),
+          RatingScreen(),
         ];
 
         final bgDecoration = BoxDecoration(

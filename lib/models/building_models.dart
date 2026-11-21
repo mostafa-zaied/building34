@@ -563,6 +563,81 @@ class BuildingPoll {
   }
 }
 
+class AppRating {
+  final String id;
+  final int aptNum;
+  final int stars;
+  final List<String> tags;
+  final String comment;
+  final DateTime updatedAt;
+
+  const AppRating({
+    required this.id,
+    required this.aptNum,
+    required this.stars,
+    this.tags = const [],
+    this.comment = '',
+    required this.updatedAt,
+  });
+
+  factory AppRating.fromJson(Map<String, dynamic> json) {
+    final rawTags = json['tags'];
+    final parsedTags = <String>[];
+    if (rawTags is List) {
+      for (final t in rawTags) {
+        final s = t?.toString().trim() ?? '';
+        if (s.isNotEmpty) parsedTags.add(s);
+      }
+    }
+    return AppRating(
+      id: (json['id'] ?? json['apt_num']).toString(),
+      aptNum: (json['apt_num'] as num?)?.toInt() ?? 0,
+      stars: ((json['stars'] as num?)?.toInt() ?? 5).clamp(1, 5),
+      tags: parsedTags,
+      comment: (json['comment'] as String?) ?? '',
+      updatedAt:
+          DateTime.tryParse(json['updated_at']?.toString() ?? '') ??
+              DateTime.now(),
+    );
+  }
+}
+
+class EmergencyArrear {
+  final String id;
+  final String title;
+  final double amount;
+  final String details;
+  final bool isCollected;
+  final DateTime createdAt;
+  final DateTime? collectedAt;
+
+  const EmergencyArrear({
+    required this.id,
+    required this.title,
+    required this.amount,
+    this.details = '',
+    this.isCollected = false,
+    required this.createdAt,
+    this.collectedAt,
+  });
+
+  factory EmergencyArrear.fromJson(Map<String, dynamic> json) {
+    return EmergencyArrear(
+      id: json['id'].toString(),
+      title: (json['title'] as String?) ?? '',
+      amount: (json['amount'] as num?)?.toDouble() ?? 0,
+      details: (json['details'] as String?) ?? '',
+      isCollected: json['is_collected'] == true,
+      createdAt:
+          DateTime.tryParse(json['created_at']?.toString() ?? '') ??
+              DateTime.now(),
+      collectedAt: json['collected_at'] != null
+          ? DateTime.tryParse(json['collected_at'].toString())
+          : null,
+    );
+  }
+}
+
 String localizedMonthName(int monthNum, bool isAr) {
   const arMonths = [
     'يناير',

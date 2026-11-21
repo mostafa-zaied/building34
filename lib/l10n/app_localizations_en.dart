@@ -1547,4 +1547,189 @@ class AppLocalizationsEn extends AppLocalizations {
   String pushAutoAptPassSetBody(String apt) {
     return '$apt has set their apartment passcode';
   }
+
+  @override
+  String get navAppRating => 'Rate the App';
+
+  @override
+  String get ratingScreenTitle => 'Rate MABNA CARE';
+
+  @override
+  String get ratingScreenSubtitle =>
+      'Verified ratings from registered building residents only';
+
+  @override
+  String ratingCountLabel(int count) {
+    return '$count ratings';
+  }
+
+  @override
+  String ratingParticipationLabel(int rated, int total) {
+    return '$rated / $total apts rated';
+  }
+
+  @override
+  String get ratingFormTitleNew => 'Rate your experience';
+
+  @override
+  String get ratingFormTitleEdit => 'Update your rating';
+
+  @override
+  String get ratingFormSubtitle =>
+      'You can update your rating anytime — one rating per apartment';
+
+  @override
+  String get ratingPickStarsHint => 'Tap to select stars';
+
+  @override
+  String get ratingMood1 => 'Poor — needs big improvements';
+
+  @override
+  String get ratingMood2 => 'Fair — has some issues';
+
+  @override
+  String get ratingMood3 => 'Good — works well';
+
+  @override
+  String get ratingMood4 => 'Very Good';
+
+  @override
+  String get ratingMood5 => 'Awesome! Saved us so much hassle ❤️';
+
+  @override
+  String get ratingCommentHint =>
+      'Share any thoughts or suggestions to help us improve (optional)...';
+
+  @override
+  String get ratingSubmitBtn => 'Save Rating';
+
+  @override
+  String get ratingSavedToast =>
+      '✅ Your apartment\'s rating has been saved — thank you!';
+
+  @override
+  String get ratingReviewsAdminTitle => 'Ratings by Apartment (Admin)';
+
+  @override
+  String get ratingReviewsPublicTitle => 'Resident Reviews';
+
+  @override
+  String get ratingVerifiedResident => 'Verified Resident ✓';
+
+  @override
+  String get ratingAdminOnlyBadge => 'Apartment details visible to Admin only';
+
+  @override
+  String get ratingNoReviewsYet => 'No ratings yet — be the first to rate!';
+
+  @override
+  String ratingUnratedAptsTitle(int count) {
+    return 'Apartments that haven\'t rated yet ($count):';
+  }
+
+  @override
+  String get pushAutoNewRatingTitle => 'New App Rating';
+
+  @override
+  String pushAutoNewRatingBody(String apt, int stars) {
+    return '$apt rated the app $stars stars';
+  }
+
+  @override
+  String get emergencyArrearsTitle => 'Pending Dues & Arrears for Fund';
+
+  @override
+  String get emergencyArrearsPendingKpi => 'Pending Dues';
+
+  @override
+  String get emergencyArrearsExpectedKpi => 'Expected After Collection';
+
+  @override
+  String get emergencyArrearsAddBtn => 'Add Arrear';
+
+  @override
+  String get emergencyArrearsDialogTitle => 'Add Pending Due for Fund';
+
+  @override
+  String get emergencyArrearsAptLabel => 'Apartment / Name';
+
+  @override
+  String get emergencyArrearsAptHint => 'e.g. Mr. Khaled\'s Apt (Closed)';
+
+  @override
+  String get emergencyArrearsAmountLabel => 'Amount Due (EGP)';
+
+  @override
+  String get emergencyArrearsDetailsLabel => 'Details & Included Items';
+
+  @override
+  String get emergencyArrearsDetailsHint =>
+      'e.g. Marble work, elevator, electrical switches...';
+
+  @override
+  String get emergencyArrearsPendingBadge => 'Pending Collection';
+
+  @override
+  String get emergencyArrearsCollectedBadge => 'Collected & Added to Fund ✓';
+
+  @override
+  String get emergencyArrearsAutoNote =>
+      'Once paid, this amount is automatically added to the emergency fund balance';
+
+  @override
+  String get emergencyArrearsCollectBtn => 'Mark Collected → Add to Fund';
+
+  @override
+  String get emergencyArrearsEmpty => 'No pending arrears right now';
+
+  @override
+  String get emergencyArrearsAddedToast => '✅ Arrear added successfully';
+
+  @override
+  String get emergencyArrearsCollectedToast =>
+      '✅ Collected and added to emergency fund automatically';
+
+  @override
+  String get emergencyArrearsDeletedToast => 'Arrear deleted';
+
+  @override
+  String confirmDeleteArrearBody(String title) {
+    return 'Are you sure you want to delete the arrear for \"$title\"?';
+  }
+
+  @override
+  String get ratingTabAdd => 'Add Rating';
+
+  @override
+  String get ratingTabList => 'Reviews';
+
+  @override
+  String get pushAutoContactAddedTitle => 'New Maintenance Contact Added';
+
+  @override
+  String pushAutoContactAddedBody(String name) {
+    return '\"$name\" was added to the building maintenance directory';
+  }
+
+  @override
+  String get pushAutoPollVotedTitle => 'New Poll Vote';
+
+  @override
+  String pushAutoPollVotedBody(String apt) {
+    return '$apt cast a vote in building polls';
+  }
+
+  @override
+  String get emergencyArrearsEditTitle => 'Edit Arrear';
+
+  @override
+  String get emergencyArrearsUpdatedToast => '✅ Arrear updated successfully';
+
+  @override
+  String get ratingDeletedToast => 'Rating deleted';
+
+  @override
+  String confirmDeleteRatingBody(String apt) {
+    return 'Are you sure you want to delete $apt\'s rating?';
+  }
 }

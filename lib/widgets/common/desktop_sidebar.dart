@@ -271,6 +271,16 @@ class DesktopSidebar extends StatelessWidget {
                   selected: state.selectedNavIndex == 3,
                   onTap: () => cubit.selectNav(3),
                 ),
+                _tile(
+                  icon: state.selectedNavIndex == 7
+                      ? Icons.star_rounded
+                      : Icons.star_outline_rounded,
+                  label: s.navAppRating,
+                  isDark: isDark,
+                  selected: state.selectedNavIndex == 7,
+                  accentColor: AppColors.amber,
+                  onTap: () => cubit.selectNav(7),
+                ),
 
                 const SizedBox(height: AppSpacing.sm),
                 Divider(height: 1, color: AppColors.border(isDark)),

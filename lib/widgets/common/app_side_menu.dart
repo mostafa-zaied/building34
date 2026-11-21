@@ -199,6 +199,18 @@ class AppSideMenu extends StatelessWidget {
                           cubit.selectNav(2);
                         },
                       ),
+                      _groupRow(
+                        icon: Icons.star_outline_rounded,
+                        label: s.navAppRating,
+                        isDark: isDark,
+                        selected: state.selectedNavIndex == 7,
+                        accentColor: AppColors.amber,
+                        trailing: _chevron(isDark),
+                        onTap: () {
+                          _close(context);
+                          cubit.selectNav(7);
+                        },
+                      ),
                     ],
                   ),
 

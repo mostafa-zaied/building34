@@ -1531,4 +1531,189 @@ class AppLocalizationsAr extends AppLocalizations {
   String pushAutoAptPassSetBody(String apt) {
     return 'قامت $apt بتعيين كلمة السر الخاصة بها بنجاح';
   }
+
+  @override
+  String get navAppRating => 'تقييم التطبيق';
+
+  @override
+  String get ratingScreenTitle => 'تقييم تطبيق MABNA CARE';
+
+  @override
+  String get ratingScreenSubtitle =>
+      'تقييم حقيقي وموثّق من سكان العمارة المسجّلين فقط';
+
+  @override
+  String ratingCountLabel(int count) {
+    return '$count تقييم';
+  }
+
+  @override
+  String ratingParticipationLabel(int rated, int total) {
+    return 'شارك $rated / $total شقة';
+  }
+
+  @override
+  String get ratingFormTitleNew => 'قيّم تجربتك مع التطبيق';
+
+  @override
+  String get ratingFormTitleEdit => 'تعديل تقييمك الحالي';
+
+  @override
+  String get ratingFormSubtitle =>
+      'تقدر تعدّل تقييمك في أي وقت — تقييم واحد لكل شقة';
+
+  @override
+  String get ratingPickStarsHint => 'اختر عدد النجوم';
+
+  @override
+  String get ratingMood1 => 'ضعيف — محتاج تحسين كبير';
+
+  @override
+  String get ratingMood2 => 'مقبول — فيه ملاحظات';
+
+  @override
+  String get ratingMood3 => 'جيد — شغال كويس';
+
+  @override
+  String get ratingMood4 => 'ممتاز جداً';
+
+  @override
+  String get ratingMood5 => 'تحفة! ريّحنا كتير ❤️';
+
+  @override
+  String get ratingCommentHint =>
+      'اكتب رأيك أو أي ملاحظة تساعدنا نطوّر التطبيق (اختياري)...';
+
+  @override
+  String get ratingSubmitBtn => 'حفظ التقييم';
+
+  @override
+  String get ratingSavedToast => '✅ تم حفظ تقييم شقتك بنجاح — شكراً لك!';
+
+  @override
+  String get ratingReviewsAdminTitle => 'تقييمات كل شقة (لوحة المدير)';
+
+  @override
+  String get ratingReviewsPublicTitle => 'آراء سكان العمارة';
+
+  @override
+  String get ratingVerifiedResident => 'ساكن موثّق ✓';
+
+  @override
+  String get ratingAdminOnlyBadge => 'تفاصيل الشقق للمدير فقط';
+
+  @override
+  String get ratingNoReviewsYet =>
+      'لا توجد تقييمات بعد — كن أول من يقيّم التطبيق!';
+
+  @override
+  String ratingUnratedAptsTitle(int count) {
+    return 'شقق لم تقيّم بعد ($count شقة):';
+  }
+
+  @override
+  String get pushAutoNewRatingTitle => 'تقييم جديد للتطبيق';
+
+  @override
+  String pushAutoNewRatingBody(String apt, int stars) {
+    return 'قيّمت $apt التطبيق بـ $stars نجوم';
+  }
+
+  @override
+  String get emergencyArrearsTitle => 'متأخرات ومستحقات لصالح الصندوق';
+
+  @override
+  String get emergencyArrearsPendingKpi => 'متأخرات مستحقة للصندوق';
+
+  @override
+  String get emergencyArrearsExpectedKpi => 'المتوقع بعد التحصيل';
+
+  @override
+  String get emergencyArrearsAddBtn => 'إضافة متأخرات';
+
+  @override
+  String get emergencyArrearsDialogTitle => 'إضافة متأخرات مستحقة للصندوق';
+
+  @override
+  String get emergencyArrearsAptLabel => 'الشقة / الاسم';
+
+  @override
+  String get emergencyArrearsAptHint => 'مثال: شقة أستاذ خالد (شقة مغلقة)';
+
+  @override
+  String get emergencyArrearsAmountLabel => 'المبلغ المستحق (ج.م)';
+
+  @override
+  String get emergencyArrearsDetailsLabel => 'التفاصيل والبنود المشمولة';
+
+  @override
+  String get emergencyArrearsDetailsHint =>
+      'مثال: شامل أعمال الرخام والأسانسير ومفاتيح الكهرباء...';
+
+  @override
+  String get emergencyArrearsPendingBadge => 'متأخرات قيد التحصيل';
+
+  @override
+  String get emergencyArrearsCollectedBadge => 'تم التحصيل وإيداعه بالصندوق ✓';
+
+  @override
+  String get emergencyArrearsAutoNote =>
+      'بمجرد السداد يُضاف المبلغ تلقائياً إلى رصيد صندوق الطوارئ';
+
+  @override
+  String get emergencyArrearsCollectBtn => 'تم التحصيل ← إضافة للصندوق';
+
+  @override
+  String get emergencyArrearsEmpty => 'لا توجد متأخرات مستحقة حالياً';
+
+  @override
+  String get emergencyArrearsAddedToast => '✅ تمت إضافة المتأخرات بنجاح';
+
+  @override
+  String get emergencyArrearsCollectedToast =>
+      '✅ تم التحصيل وإضافة المبلغ لصندوق الطوارئ تلقائياً';
+
+  @override
+  String get emergencyArrearsDeletedToast => 'تم حذف بند المتأخرات';
+
+  @override
+  String confirmDeleteArrearBody(String title) {
+    return 'هل أنت متأكد من حذف بند المتأخرات لـ «$title»؟';
+  }
+
+  @override
+  String get ratingTabAdd => 'إضافة تقييم';
+
+  @override
+  String get ratingTabList => 'التقييمات';
+
+  @override
+  String get pushAutoContactAddedTitle => 'رقم صيانة جديد للعمارة';
+
+  @override
+  String pushAutoContactAddedBody(String name) {
+    return 'تم إضافة «$name» في دليل أرقام وكروت الصيانة';
+  }
+
+  @override
+  String get pushAutoPollVotedTitle => 'مشاركة جديدة في التصويت';
+
+  @override
+  String pushAutoPollVotedBody(String apt) {
+    return 'قامت $apt بالتصويت في قرارات العمارة';
+  }
+
+  @override
+  String get emergencyArrearsEditTitle => 'تعديل المتأخرات';
+
+  @override
+  String get emergencyArrearsUpdatedToast => '✅ تم تعديل المتأخرات بنجاح';
+
+  @override
+  String get ratingDeletedToast => 'تم حذف التقييم';
+
+  @override
+  String confirmDeleteRatingBody(String apt) {
+    return 'هل أنت متأكد من حذف تقييم $apt؟';
+  }
 }

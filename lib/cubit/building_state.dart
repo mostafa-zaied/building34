@@ -32,6 +32,8 @@ class BuildingState {
   final List<AppNotificationItem> notifications;
   final Set<String> readNotificationIds;
   final List<BuildingPoll> buildingPolls;
+  final List<AppRating> appRatings;
+  final List<EmergencyArrear> emergencyArrears;
 
   const BuildingState({
     this.loading = true,
@@ -62,9 +64,15 @@ class BuildingState {
     this.notifications = const [],
     this.readNotificationIds = const {},
     this.buildingPolls = const [],
+    this.appRatings = const [],
+    this.emergencyArrears = const [],
   });
 
   AppLocalizations get s => lookupAppLocalizations(Locale(localeCode));
+
+  double get pendingEmergencyArrearsTotal => emergencyArrears
+      .where((a) => !a.isCollected)
+      .fold<double>(0, (sum, a) => sum + a.amount);
 
   int get unreadNotificationsCount =>
       notifications.where((n) => !readNotificationIds.contains(n.id)).length;
@@ -118,6 +126,8 @@ class BuildingState {
     List<AppNotificationItem>? notifications,
     Set<String>? readNotificationIds,
     List<BuildingPoll>? buildingPolls,
+    List<AppRating>? appRatings,
+    List<EmergencyArrear>? emergencyArrears,
   }) {
     return BuildingState(
       loading: loading ?? this.loading,
@@ -148,6 +158,8 @@ class BuildingState {
       notifications: notifications ?? this.notifications,
       readNotificationIds: readNotificationIds ?? this.readNotificationIds,
       buildingPolls: buildingPolls ?? this.buildingPolls,
+      appRatings: appRatings ?? this.appRatings,
+      emergencyArrears: emergencyArrears ?? this.emergencyArrears,
     );
   }
 }

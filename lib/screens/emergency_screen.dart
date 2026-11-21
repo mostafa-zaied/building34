@@ -8,6 +8,7 @@ import '../core/theme/app_spacing.dart';
 import '../core/theme/app_typography.dart';
 import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
+import '../models/building_models.dart';
 import '../widgets/common/app_button.dart';
 import '../widgets/dialogs/confirm_delete_dialog.dart';
 
@@ -75,6 +76,369 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     return '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
   }
 
+  Future<void> _showAddArrearDialog(
+    BuildContext context,
+    BuildingCubit cubit,
+    BuildingState state, {
+    EmergencyArrear? existing,
+  }) async {
+    final isEdit = existing != null;
+    final s = state.s;
+    final isDark = state.isDarkMode;
+    final titleCtrl = TextEditingController(text: existing?.title ?? '');
+    final amountCtrl = TextEditingController(
+      text: existing != null ? existing.amount.round().toString() : '',
+    );
+    final detailsCtrl = TextEditingController(text: existing?.details ?? '');
+    String? errMsg;
+    bool saving = false;
+
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setModalState) => AlertDialog(
+          backgroundColor: AppColors.card(isDark),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.xl),
+          ),
+          title: Row(
+            children: [
+              Icon(
+                isEdit ? Icons.edit_rounded : Icons.pending_actions_rounded,
+                color: isEdit ? AppColors.primaryText(isDark) : AppColors.amber,
+                size: 20,
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              Expanded(
+                child: Text(
+                  isEdit
+                      ? s.emergencyArrearsEditTitle
+                      : s.emergencyArrearsDialogTitle,
+                  style: AppTypography.headline.copyWith(
+                    fontSize: 15,
+                    color: AppColors.textPrimary(isDark),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextField(
+                    controller: titleCtrl,
+                    enabled: !saving,
+                    decoration: InputDecoration(
+                      labelText: s.emergencyArrearsAptLabel,
+                      hintText: s.emergencyArrearsAptHint,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  TextField(
+                    controller: amountCtrl,
+                    enabled: !saving,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                    ],
+                    decoration: InputDecoration(
+                      labelText: s.emergencyArrearsAmountLabel,
+                      hintText: '700',
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  TextField(
+                    controller: detailsCtrl,
+                    enabled: !saving,
+                    maxLines: 3,
+                    minLines: 2,
+                    decoration: InputDecoration(
+                      labelText: s.emergencyArrearsDetailsLabel,
+                      hintText: s.emergencyArrearsDetailsHint,
+                    ),
+                  ),
+                  if (errMsg != null) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      errMsg!,
+                      style: AppTypography.caption.copyWith(
+                        color: AppColors.danger,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: saving ? null : () => Navigator.pop(ctx),
+              child: Text(s.cancel),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.emerald,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: saving
+                  ? null
+                  : () async {
+                      final title = titleCtrl.text.trim();
+                      final amount = double.tryParse(amountCtrl.text.trim()) ?? 0;
+                      if (title.isEmpty || amount <= 0) {
+                        setModalState(() => errMsg = s.errEmergencyInput);
+                        return;
+                      }
+                      setModalState(() {
+                        saving = true;
+                        errMsg = null;
+                      });
+                      final ok = isEdit
+                          ? await cubit.updateEmergencyArrear(
+                              id: existing.id,
+                              title: title,
+                              amount: amount,
+                              details: detailsCtrl.text.trim(),
+                            )
+                          : await cubit.addEmergencyArrear(
+                              title: title,
+                              amount: amount,
+                              details: detailsCtrl.text.trim(),
+                            );
+                      if (ok && ctx.mounted) {
+                        Navigator.pop(ctx);
+                      } else if (ctx.mounted) {
+                        setModalState(() => saving = false);
+                      }
+                    },
+              child: saving
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Text(s.saveAll),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    Future.delayed(const Duration(milliseconds: 350), () {
+      titleCtrl.dispose();
+      amountCtrl.dispose();
+      detailsCtrl.dispose();
+    });
+  }
+
+  Widget _buildArrearCard({
+    required BuildContext context,
+    required EmergencyArrear arrear,
+    required BuildingState state,
+    required BuildingCubit cubit,
+    required bool isDark,
+  }) {
+    final s = state.s;
+    final accent = arrear.isCollected
+        ? AppColors.emeraldText(isDark)
+        : AppColors.amber;
+
+    return Container(
+      padding: const EdgeInsetsDirectional.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: (arrear.isCollected ? AppColors.emerald : AppColors.amber)
+            .withValues(alpha: isDark ? 0.08 : 0.05),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(
+          color: (arrear.isCollected ? AppColors.emerald : AppColors.amber)
+              .withValues(alpha: 0.32),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      arrear.title,
+                      style: AppTypography.title.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary(isDark),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: accent.withValues(alpha: 0.14),
+                        borderRadius: BorderRadius.circular(AppRadius.pill),
+                      ),
+                      child: Text(
+                        arrear.isCollected
+                            ? s.emergencyArrearsCollectedBadge
+                            : s.emergencyArrearsPendingBadge,
+                        style: AppTypography.caption.copyWith(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w800,
+                          color: accent,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Text(
+                s.currency(arrear.amount.round()),
+                style: AppTypography.headline.copyWith(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w900,
+                  color: accent,
+                ),
+              ),
+            ],
+          ),
+          if (arrear.details.trim().isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Container(
+              padding: const EdgeInsetsDirectional.all(AppSpacing.sm),
+              decoration: BoxDecoration(
+                color: AppColors.surface(isDark),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
+                border: Border.all(color: AppColors.border(isDark)),
+              ),
+              child: Text(
+                arrear.details,
+                style: AppTypography.caption.copyWith(
+                  fontSize: 12,
+                  color: AppColors.textPrimary(isDark),
+                  height: 1.5,
+                ),
+              ),
+            ),
+          ],
+          if (!arrear.isCollected) ...[
+            const SizedBox(height: 6),
+            Text(
+              s.emergencyArrearsAutoNote,
+              style: AppTypography.caption.copyWith(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: AppColors.primaryText(isDark),
+              ),
+            ),
+          ],
+          if (state.isAdminAuthenticated) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Row(
+              children: [
+                if (!arrear.isCollected) ...[
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: state.busy
+                          ? null
+                          : () => cubit.collectEmergencyArrear(arrear.id),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.emerald,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 9),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                        ),
+                      ),
+                      icon: const Icon(Icons.check_circle_outline_rounded, size: 16),
+                      label: Text(
+                        s.emergencyArrearsCollectBtn,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.caption.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.xs),
+                  IconButton(
+                    tooltip: s.emergencyArrearsEditTitle,
+                    onPressed: state.busy
+                        ? null
+                        : () => _showAddArrearDialog(
+                              context,
+                              cubit,
+                              state,
+                              existing: arrear,
+                            ),
+                    style: IconButton.styleFrom(
+                      foregroundColor: AppColors.primaryText(isDark),
+                      side: BorderSide(
+                        color: AppColors.primary.withValues(alpha: 0.4),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                      ),
+                    ),
+                    icon: const Icon(Icons.edit_outlined, size: 17),
+                  ),
+                  const SizedBox(width: 4),
+                ],
+                OutlinedButton.icon(
+                  onPressed: state.busy
+                      ? null
+                      : () => showConfirmDeleteDialog(
+                            context: context,
+                            s: s,
+                            isDark: isDark,
+                            message: s.confirmDeleteArrearBody(arrear.title),
+                            onConfirm: () =>
+                                cubit.deleteEmergencyArrear(arrear.id),
+                          ),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.dangerText(isDark),
+                    side: BorderSide(
+                      color: AppColors.danger.withValues(alpha: 0.4),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 9,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                    ),
+                  ),
+                  icon: const Icon(Icons.delete_outline_rounded, size: 16),
+                  label: Text(
+                    s.confirmDeleteBtn,
+                    style: AppTypography.caption.copyWith(
+                      color: AppColors.dangerText(isDark),
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<BuildingCubit, BuildingState>(
@@ -83,6 +447,8 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
         final s = state.s;
         final isDark = state.isDarkMode;
         final totalEmerg = state.baseEmergency.toInt();
+        final pendingArrears = state.pendingEmergencyArrearsTotal.toInt();
+        final expectedTotal = totalEmerg + pendingArrears;
 
         return LayoutBuilder(
           builder: (context, constraints) {
@@ -170,6 +536,99 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                                   color: AppColors.emeraldText(isDark),
                                 ),
                               ),
+                              if (pendingArrears > 0) ...[
+                                const SizedBox(height: AppSpacing.md),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        padding: const EdgeInsetsDirectional.symmetric(
+                                          horizontal: AppSpacing.sm,
+                                          vertical: 9,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.amber
+                                              .withValues(alpha: isDark ? 0.12 : 0.08),
+                                          borderRadius:
+                                              BorderRadius.circular(AppRadius.md),
+                                          border: Border.all(
+                                            color: AppColors.amber
+                                                .withValues(alpha: 0.35),
+                                          ),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              s.emergencyArrearsPendingKpi,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: AppTypography.caption.copyWith(
+                                                fontSize: 10.5,
+                                                color: AppColors.textSecondary(isDark),
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 2),
+                                            Text(
+                                              '+${s.currency(pendingArrears)}',
+                                              style: AppTypography.title.copyWith(
+                                                fontSize: 14.5,
+                                                fontWeight: FontWeight.w900,
+                                                color: AppColors.amber,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: AppSpacing.xs),
+                                    Expanded(
+                                      child: Container(
+                                        padding: const EdgeInsetsDirectional.symmetric(
+                                          horizontal: AppSpacing.sm,
+                                          vertical: 9,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.surface(isDark)
+                                              .withValues(alpha: 0.72),
+                                          borderRadius:
+                                              BorderRadius.circular(AppRadius.md),
+                                          border: Border.all(
+                                            color: AppColors.border(isDark),
+                                          ),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              s.emergencyArrearsExpectedKpi,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: AppTypography.caption.copyWith(
+                                                fontSize: 10.5,
+                                                color: AppColors.textSecondary(isDark),
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 2),
+                                            Text(
+                                              s.currency(expectedTotal),
+                                              style: AppTypography.title.copyWith(
+                                                fontSize: 14.5,
+                                                fontWeight: FontWeight.w900,
+                                                color: AppColors.emeraldText(isDark),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                               if (state.emergencyTransactions.isNotEmpty) ...[
                                 const SizedBox(height: AppSpacing.md),
                                 Builder(
@@ -208,6 +667,104 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                         ),
 
                         const SizedBox(height: AppSpacing.lg),
+
+                        // 1.5. Pending Dues & Arrears for Emergency Fund
+                        if (state.emergencyArrears.isNotEmpty ||
+                            state.isAdminAuthenticated) ...[
+                          Container(
+                            padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
+                            decoration: BoxDecoration(
+                              color: AppColors.card(isDark),
+                              borderRadius: BorderRadius.circular(AppRadius.xl),
+                              border: Border.all(
+                                color: AppColors.amber.withValues(alpha: 0.30),
+                              ),
+                              boxShadow: AppShadows.card(isDark),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.pending_actions_rounded,
+                                      size: 19,
+                                      color: AppColors.amber,
+                                    ),
+                                    const SizedBox(width: AppSpacing.xs),
+                                    Expanded(
+                                      child: Text(
+                                        s.emergencyArrearsTitle,
+                                        style: AppTypography.title.copyWith(
+                                          fontWeight: FontWeight.w800,
+                                          color: AppColors.textPrimary(isDark),
+                                        ),
+                                      ),
+                                    ),
+                                    if (state.isAdminAuthenticated)
+                                      TextButton.icon(
+                                        onPressed: () => _showAddArrearDialog(
+                                          context,
+                                          cubit,
+                                          state,
+                                        ),
+                                        style: TextButton.styleFrom(
+                                          backgroundColor: AppColors.amber
+                                              .withValues(alpha: 0.14),
+                                          foregroundColor: AppColors.amber,
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 6,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              AppRadius.md,
+                                            ),
+                                          ),
+                                        ),
+                                        icon: const Icon(Icons.add_rounded, size: 16),
+                                        label: Text(
+                                          s.emergencyArrearsAddBtn,
+                                          style: AppTypography.caption.copyWith(
+                                            color: AppColors.amber,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                const SizedBox(height: AppSpacing.sm),
+                                if (state.emergencyArrears.isEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: AppSpacing.sm,
+                                    ),
+                                    child: Text(
+                                      s.emergencyArrearsEmpty,
+                                      textAlign: TextAlign.center,
+                                      style: AppTypography.caption.copyWith(
+                                        color: AppColors.textSecondary(isDark),
+                                      ),
+                                    ),
+                                  )
+                                else
+                                  for (int i = 0;
+                                      i < state.emergencyArrears.length;
+                                      i++) ...[
+                                    if (i > 0) const SizedBox(height: AppSpacing.sm),
+                                    _buildArrearCard(
+                                      context: context,
+                                      arrear: state.emergencyArrears[i],
+                                      state: state,
+                                      cubit: cubit,
+                                      isDark: isDark,
+                                    ),
+                                  ],
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.lg),
+                        ],
 
                         // 2. Admin Record Transaction Form (Withdraw / Deposit Tabs)
                         if (state.isAdminOpen) ...[
