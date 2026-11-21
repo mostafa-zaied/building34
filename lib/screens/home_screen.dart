@@ -279,6 +279,41 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
                           month: m,
                           onToggleAdmin: () => _toggleAdminPanel(cubit, state),
                         ),
+                        if (state.announcement.trim().isNotEmpty) ...[
+                          const SizedBox(height: AppSpacing.md),
+                          Container(
+                            padding: const EdgeInsetsDirectional.symmetric(
+                              horizontal: AppSpacing.md,
+                              vertical: AppSpacing.sm + 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.amber.withValues(alpha: isDark ? 0.14 : 0.12),
+                              borderRadius: BorderRadius.circular(AppRadius.lg),
+                              border: Border.all(
+                                color: AppColors.amber.withValues(alpha: 0.45),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.campaign_rounded,
+                                  size: 18,
+                                  color: isDark ? AppColors.amber : AppColors.amberDarkText,
+                                ),
+                                const SizedBox(width: AppSpacing.sm),
+                                Expanded(
+                                  child: Text(
+                                    state.announcement.trim(),
+                                    style: AppTypography.label.copyWith(
+                                      color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                         if (m.hasDueDate && m.unpaidCount > 0) ...[
                           const SizedBox(height: AppSpacing.md),
                           Builder(
@@ -351,41 +386,6 @@ class _BuildingHomePageState extends State<BuildingHomePage> {
                                 ),
                               );
                             },
-                          ),
-                        ],
-                        if (state.announcement.trim().isNotEmpty) ...[
-                          const SizedBox(height: AppSpacing.md),
-                          Container(
-                            padding: const EdgeInsetsDirectional.symmetric(
-                              horizontal: AppSpacing.md,
-                              vertical: AppSpacing.sm + 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.amber.withValues(alpha: isDark ? 0.14 : 0.12),
-                              borderRadius: BorderRadius.circular(AppRadius.lg),
-                              border: Border.all(
-                                color: AppColors.amber.withValues(alpha: 0.45),
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.campaign_rounded,
-                                  size: 18,
-                                  color: isDark ? AppColors.amber : AppColors.amberDarkText,
-                                ),
-                                const SizedBox(width: AppSpacing.sm),
-                                Expanded(
-                                  child: Text(
-                                    state.announcement.trim(),
-                                    style: AppTypography.label.copyWith(
-                                      color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
                           ),
                         ],
                         const SizedBox(height: AppSpacing.lg),
