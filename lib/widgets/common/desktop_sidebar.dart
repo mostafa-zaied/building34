@@ -33,6 +33,13 @@ class DesktopSidebar extends StatelessWidget {
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
+  Future<void> _shareReferral(String message) async {
+    final uri = Uri.parse(
+      'https://wa.me/?text=${Uri.encodeComponent(message)}',
+    );
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = state.s;
@@ -401,61 +408,128 @@ class DesktopSidebar extends StatelessWidget {
             ),
           ),
 
-          // Footer: Contact Manager
+          // Footer: Get MABNA CARE + Contact Manager
           Padding(
             padding: EdgeInsetsDirectional.all(extended ? AppSpacing.md : AppSpacing.sm),
             child: extended
-                ? Container(
-                    padding: const EdgeInsetsDirectional.symmetric(
-                      horizontal: AppSpacing.sm,
-                      vertical: AppSpacing.xs,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.emerald.withValues(alpha: isDark ? 0.14 : 0.09),
-                      borderRadius: BorderRadius.circular(AppRadius.md),
-                      border: Border.all(
-                        color: AppColors.emerald.withValues(alpha: isDark ? 0.28 : 0.22),
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () => _shareReferral(s.referralShareMessage),
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                          child: Container(
+                            padding: const EdgeInsetsDirectional.symmetric(
+                              horizontal: AppSpacing.sm,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  AppColors.primary.withValues(alpha: isDark ? 0.22 : 0.12),
+                                  AppColors.emerald.withValues(alpha: isDark ? 0.18 : 0.10),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(AppRadius.md),
+                              border: Border.all(
+                                color: AppColors.primary.withValues(alpha: 0.35),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.rocket_launch_outlined,
+                                  size: 15,
+                                  color: AppColors.primaryText(isDark),
+                                ),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    s.getMabnaForBuildingBtn,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: AppTypography.caption.copyWith(
+                                      color: AppColors.textPrimary(isDark),
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextButton.icon(
+                      const SizedBox(height: AppSpacing.xs),
+                      Container(
+                        padding: const EdgeInsetsDirectional.symmetric(
+                          horizontal: AppSpacing.sm,
+                          vertical: AppSpacing.xs,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.emerald.withValues(alpha: isDark ? 0.14 : 0.09),
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                          border: Border.all(
+                            color: AppColors.emerald.withValues(alpha: isDark ? 0.28 : 0.22),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextButton.icon(
+                              onPressed: _contactManager,
+                              icon: Icon(
+                                Icons.chat_rounded,
+                                size: 16,
+                                color: AppColors.emeraldText(isDark),
+                              ),
+                              label: Text(
+                                s.contactManagerBtn,
+                                style: AppTypography.label.copyWith(
+                                  color: AppColors.emeraldText(isDark),
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsetsDirectional.only(end: AppSpacing.sm),
+                              child: Text(
+                                'v1.0',
+                                style: AppTypography.caption.copyWith(
+                                  color: AppColors.textSecondary(isDark),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Tooltip(
+                        message: s.getMabnaForBuildingBtn,
+                        child: IconButton(
+                          onPressed: () => _shareReferral(s.referralShareMessage),
+                          icon: Icon(
+                            Icons.rocket_launch_outlined,
+                            color: AppColors.primaryText(isDark),
+                          ),
+                        ),
+                      ),
+                      Tooltip(
+                        message: s.contactManagerBtn,
+                        child: IconButton(
                           onPressed: _contactManager,
                           icon: Icon(
                             Icons.chat_rounded,
-                            size: 16,
                             color: AppColors.emeraldText(isDark),
                           ),
-                          label: Text(
-                            s.contactManagerBtn,
-                            style: AppTypography.label.copyWith(
-                              color: AppColors.emeraldText(isDark),
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
                         ),
-                        Padding(
-                          padding: const EdgeInsetsDirectional.only(end: AppSpacing.sm),
-                          child: Text(
-                            'v1.0',
-                            style: AppTypography.caption.copyWith(
-                              color: AppColors.textSecondary(isDark),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : Tooltip(
-                    message: s.contactManagerBtn,
-                    child: IconButton(
-                      onPressed: _contactManager,
-                      icon: Icon(
-                        Icons.chat_rounded,
-                        color: AppColors.emeraldText(isDark),
                       ),
-                    ),
+                    ],
                   ),
           ),
         ],

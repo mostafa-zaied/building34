@@ -2754,6 +2754,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cast your vote now: {question}'**
   String pushAutoNewPollBody(String question);
+
+  /// No description provided for @getMabnaForBuildingBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Refer MABNA CARE to a Friend'**
+  String get getMabnaForBuildingBtn;
+
+  /// No description provided for @getMabnaFreeMonthBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'1st Month Free'**
+  String get getMabnaFreeMonthBadge;
+
+  /// No description provided for @footerGetAppCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Loving MABNA CARE? Refer it to a friend\'s building — 1st month free'**
+  String get footerGetAppCta;
+
+  /// No description provided for @referralShareMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Check out MABNA CARE — we use it in our building for expenses, receipts, and voting, and it saved us from WhatsApp group chaos!\nTake a look at our building here:\nhttps://mabna-care.web.app/\n\nAnd try it free for your building for 1 month:\nhttps://mabna-care.web.app/landing.html'**
+  String get referralShareMessage;
 }
 
 class _AppLocalizationsDelegate

@@ -8,7 +8,6 @@ import '../core/theme/app_spacing.dart';
 import '../core/theme/app_typography.dart';
 import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
-import '../widgets/common/copyright_footer.dart';
 import 'main_shell.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -341,8 +340,6 @@ class _SplashScreenState extends State<SplashScreen>
                                 );
                               },
                             ),
-                            const SizedBox(height: AppSpacing.lg),
-                            CopyrightFooter(isDark: isDark),
                             const SizedBox(height: AppSpacing.md),
                           ],
                         ),

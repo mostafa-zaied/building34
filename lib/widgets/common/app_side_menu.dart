@@ -32,6 +32,13 @@ class AppSideMenu extends StatelessWidget {
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
+  Future<void> _shareReferral(String message) async {
+    final uri = Uri.parse(
+      'https://wa.me/?text=${Uri.encodeComponent(message)}',
+    );
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
   void _close(BuildContext context) {
     if (onClose != null) {
       onClose!();
@@ -44,6 +51,19 @@ class AppSideMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = state.s;
     final isDark = state.isDarkMode;
+    final isPushGranted = getPushPermissionStatus() == 'granted';
+
+    final String headerSubtitle;
+    if (state.myAptNum != null) {
+      final aptText = s.drawerMyAptLabel(state.aptLabel(state.myAptNum!));
+      headerSubtitle = state.isAdminAuthenticated
+          ? '$aptText • ${s.contactAddedByAdmin}'
+          : aptText;
+    } else {
+      headerSubtitle = state.isAdminAuthenticated
+          ? '${s.splashTagline} • ${s.contactAddedByAdmin}'
+          : s.splashTagline;
+    }
 
     return Material(
       color: Colors.transparent,
@@ -51,371 +71,290 @@ class AppSideMenu extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Menu Header
+            // Compact Brand Header
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(
                 AppSpacing.lg,
-                AppSpacing.lg,
                 AppSpacing.md,
-                AppSpacing.md,
+                AppSpacing.sm,
+                AppSpacing.sm,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+              child: Row(
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 42,
-                        height: 42,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [AppColors.primary, AppColors.emerald],
-                            begin: AlignmentDirectional.topStart,
-                            end: AlignmentDirectional.bottomEnd,
-                          ),
-                          borderRadius: BorderRadius.circular(AppRadius.md),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withValues(alpha: 0.35),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [AppColors.primary, AppColors.emerald],
+                        begin: AlignmentDirectional.topStart,
+                        end: AlignmentDirectional.bottomEnd,
+                      ),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.30),
+                          blurRadius: 10,
+                          offset: const Offset(0, 3),
                         ),
-                        child: const Icon(
-                          Icons.apartment_rounded,
-                          color: Colors.white,
-                          size: 22,
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              s.appTitle,
-                              style: AppTypography.title.copyWith(
-                                color: AppColors.textPrimary(isDark),
-                                fontWeight: FontWeight.w900,
-                                fontSize: 16,
-                              ),
-                            ),
-                            Text(
-                              s.splashTagline,
-                              style: AppTypography.caption.copyWith(
-                                color: AppColors.textSecondary(isDark),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      IconButton(
-                        tooltip: s.close,
-                        onPressed: () => _close(context),
-                        icon: Icon(
-                          Icons.close_rounded,
-                          size: 20,
-                          color: AppColors.textSecondary(isDark),
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (state.myAptNum != null) ...[
-                    const SizedBox(height: AppSpacing.md),
-                    Container(
-                      padding: const EdgeInsetsDirectional.symmetric(
-                        horizontal: AppSpacing.md,
-                        vertical: AppSpacing.sm,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: isDark ? 0.16 : 0.10),
-                        borderRadius: BorderRadius.circular(AppRadius.md),
-                        border: Border.all(
-                          color: AppColors.primary.withValues(alpha: isDark ? 0.30 : 0.20),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.home_rounded,
-                            size: 16,
-                            color: AppColors.primaryText(isDark),
-                          ),
-                          const SizedBox(width: AppSpacing.xs),
-                          Expanded(
-                            child: Text(
-                              s.drawerMyAptLabel(state.aptLabel(state.myAptNum!)),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTypography.caption.copyWith(
-                                color: AppColors.textPrimary(isDark),
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      ],
                     ),
-                  ],
+                    child: const Icon(
+                      Icons.apartment_rounded,
+                      color: Colors.white,
+                      size: 21,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          s.appTitle,
+                          style: AppTypography.title.copyWith(
+                            color: AppColors.textPrimary(isDark),
+                            fontWeight: FontWeight.w900,
+                            fontSize: 15.5,
+                          ),
+                        ),
+                        Text(
+                          headerSubtitle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTypography.caption.copyWith(
+                            color: AppColors.textSecondary(isDark),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: s.close,
+                    onPressed: () => _close(context),
+                    icon: Icon(
+                      Icons.close_rounded,
+                      size: 19,
+                      color: AppColors.textSecondary(isDark),
+                    ),
+                  ),
                 ],
               ),
             ),
 
-            Padding(
-              padding: const EdgeInsetsDirectional.symmetric(horizontal: AppSpacing.lg),
-              child: Divider(height: 1, color: AppColors.border(isDark)),
-            ),
-
-            // Menu Body
+            // Grouped iOS-Style Menu Body
             Expanded(
               child: ListView(
-                padding: const EdgeInsetsDirectional.all(AppSpacing.md),
+                padding: const EdgeInsetsDirectional.fromSTEB(
+                  AppSpacing.md,
+                  AppSpacing.xs,
+                  AppSpacing.md,
+                  AppSpacing.sm,
+                ),
                 children: [
-                  // 1. Extra Sections
+                  // Group 1: Building Services
                   _sectionHeader(s.drawerExtraSections, isDark),
-                  _drawerTile(
-                    icon: Icons.how_to_vote_outlined,
-                    label: s.navPolls,
+                  _groupCard(
                     isDark: isDark,
-                    selected: state.selectedNavIndex == 6,
-                    accentColor: AppColors.emeraldText(isDark),
-                    trailing: state.openPollsCount > 0
-                        ? Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 7,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.emerald,
-                              borderRadius: BorderRadius.circular(AppRadius.pill),
-                            ),
-                            child: Text(
-                              '${state.openPollsCount}',
-                              style: const TextStyle(
-                                fontSize: 10.5,
-                                fontWeight: FontWeight.w900,
-                                color: Colors.white,
-                              ),
-                            ),
-                          )
-                        : null,
-                    onTap: () {
-                      _close(context);
-                      cubit.selectNav(6);
-                    },
-                  ),
-                  _drawerTile(
-                    icon: Icons.bar_chart_rounded,
-                    label: s.navAnalytics,
-                    isDark: isDark,
-                    selected: state.selectedNavIndex == 4,
-                    accentColor: AppColors.primaryText(isDark),
-                    onTap: () {
-                      _close(context);
-                      cubit.selectNav(4);
-                    },
-                  ),
-                  _drawerTile(
-                    icon: Icons.contact_phone_outlined,
-                    label: s.navContactsFull,
-                    isDark: isDark,
-                    selected: state.selectedNavIndex == 2,
-                    onTap: () {
-                      _close(context);
-                      cubit.selectNav(2);
-                    },
+                    children: [
+                      _groupRow(
+                        icon: Icons.how_to_vote_outlined,
+                        label: s.navPolls,
+                        isDark: isDark,
+                        selected: state.selectedNavIndex == 6,
+                        accentColor: AppColors.emeraldText(isDark),
+                        trailing: state.openPollsCount > 0
+                            ? _pillChip(
+                                '${state.openPollsCount}',
+                                isDark: isDark,
+                                highlighted: true,
+                              )
+                            : _chevron(isDark),
+                        onTap: () {
+                          _close(context);
+                          cubit.selectNav(6);
+                        },
+                      ),
+                      _groupRow(
+                        icon: Icons.bar_chart_rounded,
+                        label: s.navAnalytics,
+                        isDark: isDark,
+                        selected: state.selectedNavIndex == 4,
+                        accentColor: AppColors.primaryText(isDark),
+                        trailing: _chevron(isDark),
+                        onTap: () {
+                          _close(context);
+                          cubit.selectNav(4);
+                        },
+                      ),
+                      _groupRow(
+                        icon: Icons.contact_phone_outlined,
+                        label: s.navContactsFull,
+                        isDark: isDark,
+                        selected: state.selectedNavIndex == 2,
+                        trailing: _chevron(isDark),
+                        onTap: () {
+                          _close(context);
+                          cubit.selectNav(2);
+                        },
+                      ),
+                    ],
                   ),
 
-                  const SizedBox(height: AppSpacing.sm),
-                  Divider(height: 1, color: AppColors.border(isDark)),
-                  const SizedBox(height: AppSpacing.sm),
+                  const SizedBox(height: AppSpacing.md),
 
-                  // 2. App Preferences
+                  // Group 2: App Preferences
                   _sectionHeader(s.drawerPreferences, isDark),
-                  _drawerTile(
-                    icon: isDark ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
-                    label: s.drawerThemeLabel,
+                  _groupCard(
                     isDark: isDark,
-                    trailing: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
+                    children: [
+                      _groupRow(
+                        icon: isDark
+                            ? Icons.dark_mode_outlined
+                            : Icons.light_mode_outlined,
+                        label: s.drawerThemeLabel,
+                        isDark: isDark,
+                        trailing: _pillChip(
+                          isDark ? s.drawerThemeDark : s.drawerThemeLight,
+                          isDark: isDark,
+                        ),
+                        onTap: cubit.toggleTheme,
                       ),
-                      decoration: BoxDecoration(
-                        color: AppColors.surface(isDark),
-                        borderRadius: BorderRadius.circular(AppRadius.sm),
-                        border: Border.all(color: AppColors.border(isDark)),
-                      ),
-                      child: Text(
-                        isDark ? s.drawerThemeDark : s.drawerThemeLight,
-                        style: AppTypography.caption.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary(isDark),
+                      _groupRow(
+                        icon: Icons.language_rounded,
+                        label: s.drawerLanguageLabel,
+                        isDark: isDark,
+                        trailing: _pillChip(
+                          state.localeCode == 'ar' ? 'العربية' : 'English',
+                          isDark: isDark,
+                        ),
+                        onTap: () => cubit.setLocale(
+                          state.localeCode == 'ar' ? 'en' : 'ar',
                         ),
                       ),
-                    ),
-                    onTap: cubit.toggleTheme,
-                  ),
-                  _drawerTile(
-                    icon: Icons.language_rounded,
-                    label: s.drawerLanguageLabel,
-                    isDark: isDark,
-                    trailing: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.surface(isDark),
-                        borderRadius: BorderRadius.circular(AppRadius.sm),
-                        border: Border.all(color: AppColors.border(isDark)),
-                      ),
-                      child: Text(
-                        state.localeCode == 'ar' ? 'العربية' : 'English',
-                        style: AppTypography.caption.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary(isDark),
-                        ),
-                      ),
-                    ),
-                    onTap: () => cubit.setLocale(
-                      state.localeCode == 'ar' ? 'en' : 'ar',
-                    ),
-                  ),
-                  Builder(
-                    builder: (_) {
-                      final isGranted = getPushPermissionStatus() == 'granted';
-                      return _drawerTile(
-                        icon: isGranted
+                      _groupRow(
+                        icon: isPushGranted
                             ? Icons.notifications_active_rounded
                             : Icons.notifications_none_rounded,
                         label: s.drawerNotificationsLabel,
                         isDark: isDark,
-                        trailing: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isGranted
-                                ? AppColors.emerald.withValues(alpha: 0.16)
-                                : AppColors.surface(isDark),
-                            borderRadius: BorderRadius.circular(AppRadius.sm),
-                            border: Border.all(
-                              color: isGranted
-                                  ? AppColors.emerald.withValues(alpha: 0.4)
-                                  : AppColors.border(isDark),
-                            ),
-                          ),
-                          child: Text(
-                            isGranted ? s.pushEnabledBadge : s.pushEnableAction,
-                            style: AppTypography.caption.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: isGranted
-                                  ? AppColors.emeraldText(isDark)
-                                  : AppColors.textSecondary(isDark),
-                            ),
-                          ),
+                        trailing: _pillChip(
+                          isPushGranted
+                              ? s.pushEnabledBadge
+                              : s.pushEnableAction,
+                          isDark: isDark,
+                          highlighted: isPushGranted,
                         ),
                         onTap: () async {
                           _close(context);
                           await cubit.enablePushNotifications();
                         },
-                      );
-                    },
-                  ),
-                  _drawerTile(
-                    icon: Icons.install_mobile_rounded,
-                    label: s.installAppNavLabel,
-                    isDark: isDark,
-                    accentColor: AppColors.emeraldText(isDark),
-                    onTap: () {
-                      _close(context);
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const InstallAppScreen(),
-                        ),
-                      );
-                    },
-                  ),
-
-                  const SizedBox(height: AppSpacing.sm),
-                  Divider(height: 1, color: AppColors.border(isDark)),
-                  const SizedBox(height: AppSpacing.sm),
-
-                  // 3. Administration
-                  _sectionHeader(s.drawerAdminSection, isDark),
-                  if (!state.isAdminAuthenticated)
-                    _drawerTile(
-                      icon: Icons.admin_panel_settings_outlined,
-                      label: s.drawerAdminLogin,
-                      isDark: isDark,
-                      accentColor: AppColors.primaryText(isDark),
-                      onTap: () async {
-                        _close(context);
-                        if (!AppConfig.isSupabaseConfigured) {
-                          await cubit.openAdmin('admin123');
-                          return;
-                        }
-                        await showAdminLoginDialog(
-                          context,
-                          s,
-                          startWithBiometric: true,
-                          onVerifyPassword: (pass) =>
-                              cubit.openAdmin(pass, showErrorToast: false),
-                        );
-                      },
-                    )
-                  else ...[
-                    _drawerTile(
-                      icon: Icons.settings_outlined,
-                      label: s.settingsBtn,
-                      isDark: isDark,
-                      accentColor: AppColors.primaryText(isDark),
-                      onTap: () {
-                        _close(context);
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (settingsCtx) => AdminSettingsScreen(
-                              onOpenManageApts: () => showManageApartmentsDialog(
-                                context: settingsCtx,
-                                cubit: cubit,
-                                state: cubit.state,
-                              ),
+                      ),
+                      _groupRow(
+                        icon: Icons.install_mobile_rounded,
+                        label: s.installAppNavLabel,
+                        isDark: isDark,
+                        accentColor: AppColors.emeraldText(isDark),
+                        trailing: _chevron(isDark),
+                        onTap: () {
+                          _close(context);
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const InstallAppScreen(),
                             ),
-                          ),
-                        );
-                      },
-                    ),
-                    _drawerTile(
-                      icon: Icons.visibility_outlined,
-                      label: s.adminViewsTitle,
-                      isDark: isDark,
-                      selected: state.selectedNavIndex == 5,
-                      accentColor: AppColors.primaryText(isDark),
-                      onTap: () {
-                        _close(context);
-                        cubit.selectNav(5);
-                        cubit.refreshPageViewStats(showBusy: false);
-                      },
-                    ),
-                    _drawerTile(
-                      icon: Icons.logout_rounded,
-                      label: s.adminLogoutBtn,
-                      isDark: isDark,
-                      accentColor: AppColors.dangerText(isDark),
-                      onTap: () async {
-                        _close(context);
-                        await cubit.logoutAdmin();
-                      },
-                    ),
-                  ],
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: AppSpacing.md),
+
+                  // Group 3: Administration
+                  _sectionHeader(s.drawerAdminSection, isDark),
+                  _groupCard(
+                    isDark: isDark,
+                    children: !state.isAdminAuthenticated
+                        ? [
+                            _groupRow(
+                              icon: Icons.admin_panel_settings_outlined,
+                              label: s.drawerAdminLogin,
+                              isDark: isDark,
+                              accentColor: AppColors.primaryText(isDark),
+                              trailing: _chevron(isDark),
+                              onTap: () async {
+                                _close(context);
+                                if (!AppConfig.isSupabaseConfigured) {
+                                  await cubit.openAdmin('admin123');
+                                  return;
+                                }
+                                await showAdminLoginDialog(
+                                  context,
+                                  s,
+                                  startWithBiometric: true,
+                                  onVerifyPassword: (pass) => cubit.openAdmin(
+                                    pass,
+                                    showErrorToast: false,
+                                  ),
+                                );
+                              },
+                            ),
+                          ]
+                        : [
+                            _groupRow(
+                              icon: Icons.settings_outlined,
+                              label: s.settingsBtn,
+                              isDark: isDark,
+                              accentColor: AppColors.primaryText(isDark),
+                              trailing: _chevron(isDark),
+                              onTap: () {
+                                _close(context);
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (settingsCtx) =>
+                                        AdminSettingsScreen(
+                                      onOpenManageApts: () =>
+                                          showManageApartmentsDialog(
+                                        context: settingsCtx,
+                                        cubit: cubit,
+                                        state: cubit.state,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            _groupRow(
+                              icon: Icons.visibility_outlined,
+                              label: s.adminViewsTitle,
+                              isDark: isDark,
+                              selected: state.selectedNavIndex == 5,
+                              accentColor: AppColors.primaryText(isDark),
+                              trailing: _chevron(isDark),
+                              onTap: () {
+                                _close(context);
+                                cubit.selectNav(5);
+                                cubit.refreshPageViewStats(showBusy: false);
+                              },
+                            ),
+                            _groupRow(
+                              icon: Icons.logout_rounded,
+                              label: s.adminLogoutBtn,
+                              isDark: isDark,
+                              accentColor: AppColors.dangerText(isDark),
+                              onTap: () async {
+                                _close(context);
+                                await cubit.logoutAdmin();
+                              },
+                            ),
+                          ],
+                  ),
                 ],
               ),
             ),
 
-            // Footer: Contact Manager
+            // Stacked Footer: Referral + Contact Manager
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(
                 AppSpacing.md,
@@ -423,47 +362,32 @@ class AppSideMenu extends StatelessWidget {
                 AppSpacing.md,
                 AppSpacing.md,
               ),
-              child: Container(
-                padding: const EdgeInsetsDirectional.symmetric(
-                  horizontal: AppSpacing.sm,
-                  vertical: AppSpacing.xs,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.emerald.withValues(alpha: isDark ? 0.14 : 0.09),
-                  borderRadius: BorderRadius.circular(AppRadius.md),
-                  border: Border.all(
-                    color: AppColors.emerald.withValues(alpha: isDark ? 0.28 : 0.22),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _footerButton(
+                    icon: Icons.rocket_launch_outlined,
+                    label: s.getMabnaForBuildingBtn,
+                    fg: AppColors.primaryText(isDark),
+                    bg: AppColors.primary
+                        .withValues(alpha: isDark ? 0.16 : 0.10),
+                    border: AppColors.primary.withValues(alpha: 0.35),
+                    onTap: () {
+                      _close(context);
+                      _shareReferral(s.referralShareMessage);
+                    },
                   ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton.icon(
-                      onPressed: _contactManager,
-                      icon: Icon(
-                        Icons.chat_rounded,
-                        size: 16,
-                        color: AppColors.emeraldText(isDark),
-                      ),
-                      label: Text(
-                        s.contactManagerBtn,
-                        style: AppTypography.label.copyWith(
-                          color: AppColors.emeraldText(isDark),
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsetsDirectional.only(end: AppSpacing.sm),
-                      child: Text(
-                        'v1.0',
-                        style: AppTypography.caption.copyWith(
-                          color: AppColors.textSecondary(isDark),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  const SizedBox(height: AppSpacing.xs),
+                  _footerButton(
+                    icon: Icons.chat_rounded,
+                    label: s.contactManagerBtn,
+                    fg: AppColors.emeraldText(isDark),
+                    bg: AppColors.emerald
+                        .withValues(alpha: isDark ? 0.16 : 0.10),
+                    border: AppColors.emerald.withValues(alpha: 0.35),
+                    onTap: _contactManager,
+                  ),
+                ],
               ),
             ),
           ],
@@ -475,22 +399,52 @@ class AppSideMenu extends StatelessWidget {
   Widget _sectionHeader(String title, bool isDark) {
     return Padding(
       padding: const EdgeInsetsDirectional.fromSTEB(
-        AppSpacing.sm,
         AppSpacing.xs,
-        AppSpacing.sm,
+        0,
         AppSpacing.xs,
+        6,
       ),
       child: Text(
         title,
         style: AppTypography.caption.copyWith(
+          fontSize: 11,
           color: AppColors.textSecondary(isDark),
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w800,
         ),
       ),
     );
   }
 
-  Widget _drawerTile({
+  Widget _groupCard({
+    required bool isDark,
+    required List<Widget> children,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.card(isDark),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: AppColors.border(isDark)),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (int i = 0; i < children.length; i++) ...[
+            if (i > 0)
+              Divider(
+                height: 1,
+                thickness: 1,
+                indent: 42,
+                color: AppColors.border(isDark),
+              ),
+            children[i],
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _groupRow({
     required IconData icon,
     required String label,
     required bool isDark,
@@ -505,31 +459,120 @@ class AppSideMenu extends StatelessWidget {
 
     return Material(
       color: selected
-          ? AppColors.primary.withValues(alpha: isDark ? 0.18 : 0.10)
+          ? AppColors.primary.withValues(alpha: isDark ? 0.14 : 0.08)
           : Colors.transparent,
-      borderRadius: BorderRadius.circular(AppRadius.md),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.md),
         child: Padding(
           padding: const EdgeInsetsDirectional.symmetric(
             horizontal: AppSpacing.md,
-            vertical: 11,
+            vertical: 10,
           ),
           child: Row(
             children: [
-              Icon(icon, size: 19, color: fg),
-              const SizedBox(width: AppSpacing.md),
+              Icon(icon, size: 18, color: fg),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
                   label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.label.copyWith(
                     color: fg,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
                   ),
                 ),
               ),
-              ?trailing,
+              if (trailing != null) ...[
+                const SizedBox(width: AppSpacing.xs),
+                trailing,
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _pillChip(
+    String text, {
+    required bool isDark,
+    bool highlighted = false,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: highlighted
+            ? AppColors.emerald.withValues(alpha: 0.16)
+            : AppColors.surface(isDark),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        border: Border.all(
+          color: highlighted
+              ? AppColors.emerald.withValues(alpha: 0.4)
+              : AppColors.border(isDark),
+        ),
+      ),
+      child: Text(
+        text,
+        style: AppTypography.caption.copyWith(
+          fontSize: 10.5,
+          fontWeight: FontWeight.w800,
+          color: highlighted
+              ? AppColors.emeraldText(isDark)
+              : AppColors.textSecondary(isDark),
+        ),
+      ),
+    );
+  }
+
+  Widget _chevron(bool isDark) {
+    return Icon(
+      Icons.chevron_right_rounded,
+      size: 17,
+      color: AppColors.textSecondary(isDark).withValues(alpha: 0.65),
+    );
+  }
+
+  Widget _footerButton({
+    required IconData icon,
+    required String label,
+    required Color fg,
+    required Color bg,
+    required Color border,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        child: Container(
+          padding: const EdgeInsetsDirectional.symmetric(
+            horizontal: AppSpacing.sm,
+            vertical: 9,
+          ),
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            border: Border.all(color: border),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 15, color: fg),
+              const SizedBox(width: 5),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.caption.copyWith(
+                    fontSize: 11,
+                    color: fg,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
             ],
           ),
         ),

@@ -438,6 +438,71 @@
       color: #CBD5E1;
     }
 
+    /* Transparency / Infrastructure Card */
+    .infra-card {
+      margin-top: 26px;
+      background: linear-gradient(135deg, rgba(17, 28, 52, 0.96) 0%, rgba(16, 40, 68, 0.88) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.28);
+      border-radius: 22px;
+      padding: 24px 22px;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.28);
+    }
+    .infra-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .infra-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: var(--emerald-soft);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .infra-head h3 {
+      font-size: 17px;
+      font-weight: 900;
+      color: var(--text);
+    }
+    .infra-intro {
+      font-size: 13.5px;
+      color: #CBD5E1;
+      margin-bottom: 16px;
+    }
+    .infra-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .infra-item {
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 13px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .infra-footer {
+      background: rgba(16, 185, 129, 0.10);
+      border: 1px solid rgba(16, 185, 129, 0.26);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #6EE7B7;
+      text-align: center;
+    }
+
     /* FAQ */
     .faq-list {
       max-width: 740px;
@@ -511,6 +576,7 @@
       <nav class="nav-links">
         <a href="#demo">شاهد التطبيق</a>
         <a href="#features">المميزات</a>
+        <a href="#infrastructure">استقرار الخدمة</a>
         <a href="#pricing">الباقات</a>
         <a href="#faq">الأسئلة الشائعة</a>
       </nav>
@@ -609,6 +675,31 @@
     </div>
   </section>
 
+  <!-- Dedicated Section: Infrastructure Transparency (Above Pricing) -->
+  <section class="section" id="infrastructure">
+    <div class="container">
+      <div class="infra-card" style="margin-top:0;">
+        <div class="infra-head">
+          <div class="infra-badge">🛡️</div>
+          <h3>اشتراكك بيحافظ على خدمتك شغالة ❤️</h3>
+        </div>
+        <p class="infra-intro">
+          جزء كبير من قيمة الاشتراك بيُستثمر في تشغيل وصيانة البنية التحتية التقنية لـ <strong>MABNA CARE</strong>، بما يشمل:
+        </p>
+        <div class="infra-grid">
+          <div class="infra-item"><span>☁️</span><span>السيرفرات والاستضافة السحابية</span></div>
+          <div class="infra-item"><span>🗄️</span><span>قواعد البيانات وتخزين بيانات العمارة</span></div>
+          <div class="infra-item"><span>🔒</span><span>حماية البيانات والنسخ الاحتياطي</span></div>
+          <div class="infra-item"><span>⚙️</span><span>الصيانة والتحديثات وضمان استمرارية الخدمة</span></div>
+          <div class="infra-item"><span>🚀</span><span>تحسين الأداء وسرعة استجابة التطبيق</span></div>
+        </div>
+        <div class="infra-footer">
+          هدفنا إن بيانات عمارتك تفضل آمنة وخدمتك مستقرة ومتاحة في أي وقت.
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Interactive Per-Apt Cost Calculator + Pricing -->
   <section class="section" id="pricing">
     <div class="container">
@@ -618,12 +709,12 @@
       </div>
 
       <div class="calc-box">
-        <div style="font-weight:800; font-size:15px;">احسب التكلفة على كل شقة في عمارتك (5 ج للشقة — بحد أدنى 100 ج/شهر):</div>
+        <div style="font-weight:800; font-size:15px;">احسب التكلفة على كل شقة في عمارتك (10 ج للشقة — بحد أدنى 50 ج/شهر):</div>
         <div style="font-size:13px; color:var(--muted); margin-top:4px;">
-          عدد الشقق: <strong id="aptCountVal" style="color:#fff; font-size:16px;">20</strong> شقة
+          عدد الشقق: <strong id="aptCountVal" style="color:#fff; font-size:16px;">10</strong> شقة
         </div>
-        <input type="range" min="6" max="40" value="20" class="calc-slider" id="aptSlider" oninput="updateCalc(this.value)" />
-        <div class="calc-result" id="calcResult">إجمالي العمارة: 100 ج/شهر • تكلفة الشقة الواحدة: 5 جنيه فقط في الشهر!</div>
+        <input type="range" min="6" max="40" value="10" class="calc-slider" id="aptSlider" oninput="updateCalc(this.value)" />
+        <div class="calc-result" id="calcResult">إجمالي العمارة: 100 ج/شهر • تكلفة الشقة الواحدة: 10 جنيه فقط في الشهر!</div>
       </div>
 
       <div class="pricing-grid">
@@ -644,9 +735,9 @@
         <div class="price-card featured">
           <div class="popular-tag">⭐ الأكثر طلباً للعمارات</div>
           <div class="price-name">باقة العمارة الكاملة</div>
-          <div class="price-val">100 ج <span>/ شهرياً (5 ج فقط للشقة)</span></div>
+          <div class="price-val">10 ج <span>/ للشقة شهرياً (حد أدنى 50 ج)</span></div>
           <ul class="price-list">
-            <li>✓ 5 جنيه شهرياً للشقة (بحد أدنى 100 ج للعمارة)</li>
+            <li>✓ 10 جنيه شهرياً للشقة (بحد أدنى 50 ج للعمارة)</li>
             <li>✓ مصاريف ديناميك + إيصالات + طوارئ</li>
             <li>✓ كشف حساب شهري + تحليلات + تصويتات</li>
             <li>✓ دليل أرقام وكروت الصيانة + إشعارات Push</li>
@@ -812,7 +903,7 @@
     function updateCalc(apts) {
       const count = Number(apts);
       document.getElementById('aptCountVal').textContent = count;
-      const total = Math.max(100, count * 5);
+      const total = Math.max(50, count * 10);
       const perApt = (total / count).toFixed(1).replace(/\.0$/, '');
       document.getElementById('calcResult').textContent =
         `إجمالي العمارة: ${total} ج/شهر • تكلفة الشقة الواحدة: ${perApt} جنيه فقط في الشهر!`;

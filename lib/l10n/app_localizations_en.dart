@@ -1499,4 +1499,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String pushAutoNewPollBody(String question) {
     return 'Cast your vote now: $question';
   }
+
+  @override
+  String get getMabnaForBuildingBtn => 'Refer MABNA CARE to a Friend';
+
+  @override
+  String get getMabnaFreeMonthBadge => '1st Month Free';
+
+  @override
+  String get footerGetAppCta =>
+      'Loving MABNA CARE? Refer it to a friend\'s building — 1st month free';
+
+  @override
+  String get referralShareMessage =>
+      'Check out MABNA CARE — we use it in our building for expenses, receipts, and voting, and it saved us from WhatsApp group chaos!\nTake a look at our building here:\nhttps://mabna-care.web.app/\n\nAnd try it free for your building for 1 month:\nhttps://mabna-care.web.app/landing.html';
 }

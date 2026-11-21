@@ -1483,4 +1483,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String pushAutoNewPollBody(String question) {
     return 'شارك برأيك الآن: $question';
   }
+
+  @override
+  String get getMabnaForBuildingBtn => 'رشّح MABNA CARE لجارك أو قريبك';
+
+  @override
+  String get getMabnaFreeMonthBadge => 'شهر مجاني';
+
+  @override
+  String get footerGetAppCta =>
+      'عاجبك النظام؟ رشّح MABNA CARE لعمارة قريبك أو صاحبك — أول شهر مجاناً';
+
+  @override
+  String get referralShareMessage =>
+      'شوف النظام اللي شغالين بيه في عمارتنا لتنظيم المصاريف والإيصالات والتصويتات — بصراحة ريّحنا من خناقات جروب الواتساب!\nده لينك عمارتنا خد نظرة فيه:\nhttps://mabna-care.web.app/\n\nوجرّبوه لعمارتكم مجاناً أول شهر من هنا:\nhttps://mabna-care.web.app/landing.html';
 }

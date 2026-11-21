@@ -441,5 +441,9 @@
   "errPollLoginAptFirst": "يرجى تسجيل شقتك أولاً للتصويت",
   "confirmDeletePollBody": "هل أنت متأكد من حذف هذا التصويت نهائياً؟",
   "pushAutoNewPollTitle": "تصويت جديد للعمارة",
-  "pushAutoNewPollBody": "شارك برأيك الآن: {question}"
+  "pushAutoNewPollBody": "شارك برأيك الآن: {question}",
+  "getMabnaForBuildingBtn": "رشّح MABNA CARE لجارك أو قريبك",
+  "getMabnaFreeMonthBadge": "شهر مجاني",
+  "footerGetAppCta": "عاجبك النظام؟ رشّح MABNA CARE لعمارة قريبك أو صاحبك — أول شهر مجاناً",
+  "referralShareMessage": "شوف النظام اللي شغالين بيه في عمارتنا لتنظيم المصاريف والإيصالات والتصويتات — بصراحة ريّحنا من خناقات جروب الواتساب!\nده لينك عمارتنا خد نظرة فيه:\nhttps://mabna-care.web.app/\n\nوجرّبوه لعمارتكم مجاناً أول شهر من هنا:\nhttps://mabna-care.web.app/landing.html"
 }
