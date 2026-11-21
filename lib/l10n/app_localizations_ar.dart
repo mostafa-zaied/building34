@@ -1518,4 +1518,17 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get errResidentAuthRequired =>
       'يرجى فتح شقتك بكلمة السر أولاً من الصفحة الرئيسية';
+
+  @override
+  String adminPasscodeSetCounter(int setCount, int total) {
+    return 'باسورد: $setCount/$total';
+  }
+
+  @override
+  String get pushAutoAptPassSetTitle => 'تم تعيين كلمة سر شقة';
+
+  @override
+  String pushAutoAptPassSetBody(String apt) {
+    return 'قامت $apt بتعيين كلمة السر الخاصة بها بنجاح';
+  }
 }

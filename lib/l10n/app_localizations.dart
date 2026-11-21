@@ -2814,6 +2814,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please unlock your apartment with its passcode first'**
   String get errResidentAuthRequired;
+
+  /// No description provided for @adminPasscodeSetCounter.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcodes: {setCount}/{total}'**
+  String adminPasscodeSetCounter(int setCount, int total);
+
+  /// No description provided for @pushAutoAptPassSetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Apartment Passcode Set'**
+  String get pushAutoAptPassSetTitle;
+
+  /// No description provided for @pushAutoAptPassSetBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{apt} has set their apartment passcode'**
+  String pushAutoAptPassSetBody(String apt);
 }
 
 class _AppLocalizationsDelegate

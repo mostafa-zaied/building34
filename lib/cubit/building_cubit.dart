@@ -992,6 +992,12 @@ class BuildingCubit extends Cubit<BuildingState> {
     nextMap[aptNum] = true;
     emit(state.copyWith(apartmentHasPasscode: nextMap));
     await _saveAptSession(aptNum, passcode.trim());
+    _triggerAutoPush(
+      title: state.s.pushAutoAptPassSetTitle,
+      body: state.s.pushAutoAptPassSetBody(state.aptLabel(aptNum)),
+      audience: 'admins',
+      eventType: 'apt_passcode_set',
+    );
     return null;
   }
 

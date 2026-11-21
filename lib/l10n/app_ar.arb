@@ -451,5 +451,8 @@
   "residentAuthRequiredTitle": "متاح لسكان العمارة فقط",
   "residentAuthRequiredBody": "لحماية العمارة، يرجى فتح شقتك بكلمة السر أولاً من الصفحة الرئيسية للتمكن من إضافة أرقام، شكاوى، مقترحات، أو المشاركة في التصويت.",
   "residentAuthGoHomeBtn": "فتح شقتي من الرئيسية",
-  "errResidentAuthRequired": "يرجى فتح شقتك بكلمة السر أولاً من الصفحة الرئيسية"
+  "errResidentAuthRequired": "يرجى فتح شقتك بكلمة السر أولاً من الصفحة الرئيسية",
+  "adminPasscodeSetCounter": "باسورد: {setCount}/{total}",
+  "pushAutoAptPassSetTitle": "تم تعيين كلمة سر شقة",
+  "pushAutoAptPassSetBody": "قامت {apt} بتعيين كلمة السر الخاصة بها بنجاح"
 }

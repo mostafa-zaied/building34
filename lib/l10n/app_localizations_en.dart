@@ -1534,4 +1534,17 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errResidentAuthRequired =>
       'Please unlock your apartment with its passcode first';
+
+  @override
+  String adminPasscodeSetCounter(int setCount, int total) {
+    return 'Passcodes: $setCount/$total';
+  }
+
+  @override
+  String get pushAutoAptPassSetTitle => 'Apartment Passcode Set';
+
+  @override
+  String pushAutoAptPassSetBody(String apt) {
+    return '$apt has set their apartment passcode';
+  }
 }
