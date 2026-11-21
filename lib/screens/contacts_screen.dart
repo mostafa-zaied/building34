@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_spacing.dart';
 import '../core/theme/app_typography.dart';
+import '../core/utils/contact_picker.dart';
 import '../core/utils/image_compressor.dart';
 import '../cubit/building_cubit.dart';
 import '../cubit/building_state.dart';
@@ -257,6 +258,37 @@ class _ContactsScreenState extends State<ContactsScreen> {
                         hintText: hasAnyCard
                             ? s.contactPhoneOptionalHint
                             : s.contactPhoneHint,
+                        suffixIcon: IconButton(
+                          tooltip: s.contactPickFromDeviceTooltip,
+                          onPressed: saving
+                              ? null
+                              : () async {
+                                  if (!isContactPickerSupported()) {
+                                    setModalState(
+                                      () => errMsg =
+                                          s.contactPickerUnsupportedHint,
+                                    );
+                                    return;
+                                  }
+                                  final picked = await pickDeviceContact();
+                                  if (picked == null) return;
+                                  setModalState(() {
+                                    if (picked.phone.isNotEmpty) {
+                                      phoneCtrl.text = picked.phone;
+                                    }
+                                    if (nameCtrl.text.trim().isEmpty &&
+                                        picked.name.isNotEmpty) {
+                                      nameCtrl.text = picked.name;
+                                    }
+                                    if (errMsg != null) errMsg = null;
+                                  });
+                                },
+                          icon: Icon(
+                            Icons.contacts_outlined,
+                            size: 20,
+                            color: AppColors.primaryText(isDark),
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: AppSpacing.md),

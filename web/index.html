@@ -282,6 +282,28 @@
           }
         });
       };
+
+      // Native Contact Picker API (supported on Android Chrome / Chromium mobile)
+      window.mabnaCanPickContact = function () {
+        return !!(navigator.contacts && typeof navigator.contacts.select === 'function');
+      };
+      window.mabnaPickContact = async function () {
+        try {
+          if (!window.mabnaCanPickContact()) return '';
+          const contacts = await navigator.contacts.select(['name', 'tel'], { multiple: false });
+          if (!contacts || !contacts.length) return '';
+          const first = contacts[0] || {};
+          const rawName = Array.isArray(first.name) && first.name.length ? String(first.name[0] || '').trim() : '';
+          const rawTel = Array.isArray(first.tel) && first.tel.length ? String(first.tel[0] || '').trim() : '';
+          const arabicDigits = { '٠':'0','١':'1','٢':'2','٣':'3','٤':'4','٥':'5','٦':'6','٧':'7','٨':'8','٩':'9' };
+          let digits = rawTel.replace(/[٠-٩]/g, (d) => arabicDigits[d] || d).replace(/[^0-9]/g, '');
+          if (digits.startsWith('0020')) digits = '0' + digits.slice(4);
+          else if (digits.startsWith('20') && digits.length >= 11) digits = '0' + digits.slice(2);
+          return JSON.stringify({ name: rawName, phone: digits });
+        } catch (_) {
+          return '';
+        }
+      };
     })();
   </script>
 </head>

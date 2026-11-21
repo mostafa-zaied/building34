@@ -1513,4 +1513,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get referralShareMessage =>
       'Check out MABNA CARE — we use it in our building for expenses, receipts, and voting, and it saved us from WhatsApp group chaos!\nTake a look at our building here:\nhttps://mabna-care.web.app/\n\nAnd try it free for your building for 1 month:\nhttps://mabna-care.web.app/landing.html';
+
+  @override
+  String get contactPickFromDeviceTooltip => 'Pick from phone contacts';
+
+  @override
+  String get contactPickerUnsupportedHint =>
+      'Picking from device contacts is supported on mobile Chrome (Android) — you can paste the number directly here.';
 }

@@ -2778,6 +2778,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Check out MABNA CARE — we use it in our building for expenses, receipts, and voting, and it saved us from WhatsApp group chaos!\nTake a look at our building here:\nhttps://mabna-care.web.app/\n\nAnd try it free for your building for 1 month:\nhttps://mabna-care.web.app/landing.html'**
   String get referralShareMessage;
+
+  /// No description provided for @contactPickFromDeviceTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick from phone contacts'**
+  String get contactPickFromDeviceTooltip;
+
+  /// No description provided for @contactPickerUnsupportedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Picking from device contacts is supported on mobile Chrome (Android) — you can paste the number directly here.'**
+  String get contactPickerUnsupportedHint;
 }
 
 class _AppLocalizationsDelegate

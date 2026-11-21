@@ -1497,4 +1497,11 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get referralShareMessage =>
       'شوف النظام اللي شغالين بيه في عمارتنا لتنظيم المصاريف والإيصالات والتصويتات — بصراحة ريّحنا من خناقات جروب الواتساب!\nده لينك عمارتنا خد نظرة فيه:\nhttps://mabna-care.web.app/\n\nوجرّبوه لعمارتكم مجاناً أول شهر من هنا:\nhttps://mabna-care.web.app/landing.html';
+
+  @override
+  String get contactPickFromDeviceTooltip => 'اختيار من جهات الاتصال';
+
+  @override
+  String get contactPickerUnsupportedHint =>
+      'الاختيار المباشر من جهات الاتصال متاح على متصفح Chrome للموبايل (Android) — يمكنك لصق الرقم مباشرة هنا.';
 }
